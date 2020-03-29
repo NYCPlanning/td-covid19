@@ -1,52 +1,53 @@
 import geopandas as gpd
 import pandas as pd
 import numpy as np
-import shapely
 import re
-import datetime
-from shapely import wkt
 from geosupport import Geosupport
 
 
 
-
+pd.set_option('display.max_columns', None)
 path='C:/Users/Yijun Ma/Desktop/D/DOCUMENT/DCP2020/COVID19/TRAFFIC/TRANSCOM/'
 
-df=pd.read_excel(path+'GROUP1/0321.XLS',sheetname='Comparison(In Seconds)',skiprows=14)
-tp=pd.DataFrame(index=range(0,30),columns=['segment','length','week','sec'])
-tp['segment']=np.repeat(list(df.loc[range(1,61,4),'Unnamed: 0']),2)
-tp['segment']=[re.sub('Trip Description : ','',x) for x in tp['segment']]
-tp['onstreet']=[str(x).split(' from ')[0] for x in tp['segment']]
-tp['fromstreet']=[str(x).split(' from ')[1].split(' to ')[0] for x in tp['segment']]
-tp['tostreet']=[str(x).split(' from ')[1].split(' to ')[1] for x in tp['segment']]
+transcom=pd.DataFrame()
+for i in ['0301','0308','0315','0322']:
+    df=pd.read_excel(path+'GROUP1/'+str(i)+'.XLS',sheetname='Comparison(In Seconds)',skiprows=14,dtype=str)
+    tp=pd.DataFrame(index=range(0,30),columns=['segment','length','time','sec'])
+    tp['segment']=np.repeat(list(df.loc[range(1,61,4),'Unnamed: 0']),2)
+    tp['segment']=[re.sub('Trip Description : ','',x) for x in tp['segment']]
+    tp['onstreet']=[str(x).split(' from ')[0] for x in tp['segment']]
+    tp['onstreet']=[re.sub(' EB','',x) for x in tp['onstreet']]
+    tp['onstreet']=[re.sub(' WB','',x) for x in tp['onstreet']]
+    tp['onstreet']=[re.sub(' NB','',x) for x in tp['onstreet']]
+    tp['onstreet']=[re.sub(' SB','',x) for x in tp['onstreet']]
+    tp['onstreet']=[' '.join(x.split()).upper() for x in tp['onstreet']]
+    tp['fromstreet']=[str(x).split(' from ')[1].split(' to ')[0] for x in tp['segment']]
+    tp['fromstreet']=[' '.join(x.split()).upper() for x in tp['fromstreet']]
+    tp['tostreet']=[str(x).split(' from ')[1].split(' to ')[1] for x in tp['segment']]
+    tp['tostreet']=[re.sub(' \(EB\)','',x) for x in tp['tostreet']]
+    tp['tostreet']=[re.sub(' \(WB\)','',x) for x in tp['tostreet']]
+    tp['tostreet']=[re.sub(' \(NB\)','',x) for x in tp['tostreet']]
+    tp['tostreet']=[re.sub(' \(SB\)','',x) for x in tp['tostreet']]
+    tp['tostreet']=[' '.join(x.split()).upper() for x in tp['tostreet']]
+    tp['length']=np.repeat(list(df.loc[range(1,61,4),'Unnamed: 6']),2)
+    tp['mile']=pd.to_numeric([re.sub('Trip Length in miles : ','',x) for x in tp['length']])
+    tp['time']=list(df.loc[sorted(list(range(2,62,4))+list(range(3,63,4))),'Unnamed: 0'])
+    tp['week']=[str(x)[0:5]+'-'+str(x)[13:18] for x in tp['time']]
+    tp['year']=[str(x)[6:10] for x in tp['time']]
+    tp['sec']=pd.to_numeric(list(df.loc[sorted(list(range(2,62,4))+list(range(3,63,4))),'Unnamed: 4']))
+    tp['mph']=tp['mile']/tp['sec']*3600
+    tp=tp[['segment','onstreet','fromstreet','tostreet','length','mile','time','week','year','sec','mph']].reset_index(drop=True)
+    transcom=pd.concat([transcom,tp],axis=0,ignore_index=True)
+transcom.to_csv(path+'GROUP1/CLEAN.csv',index=False)
 
-
-
-tp['length']=np.repeat(list(df.loc[range(1,61,4),'Unnamed: 6']),2)
-tp['week']=list(df.loc[sorted(list(range(2,62,4))+list(range(3,63,4))),'Unnamed: 0'])
-tp['sec']=list(df.loc[sorted(list(range(2,62,4))+list(range(3,63,4))),'Unnamed: 4'])
-
-
-
-pd.set_option('display.max_columns', None)
-path1='C:/Users/Yijun Ma/Desktop/D/DOCUMENT/DCP2020/STREET CLOSURE/'
-path2='C:/Users/Yijun Ma/Desktop/D/DOCUMENT/DCP2019/ONSTPARKING/'
-
-
-snd=pd.read_csv(path2+'SND/SND.csv',dtype=float,converters={'streetname':str})
-
+segment=pd.read_csv(path+'GROUP1/CLEAN.csv',dtype=str,converters={'mile':float,'sec':float,'mph':float})
+segment=segment[['segment','onstreet','fromstreet','tostreet']].drop_duplicates(keep='first').reset_index(drop=True)
 g = Geosupport()
-
-weekendwalk=pd.read_csv(path1+'weekendwalk/2020weekendwalkslocations.csv')
-weekendwalk['boro']=np.where(weekendwalk['Borough']=='Manhattan',1,np.where(weekendwalk['Borough']=='The Bronx',2,np.where(weekendwalk['Borough']=='Brooklyn',3,np.where(weekendwalk['Borough']=='Queens',4,np.where(weekendwalk['Borough']=='Staten Island',5,0)))))
-weekendwalk['fromnode']=np.nan
-weekendwalk['tonode']=np.nan
-df=pd.DataFrame()
-for i in weekendwalk.index:
-    borocode=str(weekendwalk.loc[i,'boro'])
-    onstreet=str(weekendwalk.loc[i,'On Street'])
-    fromstreet=str(weekendwalk.loc[i,'From Street'])
-    tostreet=str(weekendwalk.loc[i,'To Street'])
+for i in segment.index:
+    borocode=str(1)
+    onstreet=str(segment.loc[i,'onstreet'])
+    fromstreet=str(segment.loc[i,'fromstreet'])
+    tostreet=str(segment.loc[i,'tostreet'])
     try:
         strech=g['3S']({'borough_code':borocode,'on':onstreet,'from':fromstreet,'to':tostreet})
         tp=pd.DataFrame(strech['LIST OF INTERSECTIONS'])
