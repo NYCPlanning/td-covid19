@@ -76,6 +76,7 @@ def unitcascpexit(ucsexit):
 
 
 # Compile data
+start=datetime.datetime.now()
 tp=pd.DataFrame()
 for i in sorted(os.listdir(path+'DATA')):
     tp=pd.concat([tp,pd.read_csv(path+'DATA/'+str(i),dtype=str)],ignore_index=True)
@@ -107,8 +108,9 @@ for i in list(rc['Remote'].unique()):
         rtunit=rtunit[['unit','firstdate','firsttime']].reset_index(drop=True)
         tpucs=tpunit.groupby('id',as_index=False).apply(unitcascpentry).reset_index(drop=True)
         df=pd.concat([df,tpucs],axis=0,ignore_index=True)
+        print(str(i)+': success')
     except:
-        print(str(i))
+        print(str(i)+': fail')
 df=df[['id','unit','firstdate','time','entries','flagtime','flagentry']].reset_index(drop=True)
 dfunitentry=df.groupby(['unit','firstdate','time'],as_index=False).agg({'entries':'sum','flagtime':'sum','flagentry':'sum','id':'count'}).reset_index(drop=True)
 dfunitentry.to_csv(path+'dfunitentry.csv',index=False)
@@ -141,8 +143,9 @@ for i in list(rc['Remote'].unique()):
         rtunit=rtunit[['unit','firstdate','firsttime']].reset_index(drop=True)
         tpucs=tpunit.groupby('id',as_index=False).apply(unitcascpexit).reset_index(drop=True)
         df=pd.concat([df,tpucs],axis=0,ignore_index=True)
+        print(str(i)+': success')
     except:
-        print(str(i))
+        print(str(i)+': fail')
 df=df[['id','unit','firstdate','time','exits','flagtime','flagexit']].reset_index(drop=True)
 dfunitexit=df.groupby(['unit','firstdate','time'],as_index=False).agg({'exits':'sum','flagtime':'sum','flagexit':'sum','id':'count'}).reset_index(drop=True)
 dfunitexit.to_csv(path+'dfunitexit.csv',index=False)
@@ -155,4 +158,5 @@ dfdateexit=pd.merge(dfdateexit,dfflagexit,how='left',on='firstdate')
 dfdateexit['firstdate']=[datetime.datetime.strptime(x,'%m/%d/%Y') for x in dfdateexit['firstdate']]
 dfdateexit=dfdateexit.sort_values('firstdate').reset_index(drop=True)
 dfdateexit.to_csv(path+'dfdateexit.csv',index=False)
+print(datetime.datetime.now()-start)
 
