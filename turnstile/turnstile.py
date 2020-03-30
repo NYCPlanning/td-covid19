@@ -16,6 +16,7 @@ rt=pd.read_csv(path+'RemoteTime.csv',dtype=str)
 #ucs=tpunit[tpunit['id']=='R018|N324|00-06-03'].reset_index(drop=True)
 #ucs=tpunit[tpunit['id']=='R158|N335|01-00-00'].reset_index(drop=True)
 #ucs=tpunit[tpunit['id']=='R208|R529|00-00-01'].reset_index(drop=True)
+#ucs=tpunit[tpunit['id']=='R023|N507|00-06-01'].reset_index(drop=True)
 def unitcascp(ucs):
     global rtunit
     ucs=ucs.sort_values(['firstdate','firsttime']).reset_index(drop=True)
@@ -37,7 +38,9 @@ def unitcascp(ucs):
 
 
 tp=pd.DataFrame()
-for i in ['200307','200314','200321','200328']:
+#for i in ['200307','200314','200321','200328']:
+#    tp=pd.concat([tp,pd.read_csv(path+'turnstile_'+str(i)+'.txt',dtype=str)],ignore_index=True)
+for i in ['190302','190309','190316','190323','190330']:
     tp=pd.concat([tp,pd.read_csv(path+'turnstile_'+str(i)+'.txt',dtype=str)],ignore_index=True)
 tp['id']=tp['UNIT']+'|'+tp['C/A']+'|'+tp['SCP']
 tp['unit']=tp['UNIT'].copy()
@@ -48,21 +51,24 @@ tp['firstentries']=pd.to_numeric(tp['ENTRIES'])
 tp=tp[['id','unit','firstdate','firsttime','firstdesc','firstentries']].reset_index(drop=True)
 df=pd.DataFrame()
 for i in list(rc['Remote'].unique()):
-    tpunit=tp[tp['unit']==i].reset_index(drop=True)
-    rtunit=rt[rt['Remote']==i].reset_index(drop=True)
-    rttp=datetime.datetime.strptime(tpunit['firstdate'].unique()[0]+' '+rtunit.loc[0,'Time'],'%m/%d/%Y %H:%M:%S').astimezone(pytz.timezone('America/New_York')).timestamp()
-    rtlist=[rttp]
-    for j in range(0,len(tpunit['firstdate'].unique())*6-1):
-        rttp+=4*3600
-        rtlist+=[rttp]
-    rtlist=[datetime.datetime.fromtimestamp(x).astimezone(pytz.timezone('America/New_York')) for x in rtlist]
-    rtunit=pd.concat([rtunit]*len(rtlist),ignore_index=True)
-    rtunit['unit']=rtunit['Remote'].copy()
-    rtunit['firstdate']=[x.strftime('%m/%d/%Y') for x in rtlist]
-    rtunit['firsttime']=[x.strftime('%H:%M:%S') for x in rtlist]
-    rtunit=rtunit[['unit','firstdate','firsttime']].reset_index(drop=True)
-    tpucs=tpunit.groupby('id',as_index=False).apply(unitcascp).reset_index(drop=True)
-    df=pd.concat([df,tpucs],axis=0,ignore_index=True)
+    try:
+        tpunit=tp[tp['unit']==i].reset_index(drop=True)
+        rtunit=rt[rt['Remote']==i].reset_index(drop=True)
+        rttp=datetime.datetime.strptime(tpunit['firstdate'].unique()[0]+' '+rtunit.loc[0,'Time'],'%m/%d/%Y %H:%M:%S').astimezone(pytz.timezone('America/New_York')).timestamp()
+        rtlist=[rttp]
+        for j in range(0,len(tpunit['firstdate'].unique())*6-1):
+            rttp+=4*3600
+            rtlist+=[rttp]
+        rtlist=[datetime.datetime.fromtimestamp(x).astimezone(pytz.timezone('America/New_York')) for x in rtlist]
+        rtunit=pd.concat([rtunit]*len(rtlist),ignore_index=True)
+        rtunit['unit']=rtunit['Remote'].copy()
+        rtunit['firstdate']=[x.strftime('%m/%d/%Y') for x in rtlist]
+        rtunit['firsttime']=[x.strftime('%H:%M:%S') for x in rtlist]
+        rtunit=rtunit[['unit','firstdate','firsttime']].reset_index(drop=True)
+        tpucs=tpunit.groupby('id',as_index=False).apply(unitcascp).reset_index(drop=True)
+        df=pd.concat([df,tpucs],axis=0,ignore_index=True)
+    except:
+        print(str(i))
 df=df[['id','unit','firstdate','time','entries','flagtime','flagentry']].reset_index(drop=True)
 df.to_csv(path+'dfid.csv',index=False)
 df=df.groupby(['unit','firstdate','time'],as_index=False).agg({'id':'count','entries':'sum','flagtime':'sum','flagentry':'sum'}).reset_index(drop=True)
