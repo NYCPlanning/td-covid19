@@ -19,7 +19,7 @@ rt=pd.read_csv(path+'RemoteTime.csv',dtype=str)
 
 
 
-# Download data
+## Download data
 #dl=datetime.datetime(2020,4,4)
 #for i in range(0,300):
 #    dl=dl-datetime.timedelta(days=7)
@@ -95,12 +95,12 @@ for i in list(rc['Remote'].unique()):
     try:
         tpunit=tp[tp['unit']==i].reset_index(drop=True)
         rtunit=rt[rt['Remote']==i].reset_index(drop=True)
-        rttp=datetime.datetime.strptime(tpunit['firstdate'].unique()[0]+' '+rtunit.loc[0,'Time'],'%m/%d/%Y %H:%M:%S').astimezone(pytz.timezone('America/New_York')).timestamp()
+        rttp=pytz.timezone('America/New_York').localize(datetime.datetime.strptime(tpunit['firstdate'].unique()[0]+' '+rtunit.loc[0,'Time'],'%m/%d/%Y %H:%M:%S')).timestamp()
         rtlist=[rttp]
         for j in range(0,len(tpunit['firstdate'].unique())*6-1):
             rttp+=4*3600
             rtlist+=[rttp]
-        rtlist=[datetime.datetime.fromtimestamp(x).astimezone(pytz.timezone('America/New_York')) for x in rtlist]
+        rtlist=[pytz.timezone('America/New_York').localize(datetime.datetime.fromtimestamp(x)) for x in rtlist]
         rtunit=pd.concat([rtunit]*len(rtlist),ignore_index=True)
         rtunit['unit']=rtunit['Remote'].copy()
         rtunit['firstdate']=[x.strftime('%m/%d/%Y') for x in rtlist]
@@ -130,12 +130,12 @@ for i in list(rc['Remote'].unique()):
     try:
         tpunit=tp[tp['unit']==i].reset_index(drop=True)
         rtunit=rt[rt['Remote']==i].reset_index(drop=True)
-        rttp=datetime.datetime.strptime(tpunit['firstdate'].unique()[0]+' '+rtunit.loc[0,'Time'],'%m/%d/%Y %H:%M:%S').astimezone(pytz.timezone('America/New_York')).timestamp()
+        rttp=pytz.timezone('America/New_York').localize(datetime.datetime.strptime(tpunit['firstdate'].unique()[0]+' '+rtunit.loc[0,'Time'],'%m/%d/%Y %H:%M:%S')).timestamp()
         rtlist=[rttp]
         for j in range(0,len(tpunit['firstdate'].unique())*6-1):
             rttp+=4*3600
             rtlist+=[rttp]
-        rtlist=[datetime.datetime.fromtimestamp(x).astimezone(pytz.timezone('America/New_York')) for x in rtlist]
+        rtlist=[pytz.timezone('America/New_York').localize(datetime.datetime.fromtimestamp(x)) for x in rtlist]
         rtunit=pd.concat([rtunit]*len(rtlist),ignore_index=True)
         rtunit['unit']=rtunit['Remote'].copy()
         rtunit['firstdate']=[x.strftime('%m/%d/%Y') for x in rtlist]
