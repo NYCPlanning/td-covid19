@@ -178,3 +178,4 @@ dfdateexit=dfdateexit.sort_values('firstdate').reset_index(drop=True)
 dfdateexit.to_csv(path+'dfdateexit.csv',index=False)
 print(datetime.datetime.now()-start)
 
+# 80 mins
