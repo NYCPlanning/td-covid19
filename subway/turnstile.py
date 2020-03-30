@@ -124,6 +124,24 @@ dfdateentry['firstdate']=[datetime.datetime.strptime(x,'%m/%d/%Y') for x in dfda
 dfdateentry=dfdateentry.sort_values('firstdate').reset_index(drop=True)
 dfdateentry.to_csv(path+'dfdateentry.csv',index=False)
 
+
+R014
+R020
+R023
+R090
+R094
+R267
+R268
+R276
+R285
+R288
+R319
+R377
+R391
+
+
+
+
 # Exits
 df=pd.DataFrame()
 for i in list(rc['Remote'].unique()):
