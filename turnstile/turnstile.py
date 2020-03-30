@@ -19,6 +19,7 @@ rt=pd.read_csv(path+'RemoteTime.csv',dtype=str)
 def unitcascp(ucs):
     global rtunit
     ucs=ucs.sort_values(['firstdate','firsttime']).reset_index(drop=True)
+    ucs=pd.merge(rtunit,ucs,how='left',on=['unit','firstdate','firsttime'])
     ucs['nextdate']=np.roll(ucs['firstdate'],-1)
     ucs['nexttime']=np.roll(ucs['firsttime'],-1)
     ucs['nextdesc']=np.roll(ucs['firstdesc'],-1)
@@ -26,17 +27,11 @@ def unitcascp(ucs):
     ucs['time']=ucs['firsttime']+'-'+ucs['nexttime']
     ucs['entries']=ucs['nextentries']-ucs['firstentries']
     ucs=ucs[:-1].reset_index(drop=True)
-    ucs=ucs[['id','unit','firstdate','time','entries']].reset_index(drop=True)    
-    ucsflagtime=pd.merge(ucs,rtunit,how='outer',on=['firstdate','time']).reset_index(drop=True)
-    ucsflagtime=ucsflagtime[(pd.isna(ucsflagtime['unit_x']))|(pd.isna(ucsflagtime['unit_y']))]
-    ucsflagtime=ucsflagtime[['firstdate']].drop_duplicates(keep='first').sort_values('firstdate').reset_index(drop=True)
-    ucsflagtime['flagtime']=1
-    ucs=pd.merge(ucs,ucsflagtime,how='left',on='firstdate')
-    ucs['flagtime']=ucs['flagtime'].fillna(0)
-    ucsflagentry=ucs.loc[(ucs['entries']<0)|(ucs['entries']>5000),['firstdate']].reset_index(drop=True)
-    ucsflagentry['flagentry']=1
-    ucs=pd.merge(ucs,ucsflagentry,how='left',on='firstdate')
-    ucs['flagentry']=ucs['flagentry'].fillna(0)
+    ucs=ucs[['id','unit','firstdate','time','entries']].reset_index(drop=True)
+    ucs['id']=ucs.loc[pd.notna(ucs['id']),'id'].unique()[0]
+    ucs['flagtime']=np.where(pd.isna(ucs['entries']),1,0)
+    ucs['flagentry']=np.where((ucs['entries']<0)|(ucs['entries']>5000),1,0)
+    ucs['entries']=ucs['entries'].fillna(0)
     return ucs
 
 
@@ -65,14 +60,13 @@ for i in list(rc['Remote'].unique()):
     rtunit['unit']=rtunit['Remote'].copy()
     rtunit['firstdate']=[x.strftime('%m/%d/%Y') for x in rtlist]
     rtunit['firsttime']=[x.strftime('%H:%M:%S') for x in rtlist]
-    rtunit['nexttime']=np.roll([x.strftime('%H:%M:%S') for x in rtlist],-1)
-    rtunit['time']=rtunit['firsttime']+'-'+rtunit['nexttime']
-    rtunit=rtunit[['unit','firstdate','time']].reset_index(drop=True)
-    rtunit=rtunit[:-1].reset_index(drop=True)
+    rtunit=rtunit[['unit','firstdate','firsttime']].reset_index(drop=True)
     tpucs=tpunit.groupby('id',as_index=False).apply(unitcascp).reset_index(drop=True)
-#    tpucs=tpucs.groupby(['unit','firstdate','time'],as_index=False).agg({'entries':'sum','exits':'sum','flag':'sum'}).reset_index(drop=True)
     df=pd.concat([df,tpucs],axis=0,ignore_index=True)
-df.to_csv(path+'df.csv',index=False)
+df=df[['id','unit','firstdate','time','entries','flagtime','flagentry']].reset_index(drop=True)
+df.to_csv(path+'dfid.csv',index=False)
+df=df.groupby(['unit','firstdate','time'],as_index=False).agg({'id':'count','entries':'sum','flagtime':'sum','flagentry':'sum'}).reset_index(drop=True)
+df.to_csv(path+'dfunit.csv',index=False)
 
 
 
