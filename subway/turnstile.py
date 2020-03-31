@@ -80,7 +80,7 @@ def unitcascpexit(ucsexit):
 # Compile data
 start=datetime.datetime.now()
 tp=pd.DataFrame()
-for i in sorted(os.listdir(path+'DATA'))[-5:-1]:
+for i in sorted(os.listdir(path+'DATA')):
     tp=pd.concat([tp,pd.read_csv(path+'DATA/'+str(i),dtype=str)],ignore_index=True)
 tp['id']=tp['UNIT']+'|'+tp['C/A']+'|'+tp['SCP']
 tp['unit']=tp['UNIT'].copy()
