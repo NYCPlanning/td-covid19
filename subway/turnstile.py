@@ -39,6 +39,7 @@ rt=pd.read_csv(path+'RemoteTime.csv',dtype=str)
 def unitcascpentry(ucsentry):
     global rtunit
     ucsentry=ucsentry.sort_values(['firstdate','firsttime']).reset_index(drop=True)
+    ucsid=ucsentry.loc[0,'id']
     ucsentry=pd.merge(rtunit,ucsentry,how='left',on=['unit','firstdate','firsttime'])
     ucsentry['nextdate']=np.roll(ucsentry['firstdate'],-1)
     ucsentry['nexttime']=np.roll(ucsentry['firsttime'],-1)
@@ -48,8 +49,7 @@ def unitcascpentry(ucsentry):
     ucsentry['entries']=ucsentry['nextentries']-ucsentry['firstentries']
     ucsentry=ucsentry[:-1].reset_index(drop=True)
     ucsentry=ucsentry[['id','unit','firstdate','time','entries']].reset_index(drop=True)
-    ucsentry['id']=ucsentry['id'].fillna('')
-    ucsentry['id']=ucsentry.loc[pd.notna(ucsentry['id']),'id'].unique()[0]
+    ucsentry['id']=ucsid
     ucsentry['flagtime']=np.where(pd.isna(ucsentry['entries']),1,0)
     ucsentry['flagentry']=np.where((ucsentry['entries']<0)|(ucsentry['entries']>5000),1,0)
     ucsentry['entries']=ucsentry['entries'].fillna(0)
@@ -59,6 +59,7 @@ def unitcascpentry(ucsentry):
 def unitcascpexit(ucsexit):
     global rtunit
     ucsexit=ucsexit.sort_values(['firstdate','firsttime']).reset_index(drop=True)
+    ucsid=ucsexit.loc[0,'id']
     ucsexit=pd.merge(rtunit,ucsexit,how='left',on=['unit','firstdate','firsttime'])
     ucsexit['nextdate']=np.roll(ucsexit['firstdate'],-1)
     ucsexit['nexttime']=np.roll(ucsexit['firsttime'],-1)
@@ -68,8 +69,7 @@ def unitcascpexit(ucsexit):
     ucsexit['exits']=ucsexit['nextexits']-ucsexit['firstexits']
     ucsexit=ucsexit[:-1].reset_index(drop=True)
     ucsexit=ucsexit[['id','unit','firstdate','time','exits']].reset_index(drop=True)
-    ucsexit['id']=ucsexit['id'].fillna('')
-    ucsexit['id']=ucsexit.loc[pd.notna(ucsexit['id']),'id'].unique()[0]
+    ucsexit['id']=ucsid
     ucsexit['flagtime']=np.where(pd.isna(ucsexit['exits']),1,0)
     ucsexit['flagexit']=np.where((ucsexit['exits']<0)|(ucsexit['exits']>5000),1,0)
     ucsexit['exits']=ucsexit['exits'].fillna(0)
@@ -80,7 +80,7 @@ def unitcascpexit(ucsexit):
 # Compile data
 start=datetime.datetime.now()
 tp=pd.DataFrame()
-for i in sorted(os.listdir(path+'DATA')):
+for i in sorted(os.listdir(path+'DATA'))[-5:-1]:
     tp=pd.concat([tp,pd.read_csv(path+'DATA/'+str(i),dtype=str)],ignore_index=True)
 tp['id']=tp['UNIT']+'|'+tp['C/A']+'|'+tp['SCP']
 tp['unit']=tp['UNIT'].copy()
