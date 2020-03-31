@@ -32,7 +32,7 @@ rt=pd.read_csv(path+'RemoteTime.csv',dtype=str)
 
 
 # Clean Entries based on Unit-C/A-SCP
-ucsentry=tpunit[tpunit['id']=='R018|N324|00-06-03'].reset_index(drop=True)
+#ucsentry=tpunit[tpunit['id']=='R018|N324|00-06-03'].reset_index(drop=True)
 #ucsentry=tpunit[tpunit['id']=='R018|N324|00-06-03'].reset_index(drop=True)
 #ucsentry=tpunit[tpunit['id']=='R158|N335|01-00-00'].reset_index(drop=True)
 #ucsentry=tpunit[tpunit['id']=='R208|R529|00-00-01'].reset_index(drop=True)
@@ -81,7 +81,7 @@ def unitcascpexit(ucsexit):
 # Compile data
 start=datetime.datetime.now()
 tp=pd.DataFrame()
-for i in sorted(os.listdir(path+'DATA'))[-5:-1]:
+for i in sorted(os.listdir(path+'DATA')):
     tp=pd.concat([tp,pd.read_csv(path+'DATA/'+str(i),dtype=str)],ignore_index=True)
 tp['id']=tp['UNIT']+'|'+tp['C/A']+'|'+tp['SCP']
 tp['unit']=tp['UNIT'].copy()
