@@ -47,3 +47,7 @@ tp['date']=[datetime.datetime.strptime(x[0:10],'%m/%d/%Y') for x in tp['week']]
 tp=tp.sort_values(['unit','date']).reset_index(drop=True)
 tp=tp[['unit','week','fare']].reset_index(drop=True)
 tp.to_csv(path+'fare.csv',index=False)
+
+
+
+
