@@ -48,6 +48,7 @@ def unitcascpentry(ucsentry):
     ucsentry['entries']=ucsentry['nextentries']-ucsentry['firstentries']
     ucsentry=ucsentry[:-1].reset_index(drop=True)
     ucsentry=ucsentry[['id','unit','firstdate','time','entries']].reset_index(drop=True)
+    ucsentry['id']=ucsentry['id'].fillna('')
     ucsentry['id']=ucsentry.loc[pd.notna(ucsentry['id']),'id'].unique()[0]
     ucsentry['flagtime']=np.where(pd.isna(ucsentry['entries']),1,0)
     ucsentry['flagentry']=np.where((ucsentry['entries']<0)|(ucsentry['entries']>5000),1,0)
@@ -67,6 +68,7 @@ def unitcascpexit(ucsexit):
     ucsexit['exits']=ucsexit['nextexits']-ucsexit['firstexits']
     ucsexit=ucsexit[:-1].reset_index(drop=True)
     ucsexit=ucsexit[['id','unit','firstdate','time','exits']].reset_index(drop=True)
+    ucsexit['id']=ucsexit['id'].fillna('')
     ucsexit['id']=ucsexit.loc[pd.notna(ucsexit['id']),'id'].unique()[0]
     ucsexit['flagtime']=np.where(pd.isna(ucsexit['exits']),1,0)
     ucsexit['flagexit']=np.where((ucsexit['exits']<0)|(ucsexit['exits']>5000),1,0)
@@ -125,21 +127,58 @@ dfdateentry=dfdateentry.sort_values('firstdate').reset_index(drop=True)
 dfdateentry.to_csv(path+'dfdateentry.csv',index=False)
 
 
-R014
-R020
-R023
-R090
-R094
-R267
-R268
-R276
-R285
-R288
-R319
-R377
-R391
+#i='R014'
+#R020
+#R023
+#R090
+#R094
+#R267
+#R268
+#R276
+#R285
+#R288
+#R319
+#R377
+#R391
 
 
+
+#tpunit=tp[tp['unit']==i].reset_index(drop=True)
+#rtunit=rt[rt['Remote']==i].reset_index(drop=True)
+#rttp=pytz.timezone('America/New_York').localize(datetime.datetime.strptime(tpunit['firstdate'].unique()[0]+' '+rtunit.loc[0,'Time'],'%m/%d/%Y %H:%M:%S')).timestamp()
+#rtlist=[rttp]
+#for j in range(0,len(tpunit['firstdate'].unique())*6-1):
+#    rttp+=4*3600
+#    rtlist+=[rttp]
+#rtlist=[pytz.timezone('America/New_York').localize(datetime.datetime.fromtimestamp(x)) for x in rtlist]
+#rtunit=pd.concat([rtunit]*len(rtlist),ignore_index=True)
+#rtunit['unit']=rtunit['Remote'].copy()
+#rtunit['firstdate']=[x.strftime('%m/%d/%Y') for x in rtlist]
+#rtunit['firsttime']=[x.strftime('%H:%M:%S') for x in rtlist]
+#rtunit=rtunit[['unit','firstdate','firsttime']].reset_index(drop=True)
+#for i in tpunit.id.unique():
+#    ucsentry=tpunit[tpunit['id']==i].reset_index(drop=True)
+#    ucsentry=unitcascpentry(ucsentry)
+#for i in tpunit.id.unique()[60:]:
+#    ucsentry=tpunit[tpunit['id']==i].reset_index(drop=True)
+#    ucsentry=unitcascpentry(ucsentry)
+#
+#ucsentry=tpunit[tpunit['id']=='R014|N095A|01-03-0A'].reset_index(drop=True)
+#ucsentry=ucsentry.sort_values(['firstdate','firsttime']).reset_index(drop=True)
+#ucsentry=pd.merge(rtunit,ucsentry,how='left',on=['unit','firstdate','firsttime'])
+#ucsentry['nextdate']=np.roll(ucsentry['firstdate'],-1)
+#ucsentry['nexttime']=np.roll(ucsentry['firsttime'],-1)
+#ucsentry['nextdesc']=np.roll(ucsentry['firstdesc'],-1)
+#ucsentry['nextentries']=np.roll(ucsentry['firstentries'],-1)
+#ucsentry['time']=ucsentry['firsttime']+'-'+ucsentry['nexttime']
+#ucsentry['entries']=ucsentry['nextentries']-ucsentry['firstentries']
+#ucsentry=ucsentry[:-1].reset_index(drop=True)
+#ucsentry=ucsentry[['id','unit','firstdate','time','entries']].reset_index(drop=True)
+#ucsentry['id']=ucsentry['id'].fillna('')
+#ucsentry['id']=ucsentry.loc[pd.notna(ucsentry['id']),'id'].unique()[0]
+#ucsentry['flagtime']=np.where(pd.isna(ucsentry['entries']),1,0)
+#ucsentry['flagentry']=np.where((ucsentry['entries']<0)|(ucsentry['entries']>5000),1,0)
+#ucsentry['entries']=ucsentry['entries'].fillna(0)
 
 
 # Exits

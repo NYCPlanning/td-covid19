@@ -10,7 +10,6 @@ import pytz
 
 pd.set_option('display.max_columns', None)
 path='C:/Users/Yijun Ma/Desktop/D/DOCUMENT/DCP2020/COVID19/SUBWAY/FARE/'
-#path='/home/mayijun/TURNSTILE/'
 
 
 
@@ -43,8 +42,8 @@ for i in sorted(os.listdir(path+'DATA')):
     dt['week']=wk
     dt=dt[['unit','week','fare']].reset_index(drop=True)
     tp=pd.concat([tp,dt],ignore_index=True)
-
 tp=pd.merge(tp,rc[['Remote']].drop_duplicates(keep='first'),how='inner',left_on='unit',right_on='Remote')
-
-
-
+tp['date']=[datetime.datetime.strptime(x[0:10],'%m/%d/%Y') for x in tp['week']]
+tp=tp.sort_values(['unit','date']).reset_index(drop=True)
+tp=tp[['unit','week','fare']].reset_index(drop=True)
+tp.to_csv(path+'fare.csv',index=False)
