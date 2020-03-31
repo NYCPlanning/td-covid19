@@ -32,6 +32,7 @@ rt=pd.read_csv(path+'RemoteTime.csv',dtype=str)
 
 
 # Clean Entries based on Unit-C/A-SCP
+ucsentry=tpunit[tpunit['id']=='R018|N324|00-06-03'].reset_index(drop=True)
 #ucsentry=tpunit[tpunit['id']=='R018|N324|00-06-03'].reset_index(drop=True)
 #ucsentry=tpunit[tpunit['id']=='R158|N335|01-00-00'].reset_index(drop=True)
 #ucsentry=tpunit[tpunit['id']=='R208|R529|00-00-01'].reset_index(drop=True)
@@ -80,7 +81,7 @@ def unitcascpexit(ucsexit):
 # Compile data
 start=datetime.datetime.now()
 tp=pd.DataFrame()
-for i in sorted(os.listdir(path+'DATA')):
+for i in sorted(os.listdir(path+'DATA'))[-5:-1]:
     tp=pd.concat([tp,pd.read_csv(path+'DATA/'+str(i),dtype=str)],ignore_index=True)
 tp['id']=tp['UNIT']+'|'+tp['C/A']+'|'+tp['SCP']
 tp['unit']=tp['UNIT'].copy()
@@ -102,7 +103,7 @@ for i in list(rc['Remote'].unique()):
         for j in range(0,len(tpunit['firstdate'].unique())*6-1):
             rttp+=4*3600
             rtlist+=[rttp]
-        rtlist=[pytz.timezone('America/New_York').localize(datetime.datetime.fromtimestamp(x)) for x in rtlist]
+        rtlist=[datetime.datetime.fromtimestamp(x,tz=pytz.timezone('America/New_York')) for x in rtlist]
         rtunit=pd.concat([rtunit]*len(rtlist),ignore_index=True)
         rtunit['unit']=rtunit['Remote'].copy()
         rtunit['firstdate']=[x.strftime('%m/%d/%Y') for x in rtlist]
@@ -142,7 +143,7 @@ dfdateentry.to_csv(path+'dfdateentry.csv',index=False)
 #R391
 
 
-
+#
 #tpunit=tp[tp['unit']==i].reset_index(drop=True)
 #rtunit=rt[rt['Remote']==i].reset_index(drop=True)
 #rttp=pytz.timezone('America/New_York').localize(datetime.datetime.strptime(tpunit['firstdate'].unique()[0]+' '+rtunit.loc[0,'Time'],'%m/%d/%Y %H:%M:%S')).timestamp()
@@ -150,19 +151,21 @@ dfdateentry.to_csv(path+'dfdateentry.csv',index=False)
 #for j in range(0,len(tpunit['firstdate'].unique())*6-1):
 #    rttp+=4*3600
 #    rtlist+=[rttp]
-#rtlist=[pytz.timezone('America/New_York').localize(datetime.datetime.fromtimestamp(x)) for x in rtlist]
+#rtlist=[datetime.datetime.fromtimestamp(x,tz=pytz.timezone('America/New_York')) for x in rtlist]
 #rtunit=pd.concat([rtunit]*len(rtlist),ignore_index=True)
 #rtunit['unit']=rtunit['Remote'].copy()
 #rtunit['firstdate']=[x.strftime('%m/%d/%Y') for x in rtlist]
 #rtunit['firsttime']=[x.strftime('%H:%M:%S') for x in rtlist]
 #rtunit=rtunit[['unit','firstdate','firsttime']].reset_index(drop=True)
+#
+#
 #for i in tpunit.id.unique():
 #    ucsentry=tpunit[tpunit['id']==i].reset_index(drop=True)
 #    ucsentry=unitcascpentry(ucsentry)
 #for i in tpunit.id.unique()[60:]:
 #    ucsentry=tpunit[tpunit['id']==i].reset_index(drop=True)
 #    ucsentry=unitcascpentry(ucsentry)
-#
+
 #ucsentry=tpunit[tpunit['id']=='R014|N095A|01-03-0A'].reset_index(drop=True)
 #ucsentry=ucsentry.sort_values(['firstdate','firsttime']).reset_index(drop=True)
 #ucsentry=pd.merge(rtunit,ucsentry,how='left',on=['unit','firstdate','firsttime'])
@@ -192,7 +195,7 @@ for i in list(rc['Remote'].unique()):
         for j in range(0,len(tpunit['firstdate'].unique())*6-1):
             rttp+=4*3600
             rtlist+=[rttp]
-        rtlist=[pytz.timezone('America/New_York').localize(datetime.datetime.fromtimestamp(x)) for x in rtlist]
+        rtlist=[datetime.datetime.fromtimestamp(x,tz=pytz.timezone('America/New_York')) for x in rtlist]
         rtunit=pd.concat([rtunit]*len(rtlist),ignore_index=True)
         rtunit['unit']=rtunit['Remote'].copy()
         rtunit['firstdate']=[x.strftime('%m/%d/%Y') for x in rtlist]
