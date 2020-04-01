@@ -37,6 +37,7 @@ rt=pd.read_csv(path+'RemoteTime.csv',dtype=str)
 #ucsentry=tpunit[tpunit['id']=='R158|N335|01-00-00'].reset_index(drop=True)
 #ucsentry=tpunit[tpunit['id']=='R208|R529|00-00-01'].reset_index(drop=True)
 #ucsentry=tpunit[tpunit['id']=='R023|N507|00-06-01'].reset_index(drop=True)
+#ucsentry=tpunit[tpunit['id']=='R044|R210|00-00-01'].reset_index(drop=True)
 def unitcascpentry(ucsentry):
     global rtunit
     ucsentry=ucsentry.sort_values(['firstdate','firsttime']).reset_index(drop=True)
@@ -241,7 +242,7 @@ dfunitentry=pd.read_csv(path+'dfunitentry.csv',dtype=str,converters={'entries':f
 #          '02/18/2020','02/19/2020','02/20/2020','02/21/2020','02/24/2020','02/25/2020','02/26/2020','02/27/2020','02/28/2020']
 predates=['03/18/2019','03/19/2019','03/20/2019','03/21/2019','03/22/2019','03/25/2019','03/26/2019','03/27/2019','03/28/2019','03/29/2019']
 postdates=['03/16/2020','03/17/2020','03/18/2020','03/19/2020','03/20/2020','03/23/2020','03/24/2020','03/25/2020','03/26/2020']
-amlist=['05:00:00-09:00:00','05:30:00-09:30:00','06:00:00-10:00:00','07:00:00-11:00:00','07:22:00-11:22:00','07:30:00-11:30:00','08:00:00-12:00:00']
+amlist=['05:00:00-09:00:00','06:00:00-10:00:00','06:30:00-10:30:00','07:00:00-11:00:00','08:00:00-12:00:00','08:22:00-12:22:00','08:30:00-12:30:00']
 cplxampre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
 cplxampre=cplxampre[np.isin(cplxampre['time'],amlist)].reset_index(drop=True)
 cplxampre=cplxampre.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
@@ -261,3 +262,38 @@ cplxamdiff['DiffPct']=cplxamdiff['Diff']/cplxamdiff['PreEntries']
 cplxamdiff=pd.merge(cplxamdiff,rc.drop('Remote',axis=1).drop_duplicates(keep='first').reset_index(drop=True),how='left',on='CplxID')
 cplxamdiff=cplxamdiff[['CplxID','Borough','CplxName','Routes','CplxLat','CplxLong','Time','PreEntries','PostEntries','Diff','DiffPct']].reset_index(drop=True)
 cplxamdiff.to_csv(path+'cplxamdiff.csv',index=False)
+
+
+dfunitentry=pd.read_csv(path+'dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
+predates=['03/18/2019','03/19/2019','03/20/2019','03/21/2019','03/22/2019','03/25/2019','03/26/2019','03/27/2019','03/28/2019','03/29/2019']
+postdates=['03/16/2020','03/17/2020','03/18/2020','03/19/2020','03/20/2020','03/23/2020','03/24/2020','03/25/2020','03/26/2020']
+period1=['01:00:00-05:00:00','02:00:00-06:00:00','02:30:00-06:30:00','03:00:00-07:00:00','04:00:00-08:00:00','04:22:00-08:22:00','04:30:00-08:30:00']
+period2=['05:00:00-09:00:00','06:00:00-10:00:00','06:30:00-10:30:00','07:00:00-11:00:00','08:00:00-12:00:00','08:22:00-12:22:00','08:30:00-12:30:00']
+period3=['09:00:00-13:00:00','10:00:00-14:00:00','10:30:00-14:30:00','11:00:00-15:00:00','12:00:00-16:00:00','12:22:00-16:22:00','12:30:00-16:30:00']
+period4=['13:00:00-17:00:00','14:00:00-18:00:00','14:30:00-18:30:00','15:00:00-19:00:00','16:00:00-20:00:00','16:22:00-20:22:00','16:30:00-20:30:00']
+period5=['17:00:00-21:00:00','18:00:00-22:00:00','18:30:00-22:30:00','19:00:00-23:00:00','20:00:00-00:00:00','20:22:00-00:22:00','20:30:00-00:30:00']
+period6=['21:00:00-01:00:00','22:00:00-02:00:00','22:30:00-02:30:00','23:00:00-03:00:00','00:00:00-04:00:00','00:22:00-04:22:00','00:30:00-04:30:00']
+period1=pd.DataFrame(period1,columns=['timeperiod'])
+period1['periodid']=1
+period2=pd.DataFrame(period2,columns=['timeperiod'])
+period2['periodid']=2
+period3=pd.DataFrame(period3,columns=['timeperiod'])
+period3['periodid']=3
+period4=pd.DataFrame(period4,columns=['timeperiod'])
+period4['periodid']=4
+period5=pd.DataFrame(period5,columns=['timeperiod'])
+period5['periodid']=5
+period6=pd.DataFrame(period6,columns=['timeperiod'])
+period6['periodid']=6
+periodlist=pd.concat([period1,period2,period3,period4,period5,period6],ignore_index=True)
+pdpre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
+pdpre=pd.merge(pdpre,periodlist,how='left',left_on='time',right_on='timeperiod')
+pdpre=pdpre.groupby(['firstdate','periodid'],as_index=False).agg({'entries':'sum'}).reset_index(drop=True)
+pdpre.columns=['Date','Period','PreEntries']
+pdpost=dfunitentry[np.isin(dfunitentry['firstdate'],postdates)].reset_index(drop=True)
+pdpost=pd.merge(pdpost,periodlist,how='left',left_on='time',right_on='timeperiod')
+pdpost=pdpost.groupby(['firstdate','periodid'],as_index=False).agg({'entries':'sum'}).reset_index(drop=True)
+pdpost.columns=['Date','Period','PostEntries']
+pddiff=pd.concat([pdpre,pdpost],ignore_index=True)
+pddiff.to_csv(path+'pddiff.csv',index=False)
+
