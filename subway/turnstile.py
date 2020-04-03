@@ -21,7 +21,7 @@ rt=pd.read_csv(path+'RemoteTime.csv',dtype=str)
 
 ## Download data
 #dl=datetime.datetime(2020,4,4)
-#for i in range(0,300):
+#for i in range(0,100):
 #    dl=dl-datetime.timedelta(days=7)
 #    url='http://web.mta.info/developers/data/nyct/turnstile/turnstile_'+datetime.datetime.strftime(dl,'%y%m%d')+'.txt'
 #    req=urllib.request.urlopen(url)
@@ -132,14 +132,14 @@ dfdateentry=dfdateentry.sort_values('firstdate').reset_index(drop=True)
 dfdateentry['firstdate']=[datetime.datetime.strftime(x,'%m/%d/%Y') for x in dfdateentry['firstdate']]
 dfdateentry.to_csv(path+'dfdateentry.csv',index=False)
 dfunitentry=pd.read_csv(path+'dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
-#dfwk=pd.DataFrame()
-#dfwk['firstdate']=sorted([datetime.datetime.strptime(x,'%m/%d/%Y') for x in dfunitentry['firstdate'].unique()])
-#dfwk['firstdate']=[x.strftime('%m/%d/%Y') for x in dfwk['firstdate']]
-#dfwk['weekid']=np.repeat(list(range(1,int(len(dfwk)/7)+2)),7)[0:len(dfwk)]
-#dfwk['weekfirstdate']=np.repeat(list(dfwk.drop_duplicates('weekid',keep='first')['firstdate']),7)[0:len(dfwk)]
-#dfunitwkentry=pd.merge(dfunitentry,dfwk,how='left',on='firstdate')
-#dfunitwkentry=dfunitwkentry.groupby(['unit','weekid','weekfirstdate'],as_index=False).agg({'entries':'sum','gooducs':'sum','flagtime':'sum','flagentry':'sum'}).reset_index(drop=True)
-#dfunitwkentry.to_csv(path+'dfunitwkentry.csv',index=False)
+dfwk=pd.DataFrame()
+dfwk['firstdate']=sorted([datetime.datetime.strptime(x,'%m/%d/%Y') for x in dfunitentry['firstdate'].unique()])
+dfwk['firstdate']=[x.strftime('%m/%d/%Y') for x in dfwk['firstdate']]
+dfwk['weekid']=np.repeat(list(range(1,int(len(dfwk)/7)+2)),7)[0:len(dfwk)]
+dfwk['weekfirstdate']=np.repeat(list(dfwk.drop_duplicates('weekid',keep='first')['firstdate']),7)[0:len(dfwk)]
+dfunitwkentry=pd.merge(dfunitentry,dfwk,how='left',on='firstdate')
+dfunitwkentry=dfunitwkentry.groupby(['unit','weekid','weekfirstdate'],as_index=False).agg({'entries':'sum','gooducs':'sum','flagtime':'sum','flagentry':'sum'}).reset_index(drop=True)
+dfunitwkentry.to_csv(path+'dfunitwkentry.csv',index=False)
 
 
 
@@ -181,14 +181,14 @@ dfdateexit=dfdateexit.sort_values('firstdate').reset_index(drop=True)
 dfdateexit['firstdate']=[datetime.datetime.strftime(x,'%m/%d/%Y') for x in dfdateexit['firstdate']]
 dfdateexit.to_csv(path+'dfdateexit.csv',index=False)
 dfunitexit=pd.read_csv(path+'dfunitexit.csv',dtype=str,converters={'exits':float,'gooducs':float,'flagtime':float,'flagexit':float})
-#dfwk=pd.DataFrame()
-#dfwk['firstdate']=sorted([datetime.datetime.strptime(x,'%m/%d/%Y') for x in dfunitexit['firstdate'].unique()])
-#dfwk['firstdate']=[x.strftime('%m/%d/%Y') for x in dfwk['firstdate']]
-#dfwk['weekid']=np.repeat(list(range(1,int(len(dfwk)/7)+2)),7)[0:len(dfwk)]
-#dfwk['weekfirstdate']=np.repeat(list(dfwk.drop_duplicates('weekid',keep='first')['firstdate']),7)[0:len(dfwk)]
-#dfunitwkexit=pd.merge(dfunitexit,dfwk,how='left',on='firstdate')
-#dfunitwkexit=dfunitwkexit.groupby(['unit','weekid','weekfirstdate'],as_index=False).agg({'exits':'sum','gooducs':'sum','flagtime':'sum','flagexit':'sum'}).reset_index(drop=True)
-#dfunitwkexit.to_csv(path+'dfunitwkexit.csv',index=False)
+dfwk=pd.DataFrame()
+dfwk['firstdate']=sorted([datetime.datetime.strptime(x,'%m/%d/%Y') for x in dfunitexit['firstdate'].unique()])
+dfwk['firstdate']=[x.strftime('%m/%d/%Y') for x in dfwk['firstdate']]
+dfwk['weekid']=np.repeat(list(range(1,int(len(dfwk)/7)+2)),7)[0:len(dfwk)]
+dfwk['weekfirstdate']=np.repeat(list(dfwk.drop_duplicates('weekid',keep='first')['firstdate']),7)[0:len(dfwk)]
+dfunitwkexit=pd.merge(dfunitexit,dfwk,how='left',on='firstdate')
+dfunitwkexit=dfunitwkexit.groupby(['unit','weekid','weekfirstdate'],as_index=False).agg({'exits':'sum','gooducs':'sum','flagtime':'sum','flagexit':'sum'}).reset_index(drop=True)
+dfunitwkexit.to_csv(path+'dfunitwkexit.csv',index=False)
 
 print(datetime.datetime.now()-start)
 # 80 mins
@@ -211,9 +211,23 @@ print(datetime.datetime.now()-start)
 #wkvld['diffpct']=wkvld['diff']/wkvld['fare']
 #wkvld.to_csv(path+'wkvld.csv',index=False)
 #
-#
-#
 ## Hourly Validation
+#turnstile=pd.read_csv(path+'dfunitentry2017.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
+#turnstile=turnstile[[str(x)[6:11]=='2017' for x in turnstile['firstdate']]].reset_index(drop=True)
+#turnstile=pd.merge(turnstile,rc,how='left',left_on='unit',right_on='Remote')
+#turnstile['weekday']=[datetime.datetime.strptime(str(x),'%m/%d/%Y').weekday() for x in turnstile['firstdate']]
+#turnstileweekday=turnstile[np.isin(turnstile['weekday'],range(0,5))].reset_index(drop=True)
+#turnstileweekday['time']=['T'+str(x)[0:2]+'-'+str(x)[9:11] for x in turnstileweekday['time']]
+#turnstileweekday=turnstileweekday.groupby(['unit','CplxID','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
+#turnstileweekday=turnstileweekday.groupby(['CplxID','time'],as_index=False).agg({'entries':'sum'}).reset_index(drop=True)
+#turnstileweekday=turnstileweekday.pivot(index='CplxID',columns='time',values='entries').reset_index(drop=False)
+#turnstileweekday.to_csv(path+'turnstileweekday2017.csv',index=False)
+#
+## Adjust Exits
+#
+#
+#
+#
 #
 #
 #
