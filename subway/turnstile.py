@@ -355,5 +355,3 @@ pdpost.columns=['Date','Period','PostEntries']
 pddiff=pd.concat([pdpre,pdpost],ignore_index=True)
 pddiff.to_csv(path+'pddiff.csv',index=False)
 
-
-
