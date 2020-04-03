@@ -223,22 +223,51 @@ turnstileweekday=turnstileweekday.groupby(['CplxID','time'],as_index=False).agg(
 turnstileweekday=turnstileweekday.pivot(index='CplxID',columns='time',values='entries').reset_index(drop=False)
 turnstileweekday.to_csv(path+'turnstileweekday2017.csv',index=False)
 
+
+
 # Adjust Exits
 dfunitentry=pd.read_csv(path+'dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
-dfunitentry=dfunitentry[[str(x)[6:11]=='2019' for x in dfunitentry['firstdate']]].reset_index(drop=True)
-dfunitentry=dfunitentry.groupby(['unit','firstdate'],as_index=False).agg({'entries':'sum'}).reset_index(drop=True)
-dfunitexit=pd.read_csv(path+'dfunitexit.csv',dtype=str,converters={'exits':float,'gooducs':float,'flagtime':float,'flagexit':float})
-dfunitexit=dfunitexit[[str(x)[6:11]=='2019' for x in dfunitexit['firstdate']]].reset_index(drop=True)
-dfunitexit=dfunitexit.groupby(['unit','firstdate'],as_index=False).agg({'exits':'sum'}).reset_index(drop=True)
-dfunitdate=pd.merge(dfunitentry,dfunitexit,how='inner',on=['unit','firstdate'])
-#dfunitdate['weekday']=[datetime.datetime.strptime(str(x),'%m/%d/%Y').weekday() for x in dfunitdate['firstdate']]
-#dfunitdate=dfunitdate[dfunitdate['entries']!=0].reset_index(drop=True)
-#dfunitdate=dfunitdate[dfunitdate['exits']!=0].reset_index(drop=True)
-#dfunitdate['adj']=dfunitdate['entries']/dfunitdate['exits']
-#dfunitdate=dfunitdate.groupby(['unit','weekday'],as_index=False).agg({'adj':'median'}).reset_index(drop=True)
-dfunitdate=dfunitdate.groupby('unit',as_index=False).agg({'entries':'sum','exits':'sum'}).reset_index(drop=True)
-dfunitdate['adj']=dfunitdate['entries']/dfunitdate['exits']
+dfunitentry['weekday']=[datetime.datetime.strptime(str(x),'%m/%d/%Y').weekday() for x in dfunitentry['firstdate']]
+dfunitentry2019wkd=dfunitentry[[str(x)[6:11]=='2019' for x in dfunitentry['firstdate']]].reset_index(drop=True)
+dfunitentry2019wkd=dfunitentry2019wkd[np.isin(dfunitentry2019wkd['weekday'],range(0,5))].reset_index(drop=True)
+dfunitentry2019wkd=dfunitentry2019wkd.groupby(['unit','firstdate'],as_index=False).agg({'entries':'sum'}).reset_index(drop=True)
+dfunitentry2018wkd=dfunitentry[[str(x)[6:11]=='2018' for x in dfunitentry['firstdate']]].reset_index(drop=True)
+dfunitentry2018wkd=dfunitentry2018wkd[np.isin(dfunitentry2018wkd['weekday'],range(0,5))].reset_index(drop=True)
+dfunitentry2018wkd=dfunitentry2018wkd.groupby(['unit','firstdate'],as_index=False).agg({'entries':'sum'}).reset_index(drop=True)
 
+dfunitexit=pd.read_csv(path+'dfunitexit.csv',dtype=str,converters={'exits':float,'gooducs':float,'flagtime':float,'flagexit':float})
+dfunitexit['weekday']=[datetime.datetime.strptime(str(x),'%m/%d/%Y').weekday() for x in dfunitexit['firstdate']]
+dfunitexit2019wkd=dfunitexit[[str(x)[6:11]=='2019' for x in dfunitexit['firstdate']]].reset_index(drop=True)
+dfunitexit2019wkd=dfunitexit2019wkd[np.isin(dfunitexit2019wkd['weekday'],range(0,5))].reset_index(drop=True)
+dfunitexit2019wkd=dfunitexit2019wkd.groupby(['unit','firstdate'],as_index=False).agg({'exits':'sum'}).reset_index(drop=True)
+dfunitexit2018wkd=dfunitexit[[str(x)[6:11]=='2018' for x in dfunitexit['firstdate']]].reset_index(drop=True)
+dfunitexit2018wkd=dfunitexit2018wkd[np.isin(dfunitexit2018wkd['weekday'],range(0,5))].reset_index(drop=True)
+dfunitexit2018wkd=dfunitexit2018wkd.groupby(['unit','firstdate'],as_index=False).agg({'exits':'sum'}).reset_index(drop=True)
+
+dfunitdate2019wkd=pd.merge(dfunitentry2019wkd,dfunitexit2019wkd,how='inner',on=['unit','firstdate'])
+dfunitdate2019wkd['medianadj2019']=dfunitdate2019wkd['entries']/dfunitdate2019wkd['exits']
+dfunitdate2019wkdmedian=dfunitdate2019wkd.groupby('unit',as_index=False).agg({'medianadj2019':'median'}).reset_index(drop=True)
+dfunitdate2019wkdsum=dfunitdate2019wkd.groupby('unit',as_index=False).agg({'entries':'sum','exits':'sum'}).reset_index(drop=True)
+dfunitdate2019wkdsum['sumadj2019']=dfunitdate2019wkdsum['entries']/dfunitdate2019wkdsum['exits']
+dfunitdate2019wkdsum=dfunitdate2019wkdsum[['unit','sumadj2019']].reset_index(drop=True)
+dfunitdate2019wkdadjrate=pd.merge(dfunitdate2019wkdmedian,dfunitdate2019wkdsum,how='inner',on='unit')
+dfunitdate2019wkdadjrate.to_csv(path+'dfunitdate2019wkdadjrate.csv',index=False)
+
+dfunitdate2018wkd=pd.merge(dfunitentry2018wkd,dfunitexit2018wkd,how='inner',on=['unit','firstdate'])
+dfunitdate2018wkd['medianadj2018']=dfunitdate2018wkd['entries']/dfunitdate2018wkd['exits']
+dfunitdate2018wkdmedian=dfunitdate2018wkd.groupby('unit',as_index=False).agg({'medianadj2018':'median'}).reset_index(drop=True)
+dfunitdate2018wkdsum=dfunitdate2018wkd.groupby('unit',as_index=False).agg({'entries':'sum','exits':'sum'}).reset_index(drop=True)
+dfunitdate2018wkdsum['sumadj2018']=dfunitdate2018wkdsum['entries']/dfunitdate2018wkdsum['exits']
+dfunitdate2018wkdsum=dfunitdate2018wkdsum[['unit','sumadj2018']].reset_index(drop=True)
+dfunitdate2018wkdadjrate=pd.merge(dfunitdate2018wkdmedian,dfunitdate2018wkdsum,how='inner',on='unit')
+dfunitdate2018wkdadjrate.to_csv(path+'dfunitdate2018wkdadjrate.csv',index=False)
+
+dfunitdate2019wkd=pd.merge(dfunitentry2019wkd,dfunitexit2019wkd,how='inner',on=['unit','firstdate'])
+dfunitdate2019wkdadj=pd.merge(dfunitdate2019wkd,dfunitdate2019wkdadjrate,how='inner',on='unit')
+dfunitdate2019wkdadj['exitsmedianadj']=dfunitdate2019wkdadj['exits']*dfunitdate2019wkdadj['medianadj2019']
+dfunitdate2019wkdadj['exitssumadj']=dfunitdate2019wkdadj['exits']*dfunitdate2019wkdadj['sumadj2019']
+dfunitdate2019wkdadj=dfunitdate2019wkdadj.groupby('firstdate',as_index=False).agg({'entries':'sum','exitsmedianadj':'sum','exitssumadj':'sum'}).reset_index(drop=True)
+dfunitdate2019wkdadj.to_csv(path+'dfunitdate2019wkdadj.csv',index=False)
 
 
 
@@ -325,4 +354,6 @@ pdpost=pdpost.groupby(['firstdate','periodid'],as_index=False).agg({'entries':'s
 pdpost.columns=['Date','Period','PostEntries']
 pddiff=pd.concat([pdpre,pdpost],ignore_index=True)
 pddiff.to_csv(path+'pddiff.csv',index=False)
+
+
 
