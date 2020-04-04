@@ -311,9 +311,7 @@ cplxpmdiff=pd.merge(cplxpmdiff,rc.drop('Remote',axis=1).drop_duplicates(keep='fi
 cplxpmdiff=cplxpmdiff[['CplxID','Borough','CplxName','Routes','CplxLat','CplxLong','Hub','Time','PreEntries','PostEntries','Diff','DiffPct']].reset_index(drop=True)
 cplxpmdiff.to_csv(path+'OUTPUT/cplxpmdiff.csv',index=False)
 
-
-
-
+# Period Diff
 dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
 predates=['03/25/2019','03/26/2019','03/27/2019','03/28/2019','03/29/2019','04/01/2019','04/02/2019','04/03/2019','04/04/2019']
 postdates=['03/23/2020','03/24/2020','03/25/2020','03/26/2020','03/27/2020','03/30/2020','03/31/2020','04/01/2020','04/02/2020']
