@@ -9,12 +9,12 @@ import pytz
 
 
 pd.set_option('display.max_columns', None)
-#path='C:/Users/Yijun Ma/Desktop/D/DOCUMENT/DCP2020/COVID19/SUBWAY/TURNSTILE/'
-path='/home/mayijun/TURNSTILE/'
+path='C:/Users/Yijun Ma/Desktop/D/DOCUMENT/DCP2020/COVID19/SUBWAY/TURNSTILE/'
+#path='/home/mayijun/TURNSTILE/'
 
 
 
-rc=pd.read_csv(path+'RemoteComplex.csv',dtype=str,converters={'CplxID':float,'CplxLat':float,'CplxLong':float})
+rc=pd.read_csv(path+'RemoteComplex.csv',dtype=str,converters={'CplxID':float,'CplxLat':float,'CplxLong':float,'Hub':float})
 rt=pd.read_csv(path+'RemoteTime.csv',dtype=str)
 
 
@@ -344,4 +344,24 @@ pdpost=pdpost.groupby(['firstdate','periodid'],as_index=False).agg({'entries':'s
 pdpost.columns=['Date','Period','PostEntries']
 pddiff=pd.concat([pdpre,pdpost],ignore_index=True)
 pddiff.to_csv(path+'OUTPUT/pddiff.csv',index=False)
+
+# Hub Bound
+dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
+predates=['03/11/2019','03/12/2019','03/13/2019','03/14/2019','03/15/2019','03/18/2019','03/19/2019','03/20/2019','03/21/2019','03/22/2019',
+          '03/25/2019','03/26/2019','03/27/2019','03/28/2019','03/29/2019','04/01/2019','04/02/2019','04/03/2019','04/04/2019']
+postdates=['03/09/2020','03/10/2020','03/11/2020','03/12/2020','03/13/2020','03/16/2020','03/17/2020','03/18/2020','03/19/2020','03/20/2020',
+           '03/23/2020','03/24/2020','03/25/2020','03/26/2020','03/27/2020','03/30/2020','03/31/2020','04/01/2020','04/02/2020']
+pmlist=['13:00:00-17:00:00','14:00:00-18:00:00','14:30:00-18:30:00','15:00:00-19:00:00','16:00:00-20:00:00','16:22:00-20:22:00','16:30:00-20:30:00']
+cplxpmpre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
+cplxpmpre=cplxpmpre[np.isin(cplxpmpre['time'],pmlist)].reset_index(drop=True)
+cplxpmpre=pd.merge(cplxpmpre,rc,how='left',left_on='unit',right_on='Remote')
+cplxpmpre=cplxpmpre[cplxpmpre['Hub']==1].reset_index(drop=True)
+cplxpmpre=cplxpmpre.groupby(['firstdate'],as_index=False).agg({'entries':'sum'}).reset_index(drop=True)
+cplxpmpost=dfunitentry[np.isin(dfunitentry['firstdate'],postdates)].reset_index(drop=True)
+cplxpmpost=cplxpmpost[np.isin(cplxpmpost['time'],pmlist)].reset_index(drop=True)
+cplxpmpost=pd.merge(cplxpmpost,rc,how='left',left_on='unit',right_on='Remote')
+cplxpmpost=cplxpmpost[cplxpmpost['Hub']==1].reset_index(drop=True)
+cplxpmpost=cplxpmpost.groupby(['firstdate'],as_index=False).agg({'entries':'sum'}).reset_index(drop=True)
+hub=pd.concat([cplxpmpre,cplxpmpost],axis=0,ignore_index=True)
+hub.to_csv(path+'OUTPUT/hub.csv',index=False)
 
