@@ -11,11 +11,16 @@ path='C:/Users/Yijun Ma/Desktop/D/DOCUMENT/DCP2020/COVID19/STREET CLOSURE/sidewa
 #start=datetime.datetime.now()
 lion=gpd.read_file(path+'LION.shp')
 
-lionbfpk=lion[['FeatureTyp','SegmentTyp','NonPed','RB_Layer','RW_TYPE','TrafDir']].drop_duplicates().reset_index(drop=True)
+lionbfpk=lion[['SegmentID','PhysicalID','FeatureTyp','SegmentTyp','NonPed','RB_Layer','RW_TYPE','TrafDir']].drop_duplicates().reset_index(drop=True)
+lionbfpk['segmentid']=pd.to_numeric(lionbfpk['SegmentID'])
+
+lionbfpk['rwtype']=pd.to_numeric(lionbfpk['RW_TYPE'])
+
 lionbfpk['featuretype']=[' '.join(x.split()).upper() if pd.notna(x) else '' for x in lionbfpk['FeatureTyp']]
 lionbfpk=lionbfpk[np.isin(lionbfpk['featuretype'],['0','6','A','C'])].reset_index(drop=True)
 lionbfpk['segmenttype']=[' '.join(x.split()).upper() if pd.notna(x) else '' for x in lionbfpk['SegmentTyp']]
 lionbfpk=lionbfpk[np.isin(lionbfpk['segmenttype'],['B','R','U'])].reset_index(drop=True)
+
 
 lionbfpk['rwtype']=pd.to_numeric(lionbfpk['RW_TYPE'])
 lionbfpk=lionbfpk[np.isin(lionbfpk['rwtype'],[1])].reset_index(drop=True)
