@@ -51,8 +51,8 @@ tp.to_csv(path+'fare.csv',index=False)
 
 # Compare the data
 df=pd.read_csv(path+'fare.csv',dtype=str,converters={'fare':float})
-preweek='03/23/2019-03/29/2019'
-postweek='03/21/2020-03/27/2020'
+preweek='03/30/2019-04/05/2019'
+postweek='03/28/2020-04/03/2020'
 cplxpre=df[np.isin(df['week'],preweek)].reset_index(drop=True)
 cplxpre=pd.merge(cplxpre,rc,how='left',left_on='unit',right_on='Remote')
 cplxpre=cplxpre.groupby(['CplxID'],as_index=False).agg({'fare':'sum'}).reset_index(drop=True)
