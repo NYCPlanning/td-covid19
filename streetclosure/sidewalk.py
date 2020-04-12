@@ -7,20 +7,24 @@ import datetime
 
 
 pd.set_option('display.max_columns', None)
-#path='C:/Users/Yijun Ma/Desktop/D/DOCUMENT/DCP2020/COVID19/STREET CLOSURE/sidewalk/'
+path='C:/Users/Yijun Ma/Desktop/D/DOCUMENT/DCP2020/COVID19/STREET CLOSURE/sidewalk/'
 path='/home/mayijun/sidewalk/'
 
 
 ## SImplify LION
 #lion=gpd.read_file(path+'lion.shp')
 #lion.crs={'init':'epsg:4326'}
-#lionsp=lion[['PhysicalID','SeqNum','SegmentID','RB_Layer','FeatureTyp','SegmentTyp','NonPed','TrafDir','RW_TYPE','StreetWidt','geometry']].reset_index(drop=True)
+#lionsp=lion[['PhysicalID','SeqNum','SegmentID','NodeIDFrom','NodeIDTo','RB_Layer','FeatureTyp','SegmentTyp','NonPed','TrafDir','RW_TYPE','StreetWidt','geometry']].reset_index(drop=True)
 #lionsp['physicalid']=pd.to_numeric(lionsp['PhysicalID'])
 #lionsp=lionsp[pd.notna(lionsp['physicalid'])].reset_index(drop=True)
 #lionsp['seqnum']=pd.to_numeric(lionsp['SeqNum'])
 #lionsp=lionsp[pd.notna(lionsp['seqnum'])].reset_index(drop=True)
 #lionsp['segmentid']=pd.to_numeric(lionsp['SegmentID'])
 #lionsp=lionsp[pd.notna(lionsp['segmentid'])].reset_index(drop=True)
+#lionsp['nodeidfrom']=pd.to_numeric(lionsp['NodeIDFrom'])
+#lionsp=lionsp[pd.notna(lionsp['nodeidfrom'])].reset_index(drop=True)
+#lionsp['nodeidto']=pd.to_numeric(lionsp['NodeIDTo'])
+#lionsp=lionsp[pd.notna(lionsp['nodeidfrom'])].reset_index(drop=True)
 #lionsp['rblayer']=[' '.join(x.split()).upper() if pd.notna(x) else '' for x in lionsp['RB_Layer']]
 #lionsp=lionsp[np.isin(lionsp['rblayer'],['B','R'])].reset_index(drop=True)
 #lionsp['featuretype']=[' '.join(x.split()).upper() if pd.notna(x) else '' for x in lionsp['FeatureTyp']]
@@ -34,16 +38,96 @@ path='/home/mayijun/sidewalk/'
 #lionsp['rwtype']=pd.to_numeric(lionsp['RW_TYPE'])
 #lionsp=lionsp[np.isin(lionsp['rwtype'],[1])].reset_index(drop=True)
 #lionsp['stwidth']=pd.to_numeric(lionsp['StreetWidt'])
-#lionsp=lionsp[['physicalid','seqnum','segmentid','rblayer','featuretype','segmenttype','nonped','trafficdir','rwtype','stwidth','geometry']].reset_index(drop=True)
-#lionsp=lionsp.drop_duplicates(['segmentid','seqnum','physicalid','rblayer','featuretype','segmenttype','nonped','trafficdir','rwtype','stwidth'],keep='first').reset_index(drop=True)
+#lionsp=lionsp[['physicalid','seqnum','segmentid','nodeidfrom','nodeidto','rblayer','featuretype','segmenttype','nonped','trafficdir','rwtype','stwidth','geometry']].reset_index(drop=True)
+#lionsp=lionsp.drop_duplicates(['physicalid','seqnum','segmentid','nodeidfrom','nodeidto','rblayer','featuretype','segmenttype','nonped','trafficdir','rwtype','stwidth'],keep='first').reset_index(drop=True)
 #lionsp=lionsp.sort_values(['physicalid','seqnum']).reset_index(drop=True)
 #lionsp=lionsp[['physicalid','stwidth','geometry']].dissolve(by='physicalid',as_index=False)
 #lionsp.to_file(path+'lionsp.shp')
 
 
+# Generate SegmentID Order
+#sg=sgod[sgod['physicalid']==175067].reset_index(drop=True)
+#sg=sgod[sgod['physicalid']==3].reset_index(drop=True)
+#sg=sgod[sgod['physicalid']==5152].reset_index(drop=True)
+#sg=sgod[sgod['physicalid']==183].reset_index(drop=True)
+sg=sgod[sgod['physicalid']==11676].reset_index(drop=True)
+def segmentorder(sg):
+    sg=sg.reset_index(drop=True)
+    sgph=sg.loc[0,'physicalid']
+    nd=pd.concat([sg['nodeidfrom'],sg['nodeidto']],axis=0,ignore_index=True)
+    nd=list(nd.value_counts()[nd.value_counts()==1].index)
+    sgtp=sg[np.isin(sg['nodeidfrom'],nd)].reset_index(drop=True)
+    sgtp.columns=['physicalid1','segmentid1','nodeidfrom1','nodeidto1']
+    if len(sgtp)==1:
+        sgrs=sg[sg['segmentid']!=sgtp.loc[0,'segmentid1']].reset_index(drop=True)
+        for i in range(0,len(sgrs)):
+            sgtp=pd.merge(sgtp,sgrs,how='inner',left_on='nodeidto'+str(i+1),right_on='nodeidfrom')
+            sgtp=sgtp.rename(columns={'physicalid':'physicalid'+str(i+2),'segmentid':'segmentid'+str(i+2),'nodeidfrom':'nodeidfrom'+str(i+2),'nodeidto':'nodeidto'+str(i+2)})
+        if len(sgtp)==1:
+            sgtp=pd.wide_to_long(sgtp,stubnames=['segmentid','nodeidfrom','nodeidto'],i='physicalid1',j='segorder').reset_index(drop=False)
+            sgtp=sgtp[['physicalid1','segmentid','segorder']].reset_index(drop=True)
+            sgtp=sgtp.rename(columns={'physicalid1':'physicalid'})
+            return sgtp
+        else:
+            print(str(sgph)+' merge error!')
+    else:
+        print(str(sgph)+' nodeidfrom error!')
+
+
+# Simplify LION
+start=datetime.datetime.now()
+lion=gpd.read_file(path+'lion.shp')
+lion.crs={'init':'epsg:4326'}
+lionsp=lion[['PhysicalID','SegmentID','NodeIDFrom','NodeIDTo','RB_Layer','FeatureTyp','SegmentTyp','NonPed','TrafDir','RW_TYPE','StreetWidt','geometry']].reset_index(drop=True)
+lionsp['physicalid']=pd.to_numeric(lionsp['PhysicalID'])
+lionsp=lionsp[pd.notna(lionsp['physicalid'])].reset_index(drop=True)
+lionsp['segmentid']=pd.to_numeric(lionsp['SegmentID'])
+lionsp=lionsp[pd.notna(lionsp['segmentid'])].reset_index(drop=True)
+lionsp['nodeidfrom']=pd.to_numeric(lionsp['NodeIDFrom'])
+lionsp=lionsp[pd.notna(lionsp['nodeidfrom'])].reset_index(drop=True)
+lionsp['nodeidto']=pd.to_numeric(lionsp['NodeIDTo'])
+lionsp=lionsp[pd.notna(lionsp['nodeidfrom'])].reset_index(drop=True)
+lionsp['rblayer']=[' '.join(x.split()).upper() if pd.notna(x) else '' for x in lionsp['RB_Layer']]
+lionsp=lionsp[np.isin(lionsp['rblayer'],['B','R'])].reset_index(drop=True)
+lionsp['featuretype']=[' '.join(x.split()).upper() if pd.notna(x) else '' for x in lionsp['FeatureTyp']]
+lionsp=lionsp[np.isin(lionsp['featuretype'],['0','6','A','C'])].reset_index(drop=True)
+lionsp['segmenttype']=[' '.join(x.split()).upper() if pd.notna(x) else '' for x in lionsp['SegmentTyp']]
+lionsp=lionsp[np.isin(lionsp['segmenttype'],['B','R','U','S'])].reset_index(drop=True)
+lionsp['nonped']=[' '.join(x.split()).upper() if pd.notna(x) else '' for x in lionsp['NonPed']]
+lionsp=lionsp[np.isin(lionsp['nonped'],['','D'])].reset_index(drop=True)
+lionsp['trafficdir']=[' '.join(x.split()).upper() if pd.notna(x) else '' for x in lionsp['TrafDir']]
+lionsp=lionsp[np.isin(lionsp['trafficdir'],['T','W','A'])].reset_index(drop=True)
+lionsp['rwtype']=pd.to_numeric(lionsp['RW_TYPE'])
+lionsp=lionsp[np.isin(lionsp['rwtype'],[1])].reset_index(drop=True)
+lionsp['stwidth']=pd.to_numeric(lionsp['StreetWidt'])
+lionsp=lionsp[['physicalid','segmentid','nodeidfrom','nodeidto','rblayer','featuretype','segmenttype','nonped','trafficdir','rwtype','stwidth','geometry']].reset_index(drop=True)
+lionsp=lionsp.drop_duplicates(['physicalid','segmentid','nodeidfrom','nodeidto','rblayer','featuretype','segmenttype','nonped','trafficdir','rwtype','stwidth'],keep='first').reset_index(drop=True)
+sgod=lionsp[['physicalid','segmentid','nodeidfrom','nodeidto']].reset_index(drop=True)
+sgod=sgod.groupby('physicalid',as_index=False).apply(segmentorder).reset_index(drop=True)
+
+print(datetime.datetime.now()-start)
+
+
+for i in sorted(sgod.physicalid.unique()):
+    sg=sgod[sgod['physicalid']==i].reset_index(drop=True)
+    k=segmentorder(sg)
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+
+
 
 # 
-
 sidewalk=gpd.read_file(path+'sidewalk.shp')
 sidewalk.crs={'init':'epsg:4326'}
 sidewalk=sidewalk.to_crs({'init':'epsg:6539'})
@@ -93,9 +177,22 @@ print(datetime.datetime.now()-start)
 
 # 120 mins
 
+df=gpd.read_file(path+'df.shp')
+df.crs={'init':'epsg:4326'}
+df['ldiff']=df['lmax']-df['lmin']
+df['rdiff']=df['rmax']-df['rmin']
+df['lmaxdiff']=df['stwidth']/2+50-df['lmax']
+df['rmaxdiff']=df['stwidth']/2+50-df['rmax']
+df.to_file(path+'dfdiff.shp')
 
 
 
+
+
+
+#check if close to stwidth/2+50
+#check max-min
+#add outside 200 buffer
 
 
 
