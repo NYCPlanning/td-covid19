@@ -50,7 +50,8 @@ path='/home/mayijun/sidewalk/'
 #sg=sgod[sgod['physicalid']==3].reset_index(drop=True)
 #sg=sgod[sgod['physicalid']==5152].reset_index(drop=True)
 #sg=sgod[sgod['physicalid']==183].reset_index(drop=True)
-sg=sgod[sgod['physicalid']==11676].reset_index(drop=True)
+#sg=sgod[sgod['physicalid']==11676].reset_index(drop=True)
+#sg=sgod[sgod['physicalid']==187692].reset_index(drop=True)
 def segmentorder(sg):
     sg=sg.reset_index(drop=True)
     sgph=sg.loc[0,'physicalid']
@@ -104,13 +105,15 @@ lionsp=lionsp[['physicalid','segmentid','nodeidfrom','nodeidto','rblayer','featu
 lionsp=lionsp.drop_duplicates(['physicalid','segmentid','nodeidfrom','nodeidto','rblayer','featuretype','segmenttype','nonped','trafficdir','rwtype','stwidth'],keep='first').reset_index(drop=True)
 sgod=lionsp[['physicalid','segmentid','nodeidfrom','nodeidto']].reset_index(drop=True)
 sgod=sgod.groupby('physicalid',as_index=False).apply(segmentorder).reset_index(drop=True)
+lionsp=pd.merge(lionsp,sgod,how='inner',on=['physicalid','segmentid','])
+
 
 print(datetime.datetime.now()-start)
 
-
-for i in sorted(sgod.physicalid.unique()):
-    sg=sgod[sgod['physicalid']==i].reset_index(drop=True)
-    k=segmentorder(sg)
+#
+#for i in sorted(sgod.physicalid.unique()):
+#    sg=sgod[sgod['physicalid']==i].reset_index(drop=True)
+#    k=segmentorder(sg)
     
     
     
