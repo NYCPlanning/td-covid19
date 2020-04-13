@@ -81,7 +81,7 @@ lionsp=lionsp.sort_values(['physicalid','segorder']).reset_index(drop=True)
 lionsp['geom1']=[str(x).replace('LINESTRING (','').replace(')','') for x in lionsp['geometry']]
 lionsp['geom2']=[', '.join(str(x).replace('LINESTRING (','').replace(')','').split(', ')[1:]) for x in lionsp['geometry']]
 lionsp['geom']=np.where(lionsp['segorder']==1,lionsp['geom1'],lionsp['geom2'])
-lionsp=lionsp.groupby(['physicalid','stwidth'],as_index=False).agg({'geom':lambda x:', '.join(x)}).reset_index(drop=True)
+lionsp=lionsp.groupby('physicalid',as_index=False).agg({'stwidth':'mean','geom':lambda x:', '.join(x)}).reset_index(drop=True)
 lionsp['geom']=['LINESTRING ('+str(x)+')' for x in lionsp['geom']]
 lionsp=gpd.GeoDataFrame(lionsp,geometry=lionsp['geom'].map(wkt.loads),crs={'init':'epsg:4326'})
 lionsp=lionsp.drop('geom',axis=1)
