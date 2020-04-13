@@ -2,13 +2,14 @@ import pandas as pd
 import geopandas as gpd
 import numpy as np
 import shapely
+from shapely import wkt
 import datetime
 
 
 
 pd.set_option('display.max_columns', None)
-path='C:/Users/Yijun Ma/Desktop/D/DOCUMENT/DCP2020/COVID19/STREET CLOSURE/sidewalk/'
-#path='/home/mayijun/sidewalk/'
+#path='C:/Users/Yijun Ma/Desktop/D/DOCUMENT/DCP2020/COVID19/STREET CLOSURE/sidewalk/'
+path='/home/mayijun/sidewalk/'
 
 
 
@@ -74,13 +75,20 @@ lionsp=lionsp[['physicalid','segmentid','nodeidfrom','nodeidto','rblayer','featu
 lionsp=lionsp.drop_duplicates(['physicalid','segmentid','nodeidfrom','nodeidto','rblayer','featuretype','segmenttype','nonped','trafficdir','rwtype','stwidth'],keep='first').reset_index(drop=True)
 sgod=lionsp[['physicalid','segmentid','nodeidfrom','nodeidto']].reset_index(drop=True)
 sgod=sgod.groupby('physicalid',as_index=False).apply(segmentorder).reset_index(drop=True)
+sgod['segorder']=pd.to_numeric(sgod['segorder'])
 lionsp=pd.merge(lionsp,sgod,how='inner',on=['physicalid','segmentid'])
 lionsp=lionsp.sort_values(['physicalid','segorder']).reset_index(drop=True)
-lionsp=lionsp[['physicalid','stwidth','geometry']].dissolve(by='physicalid',as_index=False)
+lionsp['geom1']=[str(x).replace('LINESTRING (','').replace(')','') for x in lionsp['geometry']]
+lionsp['geom2']=[', '.join(str(x).replace('LINESTRING (','').replace(')','').split(', ')[1:]) for x in lionsp['geometry']]
+lionsp['geom']=np.where(lionsp['segorder']==1,lionsp['geom1'],lionsp['geom2'])
+lionsp=lionsp.groupby(['physicalid','stwidth'],as_index=False).agg({'geom':lambda x:', '.join(x)}).reset_index(drop=True)
+lionsp['geom']=['LINESTRING ('+str(x)+')' for x in lionsp['geom']]
+lionsp=gpd.GeoDataFrame(lionsp,geometry=lionsp['geom'].map(wkt.loads),crs={'init':'epsg:4326'})
+lionsp=lionsp.drop('geom',axis=1)
 lionsp.to_file(path+'lionsp.shp')
 print(datetime.datetime.now()-start)
 
-
+#i=19735
 
 # Find sidewalk width
 start=datetime.datetime.now()
@@ -130,16 +138,16 @@ print(datetime.datetime.now()-start)
 # 120 mins
 
 
-
-
-df=gpd.read_file(path+'df.shp')
-df.crs={'init':'epsg:4326'}
-df['ldiff']=df['lmax']-df['lmin']
-df['rdiff']=df['rmax']-df['rmin']
-df['lmaxdiff']=df['stwidth']/2+50-df['lmax']
-df['rmaxdiff']=df['stwidth']/2+50-df['rmax']
-df.to_file(path+'dfdiff.shp')
-
+#
+#
+#df=gpd.read_file(path+'df.shp')
+#df.crs={'init':'epsg:4326'}
+#df['ldiff']=df['lmax']-df['lmin']
+#df['rdiff']=df['rmax']-df['rmin']
+#df['lmaxdiff']=df['stwidth']/2+50-df['lmax']
+#df['rmaxdiff']=df['stwidth']/2+50-df['rmax']
+#df.to_file(path+'dfdiff.shp')
+#
 
 
 
