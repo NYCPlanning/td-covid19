@@ -9,7 +9,7 @@ import datetime
 
 pd.set_option('display.max_columns', None)
 path='C:/Users/Yijun Ma/Desktop/D/DOCUMENT/DCP2020/COVID19/STREET CLOSURE/sidewalk/'
-path='/home/mayijun/sidewalk/'
+#path='/home/mayijun/sidewalk/'
 
 
 
@@ -42,8 +42,6 @@ def segmentorder(sg):
             print(str(sgph)+' merge error!')
     else:
         print(str(sgph)+' nodeidfrom error!')
-
-
 
 # Simplify LION
 start=datetime.datetime.now()
@@ -88,7 +86,7 @@ lionsp=lionsp.drop('geom',axis=1)
 lionsp.to_file(path+'lionsp.shp')
 print(datetime.datetime.now()-start)
 
-#i=19735
+
 
 # Find sidewalk width
 start=datetime.datetime.now()
@@ -140,6 +138,12 @@ print(datetime.datetime.now()-start)
 
 
 
+
+
+
+
+
+
 df=gpd.read_file(path+'df.shp')
 df.crs={'init':'epsg:4326'}
 df['ldiff']=df['lmax']-df['lmin']
@@ -156,6 +160,15 @@ df.to_file(path+'dfdiff.shp')
 #check if close to stwidth/2+50
 #check max-min
 #add outside 200 buffer
+
+
+
+
+
+
+
+# Based on Blockface
+
 
 
 
