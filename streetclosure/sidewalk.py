@@ -8,7 +8,7 @@ import datetime
 
 
 pd.set_option('display.max_columns', None)
-#path='C:/Users/Yijun Ma/Desktop/D/DOCUMENT/DCP2020/COVID19/STREET CLOSURE/sidewalk/'
+path='C:/Users/Yijun Ma/Desktop/D/DOCUMENT/DCP2020/COVID19/STREET CLOSURE/sidewalk/'
 path='/home/mayijun/sidewalk/'
 
 
@@ -138,16 +138,16 @@ print(datetime.datetime.now()-start)
 # 120 mins
 
 
-#
-#
-#df=gpd.read_file(path+'df.shp')
-#df.crs={'init':'epsg:4326'}
-#df['ldiff']=df['lmax']-df['lmin']
-#df['rdiff']=df['rmax']-df['rmin']
-#df['lmaxdiff']=df['stwidth']/2+50-df['lmax']
-#df['rmaxdiff']=df['stwidth']/2+50-df['rmax']
-#df.to_file(path+'dfdiff.shp')
-#
+
+
+df=gpd.read_file(path+'df.shp')
+df.crs={'init':'epsg:4326'}
+df['ldiff']=df['lmax']-df['lmin']
+df['rdiff']=df['rmax']-df['rmin']
+df['lmaxdiff']=df['stwidth']/2+50-df['lmax']
+df['rmaxdiff']=df['stwidth']/2+50-df['rmax']
+df.to_file(path+'dfdiff.shp')
+
 
 
 
