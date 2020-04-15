@@ -178,7 +178,7 @@ sidewalk=sidewalk.to_crs({'init':'epsg:6539'})
 sdwkpvmt=gpd.sjoin(sidewalk,pvmtsp,how='left',op='intersects')
 sdwkpvmt=sdwkpvmt.loc[pd.notna(sdwkpvmt['bkfaceid']),['FID','bkfaceid','geometry']].reset_index(drop=True)
 sw=pd.DataFrame()
-for i in pvmtsp.index[:100]:
+for i in pvmtsp.index:
     try:
         tp=pvmtsp.loc[[i]].reset_index(drop=True)
         tp=pd.concat([tp]*14,axis=0,ignore_index=True)
