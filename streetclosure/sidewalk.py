@@ -154,18 +154,18 @@ path='/home/mayijun/sidewalk/'
 
 
 
-# Simplify Pavement Edge
-pvmtedge=gpd.read_file(path+'pvmtedge.shp')
-pvmtedge.crs={'init':'epsg:4326'}
-pvmtedge['bkfaceid']=pd.to_numeric(pvmtedge['BLOCKFACEI'])
-sidewalk=gpd.read_file(path+'sidewalk.shp')
-sidewalk.crs={'init':'epsg:4326'}
-pvmtsp=pvmtedge.loc[pvmtedge['FEATURE_CO']==2260,['bkfaceid','geometry']].reset_index(drop=True)
-pvmtsp=pvmtsp.drop_duplicates('bkfaceid',keep='first').reset_index(drop=True)
-pvmtsp=gpd.sjoin(pvmtsp,sidewalk,how='left',op='intersects')
-pvmtsp=pvmtsp.loc[pd.notna(pvmtsp['FID']),['bkfaceid','geometry']].reset_index(drop=True)
-pvmtsp=pvmtsp.drop_duplicates('bkfaceid',keep='first').sort_values('bkfaceid').reset_index(drop=True)
-pvmtsp.to_file(path+'pvmtsp.shp')
+### Simplify Pavement Edge
+#pvmtedge=gpd.read_file(path+'pvmtedge.shp')
+#pvmtedge.crs={'init':'epsg:4326'}
+#pvmtedge['bkfaceid']=pd.to_numeric(pvmtedge['BLOCKFACEI'])
+#sidewalk=gpd.read_file(path+'sidewalk.shp')
+#sidewalk.crs={'init':'epsg:4326'}
+#pvmtsp=pvmtedge.loc[pvmtedge['FEATURE_CO']==2260,['bkfaceid','geometry']].reset_index(drop=True)
+#pvmtsp=pvmtsp.drop_duplicates('bkfaceid',keep='first').reset_index(drop=True)
+#pvmtsp=gpd.sjoin(pvmtsp,sidewalk,how='left',op='intersects')
+#pvmtsp=pvmtsp.loc[pd.notna(pvmtsp['FID']),['bkfaceid','geometry']].reset_index(drop=True)
+#pvmtsp=pvmtsp.drop_duplicates('bkfaceid',keep='first').sort_values('bkfaceid').reset_index(drop=True)
+#pvmtsp.to_file(path+'pvmtsp.shp')
 
 # Find sidewalk width
 start=datetime.datetime.now()
@@ -178,7 +178,7 @@ sidewalk=sidewalk.to_crs({'init':'epsg:6539'})
 sdwkpvmt=gpd.sjoin(sidewalk,pvmtsp,how='left',op='intersects')
 sdwkpvmt=sdwkpvmt.loc[pd.notna(sdwkpvmt['bkfaceid']),['FID','bkfaceid','geometry']].reset_index(drop=True)
 sw=pd.DataFrame()
-for i in pvmtsp.index[:10000]:
+for i in pvmtsp.index[:100]:
     try:
         tp=pvmtsp.loc[[i]].reset_index(drop=True)
         tp=pd.concat([tp]*14,axis=0,ignore_index=True)
