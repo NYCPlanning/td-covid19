@@ -8,8 +8,8 @@ import datetime
 
 
 pd.set_option('display.max_columns', None)
-#path='C:/Users/Yijun Ma/Desktop/D/DOCUMENT/DCP2020/COVID19/STREET CLOSURE/sidewalk/'
-path='/home/mayijun/sidewalk/'
+path='C:/Users/Yijun Ma/Desktop/D/DOCUMENT/DCP2020/COVID19/STREET CLOSURE/sidewalk/'
+#path='/home/mayijun/sidewalk/'
 
 
 
@@ -164,7 +164,7 @@ pvmtsp=pvmtedge.loc[pvmtedge['FEATURE_CO']==2260,['bkfaceid','geometry']].reset_
 pvmtsp=pvmtsp.drop_duplicates('bkfaceid',keep='first').reset_index(drop=True)
 pvmtsp=gpd.sjoin(pvmtsp,sidewalk,how='left',op='intersects')
 pvmtsp=pvmtsp.loc[pd.notna(pvmtsp['FID']),['bkfaceid','geometry']].reset_index(drop=True)
-pvmtsp=pvmtsp.drop_duplicates('bkfaceid',keep='first').reset_index(drop=True)
+pvmtsp=pvmtsp.drop_duplicates('bkfaceid',keep='first').sort_values('bkfaceid').reset_index(drop=True)
 pvmtsp.to_file(path+'pvmtsp.shp')
 
 # Find sidewalk width
@@ -178,7 +178,7 @@ sidewalk=sidewalk.to_crs({'init':'epsg:6539'})
 sdwkpvmt=gpd.sjoin(sidewalk,pvmtsp,how='left',op='intersects')
 sdwkpvmt=sdwkpvmt.loc[pd.notna(sdwkpvmt['bkfaceid']),['FID','bkfaceid','geometry']].reset_index(drop=True)
 sw=pd.DataFrame()
-for i in pvmtsp.index:
+for i in pvmtsp.index[:10000]:
     try:
         tp=pvmtsp.loc[[i]].reset_index(drop=True)
         tp=pd.concat([tp]*14,axis=0,ignore_index=True)
