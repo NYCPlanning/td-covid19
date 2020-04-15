@@ -223,6 +223,6 @@ sw=pd.merge(pvmtsp,sw,how='inner',on='bkfaceid')
 sw=sw.to_crs({'init':'epsg:4326'})
 sw.to_file(path+'sw.shp')
 print(datetime.datetime.now()-start)
-
+#270 mins
 
 
