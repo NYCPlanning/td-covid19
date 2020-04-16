@@ -229,6 +229,7 @@ path='/home/mayijun/sidewalk/'
 
 
 # Tracdt Index
+start=datetime.datetime.now()
 sidewalk=gpd.read_file(path+'sidewalk.shp')
 sidewalk.crs={'init':'epsg:4326'}
 sidewalk=sidewalk.to_crs({'init':'epsg:6539'})
@@ -248,3 +249,6 @@ swct=swct[['tractid','swarea','pop','geometry']].reset_index(drop=True)
 swct['swareapop']=swct['swarea']/swct['pop']*1000
 swct=swct[['tractid','swarea','pop','swareapop','geometry']].reset_index(drop=True)
 swct.to_file(path+'swct.shp')
+print(datetime.datetime.now()-start)
+
+
