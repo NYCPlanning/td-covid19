@@ -252,7 +252,30 @@ path='/home/mayijun/sidewalk/'
 #swctmedian.to_file(path+'output/swctmedian.shp')
 #print(datetime.datetime.now()-start)
 
-# Tract Sidewalk Area / Population
+## Tract Sidewalk Area / Population
+#start=datetime.datetime.now()
+#sidewalk=gpd.read_file(path+'input/sidewalk.shp')
+#sidewalk.crs={'init':'epsg:4326'}
+#sidewalk=sidewalk.to_crs({'init':'epsg:6539'})
+#nycct=gpd.read_file(path+'input/nycct.shp')
+#nycct.crs={'init':'epsg:4326'}
+#nycct=nycct.to_crs({'init':'epsg:6539'})
+#swctareapop=gpd.overlay(sidewalk,nycct,how='intersection')
+#swctareapop['swarea']=[x.area for x in swctareapop['geometry']]
+#swctareapop=swctareapop.groupby('tractid',as_index=False).agg({'swarea':'sum'}).reset_index(drop=True)
+#nycctclipped=gpd.read_file(path+'input/nycctclipped.shp')
+#nycctclipped.crs={'init':'epsg:4326'}
+#swctareapop=pd.merge(nycctclipped,swctareapop,how='inner',on='tractid')
+#swctareapop=swctareapop[['tractid','swarea','geometry']].reset_index(drop=True)
+#ctpop=pd.read_csv(path+'input/tractpop2018.csv',dtype=str,converters={'pop':float})
+#swctareapop=pd.merge(swctareapop,ctpop,how='inner',on='tractid')
+#swctareapop=swctareapop[['tractid','swarea','pop','geometry']].reset_index(drop=True)
+#swctareapop['swareapop']=swctareapop['swarea']/swctareapop['pop']
+#swctareapop=swctareapop[['tractid','swarea','pop','swareapop','geometry']].reset_index(drop=True)
+#swctareapop.to_file(path+'output/swctareapop.shp')
+#print(datetime.datetime.now()-start)
+
+# Tract Sidewalk Area / Area
 start=datetime.datetime.now()
 sidewalk=gpd.read_file(path+'input/sidewalk.shp')
 sidewalk.crs={'init':'epsg:4326'}
@@ -260,20 +283,23 @@ sidewalk=sidewalk.to_crs({'init':'epsg:6539'})
 nycct=gpd.read_file(path+'input/nycct.shp')
 nycct.crs={'init':'epsg:4326'}
 nycct=nycct.to_crs({'init':'epsg:6539'})
-swctareapop=gpd.overlay(sidewalk,nycct,how='intersection')
-swctareapop['swarea']=[x.area for x in swctareapop['geometry']]
-swctareapop=swctareapop.groupby('tractid',as_index=False).agg({'swarea':'sum'}).reset_index(drop=True)
+swctareaarea=gpd.overlay(sidewalk,nycct,how='intersection')
+swctareaarea['swarea']=[x.area for x in swctareaarea['geometry']]
+swctareaarea=swctareaarea.groupby('tractid',as_index=False).agg({'swarea':'sum'}).reset_index(drop=True)
 nycctclipped=gpd.read_file(path+'input/nycctclipped.shp')
 nycctclipped.crs={'init':'epsg:4326'}
-swctareapop=pd.merge(nycctclipped,swctareapop,how='inner',on='tractid')
-swctareapop=swctareapop[['tractid','swarea','geometry']].reset_index(drop=True)
-ctpop=pd.read_csv(path+'input/tractpop2018.csv',dtype=str,converters={'pop':float})
-swctareapop=pd.merge(swctareapop,ctpop,how='inner',on='tractid')
-swctareapop=swctareapop[['tractid','swarea','pop','geometry']].reset_index(drop=True)
-swctareapop['swareapop']=swctareapop['swarea']/swctareapop['pop']
-swctareapop=swctareapop[['tractid','swarea','pop','swareapop','geometry']].reset_index(drop=True)
-swctareapop.to_file(path+'output/swctareapop.shp')
+swctareaarea=pd.merge(nycctclipped,swctareaarea,how='inner',on='tractid')
+swctareaarea=swctareaarea.to_crs({'init':'epsg:6539'})
+swctareaarea['area']=[x.area for x in swctareaarea['geometry']]
+swctareaarea['swareaarea']=swctareaarea['swarea']/swctareaarea['area']
+swctareaarea=swctareaarea[['tractid','swarea','area','swareaarea','geometry']].reset_index(drop=True)
+swctareaarea=swctareaarea.to_crs({'init':'epsg:4326'})
+swctareaarea.to_file(path+'output/swctareaarea.shp')
 print(datetime.datetime.now()-start)
+
+
+
+
 
 
 
