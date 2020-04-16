@@ -246,7 +246,7 @@ swct=swct[['tractid','swarea','geometry']].reset_index(drop=True)
 ctpop=pd.read_csv(path+'tractpop2018.csv',dtype=str,converters={'pop':float})
 swct=pd.merge(swct,ctpop,how='inner',on='tractid')
 swct=swct[['tractid','swarea','pop','geometry']].reset_index(drop=True)
-swct['swareapop']=swct['swarea']/swct['pop']*1000
+swct['swareapop']=swct['swarea']/swct['pop']
 swct=swct[['tractid','swarea','pop','swareapop','geometry']].reset_index(drop=True)
 swct.to_file(path+'swct.shp')
 print(datetime.datetime.now()-start)
