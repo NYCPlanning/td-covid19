@@ -248,7 +248,9 @@ sw=gpd.read_file(path+'output/sw.shp')
 sw.crs={'init':'epsg:4326'}
 sidewalk=gpd.read_file(path+'input/sidewalk.shp')
 sidewalk.crs={'init':'epsg:4326'}
-swct=nycctclipped.copy()
+tracttonta=pd.read_csv(path+'input/tracttonta.csv',dtype=str)
+swct=pd.merge(nycctclipped,tracttonta,how='inner',left_on='tractid',right_on='tract')
+swct=swct.loc[[str(x) not in ['BX99','BK99','MN99','QN99','SI99','QN98'] for x in swct['nta']],['tractid','geometry']].reset_index(drop=True)
 swct=swct.to_crs({'init':'epsg:6539'})
 swct['area']=[x.area for x in swct['geometry']]
 swct=swct[['tractid','area']].reset_index(drop=True)
