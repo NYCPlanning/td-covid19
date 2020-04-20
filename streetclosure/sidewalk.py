@@ -277,6 +277,7 @@ swct['swareapop']=swct['swarea']/swct['pop']
 swct['areapoprk']=10-pd.qcut(swct['swareapop'],10,labels=False)
 swct=pd.merge(nycctclipped,swct,how='inner',on='tractid')
 swct.to_file(path+'output/swct.shp')
+print(datetime.datetime.now()-start)
 
 
 
