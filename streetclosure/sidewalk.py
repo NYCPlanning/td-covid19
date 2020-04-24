@@ -149,13 +149,27 @@ print(datetime.datetime.now()-start)
 
 
 
+tree=gpd.read_file(path+'tree.shp')
+tree.crs={'init':'epsg:4326'}
+tree=tree.to_crs({'init':'epsg:6539'})
+treebuffer=tree.copy()
+treebuffer['geometry']=treebuffer.buffer(10)
 
+pv=gpd.read_file(path+'pv.shp')
+pv.crs={'init':'epsg:4326'}
+pv=pv.to_crs({'init':'epsg:6539'})
 
+treepv=gpd.sjoin(treebuffer,pv,how='inner',op='intersects')
 
-
-
-
-
+k=gpd.GeoDataFrame()
+k['id']=[0,1]
+k['geometry']=shapely.ops.nearest_points(pv.loc[0,'geometry'],tree.loc[0,'geometry'])[0]
+itplt=pv.loc[0,'geometry'].project(k.loc[0,'geometry'])
+splitter=shapely.geometry.MultiPoint([pv.loc[0,'geometry'].interpolate(x) for x in [itplt-2.5,itplt+2.5]])
+k['geometry']=shapely.ops.split(pv.loc[0,'geometry'],splitter.buffer(0.000001))[2]
+k['geometry']=[shapely.geometry.MultiLineString([k.loc[0,'geometry'],k.loc[0,'geometry'].parallel_offset(5)]).convex_hull,
+               shapely.geometry.MultiLineString([k.loc[0,'geometry'],k.loc[0,'geometry'].parallel_offset(-5)]).convex_hull]
+k.to_file(path+'k.shp')
 
 
 
