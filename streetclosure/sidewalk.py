@@ -8,8 +8,23 @@ import datetime
 
 
 pd.set_option('display.max_columns', None)
-#path='C:/Users/Yijun Ma/Desktop/D/DOCUMENT/DCP2020/COVID19/STREET CLOSURE/sidewalk/'
+path='C:/Users/Yijun Ma/Desktop/D/DOCUMENT/DCP2020/COVID19/STREET CLOSURE/sidewalk/'
 path='/home/mayijun/sidewalk/'
+
+
+
+
+# Data Source
+# Planimetrics: https://github.com/CityOfNewYork/nyc-planimetrics/blob/master/Capture_Rules.md#transport-structure
+# Tree: https://data.cityofnewyork.us/Environment/2015-Street-Tree-Census-Tree-Data/pi5s-9p35
+# Hydrant: https://data.cityofnewyork.us/Environment/Hydrants-of-the-City-of-New-York/6pui-xhxz
+# CityBench: https://data.cityofnewyork.us/Transportation/City-Bench-Locations/8d5p-rji6
+# WalkNYC: https://data.cityofnewyork.us/Transportation/WalkNYC-Sign-Locations/q49j-2bun
+# Meter: https://data.cityofnewyork.us/Transportation/Parking-Meters-GPS-Coordinates-and-Status/5jsj-cq4s
+# Bus Shelter: https://data.cityofnewyork.us/Transportation/Bus-Stop-Shelters/qafz-7myz
+
+
+
 
 
 
@@ -25,6 +40,31 @@ pvmtsp=gpd.sjoin(pvmtsp,sidewalk,how='left',op='intersects')
 pvmtsp=pvmtsp.loc[pd.notna(pvmtsp['FID']),['bkfaceid','geometry']].reset_index(drop=True)
 pvmtsp=pvmtsp.drop_duplicates('bkfaceid',keep='first').sort_values('bkfaceid').reset_index(drop=True)
 pvmtsp.to_file(path+'output/pvmtsp.shp')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # Find sidewalk width
 start=datetime.datetime.now()
