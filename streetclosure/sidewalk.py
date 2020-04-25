@@ -16,15 +16,17 @@ path='/home/mayijun/sidewalk/'
 
 # Data Source
 # Planimetrics: https://github.com/CityOfNewYork/nyc-planimetrics/blob/master/Capture_Rules.md#transport-structure
-# Tree: https://data.cityofnewyork.us/Environment/2015-Street-Tree-Census-Tree-Data/pi5s-9p35
-# Hydrant: https://data.cityofnewyork.us/Environment/Hydrants-of-the-City-of-New-York/6pui-xhxz
 # CityBench: https://data.cityofnewyork.us/Transportation/City-Bench-Locations/8d5p-rji6
 # WalkNYC: https://data.cityofnewyork.us/Transportation/WalkNYC-Sign-Locations/q49j-2bun
 # Meter: https://data.cityofnewyork.us/Transportation/Parking-Meters-GPS-Coordinates-and-Status/5jsj-cq4s
 # Bus Shelter: https://data.cityofnewyork.us/Transportation/Bus-Stop-Shelters/qafz-7myz
-
-
-
+# LinkNYC: https://data.cityofnewyork.us/Social-Services/LinkNYC-Locations-Shapefile/7b32-6xny
+# Pay Phone: https://data.cityofnewyork.us/Social-Services/Public-Pay-Telephone-Locations-Map/sq67-3hcy
+# News Stand: https://data.cityofnewyork.us/Transportation/News-Stands/kfum-nzw3
+# Tree: https://data.cityofnewyork.us/Environment/2015-Street-Tree-Census-Tree-Data/pi5s-9p35
+# Hydrant: https://data.cityofnewyork.us/Environment/Hydrants-of-the-City-of-New-York/6pui-xhxz
+# Litter Basket: https://data.cityofnewyork.us/dataset/DSNY-Litter-Basket-Inventory/uhim-nea2
+# Recycle: https://data.cityofnewyork.us/Environment/Public-Recycling-Bins/sxx4-xhzg
 
 
 
