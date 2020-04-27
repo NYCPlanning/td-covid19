@@ -54,6 +54,7 @@ path='/home/mayijun/sidewalk/'
 #sdwkplaza['id']=range(0,len(sdwkplaza))
 #sdwkplaza.to_file(path+'sdwkplaza.shp')
 
+start=datetime.datetime.now()
 sidewalk=gpd.read_file(path+'input/planimetrics/sidewalk.shp')
 sidewalk.crs={'init':'epsg:4326'}
 sidewalk=sidewalk[['geometry']].reset_index(drop=True)
@@ -65,7 +66,8 @@ sdwkplaza['id']=0
 sdwkplaza=sdwkplaza.dissolve(by='id').reset_index(drop=False)
 sdwkplaza=gpd.GeoDataFrame(geometry=sdwkplaza.explode().reset_index(drop=True),crs={'init':'epsg:4326'})
 sdwkplaza['id']=range(0,len(sdwkplaza))
-sdwkplaza.to_file(path+'sdwkplaza.shp')
+sdwkplaza.to_file(path+'output/sdwkplaza.shp')
+print(datetime.datetime.now()-start)
 
 
 #
