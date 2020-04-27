@@ -34,35 +34,31 @@ path='C:/Users/Yijun Ma/Desktop/D/DOCUMENT/DCP2020/COVID19/STREET CLOSURE/sidewa
 sidewalk=gpd.read_file(path+'input/planimetrics/sidewalk.shp')
 sidewalk.crs={'init':'epsg:4326'}
 sidewalk=sidewalk[['geometry']].reset_index(drop=True)
-sidewalk['tp']=[type(x) for x in sidewalk['geometry']]
-sidewalk.tp.unique()
-
 plaza=gpd.read_file(path+'input/planimetrics/plaza.shp')
 plaza.crs={'init':'epsg:4326'}
 plaza=plaza[['geometry']].reset_index(drop=True)
-plaza['tp']=[type(x) for x in plaza['geometry']]
-plaza.tp.unique()
+sdwkplaza=pd.concat([sidewalk,plaza],ignore_index=True)
+sdwkplaza['id']=0
+sdwkplaza=sdwkplaza.dissolve(by='id').reset_index(drop=False)
+sdwkplaza=gpd.GeoDataFrame(geometry=sdwkplaza.explode(),crs={'init':'epsg:4326'})
+sdwkplaza.to_file(path+'sdwkplaza.shp')
 
-
-sdwkplaza=pd.DataFrame()
-sdwkplaza['geometry']=[x.wkt for x in sidewalk.union(plaza)]
-sdwkplaza['id']=range(0,len(sdwkplaza))
-sdwkplaza=gpd.GeoDataFrame(sdwkplaza,geometry=sdwkplaza['geometry'].map(wkt.loads),crs={'init':'epsg:4326'})
-sdwkplaza=sdwkplaza[0:10]
-
-sdwkplaza['geom']=[shapely.ops.unary_union(x) for x in sdwkplaza['geometry']]
-sdwkplaza['tp']=[type(x) for x in sdwkplaza['geom']]
-sdwkplaza.tp.unique()
-
-sdwkplaza.to_file(path+'output/sdwkplaza.shp')
-
-49479
-1360
 
 
 sdwkplaza=gpd.read_file(path+'output/sdwkplaza.shp')
 sdwkplaza['tp']=[type(x) for x in sdwkplaza['geometry']]
 sdwkplaza['bd']=[shapely.geometry.LineString(list(x.exterior.coords)).wkt for x in sdwkplaza['geometry']]
+
+
+
+
+
+
+
+
+
+
+
 
 
 
