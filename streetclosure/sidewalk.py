@@ -46,12 +46,11 @@ walknyc=walknyc[[x in ['Installed','Sign Held'] for x in walknyc['status']]].res
 walknyc=walknyc[[x not in ['Wall Mount','Fingerpost'] for x in walknyc['status']]].reset_index(drop=True)
 walknyc['id']=range(0,len(walknyc))
 walknycbuffer=walknyc.copy()
-walknycbuffer['geometry']=walknycbuffer.buffer(50)
+walknycbuffer['geometry']=walknycbuffer.buffer(20)
 pvmtsp=gpd.read_file(path+'output/pvmtsp.shp')
 pvmtsp.crs={'init':'epsg:4326'}
 pvmtsp=pvmtsp.to_crs({'init':'epsg:6539'})
 walknycbuffer=gpd.sjoin(walknycbuffer,pvmtsp,how='inner',op='intersects')
-
 walknycadj=pd.DataFrame()
 for i in walknyc['id']:
     walknyctp=pd.concat([walknyc.loc[walknyc['id']==i]]*2,ignore_index=True)
@@ -68,19 +67,22 @@ for i in walknyc['id']:
             walknyctp.loc[0,'adjgeom']=shapely.geometry.MultiLineString([splitseg.parallel_offset(1),splitseg.parallel_offset(5)]).convex_hull.wkt
             walknyctp.loc[1,'adjgeom']=shapely.geometry.MultiLineString([splitseg.parallel_offset(-1),splitseg.parallel_offset(-5)]).convex_hull.wkt
             walknycadj=pd.concat([walknycadj,walknyctp],ignore_index=True)
-            insidewalk
-            area~4
         except:
-            print(str(i)+'error!')
+            print(str(i)+' error!')
     else:
         print(str(i)+' no bkfaceid joined!')
-
 walknycadj=walknycadj[walknycadj['adjgeom']!='GEOMETRYCOLLECTION EMPTY'].reset_index(drop=True)
+walknycadj=walknycadj.drop('geometry',axis=1)
 walknycadj=gpd.GeoDataFrame(walknycadj,geometry=walknycadj['adjgeom'].map(wkt.loads),crs={'init':'epsg:6539'})
-
-walknycadj=walknycadj[[not x.is_empty for x in walknycadj['adjgeom']]].reset_index(drop=True)
-walknycadj=gpd.GeoDataFrame(walknycadj,geometry=walknycadj['adjgeom'],crs={'init':'epsg:6539'})
-
+walknycadj['area']=[x.area for x in walknycadj['geometry']]
+walknycadj=walknycadj[(walknycadj['area']>=3)&(walknycadj['area']<=5)].reset_index(drop=True)
+sidewalk=gpd.read_file(path+'input/planimetrics/sidewalk.shp')
+sidewalk.crs={'init':'epsg:4326'}
+sidewalk=sidewalk.to_crs({'init':'epsg:6539'})
+sidewalk=sidewalk.loc[sidewalk['SUB_FEATUR']==380000,['geometry']].reset_index(drop=True)
+walknycadj=gpd.sjoin(walknycadj,sidewalk,how='inner',op='intersects')
+walknycadj=walknycadj.drop('index_right',axis=1)
+walknycadj=walknycadj.to_crs({'init':'epsg:4326'})
 walknycadj.to_file(path+'output/walknycadj.shp')
 
 
