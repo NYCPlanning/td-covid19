@@ -81,7 +81,7 @@ path='/home/mayijun/sidewalk/'
 #sdwkplaza['geometry']=[shapely.geometry.LineString(list(x.exterior.coords)) for x in sdwkplaza['geometry']]
 #pvmtspsdwk=gpd.sjoin(pvmtedge,sdwkplaza,how='inner',op='intersects')
 #pvmtspsdwk=pvmtspsdwk[['bkfaceid','id']].reset_index(drop=True)
-#pvmtsp=pd.DataFrame()
+#pvmtsp=[]
 #for i in pvmtedge.index:
 #    tp=sdwkplaza[np.isin(sdwkplaza['id'],pvmtspsdwk.loc[pvmtspsdwk['bkfaceid']==pvmtedge.loc[i,'bkfaceid'],'id'])]
 #    tp=[pvmtedge.loc[i,'geometry'].intersection(x) for x in tp['geometry']]
@@ -89,14 +89,15 @@ path='/home/mayijun/sidewalk/'
 #    if len(tp)>0:
 #        df=pd.concat([pvmtedge.loc[[i]]]*len(tp),ignore_index=True)
 #        df['geometry']=[shapely.ops.linemerge(x) for x in tp]
-#        pvmtsp=pd.concat([pvmtsp,df],ignore_index=True)
+#        pvmtsp+=[df]
 #    else:
 #        print(str(i)+' error!')
+#pvmtsp=pd.concat(pvmtsp,ignore_index=True)
 #pvmtsp['id']=range(0,len(pvmtsp))
 #pvmtsp=pvmtsp[['id','bkfaceid','geometry']].reset_index(drop=True)
 #pvmtsp.to_file(path+'output/pvmtsp.shp')
 #print(datetime.datetime.now()-start)
-## 25 mins
+## 30 mins
 
 ## CityBench
 #start=datetime.datetime.now()
@@ -110,7 +111,7 @@ path='/home/mayijun/sidewalk/'
 #pvmtsp.crs={'init':'epsg:4326'}
 #pvmtsp=pvmtsp.to_crs({'init':'epsg:6539'})
 #citybenchbuffer=gpd.sjoin(citybenchbuffer,pvmtsp,how='inner',op='intersects')
-#citybenchadj=pd.DataFrame()
+#citybenchadj=[]
 #for i in citybench['id']:
 #    citybenchtp=pd.concat([citybench.loc[citybench['id']==i]]*2,ignore_index=True)
 #    citybenchpv=pvmtsp[np.isin(pvmtsp['bkfaceid'],citybenchbuffer.loc[citybenchbuffer['id_left']==i,'bkfaceid'])].reset_index(drop=True)
@@ -125,11 +126,12 @@ path='/home/mayijun/sidewalk/'
 #            splitseg=shapely.ops.split(citybenchpv.loc[0,'geometry'],splitter.buffer(0.01))[2]
 #            citybenchtp.loc[0,'adjgeom']=shapely.geometry.MultiLineString([splitseg.parallel_offset(1),splitseg.parallel_offset(3)]).convex_hull.wkt
 #            citybenchtp.loc[1,'adjgeom']=shapely.geometry.MultiLineString([splitseg.parallel_offset(-1),splitseg.parallel_offset(-3)]).convex_hull.wkt
-#            citybenchadj=pd.concat([citybenchadj,citybenchtp],ignore_index=True)
+#            citybenchadj+=[citybenchtp]
 #        except:
 #            print(str(i)+' error!')
 #    else:
 #        print(str(i)+' no bkfaceid joined!')
+#citybenchadj=pd.concat(citybenchadj,ignore_index=True)
 #citybenchadj=citybenchadj[citybenchadj['adjgeom']!='GEOMETRYCOLLECTION EMPTY'].reset_index(drop=True)
 #citybenchadj=citybenchadj.drop('geometry',axis=1)
 #citybenchadj=gpd.GeoDataFrame(citybenchadj,geometry=citybenchadj['adjgeom'].map(wkt.loads),crs={'init':'epsg:6539'})
@@ -159,7 +161,7 @@ path='/home/mayijun/sidewalk/'
 #pvmtsp.crs={'init':'epsg:4326'}
 #pvmtsp=pvmtsp.to_crs({'init':'epsg:6539'})
 #walknycbuffer=gpd.sjoin(walknycbuffer,pvmtsp,how='inner',op='intersects')
-#walknycadj=pd.DataFrame()
+#walknycadj=[]
 #for i in walknyc['id']:
 #    walknyctp=pd.concat([walknyc.loc[walknyc['id']==i]]*2,ignore_index=True)
 #    walknycpv=pvmtsp[np.isin(pvmtsp['bkfaceid'],walknycbuffer.loc[walknycbuffer['id_left']==i,'bkfaceid'])].reset_index(drop=True)
@@ -174,11 +176,12 @@ path='/home/mayijun/sidewalk/'
 #            splitseg=shapely.ops.split(walknycpv.loc[0,'geometry'],splitter.buffer(0.01))[2]
 #            walknyctp.loc[0,'adjgeom']=shapely.geometry.MultiLineString([splitseg.parallel_offset(1),splitseg.parallel_offset(5)]).convex_hull.wkt
 #            walknyctp.loc[1,'adjgeom']=shapely.geometry.MultiLineString([splitseg.parallel_offset(-1),splitseg.parallel_offset(-5)]).convex_hull.wkt
-#            walknycadj=pd.concat([walknycadj,walknyctp],ignore_index=True)
+#            walknycadj+=[walknyctp]
 #        except:
 #            print(str(i)+' error!')
 #    else:
 #        print(str(i)+' no bkfaceid joined!')
+#walknycadj=pd.concat(walknycadj,ignore_index=True)
 #walknycadj=walknycadj[walknycadj['adjgeom']!='GEOMETRYCOLLECTION EMPTY'].reset_index(drop=True)
 #walknycadj=walknycadj.drop('geometry',axis=1)
 #walknycadj=gpd.GeoDataFrame(walknycadj,geometry=walknycadj['adjgeom'].map(wkt.loads),crs={'init':'epsg:6539'})
@@ -207,7 +210,7 @@ path='/home/mayijun/sidewalk/'
 #pvmtsp.crs={'init':'epsg:4326'}
 #pvmtsp=pvmtsp.to_crs({'init':'epsg:6539'})
 #meterbuffer=gpd.sjoin(meterbuffer,pvmtsp,how='inner',op='intersects')
-#meteradj=pd.DataFrame()
+#meteradj=[]
 #for i in meter['id']:
 #    metertp=pd.concat([meter.loc[meter['id']==i]]*2,ignore_index=True)
 #    meterpv=pvmtsp[np.isin(pvmtsp['bkfaceid'],meterbuffer.loc[meterbuffer['id_left']==i,'bkfaceid'])].reset_index(drop=True)
@@ -222,11 +225,12 @@ path='/home/mayijun/sidewalk/'
 #            splitseg=shapely.ops.split(meterpv.loc[0,'geometry'],splitter.buffer(0.01))[2]
 #            metertp.loc[0,'adjgeom']=shapely.geometry.MultiLineString([splitseg.parallel_offset(1),splitseg.parallel_offset(2)]).convex_hull.wkt
 #            metertp.loc[1,'adjgeom']=shapely.geometry.MultiLineString([splitseg.parallel_offset(-1),splitseg.parallel_offset(-2)]).convex_hull.wkt
-#            meteradj=pd.concat([meteradj,metertp],ignore_index=True)
+#            meteradj+=[metertp]
 #        except:
 #            print(str(i)+' error!')
 #    else:
 #        print(str(i)+' no bkfaceid joined!')
+#meteradj=pd.concat(meteradj,ignore_index=True)
 #meteradj=meteradj[meteradj['adjgeom']!='GEOMETRYCOLLECTION EMPTY'].reset_index(drop=True)
 #meteradj=meteradj.drop('geometry',axis=1)
 #meteradj=gpd.GeoDataFrame(meteradj,geometry=meteradj['adjgeom'].map(wkt.loads),crs={'init':'epsg:6539'})
@@ -240,7 +244,7 @@ path='/home/mayijun/sidewalk/'
 #meteradj=meteradj.to_crs({'init':'epsg:4326'})
 #meteradj.to_file(path+'output/meteradj.shp')
 #print(datetime.datetime.now()-start)
-## 8 mins
+## 5 mins
 
 ## Bus Shelter
 #start=datetime.datetime.now()
@@ -254,7 +258,7 @@ path='/home/mayijun/sidewalk/'
 #pvmtsp.crs={'init':'epsg:4326'}
 #pvmtsp=pvmtsp.to_crs({'init':'epsg:6539'})
 #busshelterbuffer=gpd.sjoin(busshelterbuffer,pvmtsp,how='inner',op='intersects')
-#busshelteradj=pd.DataFrame()
+#busshelteradj=[]
 #for i in busshelter['id']:
 #    bussheltertp=pd.concat([busshelter.loc[busshelter['id']==i]]*2,ignore_index=True)
 #    busshelterpv=pvmtsp[np.isin(pvmtsp['bkfaceid'],busshelterbuffer.loc[busshelterbuffer['id_left']==i,'bkfaceid'])].reset_index(drop=True)
@@ -269,11 +273,12 @@ path='/home/mayijun/sidewalk/'
 #            splitseg=shapely.ops.split(busshelterpv.loc[0,'geometry'],splitter.buffer(0.01))[2]
 #            bussheltertp.loc[0,'adjgeom']=shapely.geometry.MultiLineString([splitseg.parallel_offset(1.5),splitseg.parallel_offset(6.5)]).convex_hull.wkt
 #            bussheltertp.loc[1,'adjgeom']=shapely.geometry.MultiLineString([splitseg.parallel_offset(-1.5),splitseg.parallel_offset(-6.5)]).convex_hull.wkt
-#            busshelteradj=pd.concat([busshelteradj,bussheltertp],ignore_index=True)
+#            busshelteradj+=[bussheltertp]
 #        except:
 #            print(str(i)+' error!')
 #    else:
 #        print(str(i)+' no bkfaceid joined!')
+#busshelteradj=pd.concat(busshelteradj,ignore_index=True)
 #busshelteradj=busshelteradj[busshelteradj['adjgeom']!='GEOMETRYCOLLECTION EMPTY'].reset_index(drop=True)
 #busshelteradj=busshelteradj.drop('geometry',axis=1)
 #busshelteradj=gpd.GeoDataFrame(busshelteradj,geometry=busshelteradj['adjgeom'].map(wkt.loads),crs={'init':'epsg:6539'})
@@ -287,7 +292,7 @@ path='/home/mayijun/sidewalk/'
 #busshelteradj=busshelteradj.to_crs({'init':'epsg:4326'})
 #busshelteradj.to_file(path+'output/busshelteradj.shp')
 #print(datetime.datetime.now()-start)
-## 3 mins
+## 2 mins
 
 ## LinkNYC
 #start=datetime.datetime.now()
@@ -301,7 +306,7 @@ path='/home/mayijun/sidewalk/'
 #pvmtsp.crs={'init':'epsg:4326'}
 #pvmtsp=pvmtsp.to_crs({'init':'epsg:6539'})
 #linknycbuffer=gpd.sjoin(linknycbuffer,pvmtsp,how='inner',op='intersects')
-#linknycadj=pd.DataFrame()
+#linknycadj=[]
 #for i in linknyc['id']:
 #    linknyctp=pd.concat([linknyc.loc[linknyc['id']==i]]*2,ignore_index=True)
 #    linknycpv=pvmtsp[np.isin(pvmtsp['bkfaceid'],linknycbuffer.loc[linknycbuffer['id_left']==i,'bkfaceid'])].reset_index(drop=True)
@@ -316,11 +321,12 @@ path='/home/mayijun/sidewalk/'
 #            splitseg=shapely.ops.split(linknycpv.loc[0,'geometry'],splitter.buffer(0.01))[2]
 #            linknyctp.loc[0,'adjgeom']=shapely.geometry.MultiLineString([splitseg.parallel_offset(1),splitseg.parallel_offset(5)]).convex_hull.wkt
 #            linknyctp.loc[1,'adjgeom']=shapely.geometry.MultiLineString([splitseg.parallel_offset(-1),splitseg.parallel_offset(-5)]).convex_hull.wkt
-#            linknycadj=pd.concat([linknycadj,linknyctp],ignore_index=True)
+#            linknycadj+=[linknyctp]
 #        except:
 #            print(str(i)+' error!')
 #    else:
 #        print(str(i)+' no bkfaceid joined!')
+#linknycadj=pd.concat(linknycadj,ignore_index=True)
 #linknycadj=linknycadj[linknycadj['adjgeom']!='GEOMETRYCOLLECTION EMPTY'].reset_index(drop=True)
 #linknycadj=linknycadj.drop('geometry',axis=1)
 #linknycadj=gpd.GeoDataFrame(linknycadj,geometry=linknycadj['adjgeom'].map(wkt.loads),crs={'init':'epsg:6539'})
@@ -349,7 +355,7 @@ path='/home/mayijun/sidewalk/'
 #pvmtsp.crs={'init':'epsg:4326'}
 #pvmtsp=pvmtsp.to_crs({'init':'epsg:6539'})
 #payphonebuffer=gpd.sjoin(payphonebuffer,pvmtsp,how='inner',op='intersects')
-#payphoneadj=pd.DataFrame()
+#payphoneadj=[]
 #for i in payphone['id']:
 #    payphonetp=pd.concat([payphone.loc[payphone['id']==i]]*2,ignore_index=True)
 #    payphonepv=pvmtsp[np.isin(pvmtsp['bkfaceid'],payphonebuffer.loc[payphonebuffer['id_left']==i,'bkfaceid'])].reset_index(drop=True)
@@ -364,11 +370,12 @@ path='/home/mayijun/sidewalk/'
 #            splitseg=shapely.ops.split(payphonepv.loc[0,'geometry'],splitter.buffer(0.01))[2]
 #            payphonetp.loc[0,'adjgeom']=shapely.geometry.MultiLineString([splitseg.parallel_offset(1),splitseg.parallel_offset(5)]).convex_hull.wkt
 #            payphonetp.loc[1,'adjgeom']=shapely.geometry.MultiLineString([splitseg.parallel_offset(-1),splitseg.parallel_offset(-5)]).convex_hull.wkt
-#            payphoneadj=pd.concat([payphoneadj,payphonetp],ignore_index=True)
+#            payphoneadj+=[payphonetp]
 #        except:
 #            print(str(i)+' error!')
 #    else:
 #        print(str(i)+' no bkfaceid joined!')
+#payphoneadj=pd.concat(payphoneadj,ignore_index=True)
 #payphoneadj=payphoneadj[payphoneadj['adjgeom']!='GEOMETRYCOLLECTION EMPTY'].reset_index(drop=True)
 #payphoneadj=payphoneadj.drop('geometry',axis=1)
 #payphoneadj=gpd.GeoDataFrame(payphoneadj,geometry=payphoneadj['adjgeom'].map(wkt.loads),crs={'init':'epsg:6539'})
@@ -382,7 +389,7 @@ path='/home/mayijun/sidewalk/'
 #payphoneadj=payphoneadj.to_crs({'init':'epsg:4326'})
 #payphoneadj.to_file(path+'output/payphoneadj.shp')
 #print(datetime.datetime.now()-start)
-## 4 mins
+## 3 mins
 
 ## News Stand
 #start=datetime.datetime.now()
@@ -396,7 +403,7 @@ path='/home/mayijun/sidewalk/'
 #pvmtsp.crs={'init':'epsg:4326'}
 #pvmtsp=pvmtsp.to_crs({'init':'epsg:6539'})
 #newsstandbuffer=gpd.sjoin(newsstandbuffer,pvmtsp,how='inner',op='intersects')
-#newsstandadj=pd.DataFrame()
+#newsstandadj=[]
 #for i in newsstand['id']:
 #    newsstandtp=pd.concat([newsstand.loc[newsstand['id']==i]]*2,ignore_index=True)
 #    newsstandpv=pvmtsp[np.isin(pvmtsp['bkfaceid'],newsstandbuffer.loc[newsstandbuffer['id_left']==i,'bkfaceid'])].reset_index(drop=True)
@@ -411,11 +418,12 @@ path='/home/mayijun/sidewalk/'
 #            splitseg=shapely.ops.split(newsstandpv.loc[0,'geometry'],splitter.buffer(0.01))[2]
 #            newsstandtp.loc[0,'adjgeom']=shapely.geometry.MultiLineString([splitseg.parallel_offset(1),splitseg.parallel_offset(6)]).convex_hull.wkt
 #            newsstandtp.loc[1,'adjgeom']=shapely.geometry.MultiLineString([splitseg.parallel_offset(-1),splitseg.parallel_offset(-6)]).convex_hull.wkt
-#            newsstandadj=pd.concat([newsstandadj,newsstandtp],ignore_index=True)
+#            newsstandadj+=[newsstandtp]
 #        except:
 #            print(str(i)+' error!')
 #    else:
 #        print(str(i)+' no bkfaceid joined!')
+#newsstandadj=pd.concat(newsstandadj,ignore_index=True)
 #newsstandadj=newsstandadj[newsstandadj['adjgeom']!='GEOMETRYCOLLECTION EMPTY'].reset_index(drop=True)
 #newsstandadj=newsstandadj.drop('geometry',axis=1)
 #newsstandadj=gpd.GeoDataFrame(newsstandadj,geometry=newsstandadj['adjgeom'].map(wkt.loads),crs={'init':'epsg:6539'})
@@ -431,9 +439,6 @@ path='/home/mayijun/sidewalk/'
 #print(datetime.datetime.now()-start)
 ## 1 min
 
-
-
-
 # Hydrant
 start=datetime.datetime.now()
 hydrant=gpd.read_file(path+'input/impediments/hydrant.shp')
@@ -446,7 +451,7 @@ pvmtsp=gpd.read_file(path+'output/pvmtsp.shp')
 pvmtsp.crs={'init':'epsg:4326'}
 pvmtsp=pvmtsp.to_crs({'init':'epsg:6539'})
 hydrantbuffer=gpd.sjoin(hydrantbuffer,pvmtsp,how='inner',op='intersects')
-hydrantadj=pd.DataFrame()
+hydrantadj=[]
 for i in hydrant['id']:
     hydranttp=pd.concat([hydrant.loc[hydrant['id']==i]]*2,ignore_index=True)
     hydrantpv=pvmtsp[np.isin(pvmtsp['bkfaceid'],hydrantbuffer.loc[hydrantbuffer['id_left']==i,'bkfaceid'])].reset_index(drop=True)
@@ -461,11 +466,12 @@ for i in hydrant['id']:
             splitseg=shapely.ops.split(hydrantpv.loc[0,'geometry'],splitter.buffer(0.01))[2]
             hydranttp.loc[0,'adjgeom']=shapely.geometry.MultiLineString([splitseg.parallel_offset(1),splitseg.parallel_offset(2.5)]).convex_hull.wkt
             hydranttp.loc[1,'adjgeom']=shapely.geometry.MultiLineString([splitseg.parallel_offset(-1),splitseg.parallel_offset(-2.5)]).convex_hull.wkt
-            hydrantadj=pd.concat([hydrantadj,hydranttp],ignore_index=True)
+            hydrantadj+=[hydranttp]
         except:
             print(str(i)+' error!')
     else:
         print(str(i)+' no bkfaceid joined!')
+hydrantadj=pd.concat(hydrantadj,ignore_index=True)
 hydrantadj=hydrantadj[hydrantadj['adjgeom']!='GEOMETRYCOLLECTION EMPTY'].reset_index(drop=True)
 hydrantadj=hydrantadj.drop('geometry',axis=1)
 hydrantadj=gpd.GeoDataFrame(hydrantadj,geometry=hydrantadj['adjgeom'].map(wkt.loads),crs={'init':'epsg:6539'})
