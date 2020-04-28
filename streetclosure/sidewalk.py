@@ -8,9 +8,8 @@ import datetime
 
 
 pd.set_option('display.max_columns', None)
-#path='C:/Users/Yijun Ma/Desktop/D/DOCUMENT/DCP2020/COVID19/STREET CLOSURE/sidewalk/'
-path='/home/mayijun/sidewalk/'
-
+path='C:/Users/Yijun Ma/Desktop/D/DOCUMENT/DCP2020/COVID19/STREET CLOSURE/sidewalk/'
+#path='/home/mayijun/sidewalk/'
 
 
 
@@ -30,72 +29,70 @@ path='/home/mayijun/sidewalk/'
 
 
 
-## Combine Sidewalk and Plaza
-#sidewalk=gpd.read_file(path+'input/planimetrics/sidewalk.shp')
-#sidewalk.crs={'init':'epsg:4326'}
-#sidewalk=sidewalk[['geometry']].reset_index(drop=True)
-#sidewalk['sid']=['s'+str(x) for x in range(0,len(sidewalk))]
-#plaza=gpd.read_file(path+'input/planimetrics/plaza.shp')
-#plaza.crs={'init':'epsg:4326'}
-#plaza=plaza[['geometry']].reset_index(drop=True)
-#plaza['pid']=['p'+str(x) for x in range(0,len(plaza))]
-#sdwkonly=gpd.sjoin(sidewalk,plaza,how='left',op='intersects')
-#sdwkonly=sdwkonly.loc[pd.isna(sdwkonly['pid']),['sid','geometry']].reset_index(drop=True)
-#plazaonly=gpd.sjoin(plaza,sidewalk,how='left',op='intersects')
-#plazaonly=plazaonly.loc[pd.isna(plazaonly['sid']),['pid','geometry']].reset_index(drop=True)
-#sdwkplaza=gpd.sjoin(sidewalk,plaza,how='inner',op='intersects')
-#sdwkplazasdwk=pd.merge(sidewalk,sdwkplaza[['sid']].drop_duplicates(keep='first'),how='inner',on='sid')
-#sdwkplazaplaza=pd.merge(plaza,sdwkplaza[['pid']].drop_duplicates(keep='first'),how='inner',on='pid')
-#sdwkplaza=pd.concat([sdwkplazasdwk,sdwkplazaplaza],ignore_index=True)
-#sdwkplaza['id']=0
-#sdwkplaza=sdwkplaza.dissolve(by='id').reset_index(drop=False)
-#sdwkplaza=gpd.GeoDataFrame(geometry=sdwkplaza.explode().reset_index(drop=True),crs={'init':'epsg:4326'})
-#sdwkplaza=pd.concat([sdwkplaza,sdwkonly[['geometry']],plazaonly[['geometry']]],ignore_index=True)
-#sdwkplaza['id']=range(0,len(sdwkplaza))
-#sdwkplaza.to_file(path+'sdwkplaza.shp')
-
-start=datetime.datetime.now()
+# Combine Sidewalk and Plaza
 sidewalk=gpd.read_file(path+'input/planimetrics/sidewalk.shp')
 sidewalk.crs={'init':'epsg:4326'}
 sidewalk=sidewalk[['geometry']].reset_index(drop=True)
+sidewalk['sid']=['s'+str(x) for x in range(0,len(sidewalk))]
+sdwk1=sidewalk.copy()
+sdwk2=sidewalk.copy()
+sdwkdis=gpd.sjoin(sdwk1,sdwk2,how='inner',op='intersects')
+sdwkdis=sdwkdis.groupby('sid_left',as_index=False).agg({'sid_right':'count'}).reset_index(drop=True)
+sdwkdis.columns=['sid','count']
+sdwkdis=pd.merge(sidewalk,sdwkdis,how='inner',on='sid')
+sdwkuni=sdwkdis.loc[sdwkdis['count']==1,['sid','geometry']].reset_index(drop=True)
+sdwkdis=sdwkdis.loc[sdwkdis['count']>1,['sid','geometry']].reset_index(drop=True)
+sdwkdis['id']=0
+sdwkdis=sdwkdis.dissolve(by='id').reset_index(drop=False)
+sdwkdis=gpd.GeoDataFrame(geometry=sdwkdis.explode().reset_index(drop=True),crs={'init':'epsg:4326'})
+sdwkdis=pd.concat([sdwkuni,sdwkdis],ignore_index=True)
+sdwkdis['sid']=['s'+str(x) for x in range(0,len(sdwkdis))]
 plaza=gpd.read_file(path+'input/planimetrics/plaza.shp')
 plaza.crs={'init':'epsg:4326'}
 plaza=plaza[['geometry']].reset_index(drop=True)
-sdwkplaza=pd.concat([sidewalk,plaza],ignore_index=True)
+plaza['pid']=['p'+str(x) for x in range(0,len(plaza))]
+sdwkonly=gpd.sjoin(sdwkdis,plaza,how='left',op='intersects')
+sdwkonly=sdwkonly.loc[pd.isna(sdwkonly['pid']),['sid','geometry']].reset_index(drop=True)
+plazaonly=gpd.sjoin(plaza,sdwkdis,how='left',op='intersects')
+plazaonly=plazaonly.loc[pd.isna(plazaonly['sid']),['pid','geometry']].reset_index(drop=True)
+sdwkplaza=gpd.sjoin(sdwkdis,plaza,how='inner',op='intersects')
+sdwkplazasdwk=pd.merge(sdwkdis,sdwkplaza[['sid']].drop_duplicates(keep='first'),how='inner',on='sid')
+sdwkplazaplaza=pd.merge(plaza,sdwkplaza[['pid']].drop_duplicates(keep='first'),how='inner',on='pid')
+sdwkplaza=pd.concat([sdwkplazasdwk,sdwkplazaplaza],ignore_index=True)
 sdwkplaza['id']=0
 sdwkplaza=sdwkplaza.dissolve(by='id').reset_index(drop=False)
 sdwkplaza=gpd.GeoDataFrame(geometry=sdwkplaza.explode().reset_index(drop=True),crs={'init':'epsg:4326'})
+sdwkplaza=pd.concat([sdwkplaza,sdwkonly[['geometry']],plazaonly[['geometry']]],ignore_index=True)
 sdwkplaza['id']=range(0,len(sdwkplaza))
 sdwkplaza.to_file(path+'output/sdwkplaza.shp')
-print(datetime.datetime.now()-start)
 
-
-#
-#sdwkplaza=gpd.read_file(path+'output/sdwkplaza.shp')
-#sdwkplaza['tp']=[type(x) for x in sdwkplaza['geometry']]
-#sdwkplaza['bd']=[shapely.geometry.LineString(list(x.exterior.coords)).wkt for x in sdwkplaza['geometry']]
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#
-## Simplify Pavement Edge
-#pvmtedge=gpd.read_file(path+'input/planimetrics/pvmtedge.shp')
-#pvmtedge.crs={'init':'epsg:4326'}
-#pvmtedge['bkfaceid']=pd.to_numeric(pvmtedge['BLOCKFACEI'])
-#pvmtsp=pvmtedge.loc[pd.notna(pvmtedge['bkfaceid'])&(pvmtedge['FEATURE_CO']==2260),['bkfaceid','geometry']].reset_index(drop=True)
-#pvmtsp=pvmtsp.drop_duplicates('bkfaceid',keep='first').reset_index(drop=True)
-#pvmtsp.to_file(path+'output/pvmtsp.shp')
+# Simplify Pavement Edge
+pvmtedge=gpd.read_file(path+'input/planimetrics/pvmtedge.shp')
+pvmtedge.crs={'init':'epsg:4326'}
+pvmtedge['bkfaceid']=pd.to_numeric(pvmtedge['BLOCKFACEI'])
+pvmtsp=pvmtedge.loc[pd.notna(pvmtedge['bkfaceid'])&(pvmtedge['FEATURE_CO']==2260),['bkfaceid','geometry']].reset_index(drop=True)
+pvmtsp=pvmtsp.drop_duplicates('bkfaceid',keep='first').reset_index(drop=True)
+mdn=gpd.read_file(path+'input/planimetrics/median.shp')
+mdn.crs={'init':'epsg:4326'}
+pvmtsp=gpd.sjoin(pvmtsp,mdn,how='left',op='intersects')
+pvmtsp=pvmtsp.loc[pd.isna(pvmtsp['index_right']),['bkfaceid','geometry']].reset_index(drop=True)
+pvmtsp=pvmtsp.drop_duplicates('bkfaceid',keep='first').reset_index(drop=True)
+pvmtsp['count']=np.nan
+sdwkplaza=gpd.read_file(path+'output/sdwkplaza.shp')
+sdwkplaza.crs={'init':'epsg:4326'}
+sdwkplaza['geometry']=[shapely.geometry.LineString(list(x.exterior.coords)) for x in sdwkplaza['geometry']]
+pvmtspsdwkplaza=gpd.sjoin(pvmtsp,sdwkplaza,how='inner',op='intersects')
+pvmtspsdwkplaza=pvmtspsdwkplaza[['bkfaceid','id']].reset_index(drop=True)
+for i in pvmtsp.index:
+    tp=sdwkplaza[np.isin(sdwkplaza['id'],pvmtspsdwkplaza.loc[pvmtspsdwkplaza['bkfaceid']==pvmtsp.loc[i,'bkfaceid'],'id'])]
+    tp=[pvmtsp.loc[i,'geometry'].intersection(x) for x in tp['geometry']]
+    tp=[x for x in tp if type(x)==shapely.geometry.multilinestring.MultiLineString]
+    if len(tp)>0:
+        pvmtsp.loc[i,'count']=max([len(x) for x in tp])
+    else:
+        print(str(i)+' error!')
+pvmtsp=pvmtsp[]
+pvmtsp.to_file(path+'output/pvmtsp.shp')
 
 
 
