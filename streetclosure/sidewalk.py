@@ -24,7 +24,7 @@ path='/home/mayijun/sidewalk/'
 # News Stand: https://data.cityofnewyork.us/Transportation/News-Stands/kfum-nzw3
 # Tree: https://data.cityofnewyork.us/Environment/2015-Street-Tree-Census-Tree-Data/pi5s-9p35
 # Hydrant: https://data.cityofnewyork.us/Environment/Hydrants-of-the-City-of-New-York/6pui-xhxz
-# Litter Basket: https://data.cityofnewyork.us/dataset/DSNY-Litter-Basket-Inventory/uhim-nea2
+# Litter Bin: https://data.cityofnewyork.us/dataset/DSNY-Litter-Basket-Inventory/uhim-nea2
 # Recycle: https://data.cityofnewyork.us/Environment/Public-Recycling-Bins/sxx4-xhzg
 
 
@@ -439,12 +439,60 @@ path='/home/mayijun/sidewalk/'
 #print(datetime.datetime.now()-start)
 ## 1 min
 
-# Hydrant
+## Hydrant
+#start=datetime.datetime.now()
+#hydrant=gpd.read_file(path+'input/impediments/hydrant.shp')
+#hydrant.crs={'init':'epsg:4326'}
+#hydrant=hydrant.to_crs({'init':'epsg:6539'})
+#hydrant['id']=range(0,len(hydrant))
+#hydrantbuffer=hydrant.copy()
+#hydrantbuffer['geometry']=hydrantbuffer.buffer(20)
+#pvmtsp=gpd.read_file(path+'output/pvmtsp.shp')
+#pvmtsp.crs={'init':'epsg:4326'}
+#pvmtsp=pvmtsp.to_crs({'init':'epsg:6539'})
+#hydrantbuffer=gpd.sjoin(hydrantbuffer,pvmtsp,how='inner',op='intersects')
+#hydrantadj=[]
+#for i in hydrant['id']:
+#    hydranttp=pd.concat([hydrant.loc[hydrant['id']==i]]*2,ignore_index=True)
+#    hydrantpv=pvmtsp[np.isin(pvmtsp['bkfaceid'],hydrantbuffer.loc[hydrantbuffer['id_left']==i,'bkfaceid'])].reset_index(drop=True)
+#    if len(hydrantpv)>0:
+#        try:
+#            hydrantpv=hydrantpv.loc[[np.argmin([hydrantpv.loc[0,'geometry'].distance(x) for x in hydrantpv['geometry']])]].reset_index(drop=True)
+#            hydrantpv['bkfaceid']=hydrantpv.loc[0,'bkfaceid']
+#            hydrantpv['snapdist']=hydrantpv.loc[0,'geometry'].distance(hydrantpv.loc[0,'geometry'])
+#            adjgeom=shapely.ops.nearest_points(hydranttp.loc[0,'geometry'],hydrantpv.loc[0,'geometry'])[1]
+#            intplt=hydrantpv.loc[0,'geometry'].project(adjgeom)
+#            splitter=shapely.geometry.MultiPoint([hydrantpv.loc[0,'geometry'].interpolate(x) for x in [intplt-0.75,intplt+0.75]])
+#            splitseg=shapely.ops.split(hydrantpv.loc[0,'geometry'],splitter.buffer(0.01))[2]
+#            hydranttp.loc[0,'adjgeom']=shapely.geometry.MultiLineString([splitseg.parallel_offset(1),splitseg.parallel_offset(2.5)]).convex_hull.wkt
+#            hydranttp.loc[1,'adjgeom']=shapely.geometry.MultiLineString([splitseg.parallel_offset(-1),splitseg.parallel_offset(-2.5)]).convex_hull.wkt
+#            hydrantadj+=[hydranttp]
+#        except:
+#            print(str(i)+' error!')
+#    else:
+#        print(str(i)+' no bkfaceid joined!')
+#hydrantadj=pd.concat(hydrantadj,ignore_index=True)
+#hydrantadj=hydrantadj[hydrantadj['adjgeom']!='GEOMETRYCOLLECTION EMPTY'].reset_index(drop=True)
+#hydrantadj=hydrantadj.drop('geometry',axis=1)
+#hydrantadj=gpd.GeoDataFrame(hydrantadj,geometry=hydrantadj['adjgeom'].map(wkt.loads),crs={'init':'epsg:6539'})
+#hydrantadj['area']=[x.area for x in hydrantadj['geometry']]
+#hydrantadj=hydrantadj[(hydrantadj['area']>=2)&(hydrantadj['area']<=2.5)].reset_index(drop=True)
+#sdwkplaza=gpd.read_file(path+'output/sdwkplaza.shp')
+#sdwkplaza.crs={'init':'epsg:4326'}
+#sdwkplaza=sdwkplaza.to_crs({'init':'epsg:6539'})
+#hydrantadj=gpd.sjoin(hydrantadj,sdwkplaza,how='inner',op='within')
+#hydrantadj=hydrantadj.drop(['index_right','id_right'],axis=1)
+#hydrantadj=hydrantadj.to_crs({'init':'epsg:4326'})
+#hydrantadj.to_file(path+'output/hydrantadj.shp')
+#print(datetime.datetime.now()-start)
+## 60 mins
+
+# Litter Bin
 start=datetime.datetime.now()
-hydrant=gpd.read_file(path+'input/impediments/hydrant.shp')
-hydrant.crs={'init':'epsg:4326'}
-hydrant=hydrant.to_crs({'init':'epsg:6539'})
-hydrant['id']=range(0,len(hydrant))
+litterbin=gpd.read_file(path+'input/impediments/litterbin.shp')
+litterbin.crs={'init':'epsg:4326'}
+litterbin=litterbin.to_crs({'init':'epsg:6539'})
+litterbin['id']=range(0,len(litterbin))
 hydrantbuffer=hydrant.copy()
 hydrantbuffer['geometry']=hydrantbuffer.buffer(20)
 pvmtsp=gpd.read_file(path+'output/pvmtsp.shp')
@@ -485,9 +533,7 @@ hydrantadj=hydrantadj.drop(['index_right','id_right'],axis=1)
 hydrantadj=hydrantadj.to_crs({'init':'epsg:4326'})
 hydrantadj.to_file(path+'output/hydrantadj.shp')
 print(datetime.datetime.now()-start)
-# 1 min
-
-
+# 60 mins
 
 
 
