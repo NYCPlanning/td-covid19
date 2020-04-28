@@ -70,31 +70,27 @@ sdwkplaza.to_file(path+'output/sdwkplaza.shp')
 pvmtedge=gpd.read_file(path+'input/planimetrics/pvmtedge.shp')
 pvmtedge.crs={'init':'epsg:4326'}
 pvmtedge['bkfaceid']=pd.to_numeric(pvmtedge['BLOCKFACEI'])
-pvmtsp=pvmtedge.loc[pd.notna(pvmtedge['bkfaceid'])&(pvmtedge['FEATURE_CO']==2260),['bkfaceid','geometry']].reset_index(drop=True)
-pvmtsp=pvmtsp.drop_duplicates('bkfaceid',keep='first').reset_index(drop=True)
-mdn=gpd.read_file(path+'input/planimetrics/median.shp')
-mdn.crs={'init':'epsg:4326'}
-pvmtsp=gpd.sjoin(pvmtsp,mdn,how='left',op='intersects')
-pvmtsp=pvmtsp.loc[pd.isna(pvmtsp['index_right']),['bkfaceid','geometry']].reset_index(drop=True)
-pvmtsp=pvmtsp.drop_duplicates('bkfaceid',keep='first').reset_index(drop=True)
-pvmtsp['count']=np.nan
+pvmtedge=pvmtedge.loc[pd.notna(pvmtedge['bkfaceid'])&(pvmtedge['FEATURE_CO']==2260),['bkfaceid','geometry']].reset_index(drop=True)
+pvmtedge=pvmtedge.drop_duplicates('bkfaceid',keep='first').reset_index(drop=True)
 sdwkplaza=gpd.read_file(path+'output/sdwkplaza.shp')
 sdwkplaza.crs={'init':'epsg:4326'}
 sdwkplaza['geometry']=[shapely.geometry.LineString(list(x.exterior.coords)) for x in sdwkplaza['geometry']]
-pvmtspsdwkplaza=gpd.sjoin(pvmtsp,sdwkplaza,how='inner',op='intersects')
-pvmtspsdwkplaza=pvmtspsdwkplaza[['bkfaceid','id']].reset_index(drop=True)
-for i in pvmtsp.index:
-    tp=sdwkplaza[np.isin(sdwkplaza['id'],pvmtspsdwkplaza.loc[pvmtspsdwkplaza['bkfaceid']==pvmtsp.loc[i,'bkfaceid'],'id'])]
-    tp=[pvmtsp.loc[i,'geometry'].intersection(x) for x in tp['geometry']]
+pvmtspsdwk=gpd.sjoin(pvmtedge,sdwkplaza,how='inner',op='intersects')
+pvmtspsdwk=pvmtspsdwk[['bkfaceid','id']].reset_index(drop=True)
+pvmtsp=pd.DataFrame()
+for i in pvmtedge.index:
+    tp=sdwkplaza[np.isin(sdwkplaza['id'],pvmtspsdwk.loc[pvmtspsdwk['bkfaceid']==pvmtedge.loc[i,'bkfaceid'],'id'])]
+    tp=[pvmtedge.loc[i,'geometry'].intersection(x) for x in tp['geometry']]
     tp=[x for x in tp if type(x)==shapely.geometry.multilinestring.MultiLineString]
     if len(tp)>0:
-        pvmtsp.loc[i,'count']=max([len(x) for x in tp])
+        df=pd.concat([pvmtedge.loc[[i]]]*len(tp),ignore_index=True)
+        df['geometry']=[x for x in tp]
+        pvmtsp=pd.concat([pvmtsp,df],ignore_index=True)
     else:
         print(str(i)+' error!')
-pvmtsp=pvmtsp[]
+pvmtsp['id']=range(0,len(pvmtsp))
+pvmtsp=pvmtsp[['id','bkfaceid','geometry']].reset_index(drop=True)
 pvmtsp.to_file(path+'output/pvmtsp.shp')
-
-
 
 
 
