@@ -82,7 +82,7 @@ sdwkplaza['geometry']=[shapely.geometry.LineString(list(x.exterior.coords)) for 
 pvmtspsdwk=gpd.sjoin(pvmtedge,sdwkplaza,how='inner',op='intersects')
 pvmtspsdwk=pvmtspsdwk[['bkfaceid','spid']].reset_index(drop=True)
 pvmtsp=[]
-for i in pvmtedge.index:
+for i in pvmtedge.index[0:1000]:
     tp=sdwkplaza[np.isin(sdwkplaza['spid'],pvmtspsdwk.loc[pvmtspsdwk['bkfaceid']==pvmtedge.loc[i,'bkfaceid'],'spid'])].reset_index(drop=True)
     tp['geometry']=[pvmtedge.loc[i,'geometry'].intersection(x) for x in tp['geometry']]
     tp=tp[[type(x)==shapely.geometry.multilinestring.MultiLineString for x in tp['geometry']]].reset_index(drop=True)
@@ -90,6 +90,15 @@ for i in pvmtedge.index:
         df=pd.concat([pvmtedge.loc[[i]]]*len(tp),ignore_index=True)
         df['spid']=tp['spid']
         df['geometry']=[shapely.ops.linemerge(x) for x in tp['geometry']]
+        dfsingle=df[[type(x)==shapely.geometry.linestring.LineString for x in df['geometry']]].reset_index(drop=True)
+        dfmulti=df[[type(x)==shapely.geometry.multilinestring.MultiLineString for x in df['geometry']]].reset_index(drop=True)
+        df=[]
+        df+=[dfsingle]
+        for j in dfmulti.index:
+            tpmulti=pd.concat([dfmulti.loc[[j]]]*len(dfmulti.loc[j,'geometry']),ignore_index=True)
+            tpmulti['geometry']=[x for x in tpmulti.loc[0,'geometry']]
+            df+=[tpmulti]
+        df=pd.concat(df,ignore_index=True)
         pvmtsp+=[df]
     else:
         print(str(i)+' error!')
@@ -99,6 +108,10 @@ pvmtsp=pvmtsp[['pvid','bkfaceid','spid','geometry']].reset_index(drop=True)
 pvmtsp.to_file(path+'output/pvmtsp.shp')
 print(datetime.datetime.now()-start)
 # 30 mins
+
+
+
+
 
 ## CityBench
 #start=datetime.datetime.now()
