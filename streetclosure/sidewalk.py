@@ -82,7 +82,7 @@ sdwkplaza['geometry']=[shapely.geometry.LineString(list(x.exterior.coords)) for 
 pvmtspsdwk=gpd.sjoin(pvmtedge,sdwkplaza,how='inner',op='intersects')
 pvmtspsdwk=pvmtspsdwk[['bkfaceid','spid']].reset_index(drop=True)
 pvmtsp=[]
-for i in pvmtedge.index[0:1000]:
+for i in pvmtedge.index:
     tp=sdwkplaza[np.isin(sdwkplaza['spid'],pvmtspsdwk.loc[pvmtspsdwk['bkfaceid']==pvmtedge.loc[i,'bkfaceid'],'spid'])].reset_index(drop=True)
     tp['geometry']=[pvmtedge.loc[i,'geometry'].intersection(x) for x in tp['geometry']]
     tp=tp[[type(x)==shapely.geometry.multilinestring.MultiLineString for x in tp['geometry']]].reset_index(drop=True)
