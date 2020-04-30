@@ -656,21 +656,28 @@ pvmtsp=gpd.read_file(path+'output/pvmtsp.shp')
 pvmtsp.crs={'init':'epsg:4326'}
 utistrip=pvmtsp.to_crs({'init':'epsg:6539'})
 for i in utistrip.index:
-    geom=list(utistrip.loc[i,'geometry'].coords)
-    offgeom=utistrip.loc[i,'geometry'].parallel_offset(2,'right')
-    if type(offgeom)==shapely.geometry.linestring.LineString:
-        geom+=list(offgeom.coords)
-        geom+=list(utistrip.loc[i,'geometry'].boundary[0].coords)
-    elif type(offgeom)==shapely.geometry.multilinestring.MultiLineString:
-        geom+=list(offgeom[np.argmax([x.length for x in offgeom])].coords)
-        geom+=list(utistrip.loc[i,'geometry'].boundary[0].coords)
-    else:
+    try:
+        geom=list(utistrip.loc[i,'geometry'].coords)
+        offgeom=utistrip.loc[i,'geometry'].parallel_offset(2,'right')
+        if type(offgeom)==shapely.geometry.linestring.LineString:
+            geom+=list(offgeom.coords)
+            geom+=list(utistrip.loc[i,'geometry'].boundary[0].coords)
+        elif type(offgeom)==shapely.geometry.multilinestring.MultiLineString:
+            geom+=list(offgeom[np.argmax([x.length for x in offgeom])].coords)
+            geom+=list(utistrip.loc[i,'geometry'].boundary[0].coords)
+        else:
+            print(utistrip.loc[i,'pvid']+' type error!')
+        geom=shapely.geometry.Polygon(geom)
+        utistrip.loc[i,'geometry']=geom
+    except:
         print(utistrip.loc[i,'pvid']+' error!')
-    geom=shapely.geometry.Polygon(geom)
-    utistrip.loc[i,'geometry']=geom
 utistrip=utistrip.to_crs({'init':'epsg:4326'})
 utistrip.to_file(path+'output/utistrip.shp')
 print(datetime.datetime.now()-start)
+
+
+
+
 
 
 
