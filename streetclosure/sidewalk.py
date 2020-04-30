@@ -666,11 +666,11 @@ for i in utistrip.index:
             geom+=list(offgeom[np.argmax([x.length for x in offgeom])].coords)
             geom+=list(utistrip.loc[i,'geometry'].boundary[0].coords)
         else:
-            print(utistrip.loc[i,'pvid']+' type error!')
+            print(str(utistrip.loc[i,'pvid'])+' error!')
         geom=shapely.geometry.Polygon(geom)
         utistrip.loc[i,'geometry']=geom
     except:
-        print(utistrip.loc[i,'pvid']+' error!')
+        print(str(utistrip.loc[i,'pvid'])+' error!')
 utistrip=utistrip.to_crs({'init':'epsg:4326'})
 utistrip.to_file(path+'output/utistrip.shp')
 print(datetime.datetime.now()-start)
