@@ -369,3 +369,11 @@ cplxpmpost=cplxpmpost.groupby(['firstdate'],as_index=False).agg({'entries':'sum'
 hub=pd.concat([cplxpmpre,cplxpmpost],axis=0,ignore_index=True)
 hub.to_csv(path+'OUTPUT/hub.csv',index=False)
 
+
+# Subway Closure
+dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
+predates=['04/15/2019','04/16/2019','04/17/2019','04/18/2019','04/22/2019','04/23/2019','04/24/2019','04/25/2019']
+postdates=['04/13/2020','04/14/2020','04/15/2020','04/16/2020','04/17/2020','04/20/2020','04/21/2020','04/22/2020','04/23/2020']
+period=['00:00:00-04:00:00','00:22:00-04:22:00','00:30:00-04:30:00','01:00:00-05:00:00','02:00:00-06:00:00','02:30:00-06:30:00','03:00:00-07:00:00']
+
+
