@@ -120,8 +120,8 @@ def pvmtsimplifycompile(pscp):
     return pvmtsptp
 
 def parallelize(data,func):
-    data_split=np.array_split(data,mp.cpu_count()-4)
-    pool=mp.Pool(mp.cpu_count()-4)
+    data_split=np.array_split(data,mp.cpu_count()-2)
+    pool=mp.Pool(mp.cpu_count()-2)
     dt=pool.map(func,data_split)
     dt=pd.concat(dt,axis=0,ignore_index=True)
     pool.close()
@@ -132,7 +132,7 @@ if __name__=='__main__':
     pvmtsp=parallelize(pvmtedge,pvmtsimplifycompile)
     pvmtsp['pvid']=range(0,len(pvmtsp))
     pvmtsp=pvmtsp[['pvid','bkfaceid','spid','geometry']].reset_index(drop=True)
-    pvmtsp.to_file(path+'output/pvmtsptest.shp')
+    pvmtsp.to_file(path+'output/pvmtsp.shp')
     print(datetime.datetime.now()-start)
     # 30 mins
 
