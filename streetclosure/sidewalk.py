@@ -31,8 +31,8 @@ path='/home/mayijun/sidewalk/'
 
 
 def parallelize(data, func):
-    data_split=np.array_split(data,mp.cpu_count()-1)
-    pool=mp.Pool(mp.cpu_count()-1)
+    data_split=np.array_split(data,mp.cpu_count()-6)
+    pool=mp.Pool(mp.cpu_count()-6)
     dt=pool.map(func, data_split)
     pool.close()
     pool.join()
