@@ -196,7 +196,6 @@ def utilitystrip(us):
         else:
             print(str(us.loc[0,'pvid'])+' rightgeom=leftgeom error!')
         geom=shapely.geometry.Polygon(geom)
-        geom=shapely.ops.polygonize(geom)
         us.loc[0,'geometry']=geom
         return us
     except:
