@@ -50,7 +50,8 @@ sdwkuni=sdwkdis.loc[sdwkdis['count']==1,['sid','geometry']].reset_index(drop=Tru
 sdwkdis=sdwkdis.loc[sdwkdis['count']>1,['sid','geometry']].reset_index(drop=True)
 sdwkdis['id']=0
 sdwkdis=sdwkdis.dissolve(by='id').reset_index(drop=False)
-sdwkdis=gpd.GeoDataFrame(geometry=sdwkdis.explode().reset_index(drop=True),crs={'init':'epsg:4326'})
+sdwkdis=sdwkdis.explode().reset_index(drop=True)[['geometry']]
+#sdwkdis=gpd.GeoDataFrame(geometry=sdwkdis.explode().reset_index(drop=True),crs={'init':'epsg:4326'})
 sdwkdis=pd.concat([sdwkuni,sdwkdis],ignore_index=True)
 sdwkdis['sid']=['s'+str(x) for x in range(0,len(sdwkdis))]
 plaza=gpd.read_file(path+'input/planimetrics/plaza.shp')
@@ -67,7 +68,8 @@ sdwkplazaplaza=pd.merge(plaza,sdwkplaza[['pid']].drop_duplicates(keep='first'),h
 sdwkplaza=pd.concat([sdwkplazasdwk,sdwkplazaplaza],ignore_index=True)
 sdwkplaza['id']=0
 sdwkplaza=sdwkplaza.dissolve(by='id').reset_index(drop=False)
-sdwkplaza=gpd.GeoDataFrame(geometry=sdwkplaza.explode().reset_index(drop=True),crs={'init':'epsg:4326'})
+sdwkplaza=sdwkplaza.explode().reset_index(drop=True)[['geometry']]
+#sdwkplaza=gpd.GeoDataFrame(geometry=sdwkplaza.explode().reset_index(drop=True),crs={'init':'epsg:4326'})
 sdwkplaza=pd.concat([sdwkplaza,sdwkonly[['geometry']],plazaonly[['geometry']]],ignore_index=True)
 sdwkplaza['spid']=range(0,len(sdwkplaza))
 sdwkplaza.to_file(path+'output/sdwkplaza.shp')
