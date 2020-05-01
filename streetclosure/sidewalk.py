@@ -76,48 +76,6 @@ path='/home/mayijun/sidewalk/'
 
 
 
-# Simplify Pavement Edge
-start=datetime.datetime.now()
-pvmtedge=gpd.read_file(path+'input/planimetrics/pvmtedge.shp')
-pvmtedge.crs={'init':'epsg:4326'}
-pvmtedge['bkfaceid']=pd.to_numeric(pvmtedge['BLOCKFACEI'])
-pvmtedge=pvmtedge.loc[pd.notna(pvmtedge['bkfaceid'])&(pvmtedge['FEATURE_CO']==2260),['bkfaceid','geometry']].reset_index(drop=True)
-pvmtedge=pvmtedge.drop_duplicates('bkfaceid',keep='first').reset_index(drop=True)
-sdwkplaza=gpd.read_file(path+'output/sdwkplaza.shp')
-sdwkplaza.crs={'init':'epsg:4326'}
-sdwkplaza['geometry']=[shapely.geometry.LineString(list(x.exterior.coords)) for x in sdwkplaza['geometry']]
-pvmtspsdwk=gpd.sjoin(pvmtedge,sdwkplaza,how='inner',op='intersects')
-pvmtspsdwk=pvmtspsdwk[['bkfaceid','spid']].reset_index(drop=True)
-pvmtsp=[]
-for i in pvmtedge.index:
-    tp=sdwkplaza[np.isin(sdwkplaza['spid'],pvmtspsdwk.loc[pvmtspsdwk['bkfaceid']==pvmtedge.loc[i,'bkfaceid'],'spid'])].reset_index(drop=True)
-    tp['geometry']=[pvmtedge.loc[i,'geometry'].intersection(x) for x in tp['geometry']]
-    tp=tp[[type(x)==shapely.geometry.multilinestring.MultiLineString for x in tp['geometry']]].reset_index(drop=True)
-    if len(tp)>0:
-        df=pd.concat([pvmtedge.loc[[i]]]*len(tp),ignore_index=True)
-        df['spid']=tp['spid']
-        df['geometry']=[shapely.ops.linemerge(x) for x in tp['geometry']]
-        dfsingle=df[[type(x)==shapely.geometry.linestring.LineString for x in df['geometry']]].reset_index(drop=True)
-        dfmulti=df[[type(x)==shapely.geometry.multilinestring.MultiLineString for x in df['geometry']]].reset_index(drop=True)
-        df=[]
-        df+=[dfsingle]
-        for j in dfmulti.index:
-            tpmulti=pd.concat([dfmulti.loc[[j]]]*len(dfmulti.loc[j,'geometry']),ignore_index=True)
-            tpmulti['geometry']=[x for x in tpmulti.loc[0,'geometry']]
-            df+=[tpmulti]
-        df=pd.concat(df,ignore_index=True)
-        pvmtsp+=[df]
-    else:
-        print(str(i)+' error!')
-pvmtsp=pd.concat(pvmtsp,ignore_index=True)
-pvmtsp['pvid']=range(0,len(pvmtsp))
-pvmtsp=pvmtsp[['pvid','bkfaceid','spid','geometry']].reset_index(drop=True)
-pvmtsp.to_file(path+'output/pvmtsp.shp')
-print(datetime.datetime.now()-start)
-# 30 mins
-
-
-
 ## Simplify Pavement Edge
 #start=datetime.datetime.now()
 #pvmtedge=gpd.read_file(path+'input/planimetrics/pvmtedge.shp')
@@ -161,8 +119,8 @@ print(datetime.datetime.now()-start)
 #    return pvmtsptp
 #
 #def parallelize(data,func):
-#    data_split=np.array_split(data,mp.cpu_count()-6)
-#    pool=mp.Pool(mp.cpu_count()-6)
+#    data_split=np.array_split(data,mp.cpu_count()-1)
+#    pool=mp.Pool(mp.cpu_count()-1)
 #    dt=pool.map(func,data_split)
 #    dt=pd.concat(dt,axis=0,ignore_index=True)
 #    pool.close()
@@ -176,7 +134,6 @@ print(datetime.datetime.now()-start)
 #    pvmtsp.to_file(path+'output/pvmtsptest.shp')
 #    print(datetime.datetime.now()-start)
 #    # 30 mins
-
 
 
 
@@ -246,92 +203,90 @@ print(datetime.datetime.now()-start)
 
 
 
-## Utility Strip
-#start=datetime.datetime.now()
-#pvmtsp=gpd.read_file(path+'output/pvmtsp.shp')
-#pvmtsp.crs={'init':'epsg:4326'}
-#pvmtsp=pvmtsp.to_crs({'init':'epsg:6539'})
-#sdwkplaza=gpd.read_file(path+'output/sdwkplaza.shp')
-#sdwkplaza.crs={'init':'epsg:4326'}
-#sdwkplaza=sdwkplaza.to_crs({'init':'epsg:6539'})
-#
-#def utilitystrip(us):
-#    global pvmtsp
-#    global sdwkplaza
-#    us=us.reset_index(drop=True)
-#    try:
-#        sd=sdwkplaza[sdwkplaza['spid']==us.loc[0,'spid']].reset_index(drop=True)  
-#        rightgeom=us.loc[0,'geometry'].parallel_offset(2,'right')
-#        if type(rightgeom)==shapely.geometry.linestring.LineString:
-#            rightgeom=rightgeom.intersection(sd.loc[0,'geometry']).length
-#        elif type(rightgeom)==shapely.geometry.multilinestring.MultiLineString:
-#            rightgeom=[x.intersection(sd.loc[0,'geometry']) for x in rightgeom]
-#            rightgeom=max([x.length for x in rightgeom])
-#        else:
-#            print(str(us.loc[0,'pvid'])+' rightgeom error!')
-#        leftgeom=us.loc[0,'geometry'].parallel_offset(2,'left')
-#        if type(leftgeom)==shapely.geometry.linestring.LineString:
-#            leftgeom=leftgeom.intersection(sd.loc[0,'geometry']).length
-#        elif type(leftgeom)==shapely.geometry.multilinestring.MultiLineString:
-#            leftgeom=[x.intersection(sd.loc[0,'geometry']) for x in leftgeom]
-#            leftgeom=max([x.length for x in leftgeom])
-#        else:
-#            print(str(us.loc[0,'pvid'])+' leftgeom error!')
-#        if rightgeom>leftgeom:
-#            offgeom=us.loc[0,'geometry'].parallel_offset(2,'right')
-#            if type(offgeom)==shapely.geometry.linestring.LineString:
-#                geom=list(us.loc[0,'geometry'].coords)
-#                geom+=list(offgeom.coords)
-#                geom+=list(us.loc[0,'geometry'].boundary[0].coords)
-#            elif type(offgeom)==shapely.geometry.multilinestring.MultiLineString:
-#                geom=list(us.loc[0,'geometry'].coords)
-#                geom+=list(offgeom[np.argmax([x.length for x in offgeom])].coords)
-#                geom+=list(us.loc[0,'geometry'].boundary[0].coords)
-#            else:
-#                print(str(us.loc[0,'pvid'])+' offgeom type error!') 
-#        elif rightgeom<leftgeom:
-#            offgeom=us.loc[0,'geometry'].parallel_offset(2,'left')
-#            if type(offgeom)==shapely.geometry.linestring.LineString:
-#                geom=list(us.loc[0,'geometry'].coords)
-#                geom+=list(offgeom.coords)[::-1]
-#                geom+=list(us.loc[0,'geometry'].boundary[0].coords)
-#            elif type(offgeom)==shapely.geometry.multilinestring.MultiLineString:
-#                geom=list(us.loc[0,'geometry'].coords)
-#                geom+=list(offgeom[np.argmax([x.length for x in offgeom])].coords)[::-1]
-#                geom+=list(us.loc[0,'geometry'].boundary[0].coords)            
-#            else:
-#                print(str(us.loc[0,'pvid'])+' offgeom type error!') 
-#        else:
-#            print(str(us.loc[0,'pvid'])+' rightgeom=leftgeom error!')
-#        geom=shapely.geometry.Polygon(geom)
-#        us.loc[0,'geometry']=geom
-#        return us
-#    except:
-#        print(str(us.loc[0,'pvid'])+' error!')
-#
-#def utilitystripcompile(uscp):
-#    utistriptp=uscp.groupby('pvid',as_index=False).apply(utilitystrip)
-#    return utistriptp
-#
-#def parallelize(data,func):
-#    data_split=np.array_split(data,mp.cpu_count()-6)
-#    pool=mp.Pool(mp.cpu_count()-6)
-#    dt=pool.map(func,data_split)
-#    dt=pd.concat(dt,axis=0,ignore_index=True)
-#    pool.close()
-#    pool.join()
-#    return dt
-#
-#if __name__=='__main__':
-#    utistrip=parallelize(pvmtsp,utilitystripcompile)
-#    utistrip=utistrip[[type(x)==shapely.geometry.polygon.Polygon for x in utistrip['geometry']]].reset_index(drop=True)
-#    utistrip=utistrip.to_crs({'init':'epsg:4326'})
-#    utistrip['usid']=range(0,len(utistrip))
-#    utistrip.to_file(path+'output/utistrip.shp')
-#    print(datetime.datetime.now()-start)
-#    # 120 mins
+# Utility Strip
+start=datetime.datetime.now()
+pvmtsp=gpd.read_file(path+'output/pvmtsp.shp')
+pvmtsp.crs={'init':'epsg:4326'}
+pvmtsp=pvmtsp.to_crs({'init':'epsg:6539'})
+sdwkplaza=gpd.read_file(path+'output/sdwkplaza.shp')
+sdwkplaza.crs={'init':'epsg:4326'}
+sdwkplaza=sdwkplaza.to_crs({'init':'epsg:6539'})
 
+def utilitystrip(us):
+    global pvmtsp
+    global sdwkplaza
+    us=us.reset_index(drop=True)
+    try:
+        sd=sdwkplaza[sdwkplaza['spid']==us.loc[0,'spid']].reset_index(drop=True)  
+        rightgeom=us.loc[0,'geometry'].parallel_offset(2,'right')
+        if type(rightgeom)==shapely.geometry.linestring.LineString:
+            rightgeom=rightgeom.intersection(sd.loc[0,'geometry']).length
+        elif type(rightgeom)==shapely.geometry.multilinestring.MultiLineString:
+            rightgeom=[x.intersection(sd.loc[0,'geometry']) for x in rightgeom]
+            rightgeom=max([x.length for x in rightgeom])
+        else:
+            print(str(us.loc[0,'pvid'])+' rightgeom error!')
+        leftgeom=us.loc[0,'geometry'].parallel_offset(2,'left')
+        if type(leftgeom)==shapely.geometry.linestring.LineString:
+            leftgeom=leftgeom.intersection(sd.loc[0,'geometry']).length
+        elif type(leftgeom)==shapely.geometry.multilinestring.MultiLineString:
+            leftgeom=[x.intersection(sd.loc[0,'geometry']) for x in leftgeom]
+            leftgeom=max([x.length for x in leftgeom])
+        else:
+            print(str(us.loc[0,'pvid'])+' leftgeom error!')
+        if rightgeom>leftgeom:
+            offgeom=us.loc[0,'geometry'].parallel_offset(2,'right')
+            if type(offgeom)==shapely.geometry.linestring.LineString:
+                geom=list(us.loc[0,'geometry'].coords)
+                geom+=list(offgeom.coords)
+                geom+=list(us.loc[0,'geometry'].boundary[0].coords)
+            elif type(offgeom)==shapely.geometry.multilinestring.MultiLineString:
+                geom=list(us.loc[0,'geometry'].coords)
+                geom+=list(offgeom[np.argmax([x.length for x in offgeom])].coords)
+                geom+=list(us.loc[0,'geometry'].boundary[0].coords)
+            else:
+                print(str(us.loc[0,'pvid'])+' offgeom type error!') 
+        elif rightgeom<leftgeom:
+            offgeom=us.loc[0,'geometry'].parallel_offset(2,'left')
+            if type(offgeom)==shapely.geometry.linestring.LineString:
+                geom=list(us.loc[0,'geometry'].coords)
+                geom+=list(offgeom.coords)[::-1]
+                geom+=list(us.loc[0,'geometry'].boundary[0].coords)
+            elif type(offgeom)==shapely.geometry.multilinestring.MultiLineString:
+                geom=list(us.loc[0,'geometry'].coords)
+                geom+=list(offgeom[np.argmax([x.length for x in offgeom])].coords)[::-1]
+                geom+=list(us.loc[0,'geometry'].boundary[0].coords)            
+            else:
+                print(str(us.loc[0,'pvid'])+' offgeom type error!') 
+        else:
+            print(str(us.loc[0,'pvid'])+' rightgeom=leftgeom error!')
+        geom=shapely.geometry.Polygon(geom)
+        us.loc[0,'geometry']=geom
+        return us
+    except:
+        print(str(us.loc[0,'pvid'])+' error!')
 
+def utilitystripcompile(uscp):
+    utistriptp=uscp.groupby('pvid',as_index=False).apply(utilitystrip)
+    return utistriptp
+
+def parallelize(data,func):
+    data_split=np.array_split(data,mp.cpu_count()-1)
+    pool=mp.Pool(mp.cpu_count()-1)
+    dt=pool.map(func,data_split)
+    dt=pd.concat(dt,axis=0,ignore_index=True)
+    pool.close()
+    pool.join()
+    return dt
+
+if __name__=='__main__':
+    utistrip=parallelize(pvmtsp[0:1000],utilitystripcompile)
+    utistrip=utistrip[[type(x)==shapely.geometry.polygon.Polygon for x in utistrip['geometry']]].reset_index(drop=True)
+    utistrip=utistrip.to_crs({'init':'epsg:4326'})
+    utistrip['usid']=range(0,len(utistrip))
+    utistrip.to_file(path+'output/utistriptest.shp')
+    print(datetime.datetime.now()-start)
+    # 120 mins
 
 
 
@@ -383,6 +338,8 @@ print(datetime.datetime.now()-start)
 #print(datetime.datetime.now()-start)
 ## 2 mins
 
+
+
 ## WalkNYC
 #start=datetime.datetime.now()
 #walknyc=gpd.read_file(path+'input/impediments/walknyc.shp')
@@ -433,6 +390,8 @@ print(datetime.datetime.now()-start)
 #print(datetime.datetime.now()-start)
 ## 1 min
 
+
+
 ## Meter
 #start=datetime.datetime.now()
 #meter=gpd.read_file(path+'input/impediments/meter.shp')
@@ -482,6 +441,8 @@ print(datetime.datetime.now()-start)
 #print(datetime.datetime.now()-start)
 ## 5 mins
 
+
+
 ## Bus Shelter
 #start=datetime.datetime.now()
 #busshelter=gpd.read_file(path+'input/impediments/busshelter.shp')
@@ -530,6 +491,8 @@ print(datetime.datetime.now()-start)
 #print(datetime.datetime.now()-start)
 ## 2 mins
 
+
+
 ## LinkNYC
 #start=datetime.datetime.now()
 #linknyc=gpd.read_file(path+'input/impediments/linknyc.shp')
@@ -577,6 +540,8 @@ print(datetime.datetime.now()-start)
 #linknycadj.to_file(path+'output/linknycadj.shp')
 #print(datetime.datetime.now()-start)
 ## 2 mins
+
+
 
 ## Pay Phone
 #start=datetime.datetime.now()
@@ -627,6 +592,8 @@ print(datetime.datetime.now()-start)
 #print(datetime.datetime.now()-start)
 ## 3 mins
 
+
+
 ## News Stand
 #start=datetime.datetime.now()
 #newsstand=gpd.read_file(path+'input/impediments/newsstand.shp')
@@ -674,6 +641,8 @@ print(datetime.datetime.now()-start)
 #newsstandadj.to_file(path+'output/newsstandadj.shp')
 #print(datetime.datetime.now()-start)
 ## 1 min
+
+
 
 ## Hydrant
 #start=datetime.datetime.now()
@@ -723,6 +692,8 @@ print(datetime.datetime.now()-start)
 #print(datetime.datetime.now()-start)
 ## 30 mins
 
+
+
 ## Litter Bin
 #start=datetime.datetime.now()
 #litterbin=gpd.read_file(path+'input/impediments/litterbin.shp')
@@ -771,6 +742,8 @@ print(datetime.datetime.now()-start)
 #print(datetime.datetime.now()-start)
 ## 10 mins
 
+
+
 ## Recycle Bin
 #start=datetime.datetime.now()
 #recyclebin=gpd.read_file(path+'input/impediments/recyclebin.shp')
@@ -818,6 +791,8 @@ print(datetime.datetime.now()-start)
 #recyclebinadj.to_file(path+'output/recyclebinadj.shp')
 #print(datetime.datetime.now()-start)
 ## 2 mins
+
+
 
 ## Tree
 ## On Curb
@@ -869,6 +844,77 @@ print(datetime.datetime.now()-start)
 #print(datetime.datetime.now()-start)
 ## 300 mins
 
+
+
+## Tree
+## On Curb
+#start=datetime.datetime.now()
+#curbtree=gpd.read_file(path+'input/impediments/tree.shp')
+#curbtree.crs={'init':'epsg:4326'}
+#curbtree=curbtree.to_crs({'init':'epsg:6539'})
+#curbtree=curbtree[[x in ['OnCurb'] for x in curbtree['curb_loc']]].reset_index(drop=True)
+#curbtree['ctid']=range(0,len(curbtree))
+#curbtree=curbtree[0:1000]
+#curbtreebuffer=curbtree.copy()
+#curbtreebuffer['geometry']=curbtreebuffer.buffer(50)
+#pvmtsp=gpd.read_file(path+'output/pvmtsp.shp')
+#pvmtsp.crs={'init':'epsg:4326'}
+#pvmtsp=pvmtsp.to_crs({'init':'epsg:6539'})
+#curbtreebuffer=gpd.sjoin(curbtreebuffer,pvmtsp,how='inner',op='intersects')
+#
+#def curbtreeadjust(ct):
+#    global curbtree
+#    global pvmtsp
+#    global curbtreebuffer
+#    ct=ct.reset_index(drop=True)
+#    curbtreetp=pd.concat([ct]*2,ignore_index=True)
+#    curbtreepv=pvmtsp[np.isin(pvmtsp['pvid'],curbtreebuffer.loc[curbtreebuffer['ctid']==ct.loc[0,'ctid'],'pvid'])].reset_index(drop=True)
+#    if len(curbtreepv)>0:
+#        try:
+#            curbtreepv=curbtreepv.loc[[np.argmin([curbtreetp.loc[0,'geometry'].distance(x) for x in curbtreepv['geometry']])]].reset_index(drop=True)
+#            curbtreetp['pvid']=curbtreepv.loc[0,'pvid']
+#            curbtreetp['snapdist']=curbtreetp.loc[0,'geometry'].distance(curbtreepv.loc[0,'geometry'])
+#            adjgeom=shapely.ops.nearest_points(curbtreetp.loc[0,'geometry'],curbtreepv.loc[0,'geometry'])[1]
+#            intplt=curbtreepv.loc[0,'geometry'].project(adjgeom)
+#            splitter=shapely.geometry.MultiPoint([curbtreepv.loc[0,'geometry'].interpolate(x) for x in [intplt-2.5,intplt+2.5]])
+#            splitseg=shapely.ops.split(curbtreepv.loc[0,'geometry'],splitter.buffer(0.01))[2]
+#            curbtreetp.loc[0,'adjgeom']=shapely.geometry.MultiLineString([splitseg.parallel_offset(1),splitseg.parallel_offset(6)]).convex_hull.wkt
+#            curbtreetp.loc[1,'adjgeom']=shapely.geometry.MultiLineString([splitseg.parallel_offset(-1),splitseg.parallel_offset(-6)]).convex_hull.wkt
+#            return curbtreetp
+#        except:
+#            print(str(ct.loc[0,'ctid'])+' error!')
+#    else:
+#        print(str(ct.loc[0,'ctid'])+' no pvid joined!')
+#
+#def curbtreeadjustcompile(ctcp):
+#    curbtreeadjtp=ctcp.groupby('ctid',as_index=False).apply(curbtreeadjust)
+#    return curbtreeadjtp
+#
+#def parallelize(data,func):
+#    data_split=np.array_split(data,mp.cpu_count()-1)
+#    pool=mp.Pool(mp.cpu_count()-1)
+#    dt=pool.map(func,data_split)
+#    dt=pd.concat(dt,axis=0,ignore_index=True)
+#    pool.close()
+#    pool.join()
+#    return dt
+#
+#if __name__=='__main__':
+#    curbtreeadj=parallelize(curbtree,curbtreeadjustcompile)
+#    curbtreeadj=curbtreeadj[curbtreeadj['adjgeom']!='GEOMETRYCOLLECTION EMPTY'].reset_index(drop=True)
+#    curbtreeadj=curbtreeadj.drop('geometry',axis=1)
+#    curbtreeadj=gpd.GeoDataFrame(curbtreeadj,geometry=curbtreeadj['adjgeom'].map(wkt.loads),crs={'init':'epsg:6539'})
+#    curbtreeadj['area']=[x.area for x in curbtreeadj['geometry']]
+#    curbtreeadj=curbtreeadj[(curbtreeadj['area']>=20)&(curbtreeadj['area']<=30)].reset_index(drop=True)
+#    sdwkplaza=gpd.read_file(path+'output/sdwkplaza.shp')
+#    sdwkplaza.crs={'init':'epsg:4326'}
+#    sdwkplaza=sdwkplaza.to_crs({'init':'epsg:6539'})
+#    curbtreeadj=gpd.sjoin(curbtreeadj,sdwkplaza,how='inner',op='within')
+#    curbtreeadj=curbtreeadj.drop(['index_right'],axis=1)
+#    curbtreeadj=curbtreeadj.to_crs({'init':'epsg:4326'})
+#    curbtreeadj.to_file(path+'output/curbtreeadjtest.shp')
+#    print(datetime.datetime.now()-start)
+#    # 300 mins
 
 
 # Off Set Curb
