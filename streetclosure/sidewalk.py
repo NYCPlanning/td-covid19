@@ -80,6 +80,8 @@ def parallelize(data, func):
 #print(datetime.datetime.now()-start)
 ## 7 mins
 
+
+
 ## Simplify Pavement Edge
 #start=datetime.datetime.now()
 #pvmtedge=gpd.read_file(path+'input/planimetrics/pvmtedge.shp')
@@ -120,6 +122,8 @@ def parallelize(data, func):
 #print(datetime.datetime.now()-start)
 ## 30 mins
 
+
+
 # Simplify Pavement Edge
 start=datetime.datetime.now()
 pvmtedge=gpd.read_file(path+'input/planimetrics/pvmtedge.shp')
@@ -133,36 +137,42 @@ sdwkplaza['geometry']=[shapely.geometry.LineString(list(x.exterior.coords)) for 
 pvmtspsdwk=gpd.sjoin(pvmtedge,sdwkplaza,how='inner',op='intersects')
 pvmtspsdwk=pvmtspsdwk[['bkfaceid','spid']].reset_index(drop=True)
 
-def pvmtsimplified(ps):
-    pvmtsptp=[]
-    for i in ps.index:
-        tp=sdwkplaza[np.isin(sdwkplaza['spid'],pvmtspsdwk.loc[pvmtspsdwk['bkfaceid']==pvmtedge.loc[i,'bkfaceid'],'spid'])].reset_index(drop=True)
-        tp['geometry']=[pvmtedge.loc[i,'geometry'].intersection(x) for x in tp['geometry']]
-        tp=tp[[type(x)==shapely.geometry.multilinestring.MultiLineString for x in tp['geometry']]].reset_index(drop=True)
-        if len(tp)>0:
-            df=pd.concat([pvmtedge.loc[[i]]]*len(tp),ignore_index=True)
-            df['spid']=tp['spid']
-            df['geometry']=[shapely.ops.linemerge(x) for x in tp['geometry']]
-            dfsingle=df[[type(x)==shapely.geometry.linestring.LineString for x in df['geometry']]].reset_index(drop=True)
-            dfmulti=df[[type(x)==shapely.geometry.multilinestring.MultiLineString for x in df['geometry']]].reset_index(drop=True)
-            df=[]
-            df+=[dfsingle]
-            for j in dfmulti.index:
-                tpmulti=pd.concat([dfmulti.loc[[j]]]*len(dfmulti.loc[j,'geometry']),ignore_index=True)
-                tpmulti['geometry']=[x for x in tpmulti.loc[0,'geometry']]
-                df+=[tpmulti]
-            df=pd.concat(df,ignore_index=True)
-            pvmtsptp+=[df]
-        else:
-            print(str(i)+' error!')
-    pvmtsptp=pd.concat(pvmtsptp,ignore_index=True)
+def pvmtsimplify(ps):
+    global pvmtedge
+    global sdwkplaza
+    global pvmtspsdwk
+    ps=ps.reset_index(drop=True)
+    tp=sdwkplaza[np.isin(sdwkplaza['spid'],pvmtspsdwk.loc[pvmtspsdwk['bkfaceid']==ps.loc[0,'bkfaceid'],'spid'])].reset_index(drop=True)
+    tp['geometry']=[ps.loc[0,'geometry'].intersection(x) for x in tp['geometry']]
+    tp=tp[[type(x)==shapely.geometry.multilinestring.MultiLineString for x in tp['geometry']]].reset_index(drop=True)
+    if len(tp)>0:
+        df=pd.concat([ps]*len(tp),ignore_index=True)
+        df['spid']=tp['spid']
+        df['geometry']=[shapely.ops.linemerge(x) for x in tp['geometry']]
+        dfsingle=df[[type(x)==shapely.geometry.linestring.LineString for x in df['geometry']]].reset_index(drop=True)
+        dfmulti=df[[type(x)==shapely.geometry.multilinestring.MultiLineString for x in df['geometry']]].reset_index(drop=True)
+        df=[]
+        df+=[dfsingle]
+        for j in dfmulti.index:
+            tpmulti=pd.concat([dfmulti.loc[[j]]]*len(dfmulti.loc[j,'geometry']),ignore_index=True)
+            tpmulti['geometry']=[x for x in tpmulti.loc[0,'geometry']]
+            df+=[tpmulti]
+        df=pd.concat(df,ignore_index=True)
+    else:
+        print(str(ps.loc[0,'bkfaceid'])+' error!')
+    return df
+
+def pvmtsimplifycompile(pscp):
+    pvmtsptp=pscp.groupby('bkfaceid',as_index=False).apply(pvmtsimplify)
+    return pvmtsptp
 
 if __name__=='__main__':
-    pvmtsp=parallelize(pvmtedge,pvmtsimplified)
-    pvmtsp['pvid']=range(0,len(pvmtsp))
-    pvmtsp=pvmtsp[['pvid','bkfaceid','spid','geometry']].reset_index(drop=True)
-    pvmtsp.to_file(path+'output/pvmtsptest.shp')
-    print(datetime.datetime.now()-start)
+    pvmtsp=parallelize(pvmtedge,pvmtsimplifycompile)
+    pvmtsp.head()
+#    pvmtsp['pvid']=range(0,len(pvmtsp))
+#    pvmtsp=pvmtsp[['pvid','bkfaceid','spid','geometry']].reset_index(drop=True)
+#    pvmtsp.to_file(path+'output/pvmtsptest.shp')
+#    print(datetime.datetime.now()-start)
     # 30 mins
 
 
