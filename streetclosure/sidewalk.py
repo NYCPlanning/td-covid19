@@ -4,12 +4,13 @@ import numpy as np
 import shapely
 from shapely import wkt
 import datetime
+import multiprocessing as mp
 
 
 
 pd.set_option('display.max_columns', None)
-path='C:/Users/Yijun Ma/Desktop/D/DOCUMENT/DCP2020/COVID19/STREET CLOSURE/sidewalk/'
-#path='/home/mayijun/sidewalk/'
+#path='C:/Users/Yijun Ma/Desktop/D/DOCUMENT/DCP2020/COVID19/STREET CLOSURE/sidewalk/'
+path='/home/mayijun/sidewalk/'
 
 
 
@@ -26,6 +27,16 @@ path='C:/Users/Yijun Ma/Desktop/D/DOCUMENT/DCP2020/COVID19/STREET CLOSURE/sidewa
 # Litter Bin: https://data.cityofnewyork.us/dataset/DSNY-Litter-Basket-Inventory/uhim-nea2
 # Recycle: https://data.cityofnewyork.us/Environment/Public-Recycling-Bins/sxx4-xhzg
 # Tree: https://data.cityofnewyork.us/Environment/2015-Street-Tree-Census-Tree-Data/pi5s-9p35
+
+
+
+def parallelize(data, func):
+    data_split=np.array_split(data,mp.cpu_count()-1)
+    pool=mp.Pool(mp.cpu_count()-1)
+    dt=pool.map(func, data_split)
+    pool.close()
+    pool.join()
+    return dt
 
 
 
@@ -108,6 +119,53 @@ path='C:/Users/Yijun Ma/Desktop/D/DOCUMENT/DCP2020/COVID19/STREET CLOSURE/sidewa
 #pvmtsp.to_file(path+'output/pvmtsp.shp')
 #print(datetime.datetime.now()-start)
 ## 30 mins
+
+# Simplify Pavement Edge
+start=datetime.datetime.now()
+pvmtedge=gpd.read_file(path+'input/planimetrics/pvmtedge.shp')
+pvmtedge.crs={'init':'epsg:4326'}
+pvmtedge['bkfaceid']=pd.to_numeric(pvmtedge['BLOCKFACEI'])
+pvmtedge=pvmtedge.loc[pd.notna(pvmtedge['bkfaceid'])&(pvmtedge['FEATURE_CO']==2260),['bkfaceid','geometry']].reset_index(drop=True)
+pvmtedge=pvmtedge.drop_duplicates('bkfaceid',keep='first').reset_index(drop=True)
+sdwkplaza=gpd.read_file(path+'output/sdwkplaza.shp')
+sdwkplaza.crs={'init':'epsg:4326'}
+sdwkplaza['geometry']=[shapely.geometry.LineString(list(x.exterior.coords)) for x in sdwkplaza['geometry']]
+pvmtspsdwk=gpd.sjoin(pvmtedge,sdwkplaza,how='inner',op='intersects')
+pvmtspsdwk=pvmtspsdwk[['bkfaceid','spid']].reset_index(drop=True)
+
+def pvmtsimplified(ps):
+    pvmtsptp=[]
+    for i in ps.index:
+        tp=sdwkplaza[np.isin(sdwkplaza['spid'],pvmtspsdwk.loc[pvmtspsdwk['bkfaceid']==pvmtedge.loc[i,'bkfaceid'],'spid'])].reset_index(drop=True)
+        tp['geometry']=[pvmtedge.loc[i,'geometry'].intersection(x) for x in tp['geometry']]
+        tp=tp[[type(x)==shapely.geometry.multilinestring.MultiLineString for x in tp['geometry']]].reset_index(drop=True)
+        if len(tp)>0:
+            df=pd.concat([pvmtedge.loc[[i]]]*len(tp),ignore_index=True)
+            df['spid']=tp['spid']
+            df['geometry']=[shapely.ops.linemerge(x) for x in tp['geometry']]
+            dfsingle=df[[type(x)==shapely.geometry.linestring.LineString for x in df['geometry']]].reset_index(drop=True)
+            dfmulti=df[[type(x)==shapely.geometry.multilinestring.MultiLineString for x in df['geometry']]].reset_index(drop=True)
+            df=[]
+            df+=[dfsingle]
+            for j in dfmulti.index:
+                tpmulti=pd.concat([dfmulti.loc[[j]]]*len(dfmulti.loc[j,'geometry']),ignore_index=True)
+                tpmulti['geometry']=[x for x in tpmulti.loc[0,'geometry']]
+                df+=[tpmulti]
+            df=pd.concat(df,ignore_index=True)
+            pvmtsptp+=[df]
+        else:
+            print(str(i)+' error!')
+    pvmtsptp=pd.concat(pvmtsptp,ignore_index=True)
+
+if __name__=='__main__':
+    pvmtsp=parallelize(pvmtedge,pvmtsimplified)
+    pvmtsp['pvid']=range(0,len(pvmtsp))
+    pvmtsp=pvmtsp[['pvid','bkfaceid','spid','geometry']].reset_index(drop=True)
+    pvmtsp.to_file(path+'output/pvmtsp.shp')
+    print(datetime.datetime.now()-start)
+    # 30 mins
+
+
 
 
 
@@ -792,108 +850,139 @@ path='C:/Users/Yijun Ma/Desktop/D/DOCUMENT/DCP2020/COVID19/STREET CLOSURE/sidewa
 
 
 
-# Sidewalk and Plaza Excluding Impediments
-sdwkplaza=gpd.read_file(path+'output/sdwkplaza.shp')
-sdwkplaza.crs={'init':'epsg:4326'}
-sdwkplaza['id']=0
-sdwkplaza=sdwkplaza.dissolve(by='id')
-
-impediment=gpd.read_file(path+'output/impediment.shp')
-impediment.crs={'init':'epsg:4326'}
-
-k=impediment[0:1000].reset_index(drop=True)
-k['id']=0
-k=k.dissolve(by='id')
-k.to_file(path+'k.shp')
-
-sdwkplazaimp=gpd.overlay(sdwkplaza,k,how='difference')
-sdwkplazaimp.to_file(path+'output/sdwkplazaimp.shp')
-
-
+## Sidewalk and Plaza Excluding Impediments
+#sdwkplaza=gpd.read_file(path+'output/sdwkplaza.shp')
+#sdwkplaza.crs={'init':'epsg:4326'}
+#sdwkplaza['id']=0
+#sdwkplaza=sdwkplaza.dissolve(by='id')
+#
+#impediment=gpd.read_file(path+'output/impediment.shp')
+#impediment.crs={'init':'epsg:4326'}
+#
+#k=impediment[0:1000].reset_index(drop=True)
+#k['id']=0
+#k=k.dissolve(by='id')
+#k.to_file(path+'k.shp')
+#
+#sdwkplazaimp=gpd.overlay(sdwkplaza,k,how='difference')
+#sdwkplazaimp.to_file(path+'output/sdwkplazaimp.shp')
 
 
 
 
-# Find original sidewalk width
-start=datetime.datetime.now()
-pvmtsp=gpd.read_file(path+'output/pvmtsp.shp')
-pvmtsp.crs={'init':'epsg:4326'}
-pvmtsp=pvmtsp.to_crs({'init':'epsg:6539'})
-pvmtsp['length']=[x.length for x in pvmtsp['geometry']]
-sdwkplaza=gpd.read_file(path+'output/sdwkplaza.shp')
-sdwkplaza.crs={'init':'epsg:4326'}
-sdwkplaza=sdwkplaza.to_crs({'init':'epsg:6539'})
-sw=[]
-swtm=[]
-for i in pvmtsp.index:
-    tp=pvmtsp.loc[[i]].reset_index(drop=True)
-    tpseg=[0 if tp.loc[0,'length']<=40 else int((tp.loc[0,'length']-40)/5)+1][0]
-    if tpseg!=0:
-        try:
-            tp=pd.concat([tp]*tpseg*2,axis=0,ignore_index=True)
-            tp['side']=['L']*tpseg+['R']*tpseg
-            tp['orgsw']=np.nan
-            tp['count']=np.nan
-            sd=sdwkplaza[sdwkplaza['spid']==tp.loc[0,'spid']].reset_index(drop=True)  
-            splitter=shapely.geometry.MultiPoint([tp.loc[0,'geometry'].interpolate(20+x*5,normalized=False) for x in range(0,tpseg)])
-            tpsplit=shapely.ops.split(tp.loc[0,'geometry'],splitter.buffer(0.01))
-            if len(tpsplit[2].parallel_offset(50,'left').boundary)==2:
-                tp.loc[0,'geometry']=shapely.geometry.LineString([splitter[0],tpsplit[2].parallel_offset(50,'left').boundary[0]])
-            else:
-                tp.loc[0,'geometry']=''
-            if len(tpsplit[2].parallel_offset(50,'right').boundary)==2:
-                tp.loc[tpseg,'geometry']=shapely.geometry.LineString([splitter[0],tpsplit[2].parallel_offset(50,'right').boundary[1]])
-            else:
-                tp.loc[tpseg,'geometry']=''
-            for j in range(1,tpseg):
-                if len(tpsplit[j*2].parallel_offset(50,'left').boundary)==2:
-                    tp.loc[j,'geometry']=shapely.geometry.LineString([splitter[j],tpsplit[j*2].parallel_offset(50,'left').boundary[1]])
-                else:
-                    tp.loc[j,'geometry']=''
-                if len(tpsplit[j*2].parallel_offset(50,'right').boundary)==2:
-                    tp.loc[j+tpseg,'geometry']=shapely.geometry.LineString([splitter[j],tpsplit[j*2].parallel_offset(50,'right').boundary[0]])
-                else:
-                    tp.loc[j+tpseg,'geometry']=''  
-            tp=tp[tp['geometry']!=''].reset_index(drop=True) 
-            for k in tp.index:
-                sdwkint=[tp.loc[k,'geometry'].intersection(sd.loc[0,'geometry'])]
-                if sdwkint[0].length<=0.01:
-                    tp.loc[k,'geometry']=''
-                    tp.loc[k,'orgsw']=0
-                    tp.loc[k,'count']=0
-                elif type(sdwkint[0])==shapely.geometry.linestring.LineString:
-                    tp.loc[k,'geometry']=sdwkint[0]
-                    tp.loc[k,'orgsw']=sdwkint[0].length
-                    tp.loc[k,'count']=1
-                elif type(sdwkint[0])==shapely.geometry.multilinestring.MultiLineString:
-                    tp.loc[k,'geometry']=sdwkint[0][0]
-                    tp.loc[k,'orgsw']=sdwkint[0][0].length
-                    tp.loc[k,'count']=len(sdwkint[0])
-            tp['geometry']=np.where(tp['orgsw']<=0.01,'',tp['geometry'])
-            tp['orgsw']=np.where(tp['orgsw']<=0.01,np.nan,tp['orgsw'])
-            tp=tp.loc[pd.notna(tp['orgsw']),['pvid','bkfaceid','spid','side','orgsw','count','geometry']].reset_index(drop=True)
-            if len(tp.side.unique())==1:
-                swtm+=[tp]
-                tp=tp.groupby(['pvid','bkfaceid','spid','side'],as_index=False).agg({'orgsw':['min','max','median']}).reset_index(drop=True)
-                tp.columns=['pvid','bkfaceid','spid','side','orgswmin','orgswmax','orgswmedian']
-                sw+=[tp]
-            else:
-                print(str(pvmtsp.loc[i,'pvid'])+' tickmarks on both sides!')
-        except:
-            print(str(pvmtsp.loc[i,'pvid'])+' error!')
-    else:
-        print(str(pvmtsp.loc[i,'pvid'])+' shorter than 40 feet!')
-swtm=pd.concat(swtm,ignore_index=True)
-swtm=swtm.to_crs({'init':'epsg:4326'})
-swtm.to_file(path+'output/swtm.shp')
-sw=pd.concat(sw,ignore_index=True)
-sw=pd.merge(pvmtsp,sw,how='inner',on=['pvid','bkfaceid','spid'])
-sw['length']=[x.length for x in sw['geometry']]
-sw=sw[['pvid','bkfaceid','spid','side','orgswmin','orgswmax','orgswmedian','length','geometry']].reset_index(drop=True)
-sw=sw.to_crs({'init':'epsg:4326'})
-sw.to_file(path+'output/sw.shp')
-print(datetime.datetime.now()-start)
-#480 mins
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Find original sidewalk width
+#start=datetime.datetime.now()
+#pvmtsp=gpd.read_file(path+'output/pvmtsp.shp')
+#pvmtsp.crs={'init':'epsg:4326'}
+#pvmtsp=pvmtsp.to_crs({'init':'epsg:6539'})
+#pvmtsp['length']=[x.length for x in pvmtsp['geometry']]
+#sdwkplaza=gpd.read_file(path+'output/sdwkplaza.shp')
+#sdwkplaza.crs={'init':'epsg:4326'}
+#sdwkplaza=sdwkplaza.to_crs({'init':'epsg:6539'})
+#sw=[]
+#swtm=[]
+#for i in pvmtsp.index:
+#    tp=pvmtsp.loc[[i]].reset_index(drop=True)
+#    tpseg=[0 if tp.loc[0,'length']<=40 else int((tp.loc[0,'length']-40)/5)+1][0]
+#    if tpseg!=0:
+#        try:
+#            tp=pd.concat([tp]*tpseg*2,axis=0,ignore_index=True)
+#            tp['side']=['L']*tpseg+['R']*tpseg
+#            tp['orgsw']=np.nan
+#            tp['count']=np.nan
+#            sd=sdwkplaza[sdwkplaza['spid']==tp.loc[0,'spid']].reset_index(drop=True)  
+#            splitter=shapely.geometry.MultiPoint([tp.loc[0,'geometry'].interpolate(20+x*5,normalized=False) for x in range(0,tpseg)])
+#            tpsplit=shapely.ops.split(tp.loc[0,'geometry'],splitter.buffer(0.01))
+#            if len(tpsplit[2].parallel_offset(50,'left').boundary)==2:
+#                tp.loc[0,'geometry']=shapely.geometry.LineString([splitter[0],tpsplit[2].parallel_offset(50,'left').boundary[0]])
+#            else:
+#                tp.loc[0,'geometry']=''
+#            if len(tpsplit[2].parallel_offset(50,'right').boundary)==2:
+#                tp.loc[tpseg,'geometry']=shapely.geometry.LineString([splitter[0],tpsplit[2].parallel_offset(50,'right').boundary[1]])
+#            else:
+#                tp.loc[tpseg,'geometry']=''
+#            for j in range(1,tpseg):
+#                if len(tpsplit[j*2].parallel_offset(50,'left').boundary)==2:
+#                    tp.loc[j,'geometry']=shapely.geometry.LineString([splitter[j],tpsplit[j*2].parallel_offset(50,'left').boundary[1]])
+#                else:
+#                    tp.loc[j,'geometry']=''
+#                if len(tpsplit[j*2].parallel_offset(50,'right').boundary)==2:
+#                    tp.loc[j+tpseg,'geometry']=shapely.geometry.LineString([splitter[j],tpsplit[j*2].parallel_offset(50,'right').boundary[0]])
+#                else:
+#                    tp.loc[j+tpseg,'geometry']=''  
+#            tp=tp[tp['geometry']!=''].reset_index(drop=True) 
+#            for k in tp.index:
+#                sdwkint=[tp.loc[k,'geometry'].intersection(sd.loc[0,'geometry'])]
+#                if sdwkint[0].length<=0.01:
+#                    tp.loc[k,'geometry']=''
+#                    tp.loc[k,'orgsw']=0
+#                    tp.loc[k,'count']=0
+#                elif type(sdwkint[0])==shapely.geometry.linestring.LineString:
+#                    tp.loc[k,'geometry']=sdwkint[0]
+#                    tp.loc[k,'orgsw']=sdwkint[0].length
+#                    tp.loc[k,'count']=1
+#                elif type(sdwkint[0])==shapely.geometry.multilinestring.MultiLineString:
+#                    tp.loc[k,'geometry']=sdwkint[0][0]
+#                    tp.loc[k,'orgsw']=sdwkint[0][0].length
+#                    tp.loc[k,'count']=len(sdwkint[0])
+#            tp['geometry']=np.where(tp['orgsw']<=0.01,'',tp['geometry'])
+#            tp['orgsw']=np.where(tp['orgsw']<=0.01,np.nan,tp['orgsw'])
+#            tp=tp.loc[pd.notna(tp['orgsw']),['pvid','bkfaceid','spid','side','orgsw','count','geometry']].reset_index(drop=True)
+#            if len(tp.side.unique())==1:
+#                swtm+=[tp]
+#                tp=tp.groupby(['pvid','bkfaceid','spid','side'],as_index=False).agg({'orgsw':['min','max','median']}).reset_index(drop=True)
+#                tp.columns=['pvid','bkfaceid','spid','side','orgswmin','orgswmax','orgswmedian']
+#                sw+=[tp]
+#            else:
+#                print(str(pvmtsp.loc[i,'pvid'])+' tickmarks on both sides!')
+#        except:
+#            print(str(pvmtsp.loc[i,'pvid'])+' error!')
+#    else:
+#        print(str(pvmtsp.loc[i,'pvid'])+' shorter than 40 feet!')
+#swtm=pd.concat(swtm,ignore_index=True)
+#swtm=swtm.to_crs({'init':'epsg:4326'})
+#swtm.to_file(path+'output/swtm.shp')
+#sw=pd.concat(sw,ignore_index=True)
+#sw=pd.merge(pvmtsp,sw,how='inner',on=['pvid','bkfaceid','spid'])
+#sw['length']=[x.length for x in sw['geometry']]
+#sw=sw[['pvid','bkfaceid','spid','side','orgswmin','orgswmax','orgswmedian','length','geometry']].reset_index(drop=True)
+#sw=sw.to_crs({'init':'epsg:4326'})
+#sw.to_file(path+'output/sw.shp')
+#print(datetime.datetime.now()-start)
+##480 mins
 
 
 
