@@ -158,9 +158,10 @@ def pvmtsimplify(ps):
             tpmulti['geometry']=[x for x in tpmulti.loc[0,'geometry']]
             df+=[tpmulti]
         df=pd.concat(df,ignore_index=True)
+        return df
     else:
         print(str(ps.loc[0,'bkfaceid'])+' error!')
-    return df
+
 
 def pvmtsimplifycompile(pscp):
     pvmtsptp=pscp.groupby('bkfaceid',as_index=False).apply(pvmtsimplify)
@@ -174,7 +175,6 @@ if __name__=='__main__':
 #    pvmtsp.to_file(path+'output/pvmtsptest.shp')
 #    print(datetime.datetime.now()-start)
     # 30 mins
-
 
 
 
