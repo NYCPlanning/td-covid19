@@ -76,64 +76,65 @@ path='/home/mayijun/sidewalk/'
 
 
 
-## Simplify Pavement Edge
-#start=datetime.datetime.now()
-#pvmtedge=gpd.read_file(path+'input/planimetrics/pvmtedge.shp')
-#pvmtedge.crs={'init':'epsg:4326'}
-#pvmtedge['bkfaceid']=pd.to_numeric(pvmtedge['BLOCKFACEI'])
-#pvmtedge=pvmtedge.loc[pd.notna(pvmtedge['bkfaceid'])&(pvmtedge['FEATURE_CO']==2260),['bkfaceid','geometry']].reset_index(drop=True)
-#pvmtedge=pvmtedge.drop_duplicates('bkfaceid',keep='first').reset_index(drop=True)
-#sdwkplaza=gpd.read_file(path+'output/sdwkplaza.shp')
-#sdwkplaza.crs={'init':'epsg:4326'}
-#sdwkplaza['geometry']=[shapely.geometry.LineString(list(x.exterior.coords)) for x in sdwkplaza['geometry']]
-#pvmtspsdwk=gpd.sjoin(pvmtedge,sdwkplaza,how='inner',op='intersects')
-#pvmtspsdwk=pvmtspsdwk[['bkfaceid','spid']].reset_index(drop=True)
-#
-#def pvmtsimplify(ps):
-#    global pvmtedge
-#    global sdwkplaza
-#    global pvmtspsdwk
-#    ps=ps.reset_index(drop=True)
-#    tp=sdwkplaza[np.isin(sdwkplaza['spid'],pvmtspsdwk.loc[pvmtspsdwk['bkfaceid']==ps.loc[0,'bkfaceid'],'spid'])].reset_index(drop=True)
-#    tp['geometry']=[ps.loc[0,'geometry'].intersection(x) for x in tp['geometry']]
-#    tp=tp[[type(x)==shapely.geometry.multilinestring.MultiLineString for x in tp['geometry']]].reset_index(drop=True)
-#    if len(tp)>0:
-#        df=pd.concat([ps]*len(tp),ignore_index=True)
-#        df['spid']=tp['spid']
-#        df['geometry']=[shapely.ops.linemerge(x) for x in tp['geometry']]
-#        dfsingle=df[[type(x)==shapely.geometry.linestring.LineString for x in df['geometry']]].reset_index(drop=True)
-#        dfmulti=df[[type(x)==shapely.geometry.multilinestring.MultiLineString for x in df['geometry']]].reset_index(drop=True)
-#        df=[]
-#        df+=[dfsingle]
-#        for j in dfmulti.index:
-#            tpmulti=pd.concat([dfmulti.loc[[j]]]*len(dfmulti.loc[j,'geometry']),ignore_index=True)
-#            tpmulti['geometry']=[x for x in tpmulti.loc[0,'geometry']]
-#            df+=[tpmulti]
-#        df=pd.concat(df,ignore_index=True)
-#        return df
-#    else:
-#        print(str(ps.loc[0,'bkfaceid'])+' error!')
-#
-#def pvmtsimplifycompile(pscp):
-#    pvmtsptp=pscp.groupby('bkfaceid',as_index=False).apply(pvmtsimplify)
-#    return pvmtsptp
-#
-#def parallelize(data,func):
-#    data_split=np.array_split(data,mp.cpu_count()-1)
-#    pool=mp.Pool(mp.cpu_count()-1)
-#    dt=pool.map(func,data_split)
-#    dt=pd.concat(dt,axis=0,ignore_index=True)
-#    pool.close()
-#    pool.join()
-#    return dt
-#
-#if __name__=='__main__':
-#    pvmtsp=parallelize(pvmtedge,pvmtsimplifycompile)
-#    pvmtsp['pvid']=range(0,len(pvmtsp))
-#    pvmtsp=pvmtsp[['pvid','bkfaceid','spid','geometry']].reset_index(drop=True)
-#    pvmtsp.to_file(path+'output/pvmtsptest.shp')
-#    print(datetime.datetime.now()-start)
-#    # 30 mins
+# Simplify Pavement Edge
+start=datetime.datetime.now()
+pvmtedge=gpd.read_file(path+'input/planimetrics/pvmtedge.shp')
+pvmtedge.crs={'init':'epsg:4326'}
+pvmtedge['bkfaceid']=pd.to_numeric(pvmtedge['BLOCKFACEI'])
+pvmtedge=pvmtedge.loc[pd.notna(pvmtedge['bkfaceid'])&(pvmtedge['FEATURE_CO']==2260),['bkfaceid','geometry']].reset_index(drop=True)
+pvmtedge=pvmtedge.drop_duplicates('bkfaceid',keep='first').reset_index(drop=True)
+pvmtedge=pvmtedge[[type(x)==shapely.geometry.linestring.LineString for x in pvmtedge['geometry']]].reset_index(drop=True)
+pvmtedge['geometry']=[shapely.geometry.LineString(list(zip(x.xy[0],x.xy[1]))) for x in pvmtedge['geometry']]
+sdwkplaza=gpd.read_file(path+'output/sdwkplaza.shp')
+sdwkplaza.crs={'init':'epsg:4326'}
+sdwkplaza['geometry']=[shapely.geometry.LineString(list(x.exterior.coords)) for x in sdwkplaza['geometry']]
+pvmtspsdwk=gpd.sjoin(pvmtedge,sdwkplaza,how='inner',op='intersects')
+pvmtspsdwk=pvmtspsdwk[['bkfaceid','spid']].reset_index(drop=True)
+def pvmtsimplify(ps):
+    global pvmtedge
+    global sdwkplaza
+    global pvmtspsdwk
+    ps=ps.reset_index(drop=True)
+    tp=sdwkplaza[np.isin(sdwkplaza['spid'],pvmtspsdwk.loc[pvmtspsdwk['bkfaceid']==ps.loc[0,'bkfaceid'],'spid'])].reset_index(drop=True)
+    tp['geometry']=[ps.loc[0,'geometry'].intersection(x) for x in tp['geometry']]
+    tp=tp[[type(x)==shapely.geometry.multilinestring.MultiLineString for x in tp['geometry']]].reset_index(drop=True)
+    if len(tp)>0:
+        df=pd.concat([ps]*len(tp),ignore_index=True)
+        df['spid']=tp['spid']
+        df['geometry']=[shapely.ops.linemerge(x) for x in tp['geometry']]
+        dfsingle=df[[type(x)==shapely.geometry.linestring.LineString for x in df['geometry']]].reset_index(drop=True)
+        dfmulti=df[[type(x)==shapely.geometry.multilinestring.MultiLineString for x in df['geometry']]].reset_index(drop=True)
+        df=[]
+        df+=[dfsingle]
+        for j in dfmulti.index:
+            tpmulti=pd.concat([dfmulti.loc[[j]]]*len(dfmulti.loc[j,'geometry']),ignore_index=True)
+            tpmulti['geometry']=[x for x in tpmulti.loc[0,'geometry']]
+            df+=[tpmulti]
+        df=pd.concat(df,ignore_index=True)
+        return df
+    else:
+        print(str(ps.loc[0,'bkfaceid'])+' error!')
+
+def pvmtsimplifycompile(pscp):
+    pvmtsptp=pscp.groupby('bkfaceid',as_index=False).apply(pvmtsimplify)
+    return pvmtsptp
+
+def parallelize(data,func):
+    data_split=np.array_split(data,mp.cpu_count()-4)
+    pool=mp.Pool(mp.cpu_count()-4)
+    dt=pool.map(func,data_split)
+    dt=pd.concat(dt,axis=0,ignore_index=True)
+    pool.close()
+    pool.join()
+    return dt
+
+if __name__=='__main__':
+    pvmtsp=parallelize(pvmtedge,pvmtsimplifycompile)
+    pvmtsp['pvid']=range(0,len(pvmtsp))
+    pvmtsp=pvmtsp[['pvid','bkfaceid','spid','geometry']].reset_index(drop=True)
+    pvmtsp.to_file(path+'output/pvmtsptest.shp')
+    print(datetime.datetime.now()-start)
+    # 30 mins
 
 
 
@@ -217,7 +218,7 @@ def utilitystrip(us):
     global sdwkplaza
     us=us.reset_index(drop=True)
     try:
-        sd=sdwkplaza[sdwkplaza['spid']==us.loc[0,'spid']].reset_index(drop=True)  
+        sd=sdwkplaza[sdwkplaza['spid']==us.loc[0,'spid']].reset_index(drop=True)
         rightgeom=us.loc[0,'geometry'].parallel_offset(2,'right')
         if type(rightgeom)==shapely.geometry.linestring.LineString:
             rightgeom=rightgeom.intersection(sd.loc[0,'geometry']).length
@@ -261,6 +262,7 @@ def utilitystrip(us):
         else:
             print(str(us.loc[0,'pvid'])+' rightgeom=leftgeom error!')
         geom=shapely.geometry.Polygon(geom)
+        geom=shapely.ops.polygonize(geom)
         us.loc[0,'geometry']=geom
         return us
     except:
