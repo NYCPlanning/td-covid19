@@ -14,7 +14,7 @@ path='C:/Users/Yijun Ma/Desktop/D/DOCUMENT/DCP2020/COVID19/STREET CLOSURE/sidewa
 
 
 # Data Source
-# Planimetrics: https://github.com/CityOfNewYork/nyc-planimetrics/blob/master/Capture_Rules.md#transport-structure
+# Planimetrics: https://github.com/CityOfNewYork/nyc-planimetrics/blob/master/Capture_Rules.md
 # CityBench: https://data.cityofnewyork.us/Transportation/City-Bench-Locations/8d5p-rji6
 # WalkNYC: https://data.cityofnewyork.us/Transportation/WalkNYC-Sign-Locations/q49j-2bun
 # Meter: https://data.cityofnewyork.us/Transportation/Parking-Meters-GPS-Coordinates-and-Status/5jsj-cq4s
@@ -108,6 +108,72 @@ path='C:/Users/Yijun Ma/Desktop/D/DOCUMENT/DCP2020/COVID19/STREET CLOSURE/sidewa
 #pvmtsp.to_file(path+'output/pvmtsp.shp')
 #print(datetime.datetime.now()-start)
 ## 30 mins
+
+
+
+## Utility Strip
+#start=datetime.datetime.now()
+#pvmtsp=gpd.read_file(path+'output/pvmtsp.shp')
+#pvmtsp.crs={'init':'epsg:4326'}
+#utistrip=pvmtsp.to_crs({'init':'epsg:6539'})
+#sdwkplaza=gpd.read_file(path+'output/sdwkplaza.shp')
+#sdwkplaza.crs={'init':'epsg:4326'}
+#sdwkplaza=sdwkplaza.to_crs({'init':'epsg:6539'})
+#for i in utistrip.index:
+#    try:
+#        sd=sdwkplaza[sdwkplaza['spid']==utistrip.loc[i,'spid']].reset_index(drop=True)  
+#        rightgeom=utistrip.loc[i,'geometry'].parallel_offset(2,'right')
+#        if type(rightgeom)==shapely.geometry.linestring.LineString:
+#            rightgeom=rightgeom.intersection(sd.loc[0,'geometry']).length
+#        elif type(rightgeom)==shapely.geometry.multilinestring.MultiLineString:
+#            rightgeom=[x.intersection(sd.loc[0,'geometry']) for x in rightgeom]
+#            rightgeom=max([x.length for x in rightgeom])
+#        else:
+#            print(str(utistrip.loc[i,'pvid'])+' rightgeom error!')
+#        leftgeom=utistrip.loc[i,'geometry'].parallel_offset(2,'left')
+#        if type(leftgeom)==shapely.geometry.linestring.LineString:
+#            leftgeom=leftgeom.intersection(sd.loc[0,'geometry']).length
+#        elif type(leftgeom)==shapely.geometry.multilinestring.MultiLineString:
+#            leftgeom=[x.intersection(sd.loc[0,'geometry']) for x in leftgeom]
+#            leftgeom=max([x.length for x in leftgeom])
+#        else:
+#            print(str(utistrip.loc[i,'pvid'])+' leftgeom error!')
+#        if rightgeom>leftgeom:
+#            offgeom=utistrip.loc[i,'geometry'].parallel_offset(2,'right')
+#            if type(offgeom)==shapely.geometry.linestring.LineString:
+#                geom=list(utistrip.loc[i,'geometry'].coords)
+#                geom+=list(offgeom.coords)
+#                geom+=list(utistrip.loc[i,'geometry'].boundary[0].coords)
+#            elif type(offgeom)==shapely.geometry.multilinestring.MultiLineString:
+#                geom=list(utistrip.loc[i,'geometry'].coords)
+#                geom+=list(offgeom[np.argmax([x.length for x in offgeom])].coords)
+#                geom+=list(utistrip.loc[i,'geometry'].boundary[0].coords)
+#            else:
+#                print(str(utistrip.loc[i,'pvid'])+' offgeom type error!') 
+#        elif rightgeom<leftgeom:
+#            offgeom=utistrip.loc[i,'geometry'].parallel_offset(2,'left')
+#            if type(offgeom)==shapely.geometry.linestring.LineString:
+#                geom=list(utistrip.loc[i,'geometry'].coords)
+#                geom+=list(offgeom.coords)[::-1]
+#                geom+=list(utistrip.loc[i,'geometry'].boundary[0].coords)
+#            elif type(offgeom)==shapely.geometry.multilinestring.MultiLineString:
+#                geom=list(utistrip.loc[i,'geometry'].coords)
+#                geom+=list(offgeom[np.argmax([x.length for x in offgeom])].coords)[::-1]
+#                geom+=list(utistrip.loc[i,'geometry'].boundary[0].coords)            
+#            else:
+#                print(str(utistrip.loc[i,'pvid'])+' offgeom type error!') 
+#        else:
+#            print(str(utistrip.loc[i,'pvid'])+' rightgeom=leftgeom error!')
+#        geom=shapely.geometry.Polygon(geom)
+#        utistrip.loc[i,'geometry']=geom
+#    except:
+#        print(str(utistrip.loc[i,'pvid'])+' error!')
+#utistrip=utistrip[[type(x)==shapely.geometry.polygon.Polygon for x in utistrip['geometry']]].reset_index(drop=True)
+#utistrip=utistrip.to_crs({'init':'epsg:4326'})
+#utistrip['usid']=range(0,len(utistrip))
+#utistrip.to_file(path+'output/utistrip.shp')
+#print(datetime.datetime.now()-start)
+## 120 mins
 
 ## CityBench
 #start=datetime.datetime.now()
@@ -650,69 +716,95 @@ path='C:/Users/Yijun Ma/Desktop/D/DOCUMENT/DCP2020/COVID19/STREET CLOSURE/sidewa
 
 
 
-## Utility Strip
-#start=datetime.datetime.now()
-#pvmtsp=gpd.read_file(path+'output/pvmtsp.shp')
-#pvmtsp.crs={'init':'epsg:4326'}
-#utistrip=pvmtsp.to_crs({'init':'epsg:6539'})
-#sdwkplaza=gpd.read_file(path+'output/sdwkplaza.shp')
-#sdwkplaza.crs={'init':'epsg:4326'}
-#sdwkplaza=sdwkplaza.to_crs({'init':'epsg:6539'})
-#for i in utistrip.index:
-#    try:
-#        sd=sdwkplaza[sdwkplaza['spid']==utistrip.loc[i,'spid']].reset_index(drop=True)  
-#        rightgeom=utistrip.loc[i,'geometry'].parallel_offset(2,'right')
-#        if type(rightgeom)==shapely.geometry.linestring.LineString:
-#            rightgeom=rightgeom.intersection(sd.loc[0,'geometry']).length
-#        elif type(rightgeom)==shapely.geometry.multilinestring.MultiLineString:
-#            rightgeom=[x.intersection(sd.loc[0,'geometry']) for x in rightgeom]
-#            rightgeom=max([x.length for x in rightgeom])
-#        else:
-#            print(str(utistrip.loc[i,'pvid'])+' rightgeom error!')
-#        leftgeom=utistrip.loc[i,'geometry'].parallel_offset(2,'left')
-#        if type(leftgeom)==shapely.geometry.linestring.LineString:
-#            leftgeom=leftgeom.intersection(sd.loc[0,'geometry']).length
-#        elif type(leftgeom)==shapely.geometry.multilinestring.MultiLineString:
-#            leftgeom=[x.intersection(sd.loc[0,'geometry']) for x in leftgeom]
-#            leftgeom=max([x.length for x in leftgeom])
-#        else:
-#            print(str(utistrip.loc[i,'pvid'])+' leftgeom error!')
-#        if rightgeom>leftgeom:
-#            offgeom=utistrip.loc[i,'geometry'].parallel_offset(2,'right')
-#            if type(offgeom)==shapely.geometry.linestring.LineString:
-#                geom=list(utistrip.loc[i,'geometry'].coords)
-#                geom+=list(offgeom.coords)
-#                geom+=list(utistrip.loc[i,'geometry'].boundary[0].coords)
-#            elif type(offgeom)==shapely.geometry.multilinestring.MultiLineString:
-#                geom=list(utistrip.loc[i,'geometry'].coords)
-#                geom+=list(offgeom[np.argmax([x.length for x in offgeom])].coords)
-#                geom+=list(utistrip.loc[i,'geometry'].boundary[0].coords)
-#            else:
-#                print(str(utistrip.loc[i,'pvid'])+' offgeom type error!') 
-#        elif rightgeom<leftgeom:
-#            offgeom=utistrip.loc[i,'geometry'].parallel_offset(2,'left')
-#            if type(offgeom)==shapely.geometry.linestring.LineString:
-#                geom=list(utistrip.loc[i,'geometry'].coords)
-#                geom+=list(offgeom.coords)[::-1]
-#                geom+=list(utistrip.loc[i,'geometry'].boundary[0].coords)
-#            elif type(offgeom)==shapely.geometry.multilinestring.MultiLineString:
-#                geom=list(utistrip.loc[i,'geometry'].coords)
-#                geom+=list(offgeom[np.argmax([x.length for x in offgeom])].coords)[::-1]
-#                geom+=list(utistrip.loc[i,'geometry'].boundary[0].coords)            
-#            else:
-#                print(str(utistrip.loc[i,'pvid'])+' offgeom type error!') 
-#        else:
-#            print(str(utistrip.loc[i,'pvid'])+' rightgeom=leftgeom error!')
-#        geom=shapely.geometry.Polygon(geom)
-#        utistrip.loc[i,'geometry']=geom
-#    except:
-#        print(str(utistrip.loc[i,'pvid'])+' error!')
-#utistrip=utistrip[[type(x)==shapely.geometry.polygon.Polygon for x in utistrip['geometry']]].reset_index(drop=True)
-#utistrip=utistrip.to_crs({'init':'epsg:4326'})
-#utistrip.to_file(path+'output/utistrip.shp')
-#print(datetime.datetime.now()-start)
-## 120 mins
+# Grass Strip
 
+
+
+## Cobmine all Impediments
+#utistrip=gpd.read_file(path+'output/utistrip.shp')
+#utistrip.crs={'init':'epsg:4326'}
+#utistrip['impid']=['us'+str(x) for x in utistrip['usid']]
+#utistrip['imptype']='Utility Strip'
+#utistrip=utistrip[['impid','imptype','geometry']].reset_index(drop=True)
+#citybenchadj=gpd.read_file(path+'output/citybenchadj.shp')
+#citybenchadj.crs={'init':'epsg:4326'}
+#citybenchadj['impid']=['cb'+str(x) for x in citybenchadj['cbid']]
+#citybenchadj['imptype']='City Bench'
+#citybenchadj=citybenchadj[['impid','imptype','geometry']].reset_index(drop=True)
+#walknycadj=gpd.read_file(path+'output/walknycadj.shp')
+#walknycadj.crs={'init':'epsg:4326'}
+#walknycadj['impid']=['wn'+str(x) for x in walknycadj['wnid']]
+#walknycadj['imptype']='WalkNYC'
+#walknycadj=walknycadj[['impid','imptype','geometry']].reset_index(drop=True)
+#meteradj=gpd.read_file(path+'output/meteradj.shp')
+#meteradj.crs={'init':'epsg:4326'}
+#meteradj['impid']=['mt'+str(x) for x in meteradj['mtid']]
+#meteradj['imptype']='Meter'
+#meteradj=meteradj[['impid','imptype','geometry']].reset_index(drop=True)
+#busshelteradj=gpd.read_file(path+'output/busshelteradj.shp')
+#busshelteradj.crs={'init':'epsg:4326'}
+#busshelteradj['impid']=['bs'+str(x) for x in busshelteradj['bsid']]
+#busshelteradj['imptype']='Bus Shelter'
+#busshelteradj=busshelteradj[['impid','imptype','geometry']].reset_index(drop=True)
+#linknycadj=gpd.read_file(path+'output/linknycadj.shp')
+#linknycadj['impid']=['ln'+str(x) for x in linknycadj['lnid']]
+#linknycadj['imptype']='LinkNYC'
+#linknycadj=linknycadj[['impid','imptype','geometry']].reset_index(drop=True)
+#payphoneadj=gpd.read_file(path+'output/payphoneadj.shp')
+#payphoneadj.crs={'init':'epsg:4326'}
+#payphoneadj['impid']=['pp'+str(x) for x in payphoneadj['ppid']]
+#payphoneadj['imptype']='Pay Phone'
+#payphoneadj=payphoneadj[['impid','imptype','geometry']].reset_index(drop=True)
+#newsstandadj=gpd.read_file(path+'output/newsstandadj.shp')
+#newsstandadj.crs={'init':'epsg:4326'}
+#newsstandadj['impid']=['ns'+str(x) for x in newsstandadj['nsid']]
+#newsstandadj['imptype']='News Stand'
+#newsstandadj=newsstandadj[['impid','imptype','geometry']].reset_index(drop=True)
+#hydrantadj=gpd.read_file(path+'output/hydrantadj.shp')
+#hydrantadj.crs={'init':'epsg:4326'}
+#hydrantadj['impid']=['hd'+str(x) for x in hydrantadj['hdid']]
+#hydrantadj['imptype']='Hydrant'
+#hydrantadj=hydrantadj[['impid','imptype','geometry']].reset_index(drop=True)
+#litterbinadj=gpd.read_file(path+'output/litterbinadj.shp')
+#litterbinadj.crs={'init':'epsg:4326'}
+#litterbinadj['impid']=['lb'+str(x) for x in litterbinadj['lbid']]
+#litterbinadj['imptype']='Litter Bin'
+#litterbinadj=litterbinadj[['impid','imptype','geometry']].reset_index(drop=True)
+#recyclebinadj=gpd.read_file(path+'output/recyclebinadj.shp')
+#recyclebinadj.crs={'init':'epsg:4326'}
+#recyclebinadj['impid']=['rb'+str(x) for x in recyclebinadj['rbid']]
+#recyclebinadj['imptype']='Recycle Bin'
+#recyclebinadj=recyclebinadj[['impid','imptype','geometry']].reset_index(drop=True)
+#curbtreeadj=gpd.read_file(path+'output/curbtreeadj.shp')
+#curbtreeadj.crs={'init':'epsg:4326'}
+#curbtreeadj['impid']=['ct'+str(x) for x in curbtreeadj['ctid']]
+#curbtreeadj['imptype']='Curb Tree'
+#curbtreeadj=curbtreeadj[['impid','imptype','geometry']].reset_index(drop=True)
+#railroadstruct=gpd.read_file(path+'input/planimetrics/railroadstruct.shp')
+#railroadstruct.crs={'init':'epsg:4326'}
+#railroadstruct=railroadstruct[railroadstruct['FEATURE_CO']==2485].reset_index(drop=True)
+#railroadstruct['impid']=['rs'+str(x) for x in range(0,len(railroadstruct))]
+#railroadstruct['imptype']='Railroad Structure'
+#railroadstruct=railroadstruct[['impid','imptype','geometry']].reset_index(drop=True)
+#impediment=pd.concat([utistrip,citybenchadj,walknycadj,meteradj,busshelteradj,linknycadj,payphoneadj,newsstandadj,hydrantadj,
+#                      litterbinadj,recyclebinadj,curbtreeadj,railroadstruct],axis=0,ignore_index=True)
+#impediment.to_file(path+'output/impediment.shp')
+
+
+
+# Sidewalk and Plaza Excluding Impediments
+sdwkplaza=gpd.read_file(path+'output/sdwkplaza.shp')
+sdwkplaza.crs={'init':'epsg:4326'}
+impediment=gpd.read_file(path+'output/impediment.shp')
+impediment.crs={'init':'epsg:4326'}
+
+k=impediment[0:1000]
+k['id']=0
+k=k.dissolve(by='id')
+k.to_file(path+'k.shp')
+
+sdwkplazaimp=gpd.overlay(sdwkplaza,impediment[0:1000],how='difference')
+sdwkplazaimp.to_file(path+'output/sdwkplazaimp.shp')
 
 
 
