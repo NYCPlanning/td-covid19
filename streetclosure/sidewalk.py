@@ -167,7 +167,7 @@ def pvmtsimplifycompile(pscp):
     return pvmtsptp
 
 if __name__=='__main__':
-    pvmtsp=parallelize(pvmtedge,pvmtsimplifycompile)
+    pvmtsp=parallelize(pvmtedge[0:1000],pvmtsimplifycompile)
     pvmtsp.head()
 #    pvmtsp['pvid']=range(0,len(pvmtsp))
 #    pvmtsp=pvmtsp[['pvid','bkfaceid','spid','geometry']].reset_index(drop=True)
