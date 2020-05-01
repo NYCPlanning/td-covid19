@@ -219,9 +219,9 @@ if __name__=='__main__':
     utistrip=utistrip[[type(x)==shapely.geometry.polygon.Polygon for x in utistrip['geometry']]].reset_index(drop=True)
     utistrip=utistrip.to_crs({'init':'epsg:4326'})
     utistrip['usid']=range(0,len(utistrip))
-    utistrip.to_file(path+'output/utistriptest.shp')
+    utistrip.to_file(path+'output/utistrip.shp')
     print(datetime.datetime.now()-start)
-    # 120 mins
+    # 25 mins
 
 
 
@@ -579,153 +579,153 @@ print(datetime.datetime.now()-start)
 
 
 
-## Hydrant
-#start=datetime.datetime.now()
-#hydrant=gpd.read_file(path+'input/impediments/hydrant.shp')
-#hydrant.crs={'init':'epsg:4326'}
-#hydrant=hydrant.to_crs({'init':'epsg:6539'})
-#hydrant['hdid']=range(0,len(hydrant))
-#hydrantbuffer=hydrant.copy()
-#hydrantbuffer['geometry']=hydrantbuffer.buffer(50)
-#pvmtsp=gpd.read_file(path+'output/pvmtsp.shp')
-#pvmtsp.crs={'init':'epsg:4326'}
-#pvmtsp=pvmtsp.to_crs({'init':'epsg:6539'})
-#hydrantbuffer=gpd.sjoin(hydrantbuffer,pvmtsp,how='inner',op='intersects')
-#hydrantadj=[]
-#for i in hydrant['hdid']:
-#    hydranttp=pd.concat([hydrant.loc[hydrant['hdid']==i]]*2,ignore_index=True)
-#    hydrantpv=pvmtsp[np.isin(pvmtsp['pvid'],hydrantbuffer.loc[hydrantbuffer['hdid']==i,'pvid'])].reset_index(drop=True)
-#    if len(hydrantpv)>0:
-#        try:
-#            hydrantpv=hydrantpv.loc[[np.argmin([hydranttp.loc[0,'geometry'].distance(x) for x in hydrantpv['geometry']])]].reset_index(drop=True)
-#            hydranttp['pvid']=hydrantpv.loc[0,'pvid']
-#            hydranttp['snapdist']=hydranttp.loc[0,'geometry'].distance(hydrantpv.loc[0,'geometry'])
-#            adjgeom=shapely.ops.nearest_points(hydranttp.loc[0,'geometry'],hydrantpv.loc[0,'geometry'])[1]
-#            intplt=hydrantpv.loc[0,'geometry'].project(adjgeom)
-#            splitter=shapely.geometry.MultiPoint([hydrantpv.loc[0,'geometry'].interpolate(x) for x in [intplt-0.75,intplt+0.75]])
-#            splitseg=shapely.ops.split(hydrantpv.loc[0,'geometry'],splitter.buffer(0.01))[2]
-#            hydranttp.loc[0,'adjgeom']=shapely.geometry.MultiLineString([splitseg.parallel_offset(1),splitseg.parallel_offset(2.5)]).convex_hull.wkt
-#            hydranttp.loc[1,'adjgeom']=shapely.geometry.MultiLineString([splitseg.parallel_offset(-1),splitseg.parallel_offset(-2.5)]).convex_hull.wkt
-#            hydrantadj+=[hydranttp]
-#        except:
-#            print(str(i)+' error!')
-#    else:
-#        print(str(i)+' no pvid joined!')
-#hydrantadj=pd.concat(hydrantadj,ignore_index=True)
-#hydrantadj=hydrantadj[hydrantadj['adjgeom']!='GEOMETRYCOLLECTION EMPTY'].reset_index(drop=True)
-#hydrantadj=hydrantadj.drop('geometry',axis=1)
-#hydrantadj=gpd.GeoDataFrame(hydrantadj,geometry=hydrantadj['adjgeom'].map(wkt.loads),crs={'init':'epsg:6539'})
-#hydrantadj['area']=[x.area for x in hydrantadj['geometry']]
-#hydrantadj=hydrantadj[(hydrantadj['area']>=2)&(hydrantadj['area']<=2.5)].reset_index(drop=True)
-#sdwkplaza=gpd.read_file(path+'output/sdwkplaza.shp')
-#sdwkplaza.crs={'init':'epsg:4326'}
-#sdwkplaza=sdwkplaza.to_crs({'init':'epsg:6539'})
-#hydrantadj=gpd.sjoin(hydrantadj,sdwkplaza,how='inner',op='within')
-#hydrantadj=hydrantadj.drop(['index_right'],axis=1)
-#hydrantadj=hydrantadj.to_crs({'init':'epsg:4326'})
-#hydrantadj.to_file(path+'output/hydrantadj.shp')
-#print(datetime.datetime.now()-start)
-## 30 mins
+# Hydrant
+start=datetime.datetime.now()
+hydrant=gpd.read_file(path+'input/impediments/hydrant.shp')
+hydrant.crs={'init':'epsg:4326'}
+hydrant=hydrant.to_crs({'init':'epsg:6539'})
+hydrant['hdid']=range(0,len(hydrant))
+hydrantbuffer=hydrant.copy()
+hydrantbuffer['geometry']=hydrantbuffer.buffer(50)
+pvmtsp=gpd.read_file(path+'output/pvmtsp.shp')
+pvmtsp.crs={'init':'epsg:4326'}
+pvmtsp=pvmtsp.to_crs({'init':'epsg:6539'})
+hydrantbuffer=gpd.sjoin(hydrantbuffer,pvmtsp,how='inner',op='intersects')
+hydrantadj=[]
+for i in hydrant['hdid']:
+    hydranttp=pd.concat([hydrant.loc[hydrant['hdid']==i]]*2,ignore_index=True)
+    hydrantpv=pvmtsp[np.isin(pvmtsp['pvid'],hydrantbuffer.loc[hydrantbuffer['hdid']==i,'pvid'])].reset_index(drop=True)
+    if len(hydrantpv)>0:
+        try:
+            hydrantpv=hydrantpv.loc[[np.argmin([hydranttp.loc[0,'geometry'].distance(x) for x in hydrantpv['geometry']])]].reset_index(drop=True)
+            hydranttp['pvid']=hydrantpv.loc[0,'pvid']
+            hydranttp['snapdist']=hydranttp.loc[0,'geometry'].distance(hydrantpv.loc[0,'geometry'])
+            adjgeom=shapely.ops.nearest_points(hydranttp.loc[0,'geometry'],hydrantpv.loc[0,'geometry'])[1]
+            intplt=hydrantpv.loc[0,'geometry'].project(adjgeom)
+            splitter=shapely.geometry.MultiPoint([hydrantpv.loc[0,'geometry'].interpolate(x) for x in [intplt-0.75,intplt+0.75]])
+            splitseg=shapely.ops.split(hydrantpv.loc[0,'geometry'],splitter.buffer(0.01))[2]
+            hydranttp.loc[0,'adjgeom']=shapely.geometry.MultiLineString([splitseg.parallel_offset(1),splitseg.parallel_offset(2.5)]).convex_hull.wkt
+            hydranttp.loc[1,'adjgeom']=shapely.geometry.MultiLineString([splitseg.parallel_offset(-1),splitseg.parallel_offset(-2.5)]).convex_hull.wkt
+            hydrantadj+=[hydranttp]
+        except:
+            print(str(i)+' error!')
+    else:
+        print(str(i)+' no pvid joined!')
+hydrantadj=pd.concat(hydrantadj,ignore_index=True)
+hydrantadj=hydrantadj[hydrantadj['adjgeom']!='GEOMETRYCOLLECTION EMPTY'].reset_index(drop=True)
+hydrantadj=hydrantadj.drop('geometry',axis=1)
+hydrantadj=gpd.GeoDataFrame(hydrantadj,geometry=hydrantadj['adjgeom'].map(wkt.loads),crs={'init':'epsg:6539'})
+hydrantadj['area']=[x.area for x in hydrantadj['geometry']]
+hydrantadj=hydrantadj[(hydrantadj['area']>=2)&(hydrantadj['area']<=2.5)].reset_index(drop=True)
+sdwkplaza=gpd.read_file(path+'output/sdwkplaza.shp')
+sdwkplaza.crs={'init':'epsg:4326'}
+sdwkplaza=sdwkplaza.to_crs({'init':'epsg:6539'})
+hydrantadj=gpd.sjoin(hydrantadj,sdwkplaza,how='inner',op='within')
+hydrantadj=hydrantadj.drop(['index_right'],axis=1)
+hydrantadj=hydrantadj.to_crs({'init':'epsg:4326'})
+hydrantadj.to_file(path+'output/hydrantadj.shp')
+print(datetime.datetime.now()-start)
+# 30 mins
 
 
 
-## Litter Bin
-#start=datetime.datetime.now()
-#litterbin=gpd.read_file(path+'input/impediments/litterbin.shp')
-#litterbin.crs={'init':'epsg:4326'}
-#litterbin=litterbin.to_crs({'init':'epsg:6539'})
-#litterbin['lbid']=range(0,len(litterbin))
-#litterbinbuffer=litterbin.copy()
-#litterbinbuffer['geometry']=litterbinbuffer.buffer(100)
-#pvmtsp=gpd.read_file(path+'output/pvmtsp.shp')
-#pvmtsp.crs={'init':'epsg:4326'}
-#pvmtsp=pvmtsp.to_crs({'init':'epsg:6539'})
-#litterbinbuffer=gpd.sjoin(litterbinbuffer,pvmtsp,how='inner',op='intersects')
-#litterbinadj=[]
-#for i in litterbin['lbid']:
-#    litterbintp=pd.concat([litterbin.loc[litterbin['lbid']==i]]*2,ignore_index=True)
-#    litterbinpv=pvmtsp[np.isin(pvmtsp['pvid'],litterbinbuffer.loc[litterbinbuffer['lbid']==i,'pvid'])].reset_index(drop=True)
-#    if len(litterbinpv)>0:
-#        try:
-#            litterbinpv=litterbinpv.loc[[np.argmin([litterbintp.loc[0,'geometry'].distance(x) for x in litterbinpv['geometry']])]].reset_index(drop=True)
-#            litterbintp['pvid']=litterbinpv.loc[0,'pvid']
-#            litterbintp['snapdist']=litterbintp.loc[0,'geometry'].distance(litterbinpv.loc[0,'geometry'])
-#            adjgeom=shapely.ops.nearest_points(litterbintp.loc[0,'geometry'],litterbinpv.loc[0,'geometry'])[1]
-#            intplt=litterbinpv.loc[0,'geometry'].project(adjgeom)
-#            splitter=shapely.geometry.MultiPoint([litterbinpv.loc[0,'geometry'].interpolate(x) for x in [intplt-1,intplt+1]])
-#            splitseg=shapely.ops.split(litterbinpv.loc[0,'geometry'],splitter.buffer(0.01))[2]
-#            litterbintp.loc[0,'adjgeom']=shapely.geometry.MultiLineString([splitseg.parallel_offset(1),splitseg.parallel_offset(3)]).convex_hull.wkt
-#            litterbintp.loc[1,'adjgeom']=shapely.geometry.MultiLineString([splitseg.parallel_offset(-1),splitseg.parallel_offset(-3)]).convex_hull.wkt
-#            litterbinadj+=[litterbintp]
-#        except:
-#            print(str(i)+' error!')
-#    else:
-#        print(str(i)+' no pvid joined!')
-#litterbinadj=pd.concat(litterbinadj,ignore_index=True)
-#litterbinadj=litterbinadj[litterbinadj['adjgeom']!='GEOMETRYCOLLECTION EMPTY'].reset_index(drop=True)
-#litterbinadj=litterbinadj.drop('geometry',axis=1)
-#litterbinadj=gpd.GeoDataFrame(litterbinadj,geometry=litterbinadj['adjgeom'].map(wkt.loads),crs={'init':'epsg:6539'})
-#litterbinadj['area']=[x.area for x in litterbinadj['geometry']]
-#litterbinadj=litterbinadj[(litterbinadj['area']>=3)&(litterbinadj['area']<=5)].reset_index(drop=True)
-#sdwkplaza=gpd.read_file(path+'output/sdwkplaza.shp')
-#sdwkplaza.crs={'init':'epsg:4326'}
-#sdwkplaza=sdwkplaza.to_crs({'init':'epsg:6539'})
-#litterbinadj=gpd.sjoin(litterbinadj,sdwkplaza,how='inner',op='within')
-#litterbinadj=litterbinadj.drop(['index_right'],axis=1)
-#litterbinadj=litterbinadj.to_crs({'init':'epsg:4326'})
-#litterbinadj.to_file(path+'output/litterbinadj.shp')
-#print(datetime.datetime.now()-start)
-## 10 mins
+# Litter Bin
+start=datetime.datetime.now()
+litterbin=gpd.read_file(path+'input/impediments/litterbin.shp')
+litterbin.crs={'init':'epsg:4326'}
+litterbin=litterbin.to_crs({'init':'epsg:6539'})
+litterbin['lbid']=range(0,len(litterbin))
+litterbinbuffer=litterbin.copy()
+litterbinbuffer['geometry']=litterbinbuffer.buffer(100)
+pvmtsp=gpd.read_file(path+'output/pvmtsp.shp')
+pvmtsp.crs={'init':'epsg:4326'}
+pvmtsp=pvmtsp.to_crs({'init':'epsg:6539'})
+litterbinbuffer=gpd.sjoin(litterbinbuffer,pvmtsp,how='inner',op='intersects')
+litterbinadj=[]
+for i in litterbin['lbid']:
+    litterbintp=pd.concat([litterbin.loc[litterbin['lbid']==i]]*2,ignore_index=True)
+    litterbinpv=pvmtsp[np.isin(pvmtsp['pvid'],litterbinbuffer.loc[litterbinbuffer['lbid']==i,'pvid'])].reset_index(drop=True)
+    if len(litterbinpv)>0:
+        try:
+            litterbinpv=litterbinpv.loc[[np.argmin([litterbintp.loc[0,'geometry'].distance(x) for x in litterbinpv['geometry']])]].reset_index(drop=True)
+            litterbintp['pvid']=litterbinpv.loc[0,'pvid']
+            litterbintp['snapdist']=litterbintp.loc[0,'geometry'].distance(litterbinpv.loc[0,'geometry'])
+            adjgeom=shapely.ops.nearest_points(litterbintp.loc[0,'geometry'],litterbinpv.loc[0,'geometry'])[1]
+            intplt=litterbinpv.loc[0,'geometry'].project(adjgeom)
+            splitter=shapely.geometry.MultiPoint([litterbinpv.loc[0,'geometry'].interpolate(x) for x in [intplt-1,intplt+1]])
+            splitseg=shapely.ops.split(litterbinpv.loc[0,'geometry'],splitter.buffer(0.01))[2]
+            litterbintp.loc[0,'adjgeom']=shapely.geometry.MultiLineString([splitseg.parallel_offset(1),splitseg.parallel_offset(3)]).convex_hull.wkt
+            litterbintp.loc[1,'adjgeom']=shapely.geometry.MultiLineString([splitseg.parallel_offset(-1),splitseg.parallel_offset(-3)]).convex_hull.wkt
+            litterbinadj+=[litterbintp]
+        except:
+            print(str(i)+' error!')
+    else:
+        print(str(i)+' no pvid joined!')
+litterbinadj=pd.concat(litterbinadj,ignore_index=True)
+litterbinadj=litterbinadj[litterbinadj['adjgeom']!='GEOMETRYCOLLECTION EMPTY'].reset_index(drop=True)
+litterbinadj=litterbinadj.drop('geometry',axis=1)
+litterbinadj=gpd.GeoDataFrame(litterbinadj,geometry=litterbinadj['adjgeom'].map(wkt.loads),crs={'init':'epsg:6539'})
+litterbinadj['area']=[x.area for x in litterbinadj['geometry']]
+litterbinadj=litterbinadj[(litterbinadj['area']>=3)&(litterbinadj['area']<=5)].reset_index(drop=True)
+sdwkplaza=gpd.read_file(path+'output/sdwkplaza.shp')
+sdwkplaza.crs={'init':'epsg:4326'}
+sdwkplaza=sdwkplaza.to_crs({'init':'epsg:6539'})
+litterbinadj=gpd.sjoin(litterbinadj,sdwkplaza,how='inner',op='within')
+litterbinadj=litterbinadj.drop(['index_right'],axis=1)
+litterbinadj=litterbinadj.to_crs({'init':'epsg:4326'})
+litterbinadj.to_file(path+'output/litterbinadj.shp')
+print(datetime.datetime.now()-start)
+# 10 mins
 
 
 
-## Recycle Bin
-#start=datetime.datetime.now()
-#recyclebin=gpd.read_file(path+'input/impediments/recyclebin.shp')
-#recyclebin.crs={'init':'epsg:4326'}
-#recyclebin=recyclebin.to_crs({'init':'epsg:6539'})
-#recyclebin['rbid']=range(0,len(recyclebin))
-#recyclebinbuffer=recyclebin.copy()
-#recyclebinbuffer['geometry']=recyclebinbuffer.buffer(100)
-#pvmtsp=gpd.read_file(path+'output/pvmtsp.shp')
-#pvmtsp.crs={'init':'epsg:4326'}
-#pvmtsp=pvmtsp.to_crs({'init':'epsg:6539'})
-#recyclebinbuffer=gpd.sjoin(recyclebinbuffer,pvmtsp,how='inner',op='intersects')
-#recyclebinadj=[]
-#for i in recyclebin['rbid']:
-#    recyclebintp=pd.concat([recyclebin.loc[recyclebin['rbid']==i]]*2,ignore_index=True)
-#    recyclebinpv=pvmtsp[np.isin(pvmtsp['pvid'],recyclebinbuffer.loc[recyclebinbuffer['rbid']==i,'pvid'])].reset_index(drop=True)
-#    if len(recyclebinpv)>0:
-#        try:
-#            recyclebinpv=recyclebinpv.loc[[np.argmin([recyclebintp.loc[0,'geometry'].distance(x) for x in recyclebinpv['geometry']])]].reset_index(drop=True)
-#            recyclebintp['pvid']=recyclebinpv.loc[0,'pvid']
-#            recyclebintp['snapdist']=recyclebintp.loc[0,'geometry'].distance(recyclebinpv.loc[0,'geometry'])
-#            adjgeom=shapely.ops.nearest_points(recyclebintp.loc[0,'geometry'],recyclebinpv.loc[0,'geometry'])[1]
-#            intplt=recyclebinpv.loc[0,'geometry'].project(adjgeom)
-#            splitter=shapely.geometry.MultiPoint([recyclebinpv.loc[0,'geometry'].interpolate(x) for x in [intplt-1,intplt+1]])
-#            splitseg=shapely.ops.split(recyclebinpv.loc[0,'geometry'],splitter.buffer(0.01))[2]
-#            recyclebintp.loc[0,'adjgeom']=shapely.geometry.MultiLineString([splitseg.parallel_offset(1),splitseg.parallel_offset(3)]).convex_hull.wkt
-#            recyclebintp.loc[1,'adjgeom']=shapely.geometry.MultiLineString([splitseg.parallel_offset(-1),splitseg.parallel_offset(-3)]).convex_hull.wkt
-#            recyclebinadj+=[recyclebintp]
-#        except:
-#            print(str(i)+' error!')
-#    else:
-#        print(str(i)+' no pvid joined!')
-#recyclebinadj=pd.concat(recyclebinadj,ignore_index=True)
-#recyclebinadj=recyclebinadj[recyclebinadj['adjgeom']!='GEOMETRYCOLLECTION EMPTY'].reset_index(drop=True)
-#recyclebinadj=recyclebinadj.drop('geometry',axis=1)
-#recyclebinadj=gpd.GeoDataFrame(recyclebinadj,geometry=recyclebinadj['adjgeom'].map(wkt.loads),crs={'init':'epsg:6539'})
-#recyclebinadj['area']=[x.area for x in recyclebinadj['geometry']]
-#recyclebinadj=recyclebinadj[(recyclebinadj['area']>=3)&(recyclebinadj['area']<=5)].reset_index(drop=True)
-#sdwkplaza=gpd.read_file(path+'output/sdwkplaza.shp')
-#sdwkplaza.crs={'init':'epsg:4326'}
-#sdwkplaza=sdwkplaza.to_crs({'init':'epsg:6539'})
-#recyclebinadj=gpd.sjoin(recyclebinadj,sdwkplaza,how='inner',op='within')
-#recyclebinadj=recyclebinadj.drop(['index_right'],axis=1)
-#recyclebinadj=recyclebinadj.to_crs({'init':'epsg:4326'})
-#recyclebinadj.to_file(path+'output/recyclebinadj.shp')
-#print(datetime.datetime.now()-start)
-## 2 mins
+# Recycle Bin
+start=datetime.datetime.now()
+recyclebin=gpd.read_file(path+'input/impediments/recyclebin.shp')
+recyclebin.crs={'init':'epsg:4326'}
+recyclebin=recyclebin.to_crs({'init':'epsg:6539'})
+recyclebin['rbid']=range(0,len(recyclebin))
+recyclebinbuffer=recyclebin.copy()
+recyclebinbuffer['geometry']=recyclebinbuffer.buffer(100)
+pvmtsp=gpd.read_file(path+'output/pvmtsp.shp')
+pvmtsp.crs={'init':'epsg:4326'}
+pvmtsp=pvmtsp.to_crs({'init':'epsg:6539'})
+recyclebinbuffer=gpd.sjoin(recyclebinbuffer,pvmtsp,how='inner',op='intersects')
+recyclebinadj=[]
+for i in recyclebin['rbid']:
+    recyclebintp=pd.concat([recyclebin.loc[recyclebin['rbid']==i]]*2,ignore_index=True)
+    recyclebinpv=pvmtsp[np.isin(pvmtsp['pvid'],recyclebinbuffer.loc[recyclebinbuffer['rbid']==i,'pvid'])].reset_index(drop=True)
+    if len(recyclebinpv)>0:
+        try:
+            recyclebinpv=recyclebinpv.loc[[np.argmin([recyclebintp.loc[0,'geometry'].distance(x) for x in recyclebinpv['geometry']])]].reset_index(drop=True)
+            recyclebintp['pvid']=recyclebinpv.loc[0,'pvid']
+            recyclebintp['snapdist']=recyclebintp.loc[0,'geometry'].distance(recyclebinpv.loc[0,'geometry'])
+            adjgeom=shapely.ops.nearest_points(recyclebintp.loc[0,'geometry'],recyclebinpv.loc[0,'geometry'])[1]
+            intplt=recyclebinpv.loc[0,'geometry'].project(adjgeom)
+            splitter=shapely.geometry.MultiPoint([recyclebinpv.loc[0,'geometry'].interpolate(x) for x in [intplt-1,intplt+1]])
+            splitseg=shapely.ops.split(recyclebinpv.loc[0,'geometry'],splitter.buffer(0.01))[2]
+            recyclebintp.loc[0,'adjgeom']=shapely.geometry.MultiLineString([splitseg.parallel_offset(1),splitseg.parallel_offset(3)]).convex_hull.wkt
+            recyclebintp.loc[1,'adjgeom']=shapely.geometry.MultiLineString([splitseg.parallel_offset(-1),splitseg.parallel_offset(-3)]).convex_hull.wkt
+            recyclebinadj+=[recyclebintp]
+        except:
+            print(str(i)+' error!')
+    else:
+        print(str(i)+' no pvid joined!')
+recyclebinadj=pd.concat(recyclebinadj,ignore_index=True)
+recyclebinadj=recyclebinadj[recyclebinadj['adjgeom']!='GEOMETRYCOLLECTION EMPTY'].reset_index(drop=True)
+recyclebinadj=recyclebinadj.drop('geometry',axis=1)
+recyclebinadj=gpd.GeoDataFrame(recyclebinadj,geometry=recyclebinadj['adjgeom'].map(wkt.loads),crs={'init':'epsg:6539'})
+recyclebinadj['area']=[x.area for x in recyclebinadj['geometry']]
+recyclebinadj=recyclebinadj[(recyclebinadj['area']>=3)&(recyclebinadj['area']<=5)].reset_index(drop=True)
+sdwkplaza=gpd.read_file(path+'output/sdwkplaza.shp')
+sdwkplaza.crs={'init':'epsg:4326'}
+sdwkplaza=sdwkplaza.to_crs({'init':'epsg:6539'})
+recyclebinadj=gpd.sjoin(recyclebinadj,sdwkplaza,how='inner',op='within')
+recyclebinadj=recyclebinadj.drop(['index_right'],axis=1)
+recyclebinadj=recyclebinadj.to_crs({'init':'epsg:4326'})
+recyclebinadj.to_file(path+'output/recyclebinadj.shp')
+print(datetime.datetime.now()-start)
+# 2 mins
 
 
 
@@ -1065,7 +1065,7 @@ print(datetime.datetime.now()-start)
 #sw=sw.to_crs({'init':'epsg:4326'})
 #sw.to_file(path+'output/sw.shp')
 #print(datetime.datetime.now()-start)
-##480 mins
+##2400 mins
 
 
 
