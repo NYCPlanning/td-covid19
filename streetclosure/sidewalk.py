@@ -34,107 +34,107 @@ path='/home/mayijun/sidewalk/'
 
 
 
-## Combine Sidewalk and Plaza
-#start=datetime.datetime.now()
-#sidewalk=gpd.read_file(path+'input/planimetrics/sidewalk.shp')
-#sidewalk.crs={'init':'epsg:4326'}
-#sidewalk=sidewalk[['geometry']].reset_index(drop=True)
-#sidewalk['sid']=['s'+str(x) for x in range(0,len(sidewalk))]
-#sdwk1=sidewalk.copy()
-#sdwk2=sidewalk.copy()
-#sdwkdis=gpd.sjoin(sdwk1,sdwk2,how='inner',op='intersects')
-#sdwkdis=sdwkdis.groupby('sid_left',as_index=False).agg({'sid_right':'count'}).reset_index(drop=True)
-#sdwkdis.columns=['sid','count']
-#sdwkdis=pd.merge(sidewalk,sdwkdis,how='inner',on='sid')
-#sdwkuni=sdwkdis.loc[sdwkdis['count']==1,['sid','geometry']].reset_index(drop=True)
-#sdwkdis=sdwkdis.loc[sdwkdis['count']>1,['sid','geometry']].reset_index(drop=True)
-#sdwkdis['id']=0
-#sdwkdis=sdwkdis.dissolve(by='id').reset_index(drop=False)
-#sdwkdis=gpd.GeoDataFrame(geometry=sdwkdis.explode().reset_index(drop=True),crs={'init':'epsg:4326'})
-#sdwkdis=pd.concat([sdwkuni,sdwkdis],ignore_index=True)
-#sdwkdis['sid']=['s'+str(x) for x in range(0,len(sdwkdis))]
-#plaza=gpd.read_file(path+'input/planimetrics/plaza.shp')
-#plaza.crs={'init':'epsg:4326'}
-#plaza=plaza[['geometry']].reset_index(drop=True)
-#plaza['pid']=['p'+str(x) for x in range(0,len(plaza))]
-#sdwkonly=gpd.sjoin(sdwkdis,plaza,how='left',op='intersects')
-#sdwkonly=sdwkonly.loc[pd.isna(sdwkonly['pid']),['sid','geometry']].reset_index(drop=True)
-#plazaonly=gpd.sjoin(plaza,sdwkdis,how='left',op='intersects')
-#plazaonly=plazaonly.loc[pd.isna(plazaonly['sid']),['pid','geometry']].reset_index(drop=True)
-#sdwkplaza=gpd.sjoin(sdwkdis,plaza,how='inner',op='intersects')
-#sdwkplazasdwk=pd.merge(sdwkdis,sdwkplaza[['sid']].drop_duplicates(keep='first'),how='inner',on='sid')
-#sdwkplazaplaza=pd.merge(plaza,sdwkplaza[['pid']].drop_duplicates(keep='first'),how='inner',on='pid')
-#sdwkplaza=pd.concat([sdwkplazasdwk,sdwkplazaplaza],ignore_index=True)
-#sdwkplaza['id']=0
-#sdwkplaza=sdwkplaza.dissolve(by='id').reset_index(drop=False)
-#sdwkplaza=gpd.GeoDataFrame(geometry=sdwkplaza.explode().reset_index(drop=True),crs={'init':'epsg:4326'})
-#sdwkplaza=pd.concat([sdwkplaza,sdwkonly[['geometry']],plazaonly[['geometry']]],ignore_index=True)
-#sdwkplaza['spid']=range(0,len(sdwkplaza))
-#sdwkplaza.to_file(path+'output/sdwkplaza.shp')
-#print(datetime.datetime.now()-start)
-## 7 mins
+# Combine Sidewalk and Plaza
+start=datetime.datetime.now()
+sidewalk=gpd.read_file(path+'input/planimetrics/sidewalk.shp')
+sidewalk.crs={'init':'epsg:4326'}
+sidewalk=sidewalk[['geometry']].reset_index(drop=True)
+sidewalk['sid']=['s'+str(x) for x in range(0,len(sidewalk))]
+sdwk1=sidewalk.copy()
+sdwk2=sidewalk.copy()
+sdwkdis=gpd.sjoin(sdwk1,sdwk2,how='inner',op='intersects')
+sdwkdis=sdwkdis.groupby('sid_left',as_index=False).agg({'sid_right':'count'}).reset_index(drop=True)
+sdwkdis.columns=['sid','count']
+sdwkdis=pd.merge(sidewalk,sdwkdis,how='inner',on='sid')
+sdwkuni=sdwkdis.loc[sdwkdis['count']==1,['sid','geometry']].reset_index(drop=True)
+sdwkdis=sdwkdis.loc[sdwkdis['count']>1,['sid','geometry']].reset_index(drop=True)
+sdwkdis['id']=0
+sdwkdis=sdwkdis.dissolve(by='id').reset_index(drop=False)
+sdwkdis=gpd.GeoDataFrame(geometry=sdwkdis.explode().reset_index(drop=True),crs={'init':'epsg:4326'})
+sdwkdis=pd.concat([sdwkuni,sdwkdis],ignore_index=True)
+sdwkdis['sid']=['s'+str(x) for x in range(0,len(sdwkdis))]
+plaza=gpd.read_file(path+'input/planimetrics/plaza.shp')
+plaza.crs={'init':'epsg:4326'}
+plaza=plaza[['geometry']].reset_index(drop=True)
+plaza['pid']=['p'+str(x) for x in range(0,len(plaza))]
+sdwkonly=gpd.sjoin(sdwkdis,plaza,how='left',op='intersects')
+sdwkonly=sdwkonly.loc[pd.isna(sdwkonly['pid']),['sid','geometry']].reset_index(drop=True)
+plazaonly=gpd.sjoin(plaza,sdwkdis,how='left',op='intersects')
+plazaonly=plazaonly.loc[pd.isna(plazaonly['sid']),['pid','geometry']].reset_index(drop=True)
+sdwkplaza=gpd.sjoin(sdwkdis,plaza,how='inner',op='intersects')
+sdwkplazasdwk=pd.merge(sdwkdis,sdwkplaza[['sid']].drop_duplicates(keep='first'),how='inner',on='sid')
+sdwkplazaplaza=pd.merge(plaza,sdwkplaza[['pid']].drop_duplicates(keep='first'),how='inner',on='pid')
+sdwkplaza=pd.concat([sdwkplazasdwk,sdwkplazaplaza],ignore_index=True)
+sdwkplaza['id']=0
+sdwkplaza=sdwkplaza.dissolve(by='id').reset_index(drop=False)
+sdwkplaza=gpd.GeoDataFrame(geometry=sdwkplaza.explode().reset_index(drop=True),crs={'init':'epsg:4326'})
+sdwkplaza=pd.concat([sdwkplaza,sdwkonly[['geometry']],plazaonly[['geometry']]],ignore_index=True)
+sdwkplaza['spid']=range(0,len(sdwkplaza))
+sdwkplaza.to_file(path+'output/sdwkplaza.shp')
+print(datetime.datetime.now()-start)
+# 7 mins
 
 
 
-## Simplify Pavement Edge
-#start=datetime.datetime.now()
-#pvmtedge=gpd.read_file(path+'input/planimetrics/pvmtedge.shp')
-#pvmtedge.crs={'init':'epsg:4326'}
-#pvmtedge['bkfaceid']=pd.to_numeric(pvmtedge['BLOCKFACEI'])
-#pvmtedge=pvmtedge.loc[pd.notna(pvmtedge['bkfaceid'])&(pvmtedge['FEATURE_CO']==2260),['bkfaceid','geometry']].reset_index(drop=True)
-#pvmtedge=pvmtedge.drop_duplicates('bkfaceid',keep='first').reset_index(drop=True)
-#pvmtedge=pvmtedge[[type(x)==shapely.geometry.linestring.LineString for x in pvmtedge['geometry']]].reset_index(drop=True)
-#pvmtedge['geometry']=[shapely.geometry.LineString(list(zip(x.xy[0],x.xy[1]))) for x in pvmtedge['geometry']]
-#sdwkplaza=gpd.read_file(path+'output/sdwkplaza.shp')
-#sdwkplaza.crs={'init':'epsg:4326'}
-#sdwkplaza['geometry']=[shapely.geometry.LineString(list(x.exterior.coords)) for x in sdwkplaza['geometry']]
-#pvmtspsdwk=gpd.sjoin(pvmtedge,sdwkplaza,how='inner',op='intersects')
-#pvmtspsdwk=pvmtspsdwk[['bkfaceid','spid']].reset_index(drop=True)
-#def pvmtsimplify(ps):
-#    global pvmtedge
-#    global sdwkplaza
-#    global pvmtspsdwk
-#    ps=ps.reset_index(drop=True)
-#    tp=sdwkplaza[np.isin(sdwkplaza['spid'],pvmtspsdwk.loc[pvmtspsdwk['bkfaceid']==ps.loc[0,'bkfaceid'],'spid'])].reset_index(drop=True)
-#    tp['geometry']=[ps.loc[0,'geometry'].intersection(x) for x in tp['geometry']]
-#    tp=tp[[type(x)==shapely.geometry.multilinestring.MultiLineString for x in tp['geometry']]].reset_index(drop=True)
-#    if len(tp)>0:
-#        df=pd.concat([ps]*len(tp),ignore_index=True)
-#        df['spid']=tp['spid']
-#        df['geometry']=[shapely.ops.linemerge(x) for x in tp['geometry']]
-#        dfsingle=df[[type(x)==shapely.geometry.linestring.LineString for x in df['geometry']]].reset_index(drop=True)
-#        dfmulti=df[[type(x)==shapely.geometry.multilinestring.MultiLineString for x in df['geometry']]].reset_index(drop=True)
-#        df=[]
-#        df+=[dfsingle]
-#        for j in dfmulti.index:
-#            tpmulti=pd.concat([dfmulti.loc[[j]]]*len(dfmulti.loc[j,'geometry']),ignore_index=True)
-#            tpmulti['geometry']=[x for x in tpmulti.loc[0,'geometry']]
-#            df+=[tpmulti]
-#        df=pd.concat(df,ignore_index=True)
-#        return df
-#    else:
-#        print(str(ps.loc[0,'bkfaceid'])+' error!')
-#
-#def pvmtsimplifycompile(pscp):
-#    pvmtsptp=pscp.groupby('bkfaceid',as_index=False).apply(pvmtsimplify)
-#    return pvmtsptp
-#
-#def parallelize(data,func):
-#    data_split=np.array_split(data,mp.cpu_count()-1)
-#    pool=mp.Pool(mp.cpu_count()-1)
-#    dt=pool.map(func,data_split)
-#    dt=pd.concat(dt,axis=0,ignore_index=True)
-#    pool.close()
-#    pool.join()
-#    return dt
-#
-#if __name__=='__main__':
-#    pvmtsp=parallelize(pvmtedge,pvmtsimplifycompile)
-#    pvmtsp['pvid']=range(0,len(pvmtsp))
-#    pvmtsp=pvmtsp[['pvid','bkfaceid','spid','geometry']].reset_index(drop=True)
-#    pvmtsp.to_file(path+'output/pvmtsp.shp')
-#    print(datetime.datetime.now()-start)
-#    # 20 mins
+# Simplify Pavement Edge
+start=datetime.datetime.now()
+pvmtedge=gpd.read_file(path+'input/planimetrics/pvmtedge.shp')
+pvmtedge.crs={'init':'epsg:4326'}
+pvmtedge['bkfaceid']=pd.to_numeric(pvmtedge['BLOCKFACEI'])
+pvmtedge=pvmtedge.loc[pd.notna(pvmtedge['bkfaceid'])&(pvmtedge['FEATURE_CO']==2260),['bkfaceid','geometry']].reset_index(drop=True)
+pvmtedge=pvmtedge.drop_duplicates('bkfaceid',keep='first').reset_index(drop=True)
+pvmtedge=pvmtedge[[type(x)==shapely.geometry.linestring.LineString for x in pvmtedge['geometry']]].reset_index(drop=True)
+pvmtedge['geometry']=[shapely.geometry.LineString(list(zip(x.xy[0],x.xy[1]))) for x in pvmtedge['geometry']]
+sdwkplaza=gpd.read_file(path+'output/sdwkplaza.shp')
+sdwkplaza.crs={'init':'epsg:4326'}
+sdwkplaza['geometry']=[shapely.geometry.LineString(list(x.exterior.coords)) for x in sdwkplaza['geometry']]
+pvmtspsdwk=gpd.sjoin(pvmtedge,sdwkplaza,how='inner',op='intersects')
+pvmtspsdwk=pvmtspsdwk[['bkfaceid','spid']].reset_index(drop=True)
+def pvmtsimplify(ps):
+    global pvmtedge
+    global sdwkplaza
+    global pvmtspsdwk
+    ps=ps.reset_index(drop=True)
+    tp=sdwkplaza[np.isin(sdwkplaza['spid'],pvmtspsdwk.loc[pvmtspsdwk['bkfaceid']==ps.loc[0,'bkfaceid'],'spid'])].reset_index(drop=True)
+    tp['geometry']=[ps.loc[0,'geometry'].intersection(x) for x in tp['geometry']]
+    tp=tp[[type(x)==shapely.geometry.multilinestring.MultiLineString for x in tp['geometry']]].reset_index(drop=True)
+    if len(tp)>0:
+        df=pd.concat([ps]*len(tp),ignore_index=True)
+        df['spid']=tp['spid']
+        df['geometry']=[shapely.ops.linemerge(x) for x in tp['geometry']]
+        dfsingle=df[[type(x)==shapely.geometry.linestring.LineString for x in df['geometry']]].reset_index(drop=True)
+        dfmulti=df[[type(x)==shapely.geometry.multilinestring.MultiLineString for x in df['geometry']]].reset_index(drop=True)
+        df=[]
+        df+=[dfsingle]
+        for j in dfmulti.index:
+            tpmulti=pd.concat([dfmulti.loc[[j]]]*len(dfmulti.loc[j,'geometry']),ignore_index=True)
+            tpmulti['geometry']=[x for x in tpmulti.loc[0,'geometry']]
+            df+=[tpmulti]
+        df=pd.concat(df,ignore_index=True)
+        return df
+    else:
+        print(str(ps.loc[0,'bkfaceid'])+' error!')
+
+def pvmtsimplifycompile(pscp):
+    pvmtsptp=pscp.groupby('bkfaceid',as_index=False).apply(pvmtsimplify)
+    return pvmtsptp
+
+def parallelize(data,func):
+    data_split=np.array_split(data,mp.cpu_count()-1)
+    pool=mp.Pool(mp.cpu_count()-1)
+    dt=pool.map(func,data_split)
+    dt=pd.concat(dt,axis=0,ignore_index=True)
+    pool.close()
+    pool.join()
+    return dt
+
+if __name__=='__main__':
+    pvmtsp=parallelize(pvmtedge,pvmtsimplifycompile)
+    pvmtsp['pvid']=range(0,len(pvmtsp))
+    pvmtsp=pvmtsp[['pvid','bkfaceid','spid','geometry']].reset_index(drop=True)
+    pvmtsp.to_file(path+'output/pvmtsp.shp')
+    print(datetime.datetime.now()-start)
+    # 20 mins
 
 
 
