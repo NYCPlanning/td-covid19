@@ -795,15 +795,18 @@ path='C:/Users/Yijun Ma/Desktop/D/DOCUMENT/DCP2020/COVID19/STREET CLOSURE/sidewa
 # Sidewalk and Plaza Excluding Impediments
 sdwkplaza=gpd.read_file(path+'output/sdwkplaza.shp')
 sdwkplaza.crs={'init':'epsg:4326'}
+sdwkplaza['id']=0
+sdwkplaza=sdwkplaza.dissolve(by='id')
+
 impediment=gpd.read_file(path+'output/impediment.shp')
 impediment.crs={'init':'epsg:4326'}
 
-k=impediment[0:1000]
+k=impediment[0:1000].reset_index(drop=True)
 k['id']=0
 k=k.dissolve(by='id')
 k.to_file(path+'k.shp')
 
-sdwkplazaimp=gpd.overlay(sdwkplaza,impediment[0:1000],how='difference')
+sdwkplazaimp=gpd.overlay(sdwkplaza,k,how='difference')
 sdwkplazaimp.to_file(path+'output/sdwkplazaimp.shp')
 
 
