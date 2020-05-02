@@ -905,7 +905,7 @@ path='/home/mayijun/sidewalk/'
 
 # Test
 start=datetime.datetime.now()
-sdwkplaza=gpd.read_file(path+'output/sdwkplaza.shp')[0:10].reset_index(drop=True)
+sdwkplaza=gpd.read_file(path+'output/sdwkplaza.shp')
 sdwkplaza.crs={'init':'epsg:4326'}
 sdwkplaza['id']=0
 sdwkplazadis=sdwkplaza.dissolve(by='id')
@@ -913,7 +913,7 @@ sdwkplazadis.to_file(path+'output/sdwkplazadis.shp')
 print(datetime.datetime.now()-start)
 
 start=datetime.datetime.now()
-impediment=gpd.read_file(path+'output/impediment.shp')[0:10].reset_index(drop=True)
+impediment=gpd.read_file(path+'output/impediment.shp')
 impediment.crs={'init':'epsg:4326'}
 impediment['id']=0
 impedimentdis=impediment.dissolve(by='id')
