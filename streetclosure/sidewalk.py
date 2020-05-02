@@ -731,75 +731,75 @@ path='/home/mayijun/sidewalk/'
 
 
 
-## Tree
-## On Curb
-#start=datetime.datetime.now()
-#curbtree=gpd.read_file(path+'input/impediments/tree.shp')
-#curbtree.crs={'init':'epsg:4326'}
-#curbtree=curbtree.to_crs({'init':'epsg:6539'})
-#curbtree=curbtree[[x in ['OnCurb'] for x in curbtree['curb_loc']]].reset_index(drop=True)
-#curbtree['ctid']=range(0,len(curbtree))
-#curbtree=curbtree
-#curbtreebuffer=curbtree.copy()
-#curbtreebuffer['geometry']=curbtreebuffer.buffer(50)
-#pvmtsp=gpd.read_file(path+'output/pvmtsp.shp')
-#pvmtsp.crs={'init':'epsg:4326'}
-#pvmtsp=pvmtsp.to_crs({'init':'epsg:6539'})
-#curbtreebuffer=gpd.sjoin(curbtreebuffer,pvmtsp,how='inner',op='intersects')
-#
-#def curbtreeadjust(ct):
-#    global curbtree
-#    global pvmtsp
-#    global curbtreebuffer
-#    ct=ct.reset_index(drop=True)
-#    curbtreetp=pd.concat([ct]*2,ignore_index=True)
-#    curbtreepv=pvmtsp[np.isin(pvmtsp['pvid'],curbtreebuffer.loc[curbtreebuffer['ctid']==ct.loc[0,'ctid'],'pvid'])].reset_index(drop=True)
-#    if len(curbtreepv)>0:
-#        try:
-#            curbtreepv=curbtreepv.loc[[np.argmin([curbtreetp.loc[0,'geometry'].distance(x) for x in curbtreepv['geometry']])]].reset_index(drop=True)
-#            curbtreetp['pvid']=curbtreepv.loc[0,'pvid']
-#            curbtreetp['snapdist']=curbtreetp.loc[0,'geometry'].distance(curbtreepv.loc[0,'geometry'])
-#            adjgeom=shapely.ops.nearest_points(curbtreetp.loc[0,'geometry'],curbtreepv.loc[0,'geometry'])[1]
-#            intplt=curbtreepv.loc[0,'geometry'].project(adjgeom)
-#            splitter=shapely.geometry.MultiPoint([curbtreepv.loc[0,'geometry'].interpolate(x) for x in [intplt-2.5,intplt+2.5]])
-#            splitseg=shapely.ops.split(curbtreepv.loc[0,'geometry'],splitter.buffer(0.01))[2]
-#            curbtreetp.loc[0,'adjgeom']=shapely.geometry.MultiLineString([splitseg.parallel_offset(1),splitseg.parallel_offset(6)]).convex_hull.wkt
-#            curbtreetp.loc[1,'adjgeom']=shapely.geometry.MultiLineString([splitseg.parallel_offset(-1),splitseg.parallel_offset(-6)]).convex_hull.wkt
-#            return curbtreetp
-#        except:
-#            print(str(ct.loc[0,'ctid'])+' error!')
-#    else:
-#        print(str(ct.loc[0,'ctid'])+' no pvid joined!')
-#
-#def curbtreeadjustcompile(ctcp):
-#    curbtreeadjtp=ctcp.groupby('ctid',as_index=False).apply(curbtreeadjust)
-#    return curbtreeadjtp
-#
-#def parallelize(data,func):
-#    data_split=np.array_split(data,mp.cpu_count()-1)
-#    pool=mp.Pool(mp.cpu_count()-1)
-#    dt=pool.map(func,data_split)
-#    dt=pd.concat(dt,axis=0,ignore_index=True)
-#    pool.close()
-#    pool.join()
-#    return dt
-#
-#if __name__=='__main__':
-#    curbtreeadj=parallelize(curbtree,curbtreeadjustcompile)
-#    curbtreeadj=curbtreeadj[curbtreeadj['adjgeom']!='GEOMETRYCOLLECTION EMPTY'].reset_index(drop=True)
-#    curbtreeadj=curbtreeadj.drop('geometry',axis=1)
-#    curbtreeadj=gpd.GeoDataFrame(curbtreeadj,geometry=curbtreeadj['adjgeom'].map(wkt.loads),crs={'init':'epsg:6539'})
-#    curbtreeadj['area']=[x.area for x in curbtreeadj['geometry']]
-#    curbtreeadj=curbtreeadj[(curbtreeadj['area']>=20)&(curbtreeadj['area']<=30)].reset_index(drop=True)
-#    sdwkplaza=gpd.read_file(path+'output/sdwkplaza.shp')
-#    sdwkplaza.crs={'init':'epsg:4326'}
-#    sdwkplaza=sdwkplaza.to_crs({'init':'epsg:6539'})
-#    curbtreeadj=gpd.sjoin(curbtreeadj,sdwkplaza,how='inner',op='within')
-#    curbtreeadj=curbtreeadj.drop(['index_right'],axis=1)
-#    curbtreeadj=curbtreeadj.to_crs({'init':'epsg:4326'})
-#    curbtreeadj.to_file(path+'output/curbtreeadjtest.shp')
-#    print(datetime.datetime.now()-start)
-#    # 300 mins
+# Tree
+# On Curb
+start=datetime.datetime.now()
+curbtree=gpd.read_file(path+'input/impediments/tree.shp')
+curbtree.crs={'init':'epsg:4326'}
+curbtree=curbtree.to_crs({'init':'epsg:6539'})
+curbtree=curbtree[[x in ['OnCurb'] for x in curbtree['curb_loc']]].reset_index(drop=True)
+curbtree['ctid']=range(0,len(curbtree))
+curbtree=curbtree
+curbtreebuffer=curbtree.copy()
+curbtreebuffer['geometry']=curbtreebuffer.buffer(50)
+pvmtsp=gpd.read_file(path+'output/pvmtsp.shp')
+pvmtsp.crs={'init':'epsg:4326'}
+pvmtsp=pvmtsp.to_crs({'init':'epsg:6539'})
+curbtreebuffer=gpd.sjoin(curbtreebuffer,pvmtsp,how='inner',op='intersects')
+
+def curbtreeadjust(ct):
+    global curbtree
+    global pvmtsp
+    global curbtreebuffer
+    ct=ct.reset_index(drop=True)
+    curbtreetp=pd.concat([ct]*2,ignore_index=True)
+    curbtreepv=pvmtsp[np.isin(pvmtsp['pvid'],curbtreebuffer.loc[curbtreebuffer['ctid']==ct.loc[0,'ctid'],'pvid'])].reset_index(drop=True)
+    if len(curbtreepv)>0:
+        try:
+            curbtreepv=curbtreepv.loc[[np.argmin([curbtreetp.loc[0,'geometry'].distance(x) for x in curbtreepv['geometry']])]].reset_index(drop=True)
+            curbtreetp['pvid']=curbtreepv.loc[0,'pvid']
+            curbtreetp['snapdist']=curbtreetp.loc[0,'geometry'].distance(curbtreepv.loc[0,'geometry'])
+            adjgeom=shapely.ops.nearest_points(curbtreetp.loc[0,'geometry'],curbtreepv.loc[0,'geometry'])[1]
+            intplt=curbtreepv.loc[0,'geometry'].project(adjgeom)
+            splitter=shapely.geometry.MultiPoint([curbtreepv.loc[0,'geometry'].interpolate(x) for x in [intplt-2.5,intplt+2.5]])
+            splitseg=shapely.ops.split(curbtreepv.loc[0,'geometry'],splitter.buffer(0.01))[2]
+            curbtreetp.loc[0,'adjgeom']=shapely.geometry.MultiLineString([splitseg.parallel_offset(1),splitseg.parallel_offset(6)]).convex_hull.wkt
+            curbtreetp.loc[1,'adjgeom']=shapely.geometry.MultiLineString([splitseg.parallel_offset(-1),splitseg.parallel_offset(-6)]).convex_hull.wkt
+            return curbtreetp
+        except:
+            print(str(ct.loc[0,'ctid'])+' error!')
+    else:
+        print(str(ct.loc[0,'ctid'])+' no pvid joined!')
+
+def curbtreeadjustcompile(ctcp):
+    curbtreeadjtp=ctcp.groupby('ctid',as_index=False).apply(curbtreeadjust)
+    return curbtreeadjtp
+
+def parallelize(data,func):
+    data_split=np.array_split(data,mp.cpu_count()-1)
+    pool=mp.Pool(mp.cpu_count()-1)
+    dt=pool.map(func,data_split)
+    dt=pd.concat(dt,axis=0,ignore_index=True)
+    pool.close()
+    pool.join()
+    return dt
+
+if __name__=='__main__':
+    curbtreeadj=parallelize(curbtree,curbtreeadjustcompile)
+    curbtreeadj=curbtreeadj[curbtreeadj['adjgeom']!='GEOMETRYCOLLECTION EMPTY'].reset_index(drop=True)
+    curbtreeadj=curbtreeadj.drop('geometry',axis=1)
+    curbtreeadj=gpd.GeoDataFrame(curbtreeadj,geometry=curbtreeadj['adjgeom'].map(wkt.loads),crs={'init':'epsg:6539'})
+    curbtreeadj['area']=[x.area for x in curbtreeadj['geometry']]
+    curbtreeadj=curbtreeadj[(curbtreeadj['area']>=20)&(curbtreeadj['area']<=30)].reset_index(drop=True)
+    sdwkplaza=gpd.read_file(path+'output/sdwkplaza.shp')
+    sdwkplaza.crs={'init':'epsg:4326'}
+    sdwkplaza=sdwkplaza.to_crs({'init':'epsg:6539'})
+    curbtreeadj=gpd.sjoin(curbtreeadj,sdwkplaza,how='inner',op='within')
+    curbtreeadj=curbtreeadj.drop(['index_right'],axis=1)
+    curbtreeadj=curbtreeadj.to_crs({'init':'epsg:4326'})
+    curbtreeadj.to_file(path+'output/curbtreeadj.shp')
+    print(datetime.datetime.now()-start)
+    # 60 mins
 
 
 # Off Set Curb
@@ -895,15 +895,15 @@ path='/home/mayijun/sidewalk/'
 
 
 
-# Sidewalk and Plaza Excluding Impediments
-start=datetime.datetime.now()
-sdwkplaza=gpd.read_file(path+'output/sdwkplaza.shp')
-sdwkplaza.crs={'init':'epsg:4326'}
-sdwkplaza['id']=0
-sdwkplazadis=sdwkplaza.dissolve(by='id')
-sdwkplazadis.to_file(path+'output/sdwkplazadis.shp')
-print(datetime.datetime.now()-start)
-#
+## Sidewalk and Plaza Excluding Impediments
+#start=datetime.datetime.now()
+#sdwkplaza=gpd.read_file(path+'output/sdwkplaza.shp')
+#sdwkplaza.crs={'init':'epsg:4326'}
+#sdwkplaza['id']=0
+#sdwkplazadis=sdwkplaza.dissolve(by='id')
+#sdwkplazadis.to_file(path+'output/sdwkplazadis.shp')
+#print(datetime.datetime.now()-start)
+##
 #
 #
 #
