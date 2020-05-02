@@ -802,8 +802,8 @@ path='/home/mayijun/sidewalk/'
 #    # 60 mins
 
 
-# Off Set Curb
 
+# Off Set Curb
 
 
 
@@ -811,78 +811,78 @@ path='/home/mayijun/sidewalk/'
 
 
 
-# Cobmine all Impediments
-start=datetime.datetime.now()
-utistrip=gpd.read_file(path+'output/utistrip.shp')
-utistrip.crs={'init':'epsg:4326'}
-utistrip['impid']=['us'+str(x) for x in utistrip['usid']]
-utistrip['imptype']='Utility Strip'
-utistrip=utistrip[['impid','imptype','geometry']].reset_index(drop=True)
-citybenchadj=gpd.read_file(path+'output/citybenchadj.shp')
-citybenchadj.crs={'init':'epsg:4326'}
-citybenchadj['impid']=['cb'+str(x) for x in citybenchadj['cbid']]
-citybenchadj['imptype']='City Bench'
-citybenchadj=citybenchadj[['impid','imptype','geometry']].reset_index(drop=True)
-walknycadj=gpd.read_file(path+'output/walknycadj.shp')
-walknycadj.crs={'init':'epsg:4326'}
-walknycadj['impid']=['wn'+str(x) for x in walknycadj['wnid']]
-walknycadj['imptype']='WalkNYC'
-walknycadj=walknycadj[['impid','imptype','geometry']].reset_index(drop=True)
-meteradj=gpd.read_file(path+'output/meteradj.shp')
-meteradj.crs={'init':'epsg:4326'}
-meteradj['impid']=['mt'+str(x) for x in meteradj['mtid']]
-meteradj['imptype']='Meter'
-meteradj=meteradj[['impid','imptype','geometry']].reset_index(drop=True)
-busshelteradj=gpd.read_file(path+'output/busshelteradj.shp')
-busshelteradj.crs={'init':'epsg:4326'}
-busshelteradj['impid']=['bs'+str(x) for x in busshelteradj['bsid']]
-busshelteradj['imptype']='Bus Shelter'
-busshelteradj=busshelteradj[['impid','imptype','geometry']].reset_index(drop=True)
-linknycadj=gpd.read_file(path+'output/linknycadj.shp')
-linknycadj['impid']=['ln'+str(x) for x in linknycadj['lnid']]
-linknycadj['imptype']='LinkNYC'
-linknycadj=linknycadj[['impid','imptype','geometry']].reset_index(drop=True)
-payphoneadj=gpd.read_file(path+'output/payphoneadj.shp')
-payphoneadj.crs={'init':'epsg:4326'}
-payphoneadj['impid']=['pp'+str(x) for x in payphoneadj['ppid']]
-payphoneadj['imptype']='Pay Phone'
-payphoneadj=payphoneadj[['impid','imptype','geometry']].reset_index(drop=True)
-newsstandadj=gpd.read_file(path+'output/newsstandadj.shp')
-newsstandadj.crs={'init':'epsg:4326'}
-newsstandadj['impid']=['ns'+str(x) for x in newsstandadj['nsid']]
-newsstandadj['imptype']='News Stand'
-newsstandadj=newsstandadj[['impid','imptype','geometry']].reset_index(drop=True)
-hydrantadj=gpd.read_file(path+'output/hydrantadj.shp')
-hydrantadj.crs={'init':'epsg:4326'}
-hydrantadj['impid']=['hd'+str(x) for x in hydrantadj['hdid']]
-hydrantadj['imptype']='Hydrant'
-hydrantadj=hydrantadj[['impid','imptype','geometry']].reset_index(drop=True)
-litterbinadj=gpd.read_file(path+'output/litterbinadj.shp')
-litterbinadj.crs={'init':'epsg:4326'}
-litterbinadj['impid']=['lb'+str(x) for x in litterbinadj['lbid']]
-litterbinadj['imptype']='Litter Bin'
-litterbinadj=litterbinadj[['impid','imptype','geometry']].reset_index(drop=True)
-recyclebinadj=gpd.read_file(path+'output/recyclebinadj.shp')
-recyclebinadj.crs={'init':'epsg:4326'}
-recyclebinadj['impid']=['rb'+str(x) for x in recyclebinadj['rbid']]
-recyclebinadj['imptype']='Recycle Bin'
-recyclebinadj=recyclebinadj[['impid','imptype','geometry']].reset_index(drop=True)
-curbtreeadj=gpd.read_file(path+'output/curbtreeadj.shp')
-curbtreeadj.crs={'init':'epsg:4326'}
-curbtreeadj['impid']=['ct'+str(x) for x in curbtreeadj['ctid']]
-curbtreeadj['imptype']='Curb Tree'
-curbtreeadj=curbtreeadj[['impid','imptype','geometry']].reset_index(drop=True)
-railroadstruct=gpd.read_file(path+'input/planimetrics/railroadstruct.shp')
-railroadstruct.crs={'init':'epsg:4326'}
-railroadstruct=railroadstruct[railroadstruct['FEATURE_CO']==2485].reset_index(drop=True)
-railroadstruct['impid']=['rs'+str(x) for x in range(0,len(railroadstruct))]
-railroadstruct['imptype']='Railroad Structure'
-railroadstruct=railroadstruct[['impid','imptype','geometry']].reset_index(drop=True)
-impediment=pd.concat([utistrip,citybenchadj,walknycadj,meteradj,busshelteradj,linknycadj,payphoneadj,newsstandadj,hydrantadj,
-                      litterbinadj,recyclebinadj,curbtreeadj,railroadstruct],axis=0,ignore_index=True)
-impediment.to_file(path+'output/impediment.shp')
-print(datetime.datetime.now()-start)
-
+## Cobmine all Impediments
+#start=datetime.datetime.now()
+#utistrip=gpd.read_file(path+'output/utistrip.shp')
+#utistrip.crs={'init':'epsg:4326'}
+#utistrip['impid']=['us'+str(x) for x in utistrip['usid']]
+#utistrip['imptype']='Utility Strip'
+#utistrip=utistrip[['impid','imptype','geometry']].reset_index(drop=True)
+#citybenchadj=gpd.read_file(path+'output/citybenchadj.shp')
+#citybenchadj.crs={'init':'epsg:4326'}
+#citybenchadj['impid']=['cb'+str(x) for x in citybenchadj['cbid']]
+#citybenchadj['imptype']='City Bench'
+#citybenchadj=citybenchadj[['impid','imptype','geometry']].reset_index(drop=True)
+#walknycadj=gpd.read_file(path+'output/walknycadj.shp')
+#walknycadj.crs={'init':'epsg:4326'}
+#walknycadj['impid']=['wn'+str(x) for x in walknycadj['wnid']]
+#walknycadj['imptype']='WalkNYC'
+#walknycadj=walknycadj[['impid','imptype','geometry']].reset_index(drop=True)
+#meteradj=gpd.read_file(path+'output/meteradj.shp')
+#meteradj.crs={'init':'epsg:4326'}
+#meteradj['impid']=['mt'+str(x) for x in meteradj['mtid']]
+#meteradj['imptype']='Meter'
+#meteradj=meteradj[['impid','imptype','geometry']].reset_index(drop=True)
+#busshelteradj=gpd.read_file(path+'output/busshelteradj.shp')
+#busshelteradj.crs={'init':'epsg:4326'}
+#busshelteradj['impid']=['bs'+str(x) for x in busshelteradj['bsid']]
+#busshelteradj['imptype']='Bus Shelter'
+#busshelteradj=busshelteradj[['impid','imptype','geometry']].reset_index(drop=True)
+#linknycadj=gpd.read_file(path+'output/linknycadj.shp')
+#linknycadj['impid']=['ln'+str(x) for x in linknycadj['lnid']]
+#linknycadj['imptype']='LinkNYC'
+#linknycadj=linknycadj[['impid','imptype','geometry']].reset_index(drop=True)
+#payphoneadj=gpd.read_file(path+'output/payphoneadj.shp')
+#payphoneadj.crs={'init':'epsg:4326'}
+#payphoneadj['impid']=['pp'+str(x) for x in payphoneadj['ppid']]
+#payphoneadj['imptype']='Pay Phone'
+#payphoneadj=payphoneadj[['impid','imptype','geometry']].reset_index(drop=True)
+#newsstandadj=gpd.read_file(path+'output/newsstandadj.shp')
+#newsstandadj.crs={'init':'epsg:4326'}
+#newsstandadj['impid']=['ns'+str(x) for x in newsstandadj['nsid']]
+#newsstandadj['imptype']='News Stand'
+#newsstandadj=newsstandadj[['impid','imptype','geometry']].reset_index(drop=True)
+#hydrantadj=gpd.read_file(path+'output/hydrantadj.shp')
+#hydrantadj.crs={'init':'epsg:4326'}
+#hydrantadj['impid']=['hd'+str(x) for x in hydrantadj['hdid']]
+#hydrantadj['imptype']='Hydrant'
+#hydrantadj=hydrantadj[['impid','imptype','geometry']].reset_index(drop=True)
+#litterbinadj=gpd.read_file(path+'output/litterbinadj.shp')
+#litterbinadj.crs={'init':'epsg:4326'}
+#litterbinadj['impid']=['lb'+str(x) for x in litterbinadj['lbid']]
+#litterbinadj['imptype']='Litter Bin'
+#litterbinadj=litterbinadj[['impid','imptype','geometry']].reset_index(drop=True)
+#recyclebinadj=gpd.read_file(path+'output/recyclebinadj.shp')
+#recyclebinadj.crs={'init':'epsg:4326'}
+#recyclebinadj['impid']=['rb'+str(x) for x in recyclebinadj['rbid']]
+#recyclebinadj['imptype']='Recycle Bin'
+#recyclebinadj=recyclebinadj[['impid','imptype','geometry']].reset_index(drop=True)
+#curbtreeadj=gpd.read_file(path+'output/curbtreeadj.shp')
+#curbtreeadj.crs={'init':'epsg:4326'}
+#curbtreeadj['impid']=['ct'+str(x) for x in curbtreeadj['ctid']]
+#curbtreeadj['imptype']='Curb Tree'
+#curbtreeadj=curbtreeadj[['impid','imptype','geometry']].reset_index(drop=True)
+#railroadstruct=gpd.read_file(path+'input/planimetrics/railroadstruct.shp')
+#railroadstruct.crs={'init':'epsg:4326'}
+#railroadstruct=railroadstruct[railroadstruct['FEATURE_CO']==2485].reset_index(drop=True)
+#railroadstruct['impid']=['rs'+str(x) for x in range(0,len(railroadstruct))]
+#railroadstruct['imptype']='Railroad Structure'
+#railroadstruct=railroadstruct[['impid','imptype','geometry']].reset_index(drop=True)
+#impediment=pd.concat([utistrip,citybenchadj,walknycadj,meteradj,busshelteradj,linknycadj,payphoneadj,newsstandadj,hydrantadj,
+#                      litterbinadj,recyclebinadj,curbtreeadj,railroadstruct],axis=0,ignore_index=True)
+#impediment.to_file(path+'output/impediment.shp')
+#print(datetime.datetime.now()-start)
+## 20 mins
 
 
 
@@ -970,101 +970,101 @@ print(datetime.datetime.now()-start)
 
 
 
-## Find original sidewalk width
-#start=datetime.datetime.now()
-#pvmtsp=gpd.read_file(path+'output/pvmtsp.shp')
-#pvmtsp.crs={'init':'epsg:4326'}
-#pvmtsp=pvmtsp.to_crs({'init':'epsg:6539'})
-#pvmtsp['length']=[x.length for x in pvmtsp['geometry']]
-#pvmtsp=pvmtsp[0:1000].reset_index(drop=True)  
-#sdwkplaza=gpd.read_file(path+'output/sdwkplaza.shp')
-#sdwkplaza.crs={'init':'epsg:4326'}
-#sdwkplaza=sdwkplaza.to_crs({'init':'epsg:6539'})
-#
-#def sidewalkwidth(sw):
-#    global pvmtsp
-#    global sdwkplaza
-#    sw=sw.reset_index(drop=True)
-#    tpseg=[0 if sw.loc[0,'length']<=40 else int((sw.loc[0,'length']-40)/5)+1][0]
-#    if tpseg!=0:
-#        try:
-#            tp=pd.concat([sw]*tpseg*2,axis=0,ignore_index=True)
-#            tp['side']=['L']*tpseg+['R']*tpseg
-#            tp['orgsw']=np.nan
-#            tp['count']=np.nan
-#            sd=sdwkplaza[sdwkplaza['spid']==tp.loc[0,'spid']].reset_index(drop=True)  
-#            splitter=shapely.geometry.MultiPoint([tp.loc[0,'geometry'].interpolate(20+x*5,normalized=False) for x in range(0,tpseg)])
-#            tpsplit=shapely.ops.split(tp.loc[0,'geometry'],splitter.buffer(0.01))
-#            if len(tpsplit[2].parallel_offset(50,'left').boundary)==2:
-#                tp.loc[0,'geometry']=shapely.geometry.LineString([splitter[0],tpsplit[2].parallel_offset(50,'left').boundary[0]])
-#            else:
-#                tp.loc[0,'geometry']=''
-#            if len(tpsplit[2].parallel_offset(50,'right').boundary)==2:
-#                tp.loc[tpseg,'geometry']=shapely.geometry.LineString([splitter[0],tpsplit[2].parallel_offset(50,'right').boundary[1]])
-#            else:
-#                tp.loc[tpseg,'geometry']=''
-#            for i in range(1,tpseg):
-#                if len(tpsplit[i*2].parallel_offset(50,'left').boundary)==2:
-#                    tp.loc[i,'geometry']=shapely.geometry.LineString([splitter[i],tpsplit[i*2].parallel_offset(50,'left').boundary[1]])
-#                else:
-#                    tp.loc[i,'geometry']=''
-#                if len(tpsplit[i*2].parallel_offset(50,'right').boundary)==2:
-#                    tp.loc[i+tpseg,'geometry']=shapely.geometry.LineString([splitter[i],tpsplit[i*2].parallel_offset(50,'right').boundary[0]])
-#                else:
-#                    tp.loc[i+tpseg,'geometry']=''  
-#            tp=tp[tp['geometry']!=''].reset_index(drop=True) 
-#            for j in tp.index:
-#                sdwkint=[tp.loc[j,'geometry'].intersection(sd.loc[0,'geometry'])]
-#                if sdwkint[0].length<=0.01:
-#                    tp.loc[j,'geometry']=''
-#                    tp.loc[j,'orgsw']=0
-#                    tp.loc[j,'count']=0
-#                elif type(sdwkint[0])==shapely.geometry.linestring.LineString:
-#                    tp.loc[j,'geometry']=sdwkint[0]
-#                    tp.loc[j,'orgsw']=sdwkint[0].length
-#                    tp.loc[j,'count']=1
-#                elif type(sdwkint[0])==shapely.geometry.multilinestring.MultiLineString:
-#                    tp.loc[j,'geometry']=sdwkint[0][0]
-#                    tp.loc[j,'orgsw']=sdwkint[0][0].length
-#                    tp.loc[j,'count']=len(sdwkint[0])
-#            tp['geometry']=np.where(tp['orgsw']<=0.01,'',tp['geometry'])
-#            tp['orgsw']=np.where(tp['orgsw']<=0.01,np.nan,tp['orgsw'])
-#            tp=tp.loc[pd.notna(tp['orgsw']),['pvid','bkfaceid','spid','side','orgsw','count','geometry']].reset_index(drop=True)
-#            if len(tp.side.unique())==1:
-#                return tp
-#            else:
-#                print(str(sw.loc[0,'pvid'])+' tickmarks on both sides!')
-#        except:
-#            print(str(sw.loc[0,'pvid'])+' error!')
-#    else:
-#        print(str(sw.loc[0,'pvid'])+' shorter than 40 feet!')
-#
-#def sidewalkwidthcompile(swcp):
-#    sdwktmtp=swcp.groupby('pvid',as_index=False).apply(sidewalkwidth)
-#    return sdwktmtp
-#
-#def parallelize(data,func):
-#    data_split=np.array_split(data,mp.cpu_count()-1)
-#    pool=mp.Pool(mp.cpu_count()-1)
-#    dt=pool.map(func,data_split)
-#    dt=pd.concat(dt,axis=0,ignore_index=True)
-#    pool.close()
-#    pool.join()
-#    return dt
-#
-#if __name__=='__main__':
-#    sdwktm=parallelize(pvmtsp,sidewalkwidthcompile)
-#    sdwktm=sdwktm.to_crs({'init':'epsg:4326'})
-#    sdwktm.to_file(path+'output/sdwktm.shp')
-#    sdwkwd=sdwktm.groupby(['pvid','bkfaceid','spid','side'],as_index=False).agg({'orgsw':['min','max','median']}).reset_index(drop=True)
-#    sdwkwd.columns=['pvid','bkfaceid','spid','side','orgswmin','orgswmax','orgswmedian']
-#    sdwkwd=pd.merge(pvmtsp,sdwkwd,how='inner',on=['pvid','bkfaceid','spid'])
-#    sdwkwd['length']=[x.length for x in sdwkwd['geometry']]
-#    sdwkwd=sdwkwd[['pvid','bkfaceid','spid','side','orgswmin','orgswmax','orgswmedian','length','geometry']].reset_index(drop=True)
-#    sdwkwd=sdwkwd.to_crs({'init':'epsg:4326'})
-#    sdwkwd.to_file(path+'output/sdwkwd.shp')
-#    print(datetime.datetime.now()-start)
-#    # 2400 mins
+# Find original sidewalk width
+start=datetime.datetime.now()
+pvmtsp=gpd.read_file(path+'output/pvmtsp.shp')
+pvmtsp.crs={'init':'epsg:4326'}
+pvmtsp=pvmtsp.to_crs({'init':'epsg:6539'})
+pvmtsp['length']=[x.length for x in pvmtsp['geometry']]
+pvmtsp=pvmtsp[0:1000].reset_index(drop=True)  
+sdwkplaza=gpd.read_file(path+'output/sdwkplaza.shp')
+sdwkplaza.crs={'init':'epsg:4326'}
+sdwkplaza=sdwkplaza.to_crs({'init':'epsg:6539'})
+
+def sidewalkwidth(sw):
+    global pvmtsp
+    global sdwkplaza
+    sw=sw.reset_index(drop=True)
+    tpseg=[0 if sw.loc[0,'length']<=40 else int((sw.loc[0,'length']-40)/5)+1][0]
+    if tpseg!=0:
+        try:
+            tp=pd.concat([sw]*tpseg*2,axis=0,ignore_index=True)
+            tp['side']=['L']*tpseg+['R']*tpseg
+            tp['orgsw']=np.nan
+            tp['count']=np.nan
+            sd=sdwkplaza[sdwkplaza['spid']==tp.loc[0,'spid']].reset_index(drop=True)  
+            splitter=shapely.geometry.MultiPoint([tp.loc[0,'geometry'].interpolate(20+x*5,normalized=False) for x in range(0,tpseg)])
+            tpsplit=shapely.ops.split(tp.loc[0,'geometry'],splitter.buffer(0.01))
+            if len(tpsplit[2].parallel_offset(50,'left').boundary)==2:
+                tp.loc[0,'geometry']=shapely.geometry.LineString([splitter[0],tpsplit[2].parallel_offset(50,'left').boundary[0]])
+            else:
+                tp.loc[0,'geometry']=''
+            if len(tpsplit[2].parallel_offset(50,'right').boundary)==2:
+                tp.loc[tpseg,'geometry']=shapely.geometry.LineString([splitter[0],tpsplit[2].parallel_offset(50,'right').boundary[1]])
+            else:
+                tp.loc[tpseg,'geometry']=''
+            for i in range(1,tpseg):
+                if len(tpsplit[i*2].parallel_offset(50,'left').boundary)==2:
+                    tp.loc[i,'geometry']=shapely.geometry.LineString([splitter[i],tpsplit[i*2].parallel_offset(50,'left').boundary[1]])
+                else:
+                    tp.loc[i,'geometry']=''
+                if len(tpsplit[i*2].parallel_offset(50,'right').boundary)==2:
+                    tp.loc[i+tpseg,'geometry']=shapely.geometry.LineString([splitter[i],tpsplit[i*2].parallel_offset(50,'right').boundary[0]])
+                else:
+                    tp.loc[i+tpseg,'geometry']=''  
+            tp=tp[tp['geometry']!=''].reset_index(drop=True) 
+            for j in tp.index:
+                sdwkint=[tp.loc[j,'geometry'].intersection(sd.loc[0,'geometry'])]
+                if sdwkint[0].length<=0.01:
+                    tp.loc[j,'geometry']=''
+                    tp.loc[j,'orgsw']=0
+                    tp.loc[j,'count']=0
+                elif type(sdwkint[0])==shapely.geometry.linestring.LineString:
+                    tp.loc[j,'geometry']=sdwkint[0]
+                    tp.loc[j,'orgsw']=sdwkint[0].length
+                    tp.loc[j,'count']=1
+                elif type(sdwkint[0])==shapely.geometry.multilinestring.MultiLineString:
+                    tp.loc[j,'geometry']=sdwkint[0][0]
+                    tp.loc[j,'orgsw']=sdwkint[0][0].length
+                    tp.loc[j,'count']=len(sdwkint[0])
+            tp['geometry']=np.where(tp['orgsw']<=0.01,'',tp['geometry'])
+            tp['orgsw']=np.where(tp['orgsw']<=0.01,np.nan,tp['orgsw'])
+            tp=tp.loc[pd.notna(tp['orgsw']),['pvid','bkfaceid','spid','side','orgsw','count','geometry']].reset_index(drop=True)
+            if len(tp.side.unique())==1:
+                return tp
+            else:
+                print(str(sw.loc[0,'pvid'])+' tickmarks on both sides!')
+        except:
+            print(str(sw.loc[0,'pvid'])+' error!')
+    else:
+        print(str(sw.loc[0,'pvid'])+' shorter than 40 feet!')
+
+def sidewalkwidthcompile(swcp):
+    sdwktmtp=swcp.groupby('pvid',as_index=False).apply(sidewalkwidth)
+    return sdwktmtp
+
+def parallelize(data,func):
+    data_split=np.array_split(data,mp.cpu_count()-1)
+    pool=mp.Pool(mp.cpu_count()-1)
+    dt=pool.map(func,data_split)
+    dt=pd.concat(dt,axis=0,ignore_index=True)
+    pool.close()
+    pool.join()
+    return dt
+
+if __name__=='__main__':
+    sdwktm=parallelize(pvmtsp,sidewalkwidthcompile)
+    sdwktm=sdwktm.to_crs({'init':'epsg:4326'})
+    sdwktm.to_file(path+'output/sdwktm.shp')
+    sdwkwd=sdwktm.groupby(['pvid','bkfaceid','spid','side'],as_index=False).agg({'orgsw':['min','max','median']}).reset_index(drop=True)
+    sdwkwd.columns=['pvid','bkfaceid','spid','side','orgswmin','orgswmax','orgswmedian']
+    sdwkwd=pd.merge(pvmtsp,sdwkwd,how='inner',on=['pvid','bkfaceid','spid'])
+    sdwkwd['length']=[x.length for x in sdwkwd['geometry']]
+    sdwkwd=sdwkwd[['pvid','bkfaceid','spid','side','orgswmin','orgswmax','orgswmedian','length','geometry']].reset_index(drop=True)
+    sdwkwd=sdwkwd.to_crs({'init':'epsg:4326'})
+    sdwkwd.to_file(path+'output/sdwkwd.shp')
+    print(datetime.datetime.now()-start)
+    # 2400 mins
 
 
 
