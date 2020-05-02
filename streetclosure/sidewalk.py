@@ -811,91 +811,93 @@ path='/home/mayijun/sidewalk/'
 
 
 
-## Cobmine all Impediments
-#start=datetime.datetime.now()
-#utistrip=gpd.read_file(path+'output/utistrip.shp')
-#utistrip.crs={'init':'epsg:4326'}
-#utistrip['impid']=['us'+str(x) for x in utistrip['usid']]
-#utistrip['imptype']='Utility Strip'
-#utistrip=utistrip[['impid','imptype','geometry']].reset_index(drop=True)
-#citybenchadj=gpd.read_file(path+'output/citybenchadj.shp')
-#citybenchadj.crs={'init':'epsg:4326'}
-#citybenchadj['impid']=['cb'+str(x) for x in citybenchadj['cbid']]
-#citybenchadj['imptype']='City Bench'
-#citybenchadj=citybenchadj[['impid','imptype','geometry']].reset_index(drop=True)
-#walknycadj=gpd.read_file(path+'output/walknycadj.shp')
-#walknycadj.crs={'init':'epsg:4326'}
-#walknycadj['impid']=['wn'+str(x) for x in walknycadj['wnid']]
-#walknycadj['imptype']='WalkNYC'
-#walknycadj=walknycadj[['impid','imptype','geometry']].reset_index(drop=True)
-#meteradj=gpd.read_file(path+'output/meteradj.shp')
-#meteradj.crs={'init':'epsg:4326'}
-#meteradj['impid']=['mt'+str(x) for x in meteradj['mtid']]
-#meteradj['imptype']='Meter'
-#meteradj=meteradj[['impid','imptype','geometry']].reset_index(drop=True)
-#busshelteradj=gpd.read_file(path+'output/busshelteradj.shp')
-#busshelteradj.crs={'init':'epsg:4326'}
-#busshelteradj['impid']=['bs'+str(x) for x in busshelteradj['bsid']]
-#busshelteradj['imptype']='Bus Shelter'
-#busshelteradj=busshelteradj[['impid','imptype','geometry']].reset_index(drop=True)
-#linknycadj=gpd.read_file(path+'output/linknycadj.shp')
-#linknycadj['impid']=['ln'+str(x) for x in linknycadj['lnid']]
-#linknycadj['imptype']='LinkNYC'
-#linknycadj=linknycadj[['impid','imptype','geometry']].reset_index(drop=True)
-#payphoneadj=gpd.read_file(path+'output/payphoneadj.shp')
-#payphoneadj.crs={'init':'epsg:4326'}
-#payphoneadj['impid']=['pp'+str(x) for x in payphoneadj['ppid']]
-#payphoneadj['imptype']='Pay Phone'
-#payphoneadj=payphoneadj[['impid','imptype','geometry']].reset_index(drop=True)
-#newsstandadj=gpd.read_file(path+'output/newsstandadj.shp')
-#newsstandadj.crs={'init':'epsg:4326'}
-#newsstandadj['impid']=['ns'+str(x) for x in newsstandadj['nsid']]
-#newsstandadj['imptype']='News Stand'
-#newsstandadj=newsstandadj[['impid','imptype','geometry']].reset_index(drop=True)
-#hydrantadj=gpd.read_file(path+'output/hydrantadj.shp')
-#hydrantadj.crs={'init':'epsg:4326'}
-#hydrantadj['impid']=['hd'+str(x) for x in hydrantadj['hdid']]
-#hydrantadj['imptype']='Hydrant'
-#hydrantadj=hydrantadj[['impid','imptype','geometry']].reset_index(drop=True)
-#litterbinadj=gpd.read_file(path+'output/litterbinadj.shp')
-#litterbinadj.crs={'init':'epsg:4326'}
-#litterbinadj['impid']=['lb'+str(x) for x in litterbinadj['lbid']]
-#litterbinadj['imptype']='Litter Bin'
-#litterbinadj=litterbinadj[['impid','imptype','geometry']].reset_index(drop=True)
-#recyclebinadj=gpd.read_file(path+'output/recyclebinadj.shp')
-#recyclebinadj.crs={'init':'epsg:4326'}
-#recyclebinadj['impid']=['rb'+str(x) for x in recyclebinadj['rbid']]
-#recyclebinadj['imptype']='Recycle Bin'
-#recyclebinadj=recyclebinadj[['impid','imptype','geometry']].reset_index(drop=True)
-#curbtreeadj=gpd.read_file(path+'output/curbtreeadj.shp')
-#curbtreeadj.crs={'init':'epsg:4326'}
-#curbtreeadj['impid']=['ct'+str(x) for x in curbtreeadj['ctid']]
-#curbtreeadj['imptype']='Curb Tree'
-#curbtreeadj=curbtreeadj[['impid','imptype','geometry']].reset_index(drop=True)
-#railroadstruct=gpd.read_file(path+'input/planimetrics/railroadstruct.shp')
-#railroadstruct.crs={'init':'epsg:4326'}
-#railroadstruct=railroadstruct[railroadstruct['FEATURE_CO']==2485].reset_index(drop=True)
-#railroadstruct['impid']=['rs'+str(x) for x in range(0,len(railroadstruct))]
-#railroadstruct['imptype']='Railroad Structure'
-#railroadstruct=railroadstruct[['impid','imptype','geometry']].reset_index(drop=True)
-#impediment=pd.concat([utistrip,citybenchadj,walknycadj,meteradj,busshelteradj,linknycadj,payphoneadj,newsstandadj,hydrantadj,
-#                      litterbinadj,recyclebinadj,curbtreeadj,railroadstruct],axis=0,ignore_index=True)
-#impediment.to_file(path+'output/impediment.shp')
-#print(datetime.datetime.now()-start)
-## 20 mins
+# Cobmine all Impediments
+start=datetime.datetime.now()
+utistrip=gpd.read_file(path+'output/utistrip.shp')
+utistrip.crs={'init':'epsg:4326'}
+utistrip['impid']=['us'+str(x) for x in utistrip['usid']]
+utistrip['imptype']='Utility Strip'
+utistrip=utistrip[['impid','imptype','geometry']].reset_index(drop=True)
+citybenchadj=gpd.read_file(path+'output/citybenchadj.shp')
+citybenchadj.crs={'init':'epsg:4326'}
+citybenchadj['impid']=['cb'+str(x) for x in citybenchadj['cbid']]
+citybenchadj['imptype']='City Bench'
+citybenchadj=citybenchadj[['impid','imptype','geometry']].reset_index(drop=True)
+walknycadj=gpd.read_file(path+'output/walknycadj.shp')
+walknycadj.crs={'init':'epsg:4326'}
+walknycadj['impid']=['wn'+str(x) for x in walknycadj['wnid']]
+walknycadj['imptype']='WalkNYC'
+walknycadj=walknycadj[['impid','imptype','geometry']].reset_index(drop=True)
+meteradj=gpd.read_file(path+'output/meteradj.shp')
+meteradj.crs={'init':'epsg:4326'}
+meteradj['impid']=['mt'+str(x) for x in meteradj['mtid']]
+meteradj['imptype']='Meter'
+meteradj=meteradj[['impid','imptype','geometry']].reset_index(drop=True)
+busshelteradj=gpd.read_file(path+'output/busshelteradj.shp')
+busshelteradj.crs={'init':'epsg:4326'}
+busshelteradj['impid']=['bs'+str(x) for x in busshelteradj['bsid']]
+busshelteradj['imptype']='Bus Shelter'
+busshelteradj=busshelteradj[['impid','imptype','geometry']].reset_index(drop=True)
+linknycadj=gpd.read_file(path+'output/linknycadj.shp')
+linknycadj['impid']=['ln'+str(x) for x in linknycadj['lnid']]
+linknycadj['imptype']='LinkNYC'
+linknycadj=linknycadj[['impid','imptype','geometry']].reset_index(drop=True)
+payphoneadj=gpd.read_file(path+'output/payphoneadj.shp')
+payphoneadj.crs={'init':'epsg:4326'}
+payphoneadj['impid']=['pp'+str(x) for x in payphoneadj['ppid']]
+payphoneadj['imptype']='Pay Phone'
+payphoneadj=payphoneadj[['impid','imptype','geometry']].reset_index(drop=True)
+newsstandadj=gpd.read_file(path+'output/newsstandadj.shp')
+newsstandadj.crs={'init':'epsg:4326'}
+newsstandadj['impid']=['ns'+str(x) for x in newsstandadj['nsid']]
+newsstandadj['imptype']='News Stand'
+newsstandadj=newsstandadj[['impid','imptype','geometry']].reset_index(drop=True)
+hydrantadj=gpd.read_file(path+'output/hydrantadj.shp')
+hydrantadj.crs={'init':'epsg:4326'}
+hydrantadj['impid']=['hd'+str(x) for x in hydrantadj['hdid']]
+hydrantadj['imptype']='Hydrant'
+hydrantadj=hydrantadj[['impid','imptype','geometry']].reset_index(drop=True)
+litterbinadj=gpd.read_file(path+'output/litterbinadj.shp')
+litterbinadj.crs={'init':'epsg:4326'}
+litterbinadj['impid']=['lb'+str(x) for x in litterbinadj['lbid']]
+litterbinadj['imptype']='Litter Bin'
+litterbinadj=litterbinadj[['impid','imptype','geometry']].reset_index(drop=True)
+recyclebinadj=gpd.read_file(path+'output/recyclebinadj.shp')
+recyclebinadj.crs={'init':'epsg:4326'}
+recyclebinadj['impid']=['rb'+str(x) for x in recyclebinadj['rbid']]
+recyclebinadj['imptype']='Recycle Bin'
+recyclebinadj=recyclebinadj[['impid','imptype','geometry']].reset_index(drop=True)
+curbtreeadj=gpd.read_file(path+'output/curbtreeadj.shp')
+curbtreeadj.crs={'init':'epsg:4326'}
+curbtreeadj['impid']=['ct'+str(x) for x in curbtreeadj['ctid']]
+curbtreeadj['imptype']='Curb Tree'
+curbtreeadj=curbtreeadj[['impid','imptype','geometry']].reset_index(drop=True)
+railroadstruct=gpd.read_file(path+'input/planimetrics/railroadstruct.shp')
+railroadstruct.crs={'init':'epsg:4326'}
+railroadstruct=railroadstruct[railroadstruct['FEATURE_CO']==2485].reset_index(drop=True)
+railroadstruct=railroadstruct[[type(x)==shapely.geometry.polygon.Polygon for x in railroadstruct['geometry']]].reset_index(drop=True)
+railroadstruct['geometry']=[shapely.geometry.Polygon(list(zip(x.exterior.xy[0],x.exterior.xy[1]))) for x in railroadstruct['geometry']]
+railroadstruct['impid']=['rs'+str(x) for x in range(0,len(railroadstruct))]
+railroadstruct['imptype']='Railroad Structure'
+railroadstruct=railroadstruct[['impid','imptype','geometry']].reset_index(drop=True)
+impediment=pd.concat([utistrip,citybenchadj,walknycadj,meteradj,busshelteradj,linknycadj,payphoneadj,newsstandadj,hydrantadj,
+                      litterbinadj,recyclebinadj,curbtreeadj,railroadstruct],axis=0,ignore_index=True)
+impediment.to_file(path+'output/impediment.shp')
+print(datetime.datetime.now()-start)
+# 20 mins
 
 
 
-## Sidewalk and Plaza Excluding Impediments
-#start=datetime.datetime.now()
-#sdwkplaza=gpd.read_file(path+'output/sdwkplaza.shp')
-#sdwkplaza.crs={'init':'epsg:4326'}
-#impediment=gpd.read_file(path+'output/impediment.shp')
-#impediment.crs={'init':'epsg:4326'}
-#sdwkplazaimp=gpd.overlay(sdwkplaza,impediment,how='difference')
-#sdwkplazaimp.to_file(path+'output/sdwkplazaimp.shp')
-#print(datetime.datetime.now()-start)
-## 250 mins
+# Sidewalk and Plaza Excluding Impediments
+start=datetime.datetime.now()
+sdwkplaza=gpd.read_file(path+'output/sdwkplaza.shp')
+sdwkplaza.crs={'init':'epsg:4326'}
+impediment=gpd.read_file(path+'output/impediment.shp')
+impediment.crs={'init':'epsg:4326'}
+sdwkplazaimp=gpd.overlay(sdwkplaza,impediment,how='difference')
+sdwkplazaimp.to_file(path+'output/sdwkplazaimp.shp')
+print(datetime.datetime.now()-start)
+# 250 mins
 
 
 
@@ -912,13 +914,13 @@ path='/home/mayijun/sidewalk/'
 #sdwkplazadis.to_file(path+'output/sdwkplazadis.shp')
 #print(datetime.datetime.now()-start)
 
-start=datetime.datetime.now()
-impediment=gpd.read_file(path+'output/impediment.shp')
-impediment.crs={'init':'epsg:4326'}
-impediment['id']=0
-impedimentdis=impediment.dissolve(by='id')
-impedimentdis.to_file(path+'output/impedimentdis.shp')
-print(datetime.datetime.now()-start)
+#start=datetime.datetime.now()
+#impediment=gpd.read_file(path+'output/impediment.shp')
+#impediment.crs={'init':'epsg:4326'}
+#impediment['id']=0
+#impedimentdis=impediment.dissolve(by='id')
+#impedimentdis.to_file(path+'output/impedimentdis.shp')
+#print(datetime.datetime.now()-start)
 
 #start=datetime.datetime.now()
 #k=pd.DataFrame()
@@ -927,7 +929,6 @@ print(datetime.datetime.now()-start)
 #k=gpd.GeoDataFrame(geometry=k['geom'].map(wkt.loads),crs={'init':'epsg:4326'})
 #k.to_file(path+'k.shp')
 #print(datetime.datetime.now()-start)
-
 
 
 
