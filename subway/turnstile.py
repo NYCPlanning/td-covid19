@@ -270,13 +270,13 @@ cplxampre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(dr
 cplxampre=cplxampre[np.isin(cplxampre['time'],amlist)].reset_index(drop=True)
 cplxampre=cplxampre.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
 cplxampre=pd.merge(cplxampre,rc,how='left',left_on='unit',right_on='Remote')
-cplxampre=cplxampre.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(x),'entries':'sum'}).reset_index(drop=True)
+cplxampre=cplxampre.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
 cplxampre.columns=['CplxID','PreTime','PreEntries']
 cplxampost=dfunitentry[np.isin(dfunitentry['firstdate'],postdates)].reset_index(drop=True)
 cplxampost=cplxampost[np.isin(cplxampost['time'],amlist)].reset_index(drop=True)
 cplxampost=cplxampost.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
 cplxampost=pd.merge(cplxampost,rc,how='left',left_on='unit',right_on='Remote')
-cplxampost=cplxampost.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(x),'entries':'sum'}).reset_index(drop=True)
+cplxampost=cplxampost.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
 cplxampost.columns=['CplxID','PostTime','PostEntries']
 cplxamdiff=pd.merge(cplxampre,cplxampost,how='inner',on='CplxID')
 cplxamdiff['Time']=cplxamdiff['PreTime'].copy()
@@ -295,13 +295,13 @@ cplxpmpre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(dr
 cplxpmpre=cplxpmpre[np.isin(cplxpmpre['time'],pmlist)].reset_index(drop=True)
 cplxpmpre=cplxpmpre.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
 cplxpmpre=pd.merge(cplxpmpre,rc,how='left',left_on='unit',right_on='Remote')
-cplxpmpre=cplxpmpre.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(x),'entries':'sum'}).reset_index(drop=True)
+cplxpmpre=cplxpmpre.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
 cplxpmpre.columns=['CplxID','PreTime','PreEntries']
 cplxpmpost=dfunitentry[np.isin(dfunitentry['firstdate'],postdates)].reset_index(drop=True)
 cplxpmpost=cplxpmpost[np.isin(cplxpmpost['time'],pmlist)].reset_index(drop=True)
 cplxpmpost=cplxpmpost.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
 cplxpmpost=pd.merge(cplxpmpost,rc,how='left',left_on='unit',right_on='Remote')
-cplxpmpost=cplxpmpost.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(x),'entries':'sum'}).reset_index(drop=True)
+cplxpmpost=cplxpmpost.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
 cplxpmpost.columns=['CplxID','PostTime','PostEntries']
 cplxpmdiff=pd.merge(cplxpmpre,cplxpmpost,how='inner',on='CplxID')
 cplxpmdiff['Time']=cplxpmdiff['PreTime'].copy()
@@ -369,7 +369,6 @@ cplxpmpost=cplxpmpost.groupby(['firstdate'],as_index=False).agg({'entries':'sum'
 hub=pd.concat([cplxpmpre,cplxpmpost],axis=0,ignore_index=True)
 hub.to_csv(path+'OUTPUT/hub.csv',index=False)
 
-
 # Subway Closure
 dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
 postdates=['04/20/2020','04/21/2020','04/22/2020','04/23/2020','04/24/2020','04/27/2020','04/28/2020','04/29/2020','04/30/2020']
@@ -378,5 +377,10 @@ cplxamoff=dfunitentry[np.isin(dfunitentry['firstdate'],postdates)].reset_index(d
 cplxamoff=cplxamoff[np.isin(cplxamoff['time'],offtime)].reset_index(drop=True)
 cplxamoff=cplxamoff.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
 cplxamoff=pd.merge(cplxamoff,rc,how='left',left_on='unit',right_on='Remote')
-cplxamoff=cplxamoff.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(x),'entries':'sum'}).reset_index(drop=True)
+cplxamoff=cplxamoff.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
 cplxamoff.columns=['CplxID','PostTime','PostEntries']
+cplxamoff=pd.merge(cplxamoff,rc.drop('Remote',axis=1).drop_duplicates(keep='first').reset_index(drop=True),how='left',on='CplxID')
+cplxamoff=cplxamoff[['CplxID','Borough','CplxName','Routes','CplxLat','CplxLong','Hub','PostTime','PostEntries']].reset_index(drop=True)
+cplxamoff.to_csv(path+'OUTPUT/cplxamoff.csv',index=False)
+
+
