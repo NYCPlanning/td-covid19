@@ -903,14 +903,14 @@ path='/home/mayijun/sidewalk/'
 
 
 
-# Test
-start=datetime.datetime.now()
-sdwkplaza=gpd.read_file(path+'output/sdwkplaza.shp')
-sdwkplaza.crs={'init':'epsg:4326'}
-sdwkplaza['id']=0
-sdwkplazadis=sdwkplaza.dissolve(by='id')
-sdwkplazadis.to_file(path+'output/sdwkplazadis.shp')
-print(datetime.datetime.now()-start)
+## Test
+#start=datetime.datetime.now()
+#sdwkplaza=gpd.read_file(path+'output/sdwkplaza.shp')
+#sdwkplaza.crs={'init':'epsg:4326'}
+#sdwkplaza['id']=0
+#sdwkplazadis=sdwkplaza.dissolve(by='id')
+#sdwkplazadis.to_file(path+'output/sdwkplazadis.shp')
+#print(datetime.datetime.now()-start)
 
 start=datetime.datetime.now()
 impediment=gpd.read_file(path+'output/impediment.shp')
@@ -920,13 +920,13 @@ impedimentdis=impediment.dissolve(by='id')
 impedimentdis.to_file(path+'output/impedimentdis.shp')
 print(datetime.datetime.now()-start)
 
-start=datetime.datetime.now()
-k=pd.DataFrame()
-k['geom']=''
-k.loc[0,'geom']=sdwkplazadis.loc[0,'geometry'].difference(impedimentdis.loc[0,'geometry']).wkt
-k=gpd.GeoDataFrame(geometry=k['geom'].map(wkt.loads),crs={'init':'epsg:4326'})
-k.to_file(path+'k.shp')
-print(datetime.datetime.now()-start)
+#start=datetime.datetime.now()
+#k=pd.DataFrame()
+#k['geom']=''
+#k.loc[0,'geom']=sdwkplazadis.loc[0,'geometry'].difference(impedimentdis.loc[0,'geometry']).wkt
+#k=gpd.GeoDataFrame(geometry=k['geom'].map(wkt.loads),crs={'init':'epsg:4326'})
+#k.to_file(path+'k.shp')
+#print(datetime.datetime.now()-start)
 
 
 
