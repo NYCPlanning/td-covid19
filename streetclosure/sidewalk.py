@@ -920,23 +920,15 @@ impedimentdis=impediment.dissolve(by='id')
 impedimentdis.to_file(path+'output/impedimentdis.shp')
 print(datetime.datetime.now()-start)
 
+start=datetime.datetime.now()
+k=pd.DataFrame()
+k['geom']=''
+k.loc[0,'geom']=sdwkplazadis.loc[0,'geometry'].difference(impedimentdis.loc[0,'geometry']).wkt
+k=gpd.GeoDataFrame(geometry=k['geom'].map(wkt.loads),crs={'init':'epsg:4326'})
+k.to_file(path+'k.shp')
+print(datetime.datetime.now()-start)
 
 
-
-#start=datetime.datetime.now()
-#sdwktest['id']=0
-#sdwktestdis=sdwktest.dissolve(by='id').reset_index(drop=True)
-#litterbinadj['id']=0
-#litterbinadjdis=litterbinadj.dissolve(by='id').reset_index(drop=True)
-#k=pd.DataFrame()
-#k['geom']=''
-#k.loc[0,'geom']=sdwktestdis.loc[0,'geometry'].difference(litterbinadjdis.loc[0,'geometry']).wkt
-#k=gpd.GeoDataFrame(geometry=k['geom'].map(wkt.loads),crs={'init':'epsg:4326'})
-#k.to_file(path+'k.shp')
-#print(datetime.datetime.now()-start)
-## 0.5 sec
-#
-#
 
 
 
