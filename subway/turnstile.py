@@ -377,5 +377,10 @@ postdates=['04/30/2020']
 offtime=['00:00:00-04:00:00','00:22:00-04:22:00','00:30:00-04:30:00','01:00:00-05:00:00','02:00:00-06:00:00','02:30:00-06:30:00','03:00:00-07:00:00']
 cplxamoff=dfunitentry[np.isin(dfunitentry['firstdate'],postdates)].reset_index(drop=True)
 cplxamoff=cplxamoff[np.isin(cplxamoff['time'],offtime)].reset_index(drop=True)
+cplxamoff=cplxamoff.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
+cplxamoff=pd.merge(cplxamoff,rc,how='left',left_on='unit',right_on='Remote')
+cplxamoff=cplxamoff.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(x),'entries':'sum'}).reset_index(drop=True)
+cplxpmpost.columns=['CplxID','PostTime','PostEntries']
 
+k=pd.merge(cplxamdiff,cplxamoff,how='left',on='CplxID')
 
