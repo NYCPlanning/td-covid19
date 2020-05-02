@@ -886,6 +886,16 @@ path='/home/mayijun/sidewalk/'
 
 
 
+## Sidewalk and Plaza Excluding Impediments
+#start=datetime.datetime.now()
+#sdwkplaza=gpd.read_file(path+'output/sdwkplaza.shp')
+#sdwkplaza.crs={'init':'epsg:4326'}
+#impediment=gpd.read_file(path+'output/impediment.shp')
+#impediment.crs={'init':'epsg:4326'}
+#sdwkplazaimp=gpd.overlay(sdwkplaza,impediment,how='difference')
+#sdwkplazaimp.to_file(path+'output/sdwkplazaimp.shp')
+#print(datetime.datetime.now()-start)
+## 250 mins
 
 
 
@@ -893,72 +903,26 @@ path='/home/mayijun/sidewalk/'
 
 
 
-
-
-# Sidewalk and Plaza Excluding Impediments
+# Test
 start=datetime.datetime.now()
-sdwkplaza=gpd.read_file(path+'output/sdwkplaza.shp')
+sdwkplaza=gpd.read_file(path+'output/sdwkplaza.shp')[0:10].reset_index(drop=True)
 sdwkplaza.crs={'init':'epsg:4326'}
-impediment=gpd.read_file(path+'output/impediment.shp')
+sdwkplaza['id']=0
+sdwkplazadis=sdwkplaza.dissolve(by='id')
+sdwkplazadis.to_file(path+'output/sdwkplazadis.shp')
+print(datetime.datetime.now()-start)
+
+start=datetime.datetime.now()
+impediment=gpd.read_file(path+'output/impediment.shp')[0:10].reset_index(drop=True)
 impediment.crs={'init':'epsg:4326'}
-sdwkplazaimp=gpd.overlay(sdwkplaza,impediment,how='difference')
-sdwkplazaimp.to_file(path+'sdwkplazaimp.shp')
+impediment['id']=0
+impedimentdis=impediment.dissolve(by='id')
+impedimentdis.to_file(path+'output/impedimentdis.shp')
 print(datetime.datetime.now()-start)
 
 
 
-#start=datetime.datetime.now()
-#sdwkplaza=gpd.read_file(path+'output/sdwkplaza.shp')
-#sdwkplaza.crs={'init':'epsg:4326'}
-#sdwkplaza['id']=0
-#sdwkplazadis=sdwkplaza.dissolve(by='id')
-#sdwkplazadis.to_file(path+'output/sdwkplazadis.shp')
-#print(datetime.datetime.now()-start)
-#
-#
-#
-#
-#
-#
-#impediment=gpd.read_file(path+'output/impediment.shp')
-#impediment.crs={'init':'epsg:4326'}
-#
-#k=impediment[0:1000].reset_index(drop=True)
-#k['id']=0
-#k=k.dissolve(by='id')
-#k.to_file(path+'k.shp')
-#
-#sdwkplazaimp=gpd.overlay(sdwkplaza,k,how='difference')
-#sdwkplazaimp.to_file(path+'output/sdwkplazaimp.shp')
-#
-#
-#
-#
-#sdwktest=gpd.read_file(path+'sdwktest.shp')
-#sdwktest.crs={'init':'epsg:4326'}
-#
-#sdwktest['id']=0
-#sdwktestdis=sdwktest.dissolve(by='id').reset_index(drop=True)
-#sdwktestdis.to_file(path+'sdwktestdis.shp')
-#
-#
-#
-#litterbinadj=gpd.read_file(path+'output/litterbinadj.shp')
-#litterbinadj.crs={'init':'epsg:4326'}
-#
-#
-#
-#
-#
-#
-#
-#
-#start=datetime.datetime.now()
-#k=gpd.overlay(sdwktest,litterbinadj,how='difference')
-#k.to_file(path+'k.shp')
-#print(datetime.datetime.now()-start)
-## 60 secs
-#
+
 #start=datetime.datetime.now()
 #sdwktest['id']=0
 #sdwktestdis=sdwktest.dissolve(by='id').reset_index(drop=True)
@@ -973,6 +937,8 @@ print(datetime.datetime.now()-start)
 ## 0.5 sec
 #
 #
+
+
 
 
 
