@@ -896,31 +896,31 @@ path='/home/mayijun/sidewalk/'
 
 
 
-# Sidewalk and Plaza Excluding Impediments
-start=datetime.datetime.now()
-sdwkplaza=gpd.read_file(path+'output/sdwkplaza.shp')
-sdwkplaza.crs={'init':'epsg:4326'}
-impediment=gpd.read_file(path+'output/impediment.shp')
-impediment.crs={'init':'epsg:4326'}
-sdwkplazaimp=gpd.overlay(sdwkplaza,impediment,how='difference')
-sdwkplazaimp.to_file(path+'output/sdwkplazaimp.shp')
-print(datetime.datetime.now()-start)
-# 250 mins
-
-
-
-## Clean Sidewalk and Plaza Excluding Impediments
+## Sidewalk and Plaza Excluding Impediments
 #start=datetime.datetime.now()
-#sdwkplazaimpclean=gpd.read_file(path+'output/sdwkplazaimp.shp')
-#sdwkplazaimpclean.crs={'init':'epsg:4326'}
-#sdwkplazaimpclean=sdwkplazaimpclean.to_crs({'init':'epsg:6539'})
-#sdwkplazaimpclean=sdwkplazaimpclean.explode().reset_index(drop=True)
-#sdwkplazaimpclean['area']=[x.area for x in sdwkplazaimpclean['geometry']]
-#sdwkplazaimpclean=sdwkplazaimpclean[sdwkplazaimpclean['area']>0.01].reset_index(drop=True)
-#sdwkplazaimpclean=sdwkplazaimpclean.to_crs({'init':'epsg:4326'})
-#sdwkplazaimpclean.to_file(path+'output/sdwkplazaimpclean.shp')
+#sdwkplaza=gpd.read_file(path+'output/sdwkplaza.shp')
+#sdwkplaza.crs={'init':'epsg:4326'}
+#impediment=gpd.read_file(path+'output/impediment.shp')
+#impediment.crs={'init':'epsg:4326'}
+#sdwkplazaimp=gpd.overlay(sdwkplaza,impediment,how='difference')
+#sdwkplazaimp.to_file(path+'output/sdwkplazaimp.shp')
 #print(datetime.datetime.now()-start)
-## 5 mins
+## 200 mins
+
+
+
+# Clean Sidewalk and Plaza Excluding Impediments
+start=datetime.datetime.now()
+sdwkplazaimpclean=gpd.read_file(path+'output/sdwkplazaimp.shp')
+sdwkplazaimpclean.crs={'init':'epsg:4326'}
+sdwkplazaimpclean=sdwkplazaimpclean.to_crs({'init':'epsg:6539'})
+sdwkplazaimpclean=sdwkplazaimpclean.explode().reset_index(drop=True)
+sdwkplazaimpclean['area']=[x.area for x in sdwkplazaimpclean['geometry']]
+sdwkplazaimpclean=sdwkplazaimpclean[sdwkplazaimpclean['area']>0.01].reset_index(drop=True)
+sdwkplazaimpclean=sdwkplazaimpclean.to_crs({'init':'epsg:4326'})
+sdwkplazaimpclean.to_file(path+'output/sdwkplazaimpclean.shp')
+print(datetime.datetime.now()-start)
+# 5 mins
 
 
 
