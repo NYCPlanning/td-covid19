@@ -30,10 +30,6 @@ path='/home/mayijun/sidewalk/'
 
 
 
-
-
-
-
 ## Combine Sidewalk and Plaza
 #start=datetime.datetime.now()
 #sidewalk=gpd.read_file(path+'input/planimetrics/sidewalk.shp')
