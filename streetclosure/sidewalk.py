@@ -1122,17 +1122,15 @@ def parallelize(data,func):
     return dt
 
 if __name__=='__main__':
-    sdwktmimp=sdwkwd[0:100].groupby('pvid',as_index=False).apply(sidewalkwidthimp)    
     sdwktmimp=parallelize(sdwkwd,sidewalkwidthimpcompile)
     sdwktmimp=sdwktmimp.to_crs({'init':'epsg:4326'})
     sdwktmimp.to_file(path+'output/sdwktmimp.shp')
-    sdwkimpwd=sdwkimptm.groupby(['pvid','bkfaceid','spid','side'],as_index=False).agg({'impsw':['min','max','median']}).reset_index(drop=True)
-    sdwkimpwd.columns=['pvid','bkfaceid','spid','side','impswmin','impswmax','impswmedian']
-    sdwkimpwd=pd.merge(pvmtsp,sdwkimpwd,how='inner',on=['pvid','bkfaceid','spid'])
-    sdwkimpwd['length']=[x.length for x in sdwkimpwd['geometry']]
-    sdwkimpwd=sdwkimpwd[['pvid','bkfaceid','spid','side','impswmin','impswmax','impswmedian','length','geometry']].reset_index(drop=True)
-    sdwkimpwd=sdwkimpwd.to_crs({'init':'epsg:4326'})
-    sdwkimpwd.to_file(path+'output/sdwkimpwd.shp')
+    sdwkwdimp=sdwktmimp.groupby(['pvid','bkfaceid','spid','side','orgswmin','orgswmax','orgswmedia'],as_index=False).agg({'impsw':['min','max','median']}).reset_index(drop=True)
+    sdwkwdimp.columns=['pvid','bkfaceid','spid','side','orgswmin','orgswmax','orgswmedia','impswmin','impswmax','impswmedian']
+    sdwkwdimp=pd.merge(sdwkwd,sdwkwdimp,how='inner',on=['pvid','bkfaceid','spid','side','orgswmin','orgswmax','orgswmedia'])
+    sdwkwdimp=sdwkwdimp[['pvid','bkfaceid','spid','side','orgswmin','orgswmax','orgswmedia','impswmin','impswmax','impswmedian','length','geometry']].reset_index(drop=True)
+    sdwkwdimp=sdwkwdimp.to_crs({'init':'epsg:4326'})
+    sdwkwdimp.to_file(path+'output/sdwkwdimp.shp')
     print(datetime.datetime.now()-start)
     # 2400 mins
 
