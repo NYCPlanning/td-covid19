@@ -899,16 +899,17 @@ path='/home/mayijun/sidewalk/'
 #print(datetime.datetime.now()-start)
 ## 250 mins
 
-
+# Clean Sidewalk and Plaza Excluding Impediments
+start=datetime.datetime.now()
 sdwkplazaimpclean=gpd.read_file(path+'output/sdwkplazaimp.shp')
 sdwkplazaimpclean.crs={'init':'epsg:4326'}
 sdwkplazaimpclean=sdwkplazaimpclean.to_crs({'init':'epsg:6539'})
 sdwkplazaimpclean=sdwkplazaimpclean.explode().reset_index(drop=True)[['geometry']]
-#sdwkplazaimpclean=gpd.GeoDataFrame(geometry=sdwkplazaimpclean.explode().reset_index(drop=True),crs={'init':'epsg:4326'})
 sdwkplazaimpclean['area']=[x.area for x in sdwkplazaimpclean['geometry']]
 sdwkplazaimpclean=sdwkplazaimpclean[sdwkplazaimpclean['area']>0.01].reset_index(drop=True)
 sdwkplazaimpclean=sdwkplazaimpclean.to_crs({'init':'epsg:4326'})
 sdwkplazaimpclean.to_file(path+'output/sdwkplazaimpclean.shp')
+print(datetime.datetime.now()-start)
 
 
 
