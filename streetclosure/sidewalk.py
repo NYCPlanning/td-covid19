@@ -983,7 +983,7 @@ def parallelize(data,func):
     return dt
 
 if __name__=='__main__':
-    sdwktm=parallelize(pvmtsp,sidewalkwidthcompile)
+    sdwktm=parallelize(pvmtsp[0:1000],sidewalkwidthcompile)
     sdwktm=sdwktm.to_crs({'init':'epsg:4326'})
     sdwktm.to_file(path+'output/sdwktm.shp')
     sdwkwd=sdwktm.groupby(['pvid','bkfaceid','spid','side'],as_index=False).agg({'orgsw':['min','max','median']}).reset_index(drop=True)
