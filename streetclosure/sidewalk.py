@@ -1019,75 +1019,69 @@ path='/home/mayijun/sidewalk/'
 
 
 
-swimp=pvmtsp.loc[[1000]]
+swimp=sdwkwd.loc[[233]]
 
 
 # Find Sidewalk Width Excluding Impediments
 start=datetime.datetime.now()
-
 sdwkwd=gpd.read_file(path+'output/sdwkwd.shp')
 sdwkwd.crs={'init':'epsg:4326'}
 sdwkwd=sdwkwd.to_crs({'init':'epsg:6539'})
-
-pvmtsp=gpd.read_file(path+'output/pvmtsp.shp')
-pvmtsp.crs={'init':'epsg:4326'}
-pvmtsp=pvmtsp.to_crs({'init':'epsg:6539'})
-pvmtsp['length']=[x.length for x in pvmtsp['geometry']]
 sdwkplazaimp=gpd.read_file(path+'output/sdwkplazaimp.shp')
 sdwkplazaimp.crs={'init':'epsg:4326'}
 sdwkplazaimp=sdwkplazaimp.to_crs({'init':'epsg:6539'})
 
 def sidewalkwidthimp(swimp):
-    global pvmtsp
+    global sdwkwd
     global sdwkplazaimp
     swimp=swimp.reset_index(drop=True)
-    imptpseg=[0 if swimp.loc[0,'length']<=40 else int((swimp.loc[0,'length']-40)/5)+1][0]
-    if imptpseg!=0:
+    tpsegimp=[0 if swimp.loc[0,'length']<=40 else int((swimp.loc[0,'length']-40)/5)+1][0]
+    if tpsegimp!=0:
         try:
-            imptp=pd.concat([swimp]*imptpseg*2,axis=0,ignore_index=True)
-            imptp['side']=['L']*imptpseg+['R']*imptpseg
-            imptp['impsw']=np.nan
-            imptp['count']=np.nan
-            sdimp=sdwkplazaimp[sdwkplazaimp['spid']==imptp.loc[0,'spid']].reset_index(drop=True)  
-            impsplitter=shapely.geometry.MultiPoint([imptp.loc[0,'geometry'].interpolate(20+x*5,normalized=False) for x in range(0,imptpseg)])
-            imptpsplit=shapely.ops.split(imptp.loc[0,'geometry'],impsplitter.buffer(0.01))
-            if len(imptpsplit[2].parallel_offset(50,'left').boundary)==2:
-                imptp.loc[0,'geometry']=shapely.geometry.LineString([impsplitter[0],imptpsplit[2].parallel_offset(50,'left').boundary[0]])
+            tpimp=pd.concat([swimp]*tpsegimp*2,axis=0,ignore_index=True)
+            tpimp['side']=['L']*tpsegimp+['R']*tpsegimp
+            tpimp['impsw']=np.nan
+            tpimp['count']=np.nan
+            sdimp=sdwkplazaimp[sdwkplazaimp['spid']==tpimp.loc[0,'spid']].reset_index(drop=True)  
+            splitterimp=shapely.geometry.MultiPoint([tpimp.loc[0,'geometry'].interpolate(20+x*5,normalized=False) for x in range(0,tpsegimp)])
+            tpsplitimp=shapely.ops.split(tpimp.loc[0,'geometry'],splitterimp.buffer(0.01))
+            if len(tpsplitimp[2].parallel_offset(50,'left').boundary)==2:
+                tpimp.loc[0,'geometry']=shapely.geometry.LineString([splitterimp[0],tpsplitimp[2].parallel_offset(50,'left').boundary[0]])
             else:
-                imptp.loc[0,'geometry']=''
-            if len(imptpsplit[2].parallel_offset(50,'right').boundary)==2:
-                imptp.loc[imptpseg,'geometry']=shapely.geometry.LineString([impsplitter[0],imptpsplit[2].parallel_offset(50,'right').boundary[1]])
+                tpimp.loc[0,'geometry']=''
+            if len(tpsplitimp[2].parallel_offset(50,'right').boundary)==2:
+                tpimp.loc[tpsegimp,'geometry']=shapely.geometry.LineString([splitterimp[0],tpsplitimp[2].parallel_offset(50,'right').boundary[1]])
             else:
-                imptp.loc[imptpseg,'geometry']=''
-            for i in range(1,imptpseg):
-                if len(imptpsplit[i*2].parallel_offset(50,'left').boundary)==2:
-                    imptp.loc[i,'geometry']=shapely.geometry.LineString([impsplitter[i],imptpsplit[i*2].parallel_offset(50,'left').boundary[1]])
+                tpimp.loc[tpsegimp,'geometry']=''
+            for i in range(1,tpsegimp):
+                if len(tpsplitimp[i*2].parallel_offset(50,'left').boundary)==2:
+                    tpimp.loc[i,'geometry']=shapely.geometry.LineString([splitterimp[i],tpsplitimp[i*2].parallel_offset(50,'left').boundary[1]])
                 else:
-                    imptp.loc[i,'geometry']=''
-                if len(imptpsplit[i*2].parallel_offset(50,'right').boundary)==2:
-                    imptp.loc[i+imptpseg,'geometry']=shapely.geometry.LineString([impsplitter[i],imptpsplit[i*2].parallel_offset(50,'right').boundary[0]])
+                    tpimp.loc[i,'geometry']=''
+                if len(tpsplitimp[i*2].parallel_offset(50,'right').boundary)==2:
+                    tpimp.loc[i+tpsegimp,'geometry']=shapely.geometry.LineString([splitterimp[i],tpsplitimp[i*2].parallel_offset(50,'right').boundary[0]])
                 else:
-                    imptp.loc[i+imptpseg,'geometry']=''  
-            imptp=imptp[imptp['geometry']!=''].reset_index(drop=True) 
-            for j in imptp.index:
-                sdwkimpint=[imptp.loc[j,'geometry'].intersection(sdimp.loc[0,'geometry'])]
-                if sdwkimpint[0].length<=0.01:
-                    imptp.loc[j,'geometry']=''
-                    imptp.loc[j,'impsw']=0
-                    imptp.loc[j,'count']=0
-                elif type(sdwkimpint[0])==shapely.geometry.linestring.LineString:
-                    imptp.loc[j,'geometry']=sdwkimpint[0]
-                    imptp.loc[j,'impsw']=sdwkimpint[0].length
-                    imptp.loc[j,'count']=1
-                elif type(sdwkimpint[0])==shapely.geometry.multilinestring.MultiLineString:
-                    imptp.loc[j,'geometry']=sdwkimpint[0][0]
-                    imptp.loc[j,'impsw']=sdwkimpint[0][0].length
-                    imptp.loc[j,'count']=len(sdwkimpint[0])
-            imptp['geometry']=np.where(imptp['impsw']<=0.01,'',imptp['geometry'])
-            imptp['impsw']=np.where(imptp['impsw']<=0.01,np.nan,imptp['impsw'])
-            imptp=imptp.loc[pd.notna(imptp['impsw']),['pvid','bkfaceid','spid','side','impsw','count','geometry']].reset_index(drop=True)
-            if len(imptp.side.unique())==1:
-                return imptp
+                    tpimp.loc[i+tpsegimp,'geometry']=''
+            tpimp=tpimp[tpimp['geometry']!=''].reset_index(drop=True) 
+            for j in tpimp.index:
+                sdwkintimp=[tpimp.loc[j,'geometry'].intersection(sdimp.loc[0,'geometry'])]
+                if sdwkintimp[0].length<=0.01:
+                    tpimp.loc[j,'geometry']=''
+                    tpimp.loc[j,'impsw']=0
+                    tpimp.loc[j,'count']=0
+                elif type(sdwkintimp[0])==shapely.geometry.linestring.LineString:
+                    tpimp.loc[j,'geometry']=sdwkintimp[0]
+                    tpimp.loc[j,'impsw']=sdwkintimp[0].length
+                    tpimp.loc[j,'count']=1
+                elif type(sdwkintimp[0])==shapely.geometry.multilinestring.MultiLineString:
+                    tpimp.loc[j,'geometry']=sdwkintimp[0][0]
+                    tpimp.loc[j,'impsw']=sdwkintimp[0][0].length
+                    tpimp.loc[j,'count']=len(sdwkintimp[0])
+            tpimp['geometry']=np.where(tpimp['impsw']<=0.01,'',tpimp['geometry'])
+            tpimp['impsw']=np.where(tpimp['impsw']<=0.01,np.nan,tpimp['impsw'])
+            tpimp=tpimp.loc[pd.notna(tpimp['impsw']),['pvid','bkfaceid','spid','side','impsw','count','geometry']].reset_index(drop=True)
+            if len(tpimp.side.unique())==1:
+                return tpimp
             else:
                 print(str(swimp.loc[0,'pvid'])+' tickmarks on both sides!')
         except:
@@ -1096,8 +1090,8 @@ def sidewalkwidthimp(swimp):
         print(str(swimp.loc[0,'pvid'])+' shorter than 40 feet!')
 
 def sidewalkwidthimpcompile(swimpcp):
-    sdwkimptmtp=swimpcp.groupby('pvid',as_index=False).apply(sidewalkwidthimp)
-    return sdwkimptmtp
+    sdwktmtpimp=swimpcp.groupby('pvid',as_index=False).apply(sidewalkwidthimp)
+    return sdwktmtpimp
 
 def parallelize(data,func):
     data_split=np.array_split(data,mp.cpu_count()-1)
@@ -1109,9 +1103,9 @@ def parallelize(data,func):
     return dt
 
 if __name__=='__main__':
-    sdwkimptm=parallelize(pvmtsp,sidewalkwidthimpcompile)
-    sdwkimptm=sdwkimptm.to_crs({'init':'epsg:4326'})
-    sdwkimptm.to_file(path+'output/sdwkimptm.shp')
+    sdwktmimp=parallelize(sdwkwd[0:100],sidewalkwidthimpcompile)
+    sdwktmimp=sdwktmimp.to_crs({'init':'epsg:4326'})
+    sdwktmimp.to_file(path+'output/sdwktmimp.shp')
     sdwkimpwd=sdwkimptm.groupby(['pvid','bkfaceid','spid','side'],as_index=False).agg({'impsw':['min','max','median']}).reset_index(drop=True)
     sdwkimpwd.columns=['pvid','bkfaceid','spid','side','impswmin','impswmax','impswmedian']
     sdwkimpwd=pd.merge(pvmtsp,sdwkimpwd,how='inner',on=['pvid','bkfaceid','spid'])
