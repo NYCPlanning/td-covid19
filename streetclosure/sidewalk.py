@@ -900,6 +900,24 @@ path='/home/mayijun/sidewalk/'
 ## 250 mins
 
 
+sdwkplazaimpclean=gpd.read_file(path+'output/sdwkplazaimp.shp')
+sdwkplazaimpclean.crs={'init':'epsg:4326'}
+sdwkplazaimpclean=sdwkplazaimpclean.to_crs({'init':'epsg:6539'})
+sdwkplazaimpclean=sdwkplazaimpclean.explode().reset_index(drop=True)[['geometry']]
+#sdwkplazaimpclean=gpd.GeoDataFrame(geometry=sdwkplazaimpclean.explode().reset_index(drop=True),crs={'init':'epsg:4326'})
+sdwkplazaimpclean['area']=[x.area for x in sdwkplazaimpclean['geometry']]
+sdwkplazaimpclean=sdwkplazaimpclean[sdwkplazaimpclean['area']>0.01].reset_index(drop=True)
+sdwkplazaimpclean=sdwkplazaimpclean.to_crs({'init':'epsg:4326'})
+sdwkplazaimpclean.to_file(path+'output/sdwkplazaimpclean.shp')
+
+
+
+
+
+
+
+
+
 
 ## Find Original Sidewalk Width
 #start=datetime.datetime.now()
@@ -1017,9 +1035,9 @@ path='/home/mayijun/sidewalk/'
 
 
 
+pvid=91
 
-
-swimp=sdwkwd.loc[[233]]
+swimp=sdwkwd.loc[[46]]
 
 
 # Find Sidewalk Width Excluding Impediments
@@ -1064,6 +1082,8 @@ def sidewalkwidthimp(swimp):
                     tpimp.loc[i+tpsegimp,'geometry']=''
             tpimp=tpimp[tpimp['geometry']!=''].reset_index(drop=True) 
             for j in tpimp.index:
+#                k=[tpimp.loc[j,'geometry'].intersection(x) for x in sdimp.loc[0,'geometry']]
+#                k=[tpimp.loc[j,'geometry'].intersection(sdimp.loc[0,'geometry'][1])]
                 sdwkintimp=[tpimp.loc[j,'geometry'].intersection(sdimp.loc[0,'geometry'])]
                 if sdwkintimp[0].length<=0.01:
                     tpimp.loc[j,'geometry']=''
@@ -1079,7 +1099,7 @@ def sidewalkwidthimp(swimp):
                     tpimp.loc[j,'count']=len(sdwkintimp[0])
             tpimp['geometry']=np.where(tpimp['impsw']<=0.01,'',tpimp['geometry'])
             tpimp['impsw']=np.where(tpimp['impsw']<=0.01,np.nan,tpimp['impsw'])
-            tpimp=tpimp.loc[pd.notna(tpimp['impsw']),['pvid','bkfaceid','spid','side','impsw','count','geometry']].reset_index(drop=True)
+            tpimp=tpimp.loc[pd.notna(tpimp['impsw']),['pvid','bkfaceid','spid','side','orgswmin','orgswmax','orgswmedia','impsw','count','geometry']].reset_index(drop=True)
             if len(tpimp.side.unique())==1:
                 return tpimp
             else:
@@ -1103,7 +1123,8 @@ def parallelize(data,func):
     return dt
 
 if __name__=='__main__':
-    sdwktmimp=parallelize(sdwkwd[0:100],sidewalkwidthimpcompile)
+    sdwktmimp=sdwkwd[0:100].groupby('pvid',as_index=False).apply(sidewalkwidthimp)    
+    sdwktmimp=parallelize(sdwkwd,sidewalkwidthimpcompile)
     sdwktmimp=sdwktmimp.to_crs({'init':'epsg:4326'})
     sdwktmimp.to_file(path+'output/sdwktmimp.shp')
     sdwkimpwd=sdwkimptm.groupby(['pvid','bkfaceid','spid','side'],as_index=False).agg({'impsw':['min','max','median']}).reset_index(drop=True)
@@ -1115,14 +1136,9 @@ if __name__=='__main__':
     sdwkimpwd.to_file(path+'output/sdwkimpwd.shp')
     print(datetime.datetime.now()-start)
     # 2400 mins
-    
-    
-    
-    
-    
-    
-    
-    
+
+
+
     
     
     
