@@ -411,7 +411,7 @@ if __name__=='__main__':
     utistrip=utistrip[[type(x)==shapely.geometry.polygon.Polygon for x in utistrip['geometry']]].reset_index(drop=True)
     utistrip=utistrip.to_crs({'init':'epsg:4326'})
     utistrip['usid']=range(0,len(utistrip))
-    utistrip.to_file(path+'output/utistrip.shp')
+    utistrip.to_file(path+'output/utistriptest.shp')
     print(datetime.datetime.now()-start)
     # 25 mins
 
