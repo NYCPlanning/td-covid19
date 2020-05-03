@@ -899,23 +899,20 @@ path='/home/mayijun/sidewalk/'
 #print(datetime.datetime.now()-start)
 ## 250 mins
 
+
+
 # Clean Sidewalk and Plaza Excluding Impediments
 start=datetime.datetime.now()
 sdwkplazaimpclean=gpd.read_file(path+'output/sdwkplazaimp.shp')
 sdwkplazaimpclean.crs={'init':'epsg:4326'}
 sdwkplazaimpclean=sdwkplazaimpclean.to_crs({'init':'epsg:6539'})
-sdwkplazaimpclean=sdwkplazaimpclean.explode().reset_index(drop=True)[['geometry']]
+sdwkplazaimpclean=sdwkplazaimpclean.explode().reset_index(drop=True)
 sdwkplazaimpclean['area']=[x.area for x in sdwkplazaimpclean['geometry']]
 sdwkplazaimpclean=sdwkplazaimpclean[sdwkplazaimpclean['area']>0.01].reset_index(drop=True)
 sdwkplazaimpclean=sdwkplazaimpclean.to_crs({'init':'epsg:4326'})
 sdwkplazaimpclean.to_file(path+'output/sdwkplazaimpclean.shp')
 print(datetime.datetime.now()-start)
-
-
-
-
-
-
+# 5 mins
 
 
 
@@ -1037,7 +1034,7 @@ print(datetime.datetime.now()-start)
 #
 #pvid=91
 #
-#swimp=sdwkwd.loc[[46]]
+#swimp=sdwkwd.loc[[366]]
 #
 #
 ## Find Sidewalk Width Excluding Impediments
@@ -1045,13 +1042,13 @@ print(datetime.datetime.now()-start)
 #sdwkwd=gpd.read_file(path+'output/sdwkwd.shp')
 #sdwkwd.crs={'init':'epsg:4326'}
 #sdwkwd=sdwkwd.to_crs({'init':'epsg:6539'})
-#sdwkplazaimp=gpd.read_file(path+'output/sdwkplazaimp.shp')
-#sdwkplazaimp.crs={'init':'epsg:4326'}
-#sdwkplazaimp=sdwkplazaimp.to_crs({'init':'epsg:6539'})
+#sdwkplazaimpclean=gpd.read_file(path+'output/sdwkplazaimpclean.shp')
+#sdwkplazaimpclean.crs={'init':'epsg:4326'}
+#sdwkplazaimpclean=sdwkplazaimpclean.to_crs({'init':'epsg:6539'})
 #
 #def sidewalkwidthimp(swimp):
 #    global sdwkwd
-#    global sdwkplazaimp
+#    global sdwkplazaimpclean
 #    swimp=swimp.reset_index(drop=True)
 #    tpsegimp=[0 if swimp.loc[0,'length']<=40 else int((swimp.loc[0,'length']-40)/5)+1][0]
 #    if tpsegimp!=0:
@@ -1060,7 +1057,7 @@ print(datetime.datetime.now()-start)
 #            tpimp['side']=['L']*tpsegimp+['R']*tpsegimp
 #            tpimp['impsw']=np.nan
 #            tpimp['count']=np.nan
-#            sdimp=sdwkplazaimp[sdwkplazaimp['spid']==tpimp.loc[0,'spid']].reset_index(drop=True)  
+#            sdimp=sdwkplazaimpclean[sdwkplazaimpclean['spid']==tpimp.loc[0,'spid']].reset_index(drop=True)  
 #            splitterimp=shapely.geometry.MultiPoint([tpimp.loc[0,'geometry'].interpolate(20+x*5,normalized=False) for x in range(0,tpsegimp)])
 #            tpsplitimp=shapely.ops.split(tpimp.loc[0,'geometry'],splitterimp.buffer(0.01))
 #            if len(tpsplitimp[2].parallel_offset(50,'left').boundary)==2:
@@ -1143,12 +1140,12 @@ print(datetime.datetime.now()-start)
 #    
 #    
 #    
-#    
-#    
-#    
-#    
-#    
-#    
+    
+    
+    
+    
+    
+    
     
     
     
