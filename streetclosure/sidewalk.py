@@ -1009,7 +1009,7 @@ path='/home/mayijun/sidewalk/'
 #    sdwkwd=sdwkwd.to_crs({'init':'epsg:4326'})
 #    sdwkwd.to_file(path+'output/sdwkwd.shp')
 #    print(datetime.datetime.now()-start)
-#    # 2400 mins
+#    # 450 mins
 
 
 
@@ -1038,7 +1038,7 @@ path='/home/mayijun/sidewalk/'
 
 # Find Sidewalk Width Excluding Impediments
 start=datetime.datetime.now()
-sdwkwd=gpd.read_file(path+'output/sdwkwd.shp')
+sdwkwd=gpd.read_file(path+'output/sdwkwd.shp')[0:1000]
 sdwkwd.crs={'init':'epsg:4326'}
 sdwkwd=sdwkwd.to_crs({'init':'epsg:6539'})
 sdwkplazaimpclean=gpd.read_file(path+'output/sdwkplazaimpclean.shp')
