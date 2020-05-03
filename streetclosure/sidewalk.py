@@ -1037,7 +1037,7 @@ path='/home/mayijun/sidewalk/'
 #swimp=sdwkwd.loc[[53369]]
 # Find Sidewalk Width Excluding Impediments
 start=datetime.datetime.now()
-sdwkwd=gpd.read_file(path+'output/sdwkwd.shp')[0:1000]
+sdwkwd=gpd.read_file(path+'output/sdwkwd.shp')
 sdwkwd.crs={'init':'epsg:4326'}
 sdwkwd=sdwkwd.to_crs({'init':'epsg:6539'})
 sdwkplazaimpclean=gpd.read_file(path+'output/sdwkplazaimpclean.shp')
