@@ -1029,12 +1029,12 @@ path='/home/mayijun/sidewalk/'
 
 
 
-
 #swimp=sdwkwd.loc[[366]]
 #swimp=sdwkwd.loc[[233]]
 #swimp=sdwkwd.loc[[590]]
 #swimp=sdwkwd.loc[[594]]
 #swimp=sdwkwd.loc[[53369]]
+#swimp=sdwkwd.loc[[5263]]
 # Find Sidewalk Width Excluding Impediments
 start=datetime.datetime.now()
 sdwkwd=gpd.read_file(path+'output/sdwkwd.shp')
