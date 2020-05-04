@@ -1112,7 +1112,7 @@ path='/home/mayijun/sidewalk/'
 #    pool.join()
 #    return dt
 #
-if __name__=='__main__':
+#if __name__=='__main__':
 #    sdwktmimp=parallelize(sdwkwd,sidewalkwidthimpcompile)
 #    sdwktmimp=sdwktmimp.to_crs({'init':'epsg:4326'})
 #    sdwktmimp.to_file(path+'output/sdwktmimp.shp')
@@ -1122,55 +1122,55 @@ if __name__=='__main__':
 #    sdwkwdimp=sdwkwdimp[['pvid','bkfaceid','spid','side','orgswmin','orgswmax','orgswmedia','impswmin','impswmax','impswmedian','length','geometry']].reset_index(drop=True)
 #    sdwkwdimp=sdwkwdimp.to_crs({'init':'epsg:4326'})
 #    sdwkwdimp.to_file(path+'output/sdwkwdimp.shp')
-    sdwkbnimp=gpd.read_file(path+'output/sdwktmimp.shp')
-    sdwkbnimp=sdwkbnimp[sdwkbnimp['impsw']<8].reset_index(drop=True)
-    sdwkbnimp.to_file(path+'output/sdwkbnimp.shp')
+#    sdwkbnimp=gpd.read_file(path+'output/sdwktmimp.shp')
+#    sdwkbnimp=sdwkbnimp[sdwkbnimp['impsw']<8].reset_index(drop=True)
+#    sdwkbnimp.to_file(path+'output/sdwkbnimp.shp')
 #    print(datetime.datetime.now()-start)
-    # 600 mins
+#    # 600 mins
 
 
 
 
-## Tract
-#start=datetime.datetime.now()
-#nycct=gpd.read_file(path+'input/nycct.shp')
-#nycct.crs={'init':'epsg:4326'}
-#nycctclipped=gpd.read_file(path+'input/nycctclipped.shp')
-#nycctclipped.crs={'init':'epsg:4326'}
-#sw=gpd.read_file(path+'output/sw.shp')
-#sw.crs={'init':'epsg:4326'}
-#sidewalk=gpd.read_file(path+'input/sidewalk.shp')
-#sidewalk.crs={'init':'epsg:4326'}
-#tracttonta=pd.read_csv(path+'input/tracttonta.csv',dtype=str)
-#swct=pd.merge(nycctclipped,tracttonta,how='inner',left_on='tractid',right_on='tract')
-#swct=swct.loc[[str(x) not in ['BX99','BK99','MN99','QN99','SI99','QN98'] for x in swct['nta']],['tractid','geometry']].reset_index(drop=True)
-#swct=swct.to_crs({'init':'epsg:6539'})
-#swct['area']=[x.area for x in swct['geometry']]
-#swct=swct[['tractid','area']].reset_index(drop=True)
-#swctmedian=gpd.sjoin(sw,nycct,how='inner',op='intersects')
-#swctmedian['swlength']=swctmedian['swmedian']*swctmedian['length']
-#swctmedian=swctmedian.groupby('tractid',as_index=False).agg({'swlength':'sum','length':'sum'}).reset_index(drop=True)
-#swctmedian['swmdn']=swctmedian['swlength']/swctmedian['length']
-#swctmedian['swmdnrk']=10-pd.qcut(swctmedian['swmdn'],10,labels=False)
-#swctmedian=swctmedian[['tractid','swmdn','swmdnrk']].reset_index(drop=True)
-#swct=pd.merge(swct,swctmedian,how='inner',on='tractid')
-#swctarea=gpd.overlay(sidewalk,nycct,how='intersection')
-#swctarea.crs={'init':'epsg:4326'}
-#swctarea=swctarea.to_crs({'init':'epsg:6539'})
-#swctarea['swarea']=[x.area for x in swctarea['geometry']]
-#swctarea=swctarea.groupby('tractid',as_index=False).agg({'swarea':'sum'}).reset_index(drop=True)
-#swct=pd.merge(swct,swctarea,how='inner',on='tractid')
-#swct['swareaarea']=swct['swarea']/swct['area']
-#swct['areaareark']=10-pd.qcut(swct['swareaarea'],10,labels=False)
-#ctpop=pd.read_csv(path+'input/tractpop2018.csv',dtype=str,converters={'pop':float})
-#swct=pd.merge(swct,ctpop,how='inner',on='tractid')
-#swct['poparea']=swct['pop']/swct['area']
-#swct['poprk']=pd.qcut(swct['poparea'],10,labels=False)+1
-#swct['swareapop']=swct['swarea']/swct['pop']
-#swct['areapoprk']=10-pd.qcut(swct['swareapop'],10,labels=False)
-#swct=pd.merge(nycctclipped,swct,how='inner',on='tractid')
-#swct.to_file(path+'output/swct.shp')
-#print(datetime.datetime.now()-start)
+# Tract
+start=datetime.datetime.now()
+nycct=gpd.read_file(path+'input/nycct.shp')
+nycct.crs={'init':'epsg:4326'}
+nycctclipped=gpd.read_file(path+'input/nycctclipped.shp')
+nycctclipped.crs={'init':'epsg:4326'}
+sw=gpd.read_file(path+'output/sw.shp')
+sw.crs={'init':'epsg:4326'}
+sidewalk=gpd.read_file(path+'input/sidewalk.shp')
+sidewalk.crs={'init':'epsg:4326'}
+tracttonta=pd.read_csv(path+'input/tracttonta.csv',dtype=str)
+swct=pd.merge(nycctclipped,tracttonta,how='inner',left_on='tractid',right_on='tract')
+swct=swct.loc[[str(x) not in ['BX99','BK99','MN99','QN99','SI99','QN98'] for x in swct['nta']],['tractid','geometry']].reset_index(drop=True)
+swct=swct.to_crs({'init':'epsg:6539'})
+swct['area']=[x.area for x in swct['geometry']]
+swct=swct[['tractid','area']].reset_index(drop=True)
+swctmedian=gpd.sjoin(sw,nycct,how='inner',op='intersects')
+swctmedian['swlength']=swctmedian['swmedian']*swctmedian['length']
+swctmedian=swctmedian.groupby('tractid',as_index=False).agg({'swlength':'sum','length':'sum'}).reset_index(drop=True)
+swctmedian['swmdn']=swctmedian['swlength']/swctmedian['length']
+swctmedian['swmdnrk']=10-pd.qcut(swctmedian['swmdn'],10,labels=False)
+swctmedian=swctmedian[['tractid','swmdn','swmdnrk']].reset_index(drop=True)
+swct=pd.merge(swct,swctmedian,how='inner',on='tractid')
+swctarea=gpd.overlay(sidewalk,nycct,how='intersection')
+swctarea.crs={'init':'epsg:4326'}
+swctarea=swctarea.to_crs({'init':'epsg:6539'})
+swctarea['swarea']=[x.area for x in swctarea['geometry']]
+swctarea=swctarea.groupby('tractid',as_index=False).agg({'swarea':'sum'}).reset_index(drop=True)
+swct=pd.merge(swct,swctarea,how='inner',on='tractid')
+swct['swareaarea']=swct['swarea']/swct['area']
+swct['areaareark']=10-pd.qcut(swct['swareaarea'],10,labels=False)
+ctpop=pd.read_csv(path+'input/tractpop2018.csv',dtype=str,converters={'pop':float})
+swct=pd.merge(swct,ctpop,how='inner',on='tractid')
+swct['poparea']=swct['pop']/swct['area']
+swct['poprk']=pd.qcut(swct['poparea'],10,labels=False)+1
+swct['swareapop']=swct['swarea']/swct['pop']
+swct['areapoprk']=10-pd.qcut(swct['swareapop'],10,labels=False)
+swct=pd.merge(nycctclipped,swct,how='inner',on='tractid')
+swct.to_file(path+'output/swct.shp')
+print(datetime.datetime.now()-start)
 
 
 
