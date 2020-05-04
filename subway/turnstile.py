@@ -372,7 +372,7 @@ hub.to_csv(path+'OUTPUT/hub.csv',index=False)
 # Subway Closure
 dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
 postdates=['04/20/2020','04/21/2020','04/22/2020','04/23/2020','04/24/2020','04/27/2020','04/28/2020','04/29/2020','04/30/2020']
-offtime=['00:00:00-04:00:00','00:22:00-04:22:00','00:30:00-04:30:00','01:00:00-05:00:00','02:00:00-06:00:00','02:30:00-06:30:00','03:00:00-07:00:00']
+offtime=['23:00:00-03:00:00','00:00:00-04:00:00','00:22:00-04:22:00','00:30:00-04:30:00','01:00:00-05:00:00','02:00:00-06:00:00','02:30:00-06:30:00']
 cplxamoff=dfunitentry[np.isin(dfunitentry['firstdate'],postdates)].reset_index(drop=True)
 cplxamoff=cplxamoff[np.isin(cplxamoff['time'],offtime)].reset_index(drop=True)
 cplxamoff=cplxamoff.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
