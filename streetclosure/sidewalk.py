@@ -1123,7 +1123,7 @@ if __name__=='__main__':
 #    sdwkwdimp=sdwkwdimp.to_crs({'init':'epsg:4326'})
 #    sdwkwdimp.to_file(path+'output/sdwkwdimp.shp')
     sdwkbnimp=gpd.read_file(path+'output/sdwktmimp.shp')
-    sdwkbnimp=sdwkbnimp[sdwkbnimp['impsw']<8].reset_index(drop=True)
+    sdwkbnimp=sdwkbnimp[sdwkbnimp['impsw']<6].reset_index(drop=True)
     sdwkbnimp.to_file(path+'output/sdwkbnimp.shp')
 #    print(datetime.datetime.now()-start)
     # 600 mins
