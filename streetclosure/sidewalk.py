@@ -25,7 +25,7 @@ path='/home/mayijun/sidewalk/'
 # News Stand: https://data.cityofnewyork.us/Transportation/News-Stands/kfum-nzw3
 # Hydrant: https://data.cityofnewyork.us/Environment/Hydrants-of-the-City-of-New-York/6pui-xhxz
 # Litter Bin: https://data.cityofnewyork.us/dataset/DSNY-Litter-Basket-Inventory/uhim-nea2
-# Recycle: https://data.cityofnewyork.us/Environment/Public-Recycling-Bins/sxx4-xhzg
+# Recycle Bin: https://data.cityofnewyork.us/Environment/Public-Recycling-Bins/sxx4-xhzg
 # Tree: https://data.cityofnewyork.us/Environment/2015-Street-Tree-Census-Tree-Data/pi5s-9p35
 
 

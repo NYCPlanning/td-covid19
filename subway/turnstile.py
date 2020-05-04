@@ -381,6 +381,7 @@ cplxamoff=cplxamoff.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.
 cplxamoff.columns=['CplxID','PostTime','PostEntries']
 cplxamoff=pd.merge(rc.drop('Remote',axis=1).drop_duplicates(keep='first').reset_index(drop=True),cplxamoff,how='left',on='CplxID')
 cplxamoff=cplxamoff[['CplxID','Borough','CplxName','Routes','CplxLat','CplxLong','Hub','PostTime','PostEntries']].reset_index(drop=True)
+cplxamoff['PostEntries']=cplxamoff['PostEntries'].fillna(0)
 cplxamoff.to_csv(path+'OUTPUT/cplxamoff.csv',index=False)
 
 
