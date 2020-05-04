@@ -379,7 +379,7 @@ cplxamoff=cplxamoff.groupby(['unit','time'],as_index=False).agg({'entries':'mean
 cplxamoff=pd.merge(cplxamoff,rc,how='left',left_on='unit',right_on='Remote')
 cplxamoff=cplxamoff.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
 cplxamoff.columns=['CplxID','PostTime','PostEntries']
-cplxamoff=pd.merge(cplxamoff,rc.drop('Remote',axis=1).drop_duplicates(keep='first').reset_index(drop=True),how='left',on='CplxID')
+cplxamoff=pd.merge(rc.drop('Remote',axis=1).drop_duplicates(keep='first').reset_index(drop=True),cplxamoff,how='left',on='CplxID')
 cplxamoff=cplxamoff[['CplxID','Borough','CplxName','Routes','CplxLat','CplxLong','Hub','PostTime','PostEntries']].reset_index(drop=True)
 cplxamoff.to_csv(path+'OUTPUT/cplxamoff.csv',index=False)
 
