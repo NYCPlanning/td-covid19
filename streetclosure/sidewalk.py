@@ -1126,7 +1126,7 @@ if __name__=='__main__':
     sdwkbnimp=sdwkbnimp[sdwkbnimp['impsw']<8].reset_index(drop=True)
     sdwkbnimp.to_file(path+'output/sdwkbnimp.shp')
 #    print(datetime.datetime.now()-start)
-    # 550 mins
+    # 600 mins
 
 
 
