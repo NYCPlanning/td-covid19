@@ -1180,12 +1180,18 @@ nycctclipped=gpd.read_file(path+'input/census/nycctclipped.shp')
 nycctclipped.crs={'init':'epsg:4326'}
 tracttonta=pd.read_csv(path+'input/census/tracttonta.csv',dtype=str)
 pedct=pd.merge(nycctclipped,tracttonta,how='inner',left_on='tractid',right_on='tract')
-pedct=pedct.loc[[str(x) not in ['BX99','BK99','MN99','QN99','SI99','QN98'] for x in pedct['nta']],['tractid','geometry']].reset_index(drop=True)
+pedct=pedct.loc[[str(x) not in ['BX98','BX99','BK99','MN99','QN98','QN99','SI99'] for x in pedct['nta']],['tractid','geometry']].reset_index(drop=True)
 pedct=pd.merge(pedct,pedarea,how='inner',on='tractid')
 ctpop=pd.read_csv(path+'input/census/tractpop2018.csv',dtype=str,converters={'pop':float})
 pedct=pd.merge(pedct,ctpop,how='inner',on='tractid')
 pedct['pedareapop']=pedct['pedarea']/pedct['pop']
-pedct=pedct.loc[pedct['pop']>=100,['tractid','pedarea','pop','pedareapop','geometry']].reset_index(drop=True)
+ctjob=pd.read_csv(path+'input/census/ny_wac_S000_JT00_2017.csv',dtype=str)
+ctjob['tractid']=[str(x)[0:11] for x in ctjob['w_geocode']]
+ctjob['job']=pd.to_numeric(ctjob['C000'])
+ctjob=ctjob.groupby('tractid',as_index=False).agg({'job':'sum'}).reset_index(drop=True)
+pedct=pd.merge(pedct,ctjob,how='inner',on='tractid')
+pedct['pedareajob']=pedct['pedarea']/pedct['job']
+pedct=pedct[['tractid','pedarea','pop','pedareapop','job','pedareajob','geometry']].reset_index(drop=True)
 pedct.to_file(path+'output/pedct.shp')
 print(datetime.datetime.now()-start)
 # 1 min
