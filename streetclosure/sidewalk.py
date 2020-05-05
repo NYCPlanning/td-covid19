@@ -1112,7 +1112,7 @@ path='/home/mayijun/sidewalk/'
 #    pool.join()
 #    return dt
 #
-if __name__=='__main__':
+#if __name__=='__main__':
 #    sdwktmimp=parallelize(sdwkwd,sidewalkwidthimpcompile)
 #    sdwktmimp=sdwktmimp.to_crs({'init':'epsg:4326'})
 #    sdwktmimp.to_file(path+'output/sdwktmimp.shp')
@@ -1126,21 +1126,21 @@ if __name__=='__main__':
 #    sdwktmimp.crs={'init':'epsg:4326'}
 #    sdwkbnimp=sdwktmimp.loc[sdwktmimp['impsw']<6,['pvid','geometry']].reset_index(drop=True)
 #    sdwkbnimp.to_file(path+'output/sdwkbnimp.shp')
-    sdwkbnimp=gpd.read_file(path+'output/sdwkbnimp.shp')
-    sdwkbnimp.crs={'init':'epsg:4326'}
-    county=gpd.read_file(path+'input/census/county.shp')
-    county.crs={'init':'epsg:4326'}
-    pvmtsp=gpd.read_file(path+'output/pvmtsp.shp')
-    pvmtsp.crs={'init':'epsg:4326'}
-    pvmtspcounty=gpd.sjoin(pvmtsp,county,how='left',op='intersects')
-    pvmtspcounty=pvmtspcounty[['pvid','GEOID']].reset_index(drop=True)
-    sdwkbnimpcounty=pd.merge(sdwkbnimp,pvmtspcounty,how='inner',on='pvid')
-    sdwkbnimpqn=sdwkbnimpcounty.loc[[x in ['36081'] for x in sdwkbnimpcounty['GEOID']],'geometry'].reset_index(drop=True)
-    sdwkbnimpqn.to_file(path+'output/sdwkbnimpqn.shp')
-    sdwkbnimpsi=sdwkbnimpcounty.loc[[x in ['36085'] for x in sdwkbnimpcounty['GEOID']],'geometry'].reset_index(drop=True)
-    sdwkbnimpsi.to_file(path+'output/sdwkbnimpsi.shp')
-    sdwkbnimpbxbkmn=sdwkbnimpcounty.loc[[x in ['36005','36047','36061'] for x in sdwkbnimpcounty['GEOID']],'geometry'].reset_index(drop=True)
-    sdwkbnimpbxbkmn.to_file(path+'output/sdwkbnimpbxbkmn.shp')
+#    sdwkbnimp=gpd.read_file(path+'output/sdwkbnimp.shp')
+#    sdwkbnimp.crs={'init':'epsg:4326'}
+#    county=gpd.read_file(path+'input/census/county.shp')
+#    county.crs={'init':'epsg:4326'}
+#    pvmtsp=gpd.read_file(path+'output/pvmtsp.shp')
+#    pvmtsp.crs={'init':'epsg:4326'}
+#    pvmtspcounty=gpd.sjoin(pvmtsp,county,how='left',op='intersects')
+#    pvmtspcounty=pvmtspcounty[['pvid','GEOID']].reset_index(drop=True)
+#    sdwkbnimpcounty=pd.merge(sdwkbnimp,pvmtspcounty,how='inner',on='pvid')
+#    sdwkbnimpqn=sdwkbnimpcounty.loc[[x in ['36081'] for x in sdwkbnimpcounty['GEOID']],'geometry'].reset_index(drop=True)
+#    sdwkbnimpqn.to_file(path+'output/sdwkbnimpqn.shp')
+#    sdwkbnimpsi=sdwkbnimpcounty.loc[[x in ['36085'] for x in sdwkbnimpcounty['GEOID']],'geometry'].reset_index(drop=True)
+#    sdwkbnimpsi.to_file(path+'output/sdwkbnimpsi.shp')
+#    sdwkbnimpbxbkmn=sdwkbnimpcounty.loc[[x in ['36005','36047','36061'] for x in sdwkbnimpcounty['GEOID']],'geometry'].reset_index(drop=True)
+#    sdwkbnimpbxbkmn.to_file(path+'output/sdwkbnimpbxbkmn.shp')
 #    print(datetime.datetime.now()-start)
 #    # 600 mins
 
@@ -1153,7 +1153,8 @@ nycct.crs={'init':'epsg:4326'}
 sdwkplazaimpclean=gpd.read_file(path+'output/sdwkplazaimpclean.shp')
 sdwkplazaimpclean.crs={'init':'epsg:4326'}
 sdwkplazaimpclean=gpd.sjoin(sdwkplazaimpclean,nycct,how='inner',op='intersects')
-sdwkplazaimpclean=sdwkplazaimpclean[['tractid','pedarea']].reset_index(drop=True)
+sdwkplazaimpclean=sdwkplazaimpclean[['tractid','area']].reset_index(drop=True)
+sdwkplazaimpclean.columns=['tractid','pedarea']
 boardwalk=gpd.read_file(path+'input/planimetrics/boardwalk.shp')
 boardwalk.crs={'init':'epsg:4326'}
 boardwalk=boardwalk[[type(x)==shapely.geometry.polygon.Polygon for x in boardwalk['geometry']]].reset_index(drop=True)
