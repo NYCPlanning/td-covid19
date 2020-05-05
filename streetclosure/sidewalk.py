@@ -1122,9 +1122,12 @@ if __name__=='__main__':
 #    sdwkwdimp=sdwkwdimp[['pvid','bkfaceid','spid','side','orgswmin','orgswmax','orgswmedia','impswmin','impswmax','impswmedian','length','geometry']].reset_index(drop=True)
 #    sdwkwdimp=sdwkwdimp.to_crs({'init':'epsg:4326'})
 #    sdwkwdimp.to_file(path+'output/sdwkwdimp.shp')
-    sdwkbnimp=gpd.read_file(path+'output/sdwktmimp.shp')
+    sdwktmimp=gpd.read_file(path+'output/sdwktmimp.shp')
+    sdwktmimp.crs={'init':'epsg:4326'}
+    sdwkbnimp=sdwktmimp.loc[sdwktmimp['impsw']<6,['pvid','geometry']].reset_index(drop=True)
+    sdwkbnimp.to_file(path+'output/sdwkbnimp.shp')
+    sdwkbnimp=gpd.read_file(path+'output/sdwkbnimp.shp')
     sdwkbnimp.crs={'init':'epsg:4326'}
-    sdwkbnimp=sdwkbnimp.loc[sdwkbnimp['impsw']<6,['pvid','geometry']].reset_index(drop=True)
     county=gpd.read_file(path+'input/census/county.shp')
     county.crs={'init':'epsg:4326'}
     pvmtsp=gpd.read_file(path+'output/pvmtsp.shp')
@@ -1132,9 +1135,9 @@ if __name__=='__main__':
     pvmtspcounty=gpd.sjoin(pvmtsp,county,how='left',op='intersects')
     pvmtspcounty=pvmtspcounty[['pvid','GEOID']].reset_index(drop=True)
     sdwkbnimpcounty=pd.merge(sdwkbnimp,pvmtspcounty,how='inner',on='pvid')
-    sdwkbnimpqn=sdwkbnimpcounty[[x in ['36081'] for x in sdwkbnimpcounty['GEOID']]].reset_index(drop=True)
+    sdwkbnimpqn=sdwkbnimpcounty.loc[[x in ['36081'] for x in sdwkbnimpcounty['GEOID']],'geometry'].reset_index(drop=True)
     sdwkbnimpqn.to_file(path+'output/sdwkbnimpqn.shp')
-    sdwkbnimpbxbkmnsi=sdwkbnimpcounty[[x in ['36005','36047','36061','36085'] for x in sdwkbnimpcounty['GEOID']]].reset_index(drop=True)
+    sdwkbnimpbxbkmnsi=sdwkbnimpcounty.loc[[x in ['36005','36047','36061','36085'] for x in sdwkbnimpcounty['GEOID']],'geometry'].reset_index(drop=True)
     sdwkbnimpbxbkmnsi.to_file(path+'output/sdwkbnimpbxbkmnsi.shp')
 #    print(datetime.datetime.now()-start)
 #    # 600 mins
@@ -1244,7 +1247,6 @@ if __name__=='__main__':
 #sdwkplazaimpclean.to_file(path+'sdwkplazaimpclean.shp')
 #print(datetime.datetime.now()-start)
 ## 5 mins
-
 
 
 
