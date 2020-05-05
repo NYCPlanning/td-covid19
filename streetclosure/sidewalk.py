@@ -1188,7 +1188,7 @@ pedct['pedareapop']=pedct['pedarea']/pedct['pop']
 pedct=pedct.loc[pedct['pop']>=100,['tractid','pedarea','pop','pedareapop','geometry']].reset_index(drop=True)
 pedct.to_file(path+'output/pedct.shp')
 print(datetime.datetime.now()-start)
-
+# 1 min
 
 
 
