@@ -1112,7 +1112,7 @@ path='/home/mayijun/sidewalk/'
 #    pool.join()
 #    return dt
 #
-if __name__=='__main__':
+#if __name__=='__main__':
 #    sdwktmimp=parallelize(sdwkwd,sidewalkwidthimpcompile)
 #    sdwktmimp=sdwktmimp.to_crs({'init':'epsg:4326'})
 #    sdwktmimp.to_file(path+'output/sdwktmimp.shp')
@@ -1122,85 +1122,112 @@ if __name__=='__main__':
 #    sdwkwdimp=sdwkwdimp[['pvid','bkfaceid','spid','side','orgswmin','orgswmax','orgswmedia','impswmin','impswmax','impswmedian','length','geometry']].reset_index(drop=True)
 #    sdwkwdimp=sdwkwdimp.to_crs({'init':'epsg:4326'})
 #    sdwkwdimp.to_file(path+'output/sdwkwdimp.shp')
-    sdwkbnimp=gpd.read_file(path+'output/sdwktmimp.shp')
-    sdwkbnimp.crs={'init':'epsg:4326'}
-    sdwkbnimp=sdwkbnimp.loc[sdwkbnimp['impsw']<8,['geometry']].reset_index(drop=True)
-    county=gpd.read_file(path+'input/census/county.shp')
-    county.crs={'init':'epsg:4326'}
-    sdwkbnimp=gpd.sjoin(sdwkbnimp,county,how='left',op='intersects')
-    sdwkbnimpbkqn=sdwkbnimp[[x in ['36047','36081'] for x in sdwkbnimp['GEOID']]].reset_index(drop=True)
-    sdwkbnimp.to_file(path+'output/sdwkbnimp.shp')
-    
-    sdwkbnimpbxmnsi=sdwkbnimp[[x in ['36005','36061','36085'] for x in sdwkbnimp['GEOID']]].reset_index(drop=True)
-    sdwkbnimp.to_file(path+'output/sdwkbnimp.shp')
+#    sdwkbnimp=gpd.read_file(path+'output/sdwktmimp.shp')
+#    sdwkbnimp.crs={'init':'epsg:4326'}
+#    sdwkbnimp=sdwkbnimp.loc[sdwkbnimp['impsw']<8,['geometry']].reset_index(drop=True)
+#    county=gpd.read_file(path+'input/census/county.shp')
+#    county.crs={'init':'epsg:4326'}
+#    sdwkbnimp=gpd.sjoin(sdwkbnimp,county,how='left',op='intersects')
+#    sdwkbnimpbkqn=sdwkbnimp[[x in ['36047','36081'] for x in sdwkbnimp['GEOID']]].reset_index(drop=True)
+#    sdwkbnimp.to_file(path+'output/sdwkbnimp.shp')
+#    
+#    sdwkbnimpbxmnsi=sdwkbnimp[[x in ['36005','36061','36085'] for x in sdwkbnimp['GEOID']]].reset_index(drop=True)
+#    sdwkbnimp.to_file(path+'output/sdwkbnimp.shp')
 #    print(datetime.datetime.now()-start)
 #    # 600 mins
 
 
-    sdwkbnimp=gpd.read_file(path+'output/sdwkbnimp.shp')
-    sdwkbnimp.crs={'init':'epsg:4326'}
+sdwkbnimp=gpd.read_file(path+'output/sdwkbnimp.shp')
+sdwkbnimp.crs={'init':'epsg:4326'}
+county=gpd.read_file(path+'input/census/county.shp')
+county.crs={'init':'epsg:4326'}
+sdwkbnimp=gpd.sjoin(sdwkbnimp,county,how='left',op='intersects')
+print(sdwkbnimp.GEOID.value_counts())
+#sdwkbnimpbkqn=sdwkbnimp[[x in ['36047','36081'] for x in sdwkbnimp['GEOID']]].reset_index(drop=True)
+#sdwkbnimp.to_file(path+'output/sdwkbnimp.shp')
+    
+    
+    
+    
 
-
-# Tract
-start=datetime.datetime.now()
-nycct=gpd.read_file(path+'input/census/nycct.shp')
-nycct.crs={'init':'epsg:4326'}
-nycctclipped=gpd.read_file(path+'input/census/nycctclipped.shp')
-nycctclipped.crs={'init':'epsg:4326'}
-
-
-sdwkplazaimpclean=gpd.read_file(path+'output/sdwkplazaimpclean.shp')
-sdwkplazaimpclean.crs={'init':'epsg:4326'}
-sdwkplazaimpclean=sdwkplazaimpclean[['geometry']].reset_index(drop=True)
-boardwalk=gpd.read_file(path+'input/planimetrics/boardwalk.shp')
-boardwalk.crs={'init':'epsg:4326'}
-boardwalk=boardwalk[[type(x)==shapely.geometry.polygon.Polygon for x in boardwalk['geometry']]].reset_index(drop=True)
-boardwalk['geometry']=[shapely.geometry.Polygon(list(zip(x.exterior.xy[0],x.exterior.xy[1]))) for x in boardwalk['geometry']]
-boardwalk=boardwalk[['geometry']].reset_index(drop=True)
-transpstruct=gpd.read_file(path+'input/planimetrics/transpstruct.shp')
-transpstruct.crs={'init':'epsg:4326'}
-transpstruct=transpstruct[transpstruct['FEATURE_CO']==2330].reset_index(drop=True)
-transpstruct=transpstruct[[type(x)==shapely.geometry.polygon.Polygon for x in transpstruct['geometry']]].reset_index(drop=True)
-transpstruct['geometry']=[shapely.geometry.Polygon(list(zip(x.exterior.xy[0],x.exterior.xy[1]))) for x in transpstruct['geometry']]
-transpstruct=transpstruct[['geometry']].reset_index(drop=True)
-pedspace=pd.concat([sdwkplazaimpclean,boardwalk,transpstruct],axis=0,ignore_index=True)
-
-
-tracttonta=pd.read_csv(path+'input/census/tracttonta.csv',dtype=str)
-pedct=pd.merge(nycctclipped,tracttonta,how='inner',left_on='tractid',right_on='tract')
-pedct=pedct.loc[[str(x) not in ['BX99','BK99','MN99','QN99','SI99','QN98'] for x in pedct['nta']],['tractid','geometry']].reset_index(drop=True)
-pedct=pedct.to_crs({'init':'epsg:6539'})
-pedct['area']=[x.area for x in pedct['geometry']]
-pedct=pedct[['tractid','area']].reset_index(drop=True)
-
-
-pedct=gpd.overlay(pedspace[0:100],nycct,how='intersection')
-pedct.to_file(path+'pedct.shp')
-
-
-pedct.crs={'init':'epsg:4326'}
-pedct=pedct.to_crs({'init':'epsg:6539'})
-pedct['swarea']=[x.area for x in pedct['geometry']]
-swctarea=swctarea.groupby('tractid',as_index=False).agg({'swarea':'sum'}).reset_index(drop=True)
-swct=pd.merge(swct,swctarea,how='inner',on='tractid')
-swct['swareaarea']=swct['swarea']/swct['area']
-swct['areaareark']=10-pd.qcut(swct['swareaarea'],10,labels=False)
-ctpop=pd.read_csv(path+'input/tractpop2018.csv',dtype=str,converters={'pop':float})
-swct=pd.merge(swct,ctpop,how='inner',on='tractid')
-swct['poparea']=swct['pop']/swct['area']
-swct['poprk']=pd.qcut(swct['poparea'],10,labels=False)+1
-swct['swareapop']=swct['swarea']/swct['pop']
-swct['areapoprk']=10-pd.qcut(swct['swareapop'],10,labels=False)
-swct=pd.merge(nycctclipped,swct,how='inner',on='tractid')
-swct.to_file(path+'output/swct.shp')
-print(datetime.datetime.now()-start)
-
-
-
-
-
-
-
+## Tract
+#start=datetime.datetime.now()
+#nycct=gpd.read_file(path+'input/census/nycct.shp')
+#nycct.crs={'init':'epsg:4326'}
+#nycctclipped=gpd.read_file(path+'input/census/nycctclipped.shp')
+#nycctclipped.crs={'init':'epsg:4326'}
+#
+#
+#sdwkplazaimpclean=gpd.read_file(path+'output/sdwkplazaimpclean.shp')
+#sdwkplazaimpclean.crs={'init':'epsg:4326'}
+#sdwkplazaimpclean=sdwkplazaimpclean[['geometry']].reset_index(drop=True)
+#boardwalk=gpd.read_file(path+'input/planimetrics/boardwalk.shp')
+#boardwalk.crs={'init':'epsg:4326'}
+#boardwalk=boardwalk[[type(x)==shapely.geometry.polygon.Polygon for x in boardwalk['geometry']]].reset_index(drop=True)
+#boardwalk['geometry']=[shapely.geometry.Polygon(list(zip(x.exterior.xy[0],x.exterior.xy[1]))) for x in boardwalk['geometry']]
+#boardwalk=boardwalk[['geometry']].reset_index(drop=True)
+#transpstruct=gpd.read_file(path+'input/planimetrics/transpstruct.shp')
+#transpstruct.crs={'init':'epsg:4326'}
+#transpstruct=transpstruct[transpstruct['FEATURE_CO']==2330].reset_index(drop=True)
+#transpstruct=transpstruct[[type(x)==shapely.geometry.polygon.Polygon for x in transpstruct['geometry']]].reset_index(drop=True)
+#transpstruct['geometry']=[shapely.geometry.Polygon(list(zip(x.exterior.xy[0],x.exterior.xy[1]))) for x in transpstruct['geometry']]
+#transpstruct=transpstruct[['geometry']].reset_index(drop=True)
+#pedspace=pd.concat([sdwkplazaimpclean,boardwalk,transpstruct],axis=0,ignore_index=True)
+#
+#sdwkdis=sdwkdis.explode().reset_index(drop=True)[['geometry']]
+#
+#k=pedspace[[type(x)!=shapely.geometry.polygon.Polygon for x in pedspace['geometry']]]
+#k=k.loc[[4]]
+#pedspace['id']=0
+#pedspace=pedspace.dissolve(by='id').reset_index(drop=True)
+#
+#tracttonta=pd.read_csv(path+'input/census/tracttonta.csv',dtype=str)
+#pedct=pd.merge(nycctclipped,tracttonta,how='inner',left_on='tractid',right_on='tract')
+#pedct=pedct.loc[[str(x) not in ['BX99','BK99','MN99','QN99','SI99','QN98'] for x in pedct['nta']],['tractid','geometry']].reset_index(drop=True)
+#pedct=pedct.to_crs({'init':'epsg:6539'})
+#pedct['area']=[x.area for x in pedct['geometry']]
+#pedct=pedct[['tractid','area']].reset_index(drop=True)
+#
+#pedct=gpd.overlay(k,nycct,how='intersection')
+#
+#pedct=gpd.overlay(pedspace[0:100],nycct,how='intersection')
+#pedct.to_file(path+'pedct.shp')
+#
+#
+#pedct=gpd.overlay(boardwalk,nycct,how='intersection')
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#pedct.crs={'init':'epsg:4326'}
+#pedct=pedct.to_crs({'init':'epsg:6539'})
+#pedct['swarea']=[x.area for x in pedct['geometry']]
+#swctarea=swctarea.groupby('tractid',as_index=False).agg({'swarea':'sum'}).reset_index(drop=True)
+#swct=pd.merge(swct,swctarea,how='inner',on='tractid')
+#swct['swareaarea']=swct['swarea']/swct['area']
+#swct['areaareark']=10-pd.qcut(swct['swareaarea'],10,labels=False)
+#ctpop=pd.read_csv(path+'input/tractpop2018.csv',dtype=str,converters={'pop':float})
+#swct=pd.merge(swct,ctpop,how='inner',on='tractid')
+#swct['poparea']=swct['pop']/swct['area']
+#swct['poprk']=pd.qcut(swct['poparea'],10,labels=False)+1
+#swct['swareapop']=swct['swarea']/swct['pop']
+#swct['areapoprk']=10-pd.qcut(swct['swareapop'],10,labels=False)
+#swct=pd.merge(nycctclipped,swct,how='inner',on='tractid')
+#swct.to_file(path+'output/swct.shp')
+#print(datetime.datetime.now()-start)
+#
+#
+#
+#
+#
+#
+#
 
 
 
