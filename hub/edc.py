@@ -25,8 +25,8 @@ hub=['36061005200','36061007000','36061010100','36061007100','36061007300','3606
 
 
 
-allaux=pd.read_csv(path+'ny_od_aux_JT00_2017.csv',dtype=str)
-allmain=pd.read_csv(path+'ny_od_main_JT00_2017.csv',dtype=str)
+allaux=pd.read_csv(path+'LEHDCTPP/ny_od_aux_JT00_2017.csv',dtype=str)
+allmain=pd.read_csv(path+'LEHDCTPP/ny_od_main_JT00_2017.csv',dtype=str)
 alljob=pd.concat([allaux,allmain],axis=0,ignore_index=True)
 alljob=alljob[[str(x)[0:11] in hub for x in alljob['w_geocode']]]
 alljob['alljob']=pd.to_numeric(alljob['S000'])
@@ -34,15 +34,15 @@ sum(alljob['alljob'])
 
 
 
-alljob=pd.read_csv(path+'ny_wac_S000_JT00_2017.csv',dtype=str)
+alljob=pd.read_csv(path+'LEHDCTPP/ny_wac_S000_JT00_2017.csv',dtype=str)
 alljob=alljob[[str(x)[0:11] in hub for x in alljob['w_geocode']]]
 alljob['alljob']=pd.to_numeric(alljob['C000'])
 sum(alljob['alljob'])
 
 
 
-primaryaux=pd.read_csv(path+'ny_od_aux_JT01_2017.csv',dtype=str)
-primarymain=pd.read_csv(path+'ny_od_main_JT01_2017.csv',dtype=str)
+primaryaux=pd.read_csv(path+'LEHDCTPP/ny_od_aux_JT01_2017.csv',dtype=str)
+primarymain=pd.read_csv(path+'LEHDCTPP/ny_od_main_JT01_2017.csv',dtype=str)
 primaryjob=pd.concat([primaryaux,primarymain],axis=0,ignore_index=True)
 primaryjob=primaryjob[[str(x)[0:11] in hub for x in primaryjob['w_geocode']]]
 primaryjob['primaryjob']=pd.to_numeric(primaryjob['S000'])
@@ -50,32 +50,44 @@ sum(primaryjob['primaryjob'])
 
 
 
-primaryres=pd.read_csv(path+'ny_rac_S000_JT01_2017.csv',dtype=str)
+primaryres=pd.read_csv(path+'LEHDCTPP/ny_rac_S000_JT01_2017.csv',dtype=str)
 primaryres=primaryres[[str(x)[0:11] in hub for x in primaryres['h_geocode']]]
 primaryres['primaryres']=pd.to_numeric(primaryres['C000'])
 sum(primaryres['primaryres'])
 
 
 
-primaryaux=pd.read_csv(path+'ny_od_aux_JT01_2017.csv',dtype=str)
-primarymain=pd.read_csv(path+'ny_od_main_JT01_2017.csv',dtype=str)
-primaryresjob=pd.concat([primaryaux,primarymain],axis=0,ignore_index=True)
-primaryresjob=primaryresjob[[str(x)[0:11] in hub for x in primaryresjob['w_geocode']]]
-primaryresjob=primaryresjob[[str(x)[0:11] in hub for x in primaryresjob['h_geocode']]]
-primaryresjob['primaryresjob']=pd.to_numeric(primaryresjob['S000'])
-sum(primaryresjob['primaryresjob'])
+primaryaux=pd.read_csv(path+'LEHDCTPP/ny_od_aux_JT01_2017.csv',dtype=str)
+primarymain=pd.read_csv(path+'LEHDCTPP/ny_od_main_JT01_2017.csv',dtype=str)
+primarycbdrescbdjob=pd.concat([primaryaux,primarymain],axis=0,ignore_index=True)
+primarycbdrescbdjob=primarycbdrescbdjob[[str(x)[0:11] in hub for x in primarycbdrescbdjob['w_geocode']]]
+primarycbdrescbdjob=primarycbdrescbdjob[[str(x)[0:11] in hub for x in primarycbdrescbdjob['h_geocode']]]
+primarycbdrescbdjob['primarycbdrescbdjob']=pd.to_numeric(primarycbdrescbdjob['S000'])
+sum(primarycbdrescbdjob['primarycbdrescbdjob'])
 
 
 
-nyctpp=pd.read_csv(path+'NY_2012thru2016_A302103.csv',dtype=str)
-njctpp=pd.read_csv(path+'NJ_2012thru2016_A302103.csv',dtype=str)
-pactpp=pd.read_csv(path+'PA_2012thru2016_A302103.csv',dtype=str)
-ctctpp=pd.read_csv(path+'CT_2012thru2016_A302103.csv',dtype=str)
+primaryaux=pd.read_csv(path+'LEHDCTPP/ny_od_aux_JT01_2017.csv',dtype=str)
+primarymain=pd.read_csv(path+'LEHDCTPP/ny_od_main_JT01_2017.csv',dtype=str)
+primaryoutrescbdjob=pd.concat([primaryaux,primarymain],axis=0,ignore_index=True)
+primaryoutrescbdjob=primaryoutrescbdjob[[str(x)[0:11] in hub for x in primaryoutrescbdjob['w_geocode']]]
+primaryoutrescbdjob=primaryoutrescbdjob[[str(x)[0:11] not in hub for x in primaryoutrescbdjob['h_geocode']]]
+primaryoutrescbdjob['primaryoutrescbdjob']=pd.to_numeric(primaryoutrescbdjob['S000'])
+primaryoutrescbdjob['RESCT']=[str(x)[0:11] for x in primaryoutrescbdjob['h_geocode']]
+primaryoutrescbdjob=primaryoutrescbdjob.groupby('RESCT',as_index=False).agg({'primaryoutrescbdjob':'sum'}).reset_index(drop=True)
+
+
+
+nyctpp=pd.read_csv(path+'LEHDCTPP/NY_2012thru2016_A302103.csv',dtype=str)
+njctpp=pd.read_csv(path+'LEHDCTPP/NJ_2012thru2016_A302103.csv',dtype=str)
+pactpp=pd.read_csv(path+'LEHDCTPP/PA_2012thru2016_A302103.csv',dtype=str)
+ctctpp=pd.read_csv(path+'LEHDCTPP/CT_2012thru2016_A302103.csv',dtype=str)
 ctpp=pd.concat([nyctpp,njctpp,pactpp,ctctpp],axis=0,ignore_index=True)
 ctpp=ctpp[[str(x)[0:5]=='C5400' for x in ctpp['GEOID']]].reset_index(drop=True)
 ctpp['RESCT']=[str(x)[7:18] for x in ctpp['GEOID']]
 ctpp['WORKCT']=[str(x)[18:29] for x in ctpp['GEOID']]
 ctpp=ctpp[[x in hub for x in ctpp['WORKCT']]].reset_index(drop=True)
+ctpp=ctpp[[x not in hub for x in ctpp['RESCT']]].reset_index(drop=True)
 ctpp=ctpp[[x in ['1','14'] for x in ctpp['LINENO']]].reset_index(drop=True)
 ctpp['EST']=[x.replace(',','') for x in ctpp['EST']]
 ctpp['EST']=pd.to_numeric(ctpp['EST'])
@@ -83,6 +95,20 @@ ctpp=ctpp.groupby(['RESCT','LINENO'],as_index=False).agg({'EST':'sum'}).reset_in
 ctpp=ctpp.pivot(index='RESCT', columns='LINENO', values='EST').reset_index(drop=False)
 ctpp=ctpp[pd.notna(ctpp['14'])]
 ctpp['walkp']=ctpp['14']/ctpp['1']
-quadstatectclipped=gpd.read_file(path+'quadstatectclipped.shp')
+quadstatectclipped=gpd.read_file(path+'LEHDCTPP/quadstatectclipped.shp')
 ctpp=pd.merge(quadstatectclipped,ctpp,how='inner',left_on='tractid',right_on='RESCT')
-ctpp.to_file(path+'ctpp.shp')
+ctpp.to_file(path+'LEHDCTPP/ctpp.shp')
+
+
+
+primaryoutrescbdjobwalk=pd.merge(ctpp,primaryoutrescbdjob,how='inner',on='RESCT')
+primaryoutrescbdjobwalk['walk']=primaryoutrescbdjobwalk['primaryoutrescbdjob']*primaryoutrescbdjobwalk['walkp']
+sum(primaryoutrescbdjobwalk['walk'])
+primaryoutrescbdjobwalk.to_file(path+'LEHDCTPP/primaryoutrescbdjobwalk.shp')
+sum(primaryoutrescbdjobwalk.loc[primaryoutrescbdjobwalk['walk']>50,'walk'])
+
+
+
+
+
+
