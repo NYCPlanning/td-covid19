@@ -121,7 +121,7 @@ walk['isogeom']=''
 for i in walk.index:
     url=doserver+'otp/routers/default/isochrone?batch=true&mode=WALK'
     url+='&fromPlace='+str(walk.loc[i,'Lat'])+','+str(walk.loc[i,'Long'])
-    url+='&cutoffSec=4828'
+    url+='&cutoffSec=2400'
     headers={'Accept':'application/json'}  
     req=requests.get(url=url,headers=headers)
     js=req.json()
@@ -129,7 +129,25 @@ for i in walk.index:
     walk.loc[i,'isogeom']=str(iso.loc[0,'geometry'])
 walk=gpd.GeoDataFrame(walk,geometry=walk['isogeom'].map(wkt.loads),crs={'init':'epsg:4326'})
 walk.to_file(path+'SHED/walk.shp')
+quadstatectclipped=gpd.read_file(path+'LEHDCTPP/quadstatectclipped.shp')
+walkct=gpd.sjoin(quadstatectclipped,walk,how='left',op='intersects')
+walkct=walkct[(pd.notna(walkct['Point']))|(walkct['tractid']=='36081000700')].reset_index(drop=True)
+walkct=walkct[[x not in hub for x in walkct['tractid']]].reset_index(drop=True)
+walkct=walkct.drop_duplicates('tractid',keep='first').reset_index(drop=True)
+walkct.to_file(path+'SHED/walkct.shp')
 
+primaryaux=pd.read_csv(path+'LEHDCTPP/ny_od_aux_JT01_2017.csv',dtype=str)
+primarymain=pd.read_csv(path+'LEHDCTPP/ny_od_main_JT01_2017.csv',dtype=str)
+primaryoutrescbdjob=pd.concat([primaryaux,primarymain],axis=0,ignore_index=True)
+primaryoutrescbdjob=primaryoutrescbdjob[[str(x)[0:11] in hub for x in primaryoutrescbdjob['w_geocode']]]
+primaryoutrescbdjob=primaryoutrescbdjob[[str(x)[0:11] not in hub for x in primaryoutrescbdjob['h_geocode']]]
+primaryoutrescbdjob['primaryoutrescbdjob']=pd.to_numeric(primaryoutrescbdjob['S000'])
+primaryoutrescbdjob['RESCT']=[str(x)[0:11] for x in primaryoutrescbdjob['h_geocode']]
+primaryoutrescbdjob=primaryoutrescbdjob.groupby('RESCT',as_index=False).agg({'primaryoutrescbdjob':'sum'}).reset_index(drop=True)
+walkctlehd=pd.merge(walkct,primaryoutrescbdjob,how='left',left_on='tractid',right_on='RESCT')
+walkctlehd['county']=[str(x)[0:5] for x in walkctlehd['tractid']]
+walkctlehd=walkctlehd.groupby('county',as_index=False).agg({'primaryoutrescbdjob':'sum'})
+sum(walkctlehd['primaryoutrescbdjob'])
 
 
 bike=pd.read_csv(path+'SHED/Access Point.csv')
@@ -137,7 +155,7 @@ bike['isogeom']=''
 for i in bike.index:
     url=doserver+'otp/routers/default/isochrone?batch=true&mode=BICYCLE'
     url+='&fromPlace='+str(bike.loc[i,'Lat'])+','+str(bike.loc[i,'Long'])
-    url+='&cutoffSec=8047'
+    url+='&cutoffSec=2400'
     headers={'Accept':'application/json'}  
     req=requests.get(url=url,headers=headers)
     js=req.json()
@@ -145,5 +163,22 @@ for i in bike.index:
     bike.loc[i,'isogeom']=str(iso.loc[0,'geometry'])
 bike=gpd.GeoDataFrame(bike,geometry=bike['isogeom'].map(wkt.loads),crs={'init':'epsg:4326'})
 bike.to_file(path+'SHED/bike.shp')
+quadstatectclipped=gpd.read_file(path+'LEHDCTPP/quadstatectclipped.shp')
+bikect=gpd.sjoin(quadstatectclipped,bike,how='inner',op='intersects')
+bikect=bikect[[x not in hub for x in bikect['tractid']]].reset_index(drop=True)
+bikect=bikect.drop_duplicates('tractid',keep='first').reset_index(drop=True)
+bikect.to_file(path+'SHED/bikect.shp')
 
+primaryaux=pd.read_csv(path+'LEHDCTPP/ny_od_aux_JT01_2017.csv',dtype=str)
+primarymain=pd.read_csv(path+'LEHDCTPP/ny_od_main_JT01_2017.csv',dtype=str)
+primaryoutrescbdjob=pd.concat([primaryaux,primarymain],axis=0,ignore_index=True)
+primaryoutrescbdjob=primaryoutrescbdjob[[str(x)[0:11] in hub for x in primaryoutrescbdjob['w_geocode']]]
+primaryoutrescbdjob=primaryoutrescbdjob[[str(x)[0:11] not in hub for x in primaryoutrescbdjob['h_geocode']]]
+primaryoutrescbdjob['primaryoutrescbdjob']=pd.to_numeric(primaryoutrescbdjob['S000'])
+primaryoutrescbdjob['RESCT']=[str(x)[0:11] for x in primaryoutrescbdjob['h_geocode']]
+primaryoutrescbdjob=primaryoutrescbdjob.groupby('RESCT',as_index=False).agg({'primaryoutrescbdjob':'sum'}).reset_index(drop=True)
+bikectlehd=pd.merge(bikect,primaryoutrescbdjob,how='left',left_on='tractid',right_on='RESCT')
+bikectlehd['county']=[str(x)[0:5] for x in bikectlehd['tractid']]
+bikectlehd=bikectlehd.groupby('county',as_index=False).agg({'primaryoutrescbdjob':'sum'})
+sum(bikectlehd['primaryoutrescbdjob'])
 
