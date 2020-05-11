@@ -1,5 +1,7 @@
 import pandas as pd
 import geopandas as gpd
+import requests
+from shapely import wkt
 
 
 
@@ -114,27 +116,34 @@ sum(primaryoutrescbdjobwalk.loc[primaryoutrescbdjobwalk['walk']>50,'walk'])
 
 doserver='http://159.65.64.166:8801/'
 
-pops=pd.read_csv(path+'pops/COVID REQUESTS 2020.csv')
-popsorg=pd.read_csv(path+'pops/nycpops_20191220csv/nycpops_20191220.csv')
-pops=pd.merge(pops,popsorg,how='left',left_on='POPS Number',right_on='POPS_Number')
-popspt=gpd.GeoDataFrame(pops,geometry=[shapely.geometry.Point(x, y) for x, y in zip(pops['Longitude'],pops['Latitude'])],crs={'init':'epsg:4326'})
-popspt['CITIBIKE']=popspt['CITIBIKE'].fillna('N')
-popspt['TESTING']=popspt['TESTING'].fillna('N')
-popspt['FOOD']=popspt['FOOD'].fillna('N')
-popspt['Combo?']=popspt['Combo?'].fillna('N')
-popspt['High Potential']=popspt['High Potential'].fillna('N')
-popspt.to_file(path+'output/popspt.shp')
-
-popsiso=pops.copy()
-popsiso['isogeom']=''
-for i in pops.index:
+walk=pd.read_csv(path+'SHED/Access Point.csv')
+walk['isogeom']=''
+for i in walk.index:
     url=doserver+'otp/routers/default/isochrone?batch=true&mode=WALK'
-    url+='&fromPlace='+str(popsiso.loc[i,'Latitude'])+','+str(popsiso.loc[i,'Longitude'])
-    url+='&cutoffSec=600'
+    url+='&fromPlace='+str(walk.loc[i,'Lat'])+','+str(walk.loc[i,'Long'])
+    url+='&cutoffSec=4828'
     headers={'Accept':'application/json'}  
     req=requests.get(url=url,headers=headers)
     js=req.json()
     iso=gpd.GeoDataFrame.from_features(js,crs={'init': 'epsg:4326'})
-    popsiso.loc[i,'isogeom']=str(iso.loc[0,'geometry'])
-popsiso=gpd.GeoDataFrame(popsiso,geometry=popsiso['isogeom'].map(wkt.loads),crs={'init':'epsg:4326'})
-popsiso.to_file(path+'output/popsiso.shp')
+    walk.loc[i,'isogeom']=str(iso.loc[0,'geometry'])
+walk=gpd.GeoDataFrame(walk,geometry=walk['isogeom'].map(wkt.loads),crs={'init':'epsg:4326'})
+walk.to_file(path+'SHED/walk.shp')
+
+
+
+bike=pd.read_csv(path+'SHED/Access Point.csv')
+bike['isogeom']=''
+for i in bike.index:
+    url=doserver+'otp/routers/default/isochrone?batch=true&mode=BICYCLE'
+    url+='&fromPlace='+str(bike.loc[i,'Lat'])+','+str(bike.loc[i,'Long'])
+    url+='&cutoffSec=8047'
+    headers={'Accept':'application/json'}  
+    req=requests.get(url=url,headers=headers)
+    js=req.json()
+    iso=gpd.GeoDataFrame.from_features(js,crs={'init': 'epsg:4326'})
+    bike.loc[i,'isogeom']=str(iso.loc[0,'geometry'])
+bike=gpd.GeoDataFrame(bike,geometry=bike['isogeom'].map(wkt.loads),crs={'init':'epsg:4326'})
+bike.to_file(path+'SHED/bike.shp')
+
+
