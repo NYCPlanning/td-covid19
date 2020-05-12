@@ -448,8 +448,8 @@ pddiff.to_csv(path+'OUTPUT/pddiffclosure.csv',index=False)
 
 # Period Diff by Station
 dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
-predates=['04/13/2020','04/14/2020','04/15/2020','04/16/2020','04/17/2020','04/20/2020','04/21/2020','04/22/2020','04/23/2020']
-postdates=['04/27/2020','04/28/2020','04/29/2020','04/30/2020','05/01/2020','05/04/2020','05/05/2020','05/06/2020','05/07/2020']
+predates=['04/20/2020','04/21/2020','04/22/2020','04/23/2020','04/24/2020']
+postdates=['04/27/2020','04/28/2020','04/29/2020','04/30/2020','05/01/2020']
 period1=['11:00:00-15:00:00','12:00:00-16:00:00','12:22:00-16:22:00','12:30:00-16:30:00','13:00:00-17:00:00','14:00:00-18:00:00','14:30:00-18:30:00']
 period2=['15:00:00-19:00:00','16:00:00-20:00:00','16:22:00-20:22:00','16:30:00-20:30:00','17:00:00-21:00:00','18:00:00-22:00:00','18:30:00-22:30:00']
 period3=['19:00:00-23:00:00','20:00:00-00:00:00','20:22:00-00:22:00','20:30:00-00:30:00','21:00:00-01:00:00','22:00:00-02:00:00','22:30:00-02:30:00']
@@ -518,7 +518,7 @@ cplxpddiff['pddiff5']=(cplxpddiff['pdpost5']-cplxpddiff['pdpre5'])/cplxpddiff['p
 cplxpddiff['pddiff6']=(cplxpddiff['pdpost6']-cplxpddiff['pdpre6'])/cplxpddiff['pdpre6']
 cplxpddiff['pddiff']=(cplxpddiff['pdpost']-cplxpddiff['pdpre'])/cplxpddiff['pdpre']
 cplxpddiff=cplxpddiff.fillna(0)
-cplxpddiff=pd.merge(cplxpddiff,rc.drop('Remote',axis=1).drop_duplicates(keep='first').reset_index(drop=True),how='left',on='CplxID')
+cplxpddiff=pd.merge(rc.drop('Remote',axis=1).drop_duplicates(keep='first').reset_index(drop=True),cplxpddiff,how='left',on='CplxID')
 cplxpddiff=cplxpddiff[['CplxID','Borough','CplxName','Routes','CplxLat','CplxLong','Hub','pdpre1','pdpost1','pdpre2','pdpost2','pdpre3',
                        'pdpost3','pdpre4','pdpost4','pdpre5','pdpost5','pdpre6','pdpost6','pdpre','pdpost','pddiff1','pddiff2','pddiff3',
                        'pddiff4','pddiff5','pddiff6','pddiff']].reset_index(drop=True)
