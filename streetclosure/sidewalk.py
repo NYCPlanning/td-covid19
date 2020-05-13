@@ -1211,7 +1211,7 @@ lion=gpd.read_file(path+'input/lion/lion.shp')
 lion.crs={'init':'epsg:4326'}
 lion=lion.to_crs({'init':'epsg:6539'})
 lion['length']=[x.length for x in lion['geometry']]
-lionsp=lion[['PhysicalID','SegmentID','RB_Layer','FeatureTyp','SegmentTyp','NonPed','TrafDir','RW_TYPE','LBlockFace','RBlockFace','StreetWidt','length','geometry']].reset_index(drop=True)
+lionsp=lion[['PhysicalID','SegmentID','RB_Layer','FeatureTyp','SegmentTyp','NonPed','TrafDir','RW_TYPE','LBlockFace','RBlockFace','StreetWidt','StreetWi_1','length','geometry']].reset_index(drop=True)
 lionsp['physicalid']=pd.to_numeric(lionsp['PhysicalID'])
 lionsp=lionsp[pd.notna(lionsp['physicalid'])].reset_index(drop=True)
 lionsp['segmentid']=pd.to_numeric(lionsp['SegmentID'])
@@ -1229,14 +1229,17 @@ lionsp=lionsp[np.isin(lionsp['trafficdir'],['T','W','A'])].reset_index(drop=True
 lionsp['rwtype']=pd.to_numeric(lionsp['RW_TYPE'])
 lionsp=lionsp[np.isin(lionsp['rwtype'],[1])].reset_index(drop=True)
 lionsp['lbkfaceid']=pd.to_numeric(lionsp['LBlockFace'])
-lionsp=lionsp[pd.notna(lionsp['lbkfaceid'])].reset_index(drop=True)
 lionsp['rbkfaceid']=pd.to_numeric(lionsp['RBlockFace'])
-lionsp=lionsp[pd.notna(lionsp['rbkfaceid'])].reset_index(drop=True)
-lionsp['stwidth']=pd.to_numeric(lionsp['StreetWidt'])
+lionsp['stwidth1']=pd.to_numeric(lionsp['StreetWidt'])
+lionsp['stwidth2']=pd.to_numeric(lionsp['StreetWi_1'])
+lionsp['stwidth']=np.where(pd.notna(lionsp['stwidth1']),lionsp['stwidth1'],lionsp['stwidth2'])
 lionsp=lionsp[pd.notna(lionsp['stwidth'])].reset_index(drop=True)
 lionsp=lionsp[['physicalid','segmentid','lbkfaceid','rbkfaceid','stwidth','length','geometry']].reset_index(drop=True)
 lionsp=lionsp.drop_duplicates(['segmentid'],keep='first').reset_index(drop=True)
 lionsp=lionsp.to_crs({'init':'epsg:4326'})
+lionsp=pd.merge(lionsp,sdwkwdimp,how='left',left_on='lbkfaceid',right_on='bkfaceid')
+lionsp=pd.merge(lionsp,sdwkwdimp,how='left',left_on='rbkfaceid',right_on='bkfaceid')
+
 
 lionsp.to_file(path+'lionsp.shp')
 
