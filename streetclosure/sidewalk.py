@@ -88,6 +88,7 @@ path='C:/Users/Yijun Ma/Desktop/D/DOCUMENT/DCP2020/COVID19/STREET CLOSURE/sidewa
 #sdwkplaza['geometry']=[shapely.geometry.LineString(list(x.exterior.coords)) for x in sdwkplaza['geometry']]
 #pvmtspsdwk=gpd.sjoin(pvmtedge,sdwkplaza,how='inner',op='intersects')
 #pvmtspsdwk=pvmtspsdwk[['bkfaceid','spid']].reset_index(drop=True)
+#
 #def pvmtsimplify(ps):
 #    global pvmtedge
 #    global sdwkplaza
@@ -1248,24 +1249,6 @@ lionsp.to_file(path+'lionsp.shp')
 
 
 
-k=gpd.read_file(path+'k.shp')
-k.crs={'init':'epsg:4326'}
-k=k.loc[0,'geometry'].wkt
-k=k.split('), (')
-k=[x.replace('POLYGON ((','').replace(')','') for x in k]
-k=['POLYGON (('+x+'))' for x in k]
-k=pd.DataFrame(k,columns=['geom'])
-k=gpd.GeoDataFrame(k,geometry=k['geom'].map(wkt.loads),crs={'init':'epsg:4326'})
-k.to_file(path+'k2.shp')
-
-
-
-
-sdwkplaza=gpd.read_file(path+'output/sdwkplaza.shp')
-sdwkplaza.crs={'init':'epsg:4326'}
-k=sdwkplaza.loc[1,'geometry'].wkt
-k=sdwkplaza.loc[[0]]
-k.to_file(path+'k2.shp')
 
 
 
