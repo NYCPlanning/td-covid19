@@ -1202,16 +1202,20 @@ path='C:/Users/Yijun Ma/Desktop/D/DOCUMENT/DCP2020/COVID19/STREET CLOSURE/sidewa
 # Street Typology
 sdwkwdimp=gpd.read_file(path+'output/sdwkwdimp.shp')
 sdwkwdimp.crs={'init':'epsg:4326'}
-sdwkwdimp['orgswlen']=sdwkwdimp['orgswmedia']*sdwkwdimp['length']
-sdwkwdimp=sdwkwdimp.groupby('bkfaceid',as_index=False).agg({'orgswlen':'sum','length':'sum'}).reset_index(drop=True)
-sdwkwdimp['orgsw']=sdwkwdimp['orgswlen']/sdwkwdimp['length']
-sdwkwdimp=sdwkwdimp[['bkfaceid','orgsw']].reset_index(drop=True)
+
 
 lion=gpd.read_file(path+'input/lion/lion.shp')
 lion.crs={'init':'epsg:4326'}
 lion=lion.to_crs({'init':'epsg:6539'})
 lion['length']=[x.length for x in lion['geometry']]
 lionsp=lion[['PhysicalID','SegmentID','RB_Layer','FeatureTyp','SegmentTyp','NonPed','TrafDir','RW_TYPE','LBlockFace','RBlockFace','StreetWidt','StreetWi_1','length','geometry']].reset_index(drop=True)
+lionsp['lbkfaceid']=pd.to_numeric(lionsp['LBlockFace'])
+lionsp=lionsp[pd.notna(lionsp['lbkfaceid'])].reset_index(drop=True)
+
+lionsp['rbkfaceid']=pd.to_numeric(lionsp['RBlockFace'])
+
+
+
 lionsp['physicalid']=pd.to_numeric(lionsp['PhysicalID'])
 lionsp=lionsp[pd.notna(lionsp['physicalid'])].reset_index(drop=True)
 lionsp['segmentid']=pd.to_numeric(lionsp['SegmentID'])
@@ -1239,8 +1243,6 @@ lionsp=lionsp.drop_duplicates(['segmentid'],keep='first').reset_index(drop=True)
 lionsp=lionsp.to_crs({'init':'epsg:4326'})
 lionsp=pd.merge(lionsp,sdwkwdimp,how='left',left_on='lbkfaceid',right_on='bkfaceid')
 lionsp=pd.merge(lionsp,sdwkwdimp,how='left',left_on='rbkfaceid',right_on='bkfaceid')
-
-
 lionsp.to_file(path+'lionsp.shp')
 
 
