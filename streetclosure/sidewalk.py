@@ -1240,6 +1240,19 @@ lionsp=lionsp[pd.notna(lionsp['stwidth'])].reset_index(drop=True)
 lionsp['lbkfaceid']=pd.to_numeric(lionsp['LBlockFace'])
 lionsp['rbkfaceid']=pd.to_numeric(lionsp['RBlockFace'])
 lionsp=lionsp[['physicalid','segmentid','trafficdir','travellane','parkinglane','bikedir','bikelane','stwidth','lbkfaceid','rbkfaceid','length','geometry']].reset_index(drop=True)
+lionspseg=lionsp[['segmentid','lbkfaceid','rbkfaceid','stwidth','geometry']].reset_index(drop=True)
+lionspseg=lionspseg.drop_duplicates(['segmentid','lbkfaceid','rbkfaceid','stwidth'],keep='first').reset_index(drop=True)
+bfsdwkwdimp=sdwkwdimp.copy()
+bfsdwkwdimp['swlength']=bfsdwkwdimp['orgswmedia']*bfsdwkwdimp['length']
+bfsdwkwdimp=bfsdwkwdimp.groupby('bkfaceid',as_index=False).agg({'swlength':'sum','length':'sum'})
+bfsdwkwdimp['orgsw']=bfsdwkwdimp['swlength']/bfsdwkwdimp['length']
+bfsdwkwdimp=bfsdwkwdimp[['bkfaceid','orgsw']].reset_index(drop=True)
+lionspseg=pd.merge(lionspseg,bfsdwkwdimp,how='left',left_on='lbkfaceid',right_on='bkfaceid')
+lionspseg=pd.merge(lionspseg,bfsdwkwdimp,how='left',left_on='rbkfaceid',right_on='bkfaceid')
+lionspseg['orgsw_x']=lionspseg['orgsw_x'].fillna(0)
+lionspseg['orgsw_y']=lionspseg['orgsw_y'].fillna(0)
+lionspseg['rowwidth']=lionspseg['stwidth']+lionspseg['orgsw_x']+lionspseg['orgsw_y']
+lionspseg=lionspseg[['segmentid','rowwidth']].reset_index(drop=True)
 lionspl=lionsp[pd.notna(lionsp['lbkfaceid'])].reset_index(drop=True)
 lionspl=lionspl[['lbkfaceid','physicalid','segmentid','trafficdir','travellane','parkinglane','bikedir','bikelane','stwidth','length','geometry']].reset_index(drop=True)
 lionspl=lionspl.sort_values(by=['lbkfaceid','length'],ascending=[True,False]).reset_index(drop=True)
@@ -1254,11 +1267,12 @@ lionsp=pd.concat([lionspl,lionspr],axis=0,ignore_index=True)
 lionsp=lionsp.sort_values(by=['bkfaceid','length'],ascending=[True,False]).reset_index(drop=True)
 lionsp=lionsp.drop_duplicates(['bkfaceid'],keep='first').reset_index(drop=True)
 lionsp=lionsp[['bkfaceid','physicalid','segmentid','trafficdir','travellane','parkinglane','bikedir','bikelane','stwidth']].reset_index(drop=True)
+lionsp=pd.merge(lionsp,lionspseg,how='left',on='segmentid')
 sttype=pd.merge(sdwkwdimp,lionsp,how='left',on='bkfaceid')
-
-k=sttype[pd.isna(sttype['stwidth'])]
-
-
+sttype['sttype']=np.where((sttype['rowwidth']<=75)&(sttype['impswmedia']<=8),'Narrow Street; Narrow Sidewalk',
+                 np.where((sttype['rowwidth']<=75)&(sttype['impswmedia']>8),'Narrow Street; Wide Sidewalk',
+                 np.where((sttype['rowwidth']>75)&(sttype['impswmedia']<=8),'Wide Street; Narrow Sidewalk',
+                 np.where((sttype['rowwidth']>75)&(sttype['impswmedia']>8),'Wide Street; Wide Sidewalk',''))))
 sttype.to_file(path+'output/sttype.shp')
 
 
