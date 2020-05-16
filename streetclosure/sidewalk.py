@@ -1287,6 +1287,41 @@ pvmtsp.crs={'init':'epsg:4326'}
 lion=gpd.read_file(path+'input/lion/lion.shp')
 lion.crs={'init':'epsg:4326'}
 lion=lion.to_crs({'init':'epsg:6539'})
+lion['length']=[x.length for x in lion['geometry']]
+lionsp=lion[['PhysicalID','SegmentID','RB_Layer','FeatureTyp','SegmentTyp','NonPed','RW_TYPE','TrafDir','Number_Tra','Number_Par',
+             'BIKE_TRAFD','BikeLane','StreetWidt','StreetWi_1','LBlockFace','RBlockFace','length','geometry']].reset_index(drop=True)
+lionsp['physicalid']=pd.to_numeric(lionsp['PhysicalID'])
+lionsp=lionsp[pd.notna(lionsp['physicalid'])].reset_index(drop=True)
+lionsp['segmentid']=pd.to_numeric(lionsp['SegmentID'])
+lionsp=lionsp[pd.notna(lionsp['segmentid'])].reset_index(drop=True)
+lionsp['rblayer']=[' '.join(x.split()).upper() if pd.notna(x) else '' for x in lionsp['RB_Layer']]
+lionsp=lionsp[np.isin(lionsp['rblayer'],['B','R'])].reset_index(drop=True)
+lionsp['featuretype']=[' '.join(x.split()).upper() if pd.notna(x) else '' for x in lionsp['FeatureTyp']]
+lionsp=lionsp[np.isin(lionsp['featuretype'],['0','6','A','C'])].reset_index(drop=True)
+lionsp['segmenttype']=[' '.join(x.split()).upper() if pd.notna(x) else '' for x in lionsp['SegmentTyp']]
+lionsp=lionsp[np.isin(lionsp['segmenttype'],['B','R','U','S'])].reset_index(drop=True)
+lionsp['nonped']=[' '.join(x.split()).upper() if pd.notna(x) else '' for x in lionsp['NonPed']]
+lionsp=lionsp[np.isin(lionsp['nonped'],['','D'])].reset_index(drop=True)
+lionsp['rwtype']=pd.to_numeric(lionsp['RW_TYPE'])
+lionsp=lionsp[np.isin(lionsp['rwtype'],[1])].reset_index(drop=True)
+lionsp['trafficdir']=[' '.join(x.split()).upper() if pd.notna(x) else '' for x in lionsp['TrafDir']]
+lionsp=lionsp[np.isin(lionsp['trafficdir'],['T','W','A'])].reset_index(drop=True)
+lionsp['travellane']=pd.to_numeric(lionsp['Number_Tra'])
+lionsp['travellane']=lionsp['travellane'].fillna(0)
+lionsp['parkinglane']=pd.to_numeric(lionsp['Number_Par'])
+lionsp['parkinglane']=lionsp['parkinglane'].fillna(0)
+lionsp['bikedir']=[' '.join(x.split()).upper() if pd.notna(x) else '' for x in lionsp['BIKE_TRAFD']]
+lionsp['bikedir']=lionsp['bikedir'].fillna('')
+lionsp['bikelane']=pd.to_numeric(lionsp['BikeLane'])
+lionsp['bikelane']=lionsp['bikelane'].fillna(0)
+lionsp['stwidth1']=pd.to_numeric(lionsp['StreetWidt'])
+lionsp['stwidth2']=pd.to_numeric(lionsp['StreetWi_1'])
+lionsp['stwidth']=np.where(pd.notna(lionsp['stwidth1']),lionsp['stwidth1'],lionsp['stwidth2'])
+lionsp=lionsp[pd.notna(lionsp['stwidth'])].reset_index(drop=True)
+lionsp['lbkfaceid']=pd.to_numeric(lionsp['LBlockFace'])
+lionsp['rbkfaceid']=pd.to_numeric(lionsp['RBlockFace'])
+lionsp=lionsp[['physicalid','segmentid','trafficdir','travellane','parkinglane','bikedir','bikelane','stwidth','lbkfaceid','rbkfaceid','length','geometry']].reset_index(drop=True)
+
 
 
 
