@@ -1312,6 +1312,28 @@ sttype.to_file(path+'output/sttype.shp')
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # Backup for future use
 
 ## Find sidewalk width
