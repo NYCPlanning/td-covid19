@@ -9,8 +9,8 @@ import multiprocessing as mp
 
 
 pd.set_option('display.max_columns', None)
-path='C:/Users/Yijun Ma/Desktop/D/DOCUMENT/DCP2020/COVID19/STREET CLOSURE/sidewalk/'
-#path='/home/mayijun/sidewalk/'
+#path='C:/Users/Yijun Ma/Desktop/D/DOCUMENT/DCP2020/COVID19/STREET CLOSURE/sidewalk/'
+path='/home/mayijun/sidewalk/'
 
 
 
@@ -1199,8 +1199,8 @@ path='C:/Users/Yijun Ma/Desktop/D/DOCUMENT/DCP2020/COVID19/STREET CLOSURE/sidewa
 
 
 
-
 # Street Typology
+start=datetime.datetime.now()
 sdwkwdimp=gpd.read_file(path+'output/sdwkwdimp.shp')
 sdwkwdimp.crs={'init':'epsg:4326'}
 lion=gpd.read_file(path+'input/lion/lion.shp')
@@ -1274,7 +1274,8 @@ sttype['sttype']=np.where((sttype['rowwidth']<=75)&(sttype['impswmedia']<=8),'Na
                  np.where((sttype['rowwidth']>75)&(sttype['impswmedia']<=8),'Wide Street; Narrow Sidewalk',
                  np.where((sttype['rowwidth']>75)&(sttype['impswmedia']>8),'Wide Street; Wide Sidewalk',''))))
 sttype.to_file(path+'output/sttype.shp')
-
+print(datetime.datetime.now()-start)
+# 1 min
 
 
 
