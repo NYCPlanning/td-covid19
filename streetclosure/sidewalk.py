@@ -9,8 +9,8 @@ import multiprocessing as mp
 
 
 pd.set_option('display.max_columns', None)
-#path='C:/Users/Yijun Ma/Desktop/D/DOCUMENT/DCP2020/COVID19/STREET CLOSURE/sidewalk/'
-path='/home/mayijun/sidewalk/'
+path='C:/Users/Yijun Ma/Desktop/D/DOCUMENT/DCP2020/COVID19/STREET CLOSURE/sidewalk/'
+#path='/home/mayijun/sidewalk/'
 
 
 
@@ -1322,7 +1322,7 @@ lionsp=lionsp[((pd.notna(lionsp['lbkfaceid']))&(pd.isna(lionsp['mdn_x']))&(pd.is
 lionsp=lionsp[['physicalid','segmentid','lbkfaceid','rbkfaceid','geometry']].reset_index(drop=True)
 lionsp.to_file(path+'output/lionnosdwk.shp')
 print(datetime.datetime.now()-start)
-# 7 mins
+# 3 mins
 
 
 
