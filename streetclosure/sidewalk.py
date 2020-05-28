@@ -1326,9 +1326,7 @@ path='/home/mayijun/sidewalk/'
 
 
 
-
-
-# Street without Sidewalks
+# Sidewalk Cafe Regulation
 start=datetime.datetime.now()
 sttype=gpd.read_file(path+'output/sttype.shp')
 sttype.crs={'init':'epsg:4326'}
@@ -1339,9 +1337,11 @@ sdwkcafe=sdwkcafe.to_crs({'init':'epsg:6539'})
 sdwkcafe['geometry']=sdwkcafe['geometry'].buffer(20)
 sdwkcafe=sdwkcafe.to_crs({'init':'epsg:4326'})
 sdwkreg=gpd.sjoin(sttype,sdwkcafe,how='inner',op='intersects')
+sdwkreg=sdwkreg.drop(['index_right','Shape_Leng'],axis=1)
+sdwkreg=sdwkreg.drop_duplicates(keep='first').reset_index(drop=True)
 sdwkreg.to_file(path+'output/sdwkreg.shp')
 print(datetime.datetime.now()-start)
-# 3 mins
+# 4 mins
 
 
 
