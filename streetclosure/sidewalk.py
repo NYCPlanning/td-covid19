@@ -1344,7 +1344,7 @@ sdwkreg=sdwkreg.groupby('pvid',as_index=False).agg({'cafetype':lambda x:'/'.join
 sdwkreg=pd.merge(sttype,sdwkreg,how='inner',on='pvid')
 sdwkreg.to_file(path+'output/sdwkreg.shp')
 print(datetime.datetime.now()-start)
-# 4 mins
+# 3 mins
 
 
 
