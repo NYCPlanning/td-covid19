@@ -1334,7 +1334,7 @@ sdwkreg=sttype.loc[sttype['impswmedia']<=12,['pvid','geometry']].reset_index(dro
 sdwkcafe=gpd.read_file(path+'input/zoning/sidewalkcafe.shp')
 sdwkcafe.crs={'init':'epsg:4326'}
 sdwkcafe=sdwkcafe.to_crs({'init':'epsg:6539'})
-sdwkcafe['cafetype']=sdwkcafe['CafeType'].copy()
+sdwkcafe['cafetype']=sdwkcafe['CafeType'].fillna('')
 sdwkcafe['geometry']=sdwkcafe['geometry'].buffer(20)
 sdwkcafe=sdwkcafe.to_crs({'init':'epsg:4326'})
 sdwkreg=gpd.sjoin(sttype,sdwkcafe,how='inner',op='intersects')
