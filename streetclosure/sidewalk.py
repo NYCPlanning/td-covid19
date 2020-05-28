@@ -9,8 +9,8 @@ import multiprocessing as mp
 
 
 pd.set_option('display.max_columns', None)
-path='C:/Users/Yijun Ma/Desktop/D/DOCUMENT/DCP2020/COVID19/STREET CLOSURE/sidewalk/'
-#path='/home/mayijun/sidewalk/'
+#path='C:/Users/Yijun Ma/Desktop/D/DOCUMENT/DCP2020/COVID19/STREET CLOSURE/sidewalk/'
+path='/home/mayijun/sidewalk/'
 
 
 
@@ -1279,58 +1279,69 @@ path='C:/Users/Yijun Ma/Desktop/D/DOCUMENT/DCP2020/COVID19/STREET CLOSURE/sidewa
 
 
 
+## Street without Sidewalks
+#start=datetime.datetime.now()
+#lion=gpd.read_file(path+'input/lion/lion.shp')
+#lion.crs={'init':'epsg:4326'}
+#lionsp=lion[['PhysicalID','SegmentID','RB_Layer','FeatureTyp','SegmentTyp','NonPed','RW_TYPE','TrafDir','LBlockFace','RBlockFace','geometry']].reset_index(drop=True)
+#lionsp['physicalid']=pd.to_numeric(lionsp['PhysicalID'])
+#lionsp=lionsp[pd.notna(lionsp['physicalid'])].reset_index(drop=True)
+#lionsp['segmentid']=pd.to_numeric(lionsp['SegmentID'])
+#lionsp=lionsp[pd.notna(lionsp['segmentid'])].reset_index(drop=True)
+#lionsp['rblayer']=[' '.join(x.split()).upper() if pd.notna(x) else '' for x in lionsp['RB_Layer']]
+#lionsp=lionsp[np.isin(lionsp['rblayer'],['B','R'])].reset_index(drop=True)
+#lionsp['featuretype']=[' '.join(x.split()).upper() if pd.notna(x) else '' for x in lionsp['FeatureTyp']]
+#lionsp=lionsp[np.isin(lionsp['featuretype'],['0','6','A','C'])].reset_index(drop=True)
+#lionsp['segmenttype']=[' '.join(x.split()).upper() if pd.notna(x) else '' for x in lionsp['SegmentTyp']]
+#lionsp=lionsp[np.isin(lionsp['segmenttype'],['B','R','U','S'])].reset_index(drop=True)
+#lionsp['nonped']=[' '.join(x.split()).upper() if pd.notna(x) else '' for x in lionsp['NonPed']]
+#lionsp=lionsp[np.isin(lionsp['nonped'],['','D'])].reset_index(drop=True)
+#lionsp['rwtype']=pd.to_numeric(lionsp['RW_TYPE'])
+#lionsp=lionsp[np.isin(lionsp['rwtype'],[1])].reset_index(drop=True)
+#lionsp['trafficdir']=[' '.join(x.split()).upper() if pd.notna(x) else '' for x in lionsp['TrafDir']]
+#lionsp=lionsp[np.isin(lionsp['trafficdir'],['T','W','A'])].reset_index(drop=True)
+#lionsp['lbkfaceid']=pd.to_numeric(lionsp['LBlockFace'])
+#lionsp['rbkfaceid']=pd.to_numeric(lionsp['RBlockFace'])
+#lionsp=lionsp[['physicalid','segmentid','lbkfaceid','rbkfaceid','geometry']].reset_index(drop=True)
+#pvmtedge=gpd.read_file(path+'input/planimetrics/pvmtedge.shp')
+#pvmtedge.crs={'init':'epsg:4326'}
+#mdn=gpd.read_file(path+'input/planimetrics/median.shp')
+#mdn.crs={'init':'epsg:4326'}
+#mdn=gpd.sjoin(mdn,pvmtedge,how='inner',op='intersects')
+#mdn['bkfaceid']=pd.to_numeric(mdn['BLOCKFACEI'])
+#mdn['mdn']=1
+#mdn=mdn[['bkfaceid','mdn']].drop_duplicates(keep='first').reset_index(drop=True)
+#lionsp=pd.merge(lionsp,mdn,how='left',left_on='lbkfaceid',right_on='bkfaceid')
+#lionsp=pd.merge(lionsp,mdn,how='left',left_on='rbkfaceid',right_on='bkfaceid')
+#lionsp=lionsp[['physicalid','segmentid','lbkfaceid','rbkfaceid','mdn_x','mdn_y','geometry']].reset_index(drop=True)
+#pvmtsp=gpd.read_file(path+'output/pvmtsp.shp')
+#pvmtsp.crs={'init':'epsg:4326'}
+#lionsp=pd.merge(lionsp,pvmtsp[['bkfaceid']].drop_duplicates(keep='first'),how='left',left_on='lbkfaceid',right_on='bkfaceid')
+#lionsp=pd.merge(lionsp,pvmtsp[['bkfaceid']].drop_duplicates(keep='first'),how='left',left_on='rbkfaceid',right_on='bkfaceid')
+#lionsp=lionsp[((pd.notna(lionsp['lbkfaceid']))&(pd.isna(lionsp['mdn_x']))&(pd.isna(lionsp['bkfaceid_x'])))|((pd.notna(lionsp['rbkfaceid']))&(pd.isna(lionsp['mdn_y']))&(pd.isna(lionsp['bkfaceid_y'])))]
+#lionsp=lionsp[['physicalid','segmentid','lbkfaceid','rbkfaceid','geometry']].reset_index(drop=True)
+#lionsp.to_file(path+'output/lionnosdwk.shp')
+#print(datetime.datetime.now()-start)
+## 3 mins
+
+
+
+
+
 # Street without Sidewalks
 start=datetime.datetime.now()
-lion=gpd.read_file(path+'input/lion/lion.shp')
-lion.crs={'init':'epsg:4326'}
-lionsp=lion[['PhysicalID','SegmentID','RB_Layer','FeatureTyp','SegmentTyp','NonPed','RW_TYPE','TrafDir','LBlockFace','RBlockFace','geometry']].reset_index(drop=True)
-lionsp['physicalid']=pd.to_numeric(lionsp['PhysicalID'])
-lionsp=lionsp[pd.notna(lionsp['physicalid'])].reset_index(drop=True)
-lionsp['segmentid']=pd.to_numeric(lionsp['SegmentID'])
-lionsp=lionsp[pd.notna(lionsp['segmentid'])].reset_index(drop=True)
-lionsp['rblayer']=[' '.join(x.split()).upper() if pd.notna(x) else '' for x in lionsp['RB_Layer']]
-lionsp=lionsp[np.isin(lionsp['rblayer'],['B','R'])].reset_index(drop=True)
-lionsp['featuretype']=[' '.join(x.split()).upper() if pd.notna(x) else '' for x in lionsp['FeatureTyp']]
-lionsp=lionsp[np.isin(lionsp['featuretype'],['0','6','A','C'])].reset_index(drop=True)
-lionsp['segmenttype']=[' '.join(x.split()).upper() if pd.notna(x) else '' for x in lionsp['SegmentTyp']]
-lionsp=lionsp[np.isin(lionsp['segmenttype'],['B','R','U','S'])].reset_index(drop=True)
-lionsp['nonped']=[' '.join(x.split()).upper() if pd.notna(x) else '' for x in lionsp['NonPed']]
-lionsp=lionsp[np.isin(lionsp['nonped'],['','D'])].reset_index(drop=True)
-lionsp['rwtype']=pd.to_numeric(lionsp['RW_TYPE'])
-lionsp=lionsp[np.isin(lionsp['rwtype'],[1])].reset_index(drop=True)
-lionsp['trafficdir']=[' '.join(x.split()).upper() if pd.notna(x) else '' for x in lionsp['TrafDir']]
-lionsp=lionsp[np.isin(lionsp['trafficdir'],['T','W','A'])].reset_index(drop=True)
-lionsp['lbkfaceid']=pd.to_numeric(lionsp['LBlockFace'])
-lionsp['rbkfaceid']=pd.to_numeric(lionsp['RBlockFace'])
-lionsp=lionsp[['physicalid','segmentid','lbkfaceid','rbkfaceid','geometry']].reset_index(drop=True)
-pvmtedge=gpd.read_file(path+'input/planimetrics/pvmtedge.shp')
-pvmtedge.crs={'init':'epsg:4326'}
-mdn=gpd.read_file(path+'input/planimetrics/median.shp')
-mdn.crs={'init':'epsg:4326'}
-mdn=gpd.sjoin(mdn,pvmtedge,how='inner',op='intersects')
-mdn['bkfaceid']=pd.to_numeric(mdn['BLOCKFACEI'])
-mdn['mdn']=1
-mdn=mdn[['bkfaceid','mdn']].drop_duplicates(keep='first').reset_index(drop=True)
-lionsp=pd.merge(lionsp,mdn,how='left',left_on='lbkfaceid',right_on='bkfaceid')
-lionsp=pd.merge(lionsp,mdn,how='left',left_on='rbkfaceid',right_on='bkfaceid')
-lionsp=lionsp[['physicalid','segmentid','lbkfaceid','rbkfaceid','mdn_x','mdn_y','geometry']].reset_index(drop=True)
-pvmtsp=gpd.read_file(path+'output/pvmtsp.shp')
-pvmtsp.crs={'init':'epsg:4326'}
-lionsp=pd.merge(lionsp,pvmtsp[['bkfaceid']].drop_duplicates(keep='first'),how='left',left_on='lbkfaceid',right_on='bkfaceid')
-lionsp=pd.merge(lionsp,pvmtsp[['bkfaceid']].drop_duplicates(keep='first'),how='left',left_on='rbkfaceid',right_on='bkfaceid')
-lionsp=lionsp[((pd.notna(lionsp['lbkfaceid']))&(pd.isna(lionsp['mdn_x']))&(pd.isna(lionsp['bkfaceid_x'])))|((pd.notna(lionsp['rbkfaceid']))&(pd.isna(lionsp['mdn_y']))&(pd.isna(lionsp['bkfaceid_y'])))]
-lionsp=lionsp[['physicalid','segmentid','lbkfaceid','rbkfaceid','geometry']].reset_index(drop=True)
-lionsp.to_file(path+'output/lionnosdwk.shp')
+sttype=gpd.read_file(path+'output/sttype.shp')
+sttype.crs={'init':'epsg:4326'}
+sdwkreg=sttype[sttype['impswmedia']<=12].reset_index(drop=True)
+sdwkcafe=gpd.read_file(path+'input/zoning/sidewalkcafe.shp')
+sdwkcafe.crs={'init':'epsg:4326'}
+sdwkcafe=sdwkcafe.to_crs({'init':'epsg:6539'})
+sdwkcafe['geometry']=sdwkcafe['geometry'].buffer(20)
+sdwkcafe=sdwkcafe.to_crs({'init':'epsg:4326'})
+sdwkreg=gpd.sjoin(sttype,sdwkcafe,how='inner',op='intersects')
+sdwkreg.to_file(path+'output/sdwkreg.shp')
 print(datetime.datetime.now()-start)
 # 3 mins
-
-
-
-
-
-
-
-
 
 
 
