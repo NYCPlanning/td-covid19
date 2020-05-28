@@ -1330,15 +1330,18 @@ path='/home/mayijun/sidewalk/'
 start=datetime.datetime.now()
 sttype=gpd.read_file(path+'output/sttype.shp')
 sttype.crs={'init':'epsg:4326'}
-sdwkreg=sttype[sttype['impswmedia']<=12].reset_index(drop=True)
+sdwkreg=sttype.loc[sttype['impswmedia']<=12,['pvid','geometry']].reset_index(drop=True)
 sdwkcafe=gpd.read_file(path+'input/zoning/sidewalkcafe.shp')
 sdwkcafe.crs={'init':'epsg:4326'}
 sdwkcafe=sdwkcafe.to_crs({'init':'epsg:6539'})
+sdwkcafe['cafetype']=sdwkcafe['CafeType'].copy()
 sdwkcafe['geometry']=sdwkcafe['geometry'].buffer(20)
 sdwkcafe=sdwkcafe.to_crs({'init':'epsg:4326'})
 sdwkreg=gpd.sjoin(sttype,sdwkcafe,how='inner',op='intersects')
-sdwkreg=sdwkreg.drop(['index_right','Shape_Leng'],axis=1)
+sdwkreg=sdwkreg.drop(['index_right','Shape_Leng','geometry'],axis=1)
 sdwkreg=sdwkreg.drop_duplicates(keep='first').reset_index(drop=True)
+sdwkreg=sdwkreg.groupby('pvid',as_index=False).agg({'cafetype':lambda x:'/'.join(x)}).reset_index(drop=True)
+sdwkreg=pd.merge(sttype,sdwkreg,how='inner',on='pvid')
 sdwkreg.to_file(path+'output/sdwkreg.shp')
 print(datetime.datetime.now()-start)
 # 4 mins
