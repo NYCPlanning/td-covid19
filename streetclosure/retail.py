@@ -48,3 +48,21 @@ grocery=gpd.GeoDataFrame(grocery,geometry=[shapely.geometry.Point(x,y) for x,y i
 grocery.to_file(path+'retail/grocery.shp')
 
 
+
+
+
+
+
+# Restaurant
+dohmh=pd.read_csv(path+'retail/restaurant/DOHMH_New_York_City_Restaurant_Inspection_Results.csv',dtype=str)
+dohmh=dohmh[['CAMIS','DBA','BORO','BUILDING','STREET','ZIPCODE', 'PHONE','CUISINE DESCRIPTION','BBL']].reset_index(drop=True)
+dohmh=dohmh.drop_duplicates(keep='first').reset_index(drop=True)
+dohmh['BBL']=pd.to_numeric(dohmh['BBL'])
+mappluto=gpd.read_file(path+'retail/restaurant/mappluto20v3.shp')
+mappluto.crs={'init':'epsg:4326'}
+dohmh=pd.merge(mappluto,dohmh,how='inner',on='BBL')
+dohmh.to_file(path+'retail/restaurant/dohmh.shp')
+
+
+
+
