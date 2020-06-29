@@ -11,8 +11,8 @@ import shapely
 
 
 pd.set_option('display.max_columns', None)
-#path='C:/Users/Yijun Ma/Desktop/D/DOCUMENT/DCP2020/COVID19/SUBWAY/TURNSTILE/'
-path='/home/mayijun/TURNSTILE/'
+path='C:/Users/Yijun Ma/Desktop/D/DOCUMENT/DCP2020/COVID19/SUBWAY/TURNSTILE/'
+#path='/home/mayijun/TURNSTILE/'
 
 
 
