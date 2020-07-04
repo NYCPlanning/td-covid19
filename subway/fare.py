@@ -9,7 +9,7 @@ import pytz
 
 
 pd.set_option('display.max_columns', None)
-path='C:/Users/Yijun Ma/Desktop/D/DOCUMENT/DCP2020/COVID19/SUBWAY/FARE/'
+path='C:/Users/mayij/Desktop/DOC/DCP2020/COVID19/SUBWAY/FARE/'
 
 
 
