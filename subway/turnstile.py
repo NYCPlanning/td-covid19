@@ -11,8 +11,8 @@ import shapely
 
 
 pd.set_option('display.max_columns', None)
-# path='C:/Users/Yijun Ma/Desktop/D/DOCUMENT/DCP2020/COVID19/SUBWAY/TURNSTILE/'
-path='/home/mayijun/TURNSTILE/'
+path='C:/Users/mayij/Desktop/DOC/DCP2020/COVID19/SUBWAY/TURNSTILE/'
+# path='/home/mayijun/TURNSTILE/'
 
 
 
@@ -178,30 +178,30 @@ print(datetime.datetime.now()-start)
 
 
 
-# # Fare Validation
-# dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
-# dfwk=pd.DataFrame()
-# dfwk['firstdate']=sorted([datetime.datetime.strptime(x,'%m/%d/%Y') for x in dfunitentry['firstdate'].unique()])
-# dfwk['firstdate']=[x.strftime('%m/%d/%Y') for x in dfwk['firstdate']]
-# dfwk['weekid']=np.repeat(list(range(1,int(len(dfwk)/7)+2)),7)[0:len(dfwk)]
-# dfwk['weekfirstdate']=np.repeat(list(dfwk.drop_duplicates('weekid',keep='first')['firstdate']),7)[0:len(dfwk)]
-# dfunitwkentry=pd.merge(dfunitentry,dfwk,how='left',on='firstdate')
-# dfunitwkentry=dfunitwkentry.groupby(['unit','weekid','weekfirstdate'],as_index=False).agg({'entries':'sum','gooducs':'sum','flagtime':'sum','flagentry':'sum'}).reset_index(drop=True)
-# dfunitwkentry.to_csv(path+'VALIDATION/FARE/dfunitwkentry.csv',index=False)
-# turnstile=pd.read_csv(path+'VALIDATION/FARE/dfunitwkentry.csv',dtype=float,converters={'unit':str,'weekfirstdate':str})
-# fare=pd.read_csv('C:/Users/Yijun Ma/Desktop/D/DOCUMENT/DCP2020/COVID19/SUBWAY/FARE/fare.csv',dtype=str,converters={'fare':float})
-# fare['weekfirstdate']=[str(x)[0:10] for x in fare['week']]
-# unitwkvld=pd.merge(fare,turnstile,how='left',on=['unit','weekfirstdate'])
-# unitwkvld=unitwkvld[['unit','weekid','week','weekfirstdate','fare','entries','gooducs','flagtime','flagentry']].sort_values(['unit','weekid']).reset_index(drop=True)
-# unitwkvld['diff']=unitwkvld['entries']-unitwkvld['fare']
-# unitwkvld['diffpct']=unitwkvld['diff']/unitwkvld['fare']
-# unitwkvld.to_csv(path+'VALIDATION/FARE/unitwkvld.csv',index=False)
-# wkvld=pd.merge(fare,turnstile,how='left',on=['unit','weekfirstdate'])
-# wkvld=wkvld.groupby(['weekid','week','weekfirstdate'],as_index=False).agg({'fare':'sum','entries':'sum','gooducs':'sum','flagtime':'sum','flagentry':'sum'}).reset_index(drop=True)
-# wkvld=wkvld.sort_values('weekid').reset_index(drop=True)
-# wkvld['diff']=wkvld['entries']-wkvld['fare']
-# wkvld['diffpct']=wkvld['diff']/wkvld['fare']
-# wkvld.to_csv(path+'VALIDATION/FARE/wkvld.csv',index=False)
+# Fare Validation
+dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
+dfwk=pd.DataFrame()
+dfwk['firstdate']=sorted([datetime.datetime.strptime(x,'%m/%d/%Y') for x in dfunitentry['firstdate'].unique()])
+dfwk['firstdate']=[x.strftime('%m/%d/%Y') for x in dfwk['firstdate']]
+dfwk['weekid']=np.repeat(list(range(1,int(len(dfwk)/7)+2)),7)[0:len(dfwk)]
+dfwk['weekfirstdate']=np.repeat(list(dfwk.drop_duplicates('weekid',keep='first')['firstdate']),7)[0:len(dfwk)]
+dfunitwkentry=pd.merge(dfunitentry,dfwk,how='left',on='firstdate')
+dfunitwkentry=dfunitwkentry.groupby(['unit','weekid','weekfirstdate'],as_index=False).agg({'entries':'sum','gooducs':'sum','flagtime':'sum','flagentry':'sum'}).reset_index(drop=True)
+dfunitwkentry.to_csv(path+'VALIDATION/FARE/dfunitwkentry.csv',index=False)
+turnstile=pd.read_csv(path+'VALIDATION/FARE/dfunitwkentry.csv',dtype=float,converters={'unit':str,'weekfirstdate':str})
+fare=pd.read_csv('C:/Users/Yijun Ma/Desktop/D/DOCUMENT/DCP2020/COVID19/SUBWAY/FARE/fare.csv',dtype=str,converters={'fare':float})
+fare['weekfirstdate']=[str(x)[0:10] for x in fare['week']]
+unitwkvld=pd.merge(fare,turnstile,how='left',on=['unit','weekfirstdate'])
+unitwkvld=unitwkvld[['unit','weekid','week','weekfirstdate','fare','entries','gooducs','flagtime','flagentry']].sort_values(['unit','weekid']).reset_index(drop=True)
+unitwkvld['diff']=unitwkvld['entries']-unitwkvld['fare']
+unitwkvld['diffpct']=unitwkvld['diff']/unitwkvld['fare']
+unitwkvld.to_csv(path+'VALIDATION/FARE/unitwkvld.csv',index=False)
+wkvld=pd.merge(fare,turnstile,how='left',on=['unit','weekfirstdate'])
+wkvld=wkvld.groupby(['weekid','week','weekfirstdate'],as_index=False).agg({'fare':'sum','entries':'sum','gooducs':'sum','flagtime':'sum','flagentry':'sum'}).reset_index(drop=True)
+wkvld=wkvld.sort_values('weekid').reset_index(drop=True)
+wkvld['diff']=wkvld['entries']-wkvld['fare']
+wkvld['diffpct']=wkvld['diff']/wkvld['fare']
+wkvld.to_csv(path+'VALIDATION/FARE/wkvld.csv',index=False)
 
 ## Hourly Validation
 #turnstile=pd.read_csv(path+'VALIDATION/HOURLY/dfunitentry2017.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
