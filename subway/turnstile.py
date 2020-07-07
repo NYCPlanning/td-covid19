@@ -696,7 +696,7 @@ cplxpmdiff.to_csv(path+'OUTPUT/cplxpmdiffp1.csv',index=False)
 
 # AM Peak Previous and Curren Week during Phase 2
 dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
-predates=['06/01/2020','06/02/2020','06/03/2020','06/04/2020']
+predates=['06/22/2020','06/23/2020','06/24/2020','06/25/2020']
 postdates=['06/29/2020','06/30/2020','07/01/2020','07/02/2020']
 amlist=['05:00:00-09:00:00','06:00:00-10:00:00','06:30:00-10:30:00','07:00:00-11:00:00','08:00:00-12:00:00','08:22:00-12:22:00','08:30:00-12:30:00']
 cplxampre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
@@ -721,7 +721,7 @@ cplxamdiff.to_csv(path+'OUTPUT/cplxamdiffp2.csv',index=False)
 
 # PM Peak Previous and Curren Week during Phase 2
 dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
-predates=['06/01/2020','06/02/2020','06/03/2020','06/04/2020']
+predates=['06/22/2020','06/23/2020','06/24/2020','06/25/2020']
 postdates=['06/29/2020','06/30/2020','07/01/2020','07/02/2020']
 pmlist=['13:00:00-17:00:00','14:00:00-18:00:00','14:30:00-18:30:00','15:00:00-19:00:00','16:00:00-20:00:00','16:22:00-20:22:00','16:30:00-20:30:00']
 cplxpmpre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
