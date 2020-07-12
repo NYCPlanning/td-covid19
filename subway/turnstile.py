@@ -174,7 +174,7 @@ dfdateexit['firstdate']=[datetime.datetime.strftime(x,'%m/%d/%Y') for x in dfdat
 dfdateexit.to_csv(path+'OUTPUT/dfdateexit.csv',index=False)
 
 print(datetime.datetime.now()-start)
-# 50 mins
+# 40 mins
 
 
 
