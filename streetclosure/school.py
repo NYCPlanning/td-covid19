@@ -94,7 +94,7 @@ df.to_file(path+'school/nobusnotrk.shp')
 sc=gpd.read_file(path+'school/school.shp')
 sc.crs={'init':'epsg:4326'}
 sc=sc.to_crs({'init':'epsg:6539'})
-sc['geometry']=sc.buffer(1000)
+sc['geometry']=sc.buffer(500)
 sc=sc.to_crs({'init':'epsg:4326'})
 df=gpd.read_file(path+'school/nobusnotrk.shp')
 df.crs={'init':'epsg:4326'}
@@ -102,7 +102,7 @@ df=gpd.sjoin(df,sc,how='inner',op='intersects')
 df=df[df['rowwidth']<=75].reset_index(drop=True)
 df=df[['physicalid','rowwidth','location_c','location_n','geometry']].reset_index(drop=True)
 df.columns=['physicalid','rowwidth','schoolcode','schoolname','geometry']
-df.to_file(path+'school/schoolstreet.shp')
+df.to_file(path+'school/schoolstreet500.shp')
 
 
 
