@@ -1021,3 +1021,56 @@ cplxpmdiffnta['Diff']=cplxpmdiffnta['PostEntries']-cplxpmdiffnta['PreEntries']
 cplxpmdiffnta['DiffPct']=cplxpmdiffnta['Diff']/cplxpmdiffnta['PreEntries']
 cplxpmdiffnta=pd.merge(nta,cplxpmdiffnta,how='inner',on='NTACode')
 cplxpmdiffnta.to_file(path+'OUTPUT/cplxpmdiffp4nta.shp')
+
+# # PM Peak Pre and Post Phase1 by NTA
+# dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
+# week1=['06/01/2020','06/02/2020','06/03/2020','06/04/2020']
+# week2=['06/08/2020','06/09/2020','06/10/2020','06/11/2020']
+# week3=['06/15/2020','06/16/2020','06/17/2020','06/18/2020']
+# week4=['06/22/2020','06/23/2020','06/24/2020','06/25/2020']
+# week5=['06/29/2020','06/30/2020','07/01/2020']
+# week6=['07/06/2020','07/07/2020','07/08/2020','07/09/2020']
+# week7=['07/13/2020','07/14/2020','07/15/2020','07/16/2020']
+# week8=['07/20/2020','07/21/2020','07/22/2020','07/23/2020']
+# wk=[week1,week2,week3,week4,week5,week6,week7,week8]
+# pmlist=['13:00:00-17:00:00','14:00:00-18:00:00','14:30:00-18:30:00','15:00:00-19:00:00','16:00:00-20:00:00','16:22:00-20:22:00','16:30:00-20:30:00']
+# cplxpm=dfunitentry[np.isin(dfunitentry['firstdate'],wk[0])].reset_index(drop=True)
+# cplxpm=cplxpm[np.isin(cplxpm['time'],pmlist)].reset_index(drop=True)
+# cplxpm=cplxpm.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
+# cplxpm=pd.merge(cplxpm,rc,how='left',left_on='unit',right_on='Remote')
+# cplxpm=cplxpm.groupby(['CplxID'],as_index=False).agg({'entries':'sum'}).reset_index(drop=True)
+# cplxpm.columns=['CplxID','Week1']
+# for i in range (1,8):
+#     tp=dfunitentry[np.isin(dfunitentry['firstdate'],wk[i])].reset_index(drop=True)
+#     tp=tp[np.isin(tp['time'],pmlist)].reset_index(drop=True)
+#     tp=tp.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
+#     tp=pd.merge(tp,rc,how='left',left_on='unit',right_on='Remote')
+#     tp=tp.groupby(['CplxID'],as_index=False).agg({'entries':'sum'}).reset_index(drop=True)
+#     tp.columns=['CplxID','Week'+str(i+1)]
+#     cplxpm=pd.merge(cplxpm,tp,how='outer',on='CplxID')
+# cplxpm=pd.merge(rc.drop('Remote',axis=1).drop_duplicates(keep='first').reset_index(drop=True),cplxpm,how='left',on='CplxID')
+# cplxpm=cplxpm[['CplxID','CplxLat','CplxLong','Week1','Week2','Week3','Week4','Week5','Week6','Week7','Week8']].reset_index(drop=True)
+# cplxpm=gpd.GeoDataFrame(cplxpm,geometry=[shapely.geometry.Point(x,y) for x,y in zip(cplxpmdiff['CplxLong'],cplxpmdiff['CplxLat'])],crs={'init' :'epsg:4326'})
+# cplxpm=cplxpm.to_crs({'init':'epsg:6539'})
+# cplxpm['geometry']=cplxpm.buffer(2640)
+# cplxpm=cplxpm.to_crs({'init':'epsg:4326'})
+# nta=gpd.read_file(path+'ntaclippedadj.shp')
+# nta.crs={'init' :'epsg:4326'}
+# cplxpmweeknta=gpd.sjoin(nta,cplxpm,how='left',op='intersects')
+# cplxpmweeknta=cplxpmweeknta.groupby(['NTACode'],as_index=False).agg({'Week1':'sum','Week2':'sum','Week3':'sum',
+#                                                                      'Week4':'sum','Week5':'sum','Week6':'sum',
+#                                                                      'Week7':'sum','Week8':'sum'}).reset_index(drop=True)
+# cplxpmweeknta=cplxpmweeknta[cplxpmweeknta['Week1']!=0].reset_index(drop=True)
+# cplxpmweeknta['Week2DP']=(cplxpmweeknta['Week2']-cplxpmweeknta['Week1'])/cplxpmweeknta['Week1']
+# cplxpmweeknta['Week3DP']=(cplxpmweeknta['Week3']-cplxpmweeknta['Week2'])/cplxpmweeknta['Week2']
+# cplxpmweeknta['Week4DP']=(cplxpmweeknta['Week4']-cplxpmweeknta['Week3'])/cplxpmweeknta['Week3']
+# cplxpmweeknta['Week5DP']=(cplxpmweeknta['Week5']-cplxpmweeknta['Week4'])/cplxpmweeknta['Week4']
+# cplxpmweeknta['Week6DP']=(cplxpmweeknta['Week6']-cplxpmweeknta['Week5'])/cplxpmweeknta['Week5']
+# cplxpmweeknta['Week7DP']=(cplxpmweeknta['Week7']-cplxpmweeknta['Week6'])/cplxpmweeknta['Week6']
+# cplxpmweeknta['Week8DP']=(cplxpmweeknta['Week8']-cplxpmweeknta['Week7'])/cplxpmweeknta['Week7']
+# cplxpmweeknta['AVGDP']=(cplxpmweeknta['Week2DP']+cplxpmweeknta['Week3DP']+cplxpmweeknta['Week4DP']+
+#                         cplxpmweeknta['Week5DP']+cplxpmweeknta['Week6DP']+cplxpmweeknta['Week7DP']+
+#                         cplxpmweeknta['Week8DP'])/7
+# cplxpmweeknta['W1W8DP']=(cplxpmweeknta['Week8']-cplxpmweeknta['Week1'])/cplxpmweeknta['Week1']
+# cplxpmweeknta=pd.merge(nta,cplxpmweeknta,how='inner',on='NTACode')
+# cplxpmweeknta.to_file(path+'OUTPUT/cplxpmweeknta.shp')
