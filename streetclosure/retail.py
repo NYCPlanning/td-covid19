@@ -9,7 +9,6 @@ from geosupport import Geosupport
 pd.set_option('display.max_columns', None)
 path='C:/Users/Yijun Ma/Desktop/D/DOCUMENT/DCP2020/COVID19/STREET CLOSURE/sidewalk/'
 
-
 ct=gpd.read_file(path+'input/census/nycctclipped.shp')
 ct.crs={'init':'epsg:4326'}
 ct=ct.to_crs({'init':'epsg:6539'})
@@ -138,3 +137,70 @@ openrest=gpd.sjoin(openrest,nta,how='left',op='intersects')
 openrest=openrest.drop(['index_right'],axis=1)
 openrest.to_file(path+'retail/restaurant/openrest1.shp')
 
+
+
+
+
+
+
+
+
+
+
+
+path='C:/Users/mayij/Desktop/'
+g=Geosupport()
+grade=pd.read_csv(path+'grade letter restaurants with no NTAs.csv',dtype=str)
+for i in grade.index:
+    try:
+        housenumber=str(grade.loc[i,'building'])
+        streetname=str(grade.loc[i,'street'])
+        zipcode=str(grade.loc[i,'zipcode'])
+        addr=g['1B']({'house_number':housenumber,'street_name':streetname,'zip_code':zipcode})
+        if addr['Latitude']!='':
+            grade.loc[i,'latitude']=pd.to_numeric(addr['Latitude'])
+            grade.loc[i,'longitude']=pd.to_numeric(addr['Longitude'])
+            grade.loc[i,'bbl']=pd.to_numeric(addr['BOROUGH BLOCK LOT (BBL)']['BOROUGH BLOCK LOT (BBL)'])
+            grade.loc[i,'nta']=addr['Neighborhood Tabulation Area (NTA)']
+            grade.loc[i,'ntaname']=addr['NTA Name']
+    except:
+        print(str(i))
+grade.to_csv(path+'grade letter restaurants with no NTAs.csv',index=False)
+
+
+
+import requests
+path='C:/Users/mayij/Desktop/'
+grade=pd.read_csv(path+'grade letter restaurants with no NTAs.csv',dtype=str)
+for i in grade.index:
+    try:
+        housenumber=str(grade.loc[i,'building'])
+        streetname=str(grade.loc[i,'street'])
+        zipcode=str(grade.loc[i,'zipcode'])
+        boro=str(grade.loc[i,'boro'])
+        url='https://geoservice.planning.nyc.gov/geoservice/geoservice.svc/Function_1B?ZipCode='+zipcode
+        url+='&AddressNo='+housenumber+'&StreetName='+streetname+'&Key=VIz1smTfDCOjyWN9'
+        addr=requests.get(url).json()
+        if addr['display']['out_lat_property'].strip()!='':
+            grade.loc[i,'latitude']=pd.to_numeric(addr['display']['out_lat_property'])
+            grade.loc[i,'longitude']=pd.to_numeric(addr['display']['out_lon_property'])
+            grade.loc[i,'bbl']=pd.to_numeric(addr['display']['out_bbl'])
+            grade.loc[i,'nta']=addr['display']['out_nta'].split('/')[0].strip()
+            grade.loc[i,'ntaname']=addr['display']['out_nta'].split('/')[1].strip()
+        else:
+            url='https://geoservice.planning.nyc.gov/geoservice/geoservice.svc/Function_1B?Borough='+boro
+            url+='&AddressNo='+housenumber+'&StreetName='+streetname+'&Key=VIz1smTfDCOjyWN9'
+            addr=requests.get(url).json()
+            if addr['display']['out_lat_property'].strip()!='':
+                grade.loc[i,'latitude']=pd.to_numeric(addr['display']['out_lat_property'])
+                grade.loc[i,'longitude']=pd.to_numeric(addr['display']['out_lon_property'])
+                grade.loc[i,'bbl']=pd.to_numeric(addr['display']['out_bbl'])
+                grade.loc[i,'nta']=addr['display']['out_nta'].split('/')[0].strip()
+                grade.loc[i,'ntaname']=addr['display']['out_nta'].split('/')[1].strip()
+    except:
+        print(str(i))
+
+mappluto=pd.read_csv('C:/Users/mayij/Desktop/DOC/DCP2020/COVID19/STREET CLOSURE/sidewalk/retail/restaurant/pluto_20v4.csv')
+mappluto=mappluto[['bbl','lotfront','bldgfront']].reset_index(drop=True)
+grade=pd.merge(grade,mappluto,how='inner',on='bbl')
+grade.to_csv(path+'grade.csv',index=False)
