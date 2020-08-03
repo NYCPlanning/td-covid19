@@ -263,90 +263,90 @@ wkvld.to_csv(path+'VALIDATION/FARE/wkvld.csv',index=False)
 
 
 
-# Comparison
-# AM Peak
-dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
-predates=['07/15/2019','07/16/2019','07/17/2019','07/18/2019','07/19/2019','07/22/2019','07/23/2019','07/24/2019','07/25/2019']
-postdates=['07/13/2020','07/14/2020','07/15/2020','07/16/2020','07/17/2020','07/20/2020','07/21/2020','07/22/2020','07/23/2020']
-amlist=['05:00:00-09:00:00','06:00:00-10:00:00','06:30:00-10:30:00','07:00:00-11:00:00','08:00:00-12:00:00','08:22:00-12:22:00','08:30:00-12:30:00']
-cplxampre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
-cplxampre=cplxampre[np.isin(cplxampre['time'],amlist)].reset_index(drop=True)
-cplxampre=cplxampre.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
-cplxampre=pd.merge(cplxampre,rc,how='left',left_on='unit',right_on='Remote')
-cplxampre=cplxampre.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
-cplxampre.columns=['CplxID','PreTime','PreEntries']
-cplxampost=dfunitentry[np.isin(dfunitentry['firstdate'],postdates)].reset_index(drop=True)
-cplxampost=cplxampost[np.isin(cplxampost['time'],amlist)].reset_index(drop=True)
-cplxampost=cplxampost.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
-cplxampost=pd.merge(cplxampost,rc,how='left',left_on='unit',right_on='Remote')
-cplxampost=cplxampost.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
-cplxampost.columns=['CplxID','PostTime','PostEntries']
-cplxamdiff=pd.merge(cplxampre,cplxampost,how='inner',on='CplxID')
-cplxamdiff['Time']=cplxamdiff['PreTime'].copy()
-cplxamdiff['Diff']=cplxamdiff['PostEntries']-cplxamdiff['PreEntries']
-cplxamdiff['DiffPct']=cplxamdiff['Diff']/cplxamdiff['PreEntries']
-cplxamdiff=pd.merge(rc.drop('Remote',axis=1).drop_duplicates(keep='first').reset_index(drop=True),cplxamdiff,how='left',on='CplxID')
-cplxamdiff=cplxamdiff[['CplxID','Borough','CplxName','Routes','CplxLat','CplxLong','Hub','Time','PreEntries','PostEntries','Diff','DiffPct']].reset_index(drop=True)
-cplxamdiff.to_csv(path+'OUTPUT/cplxamdiff.csv',index=False)
+# # Comparison
+# # AM Peak
+# dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
+# predates=['07/22/2019','07/23/2019','07/24/2019','07/25/2019','07/26/2019','07/29/2019','07/30/2019','07/31/2019','08/01/2019']
+# postdates=['07/20/2020','07/21/2020','07/22/2020','07/23/2020','07/24/2020','07/27/2020','07/28/2020','07/29/2020','07/30/2020']
+# amlist=['05:00:00-09:00:00','06:00:00-10:00:00','06:30:00-10:30:00','07:00:00-11:00:00','08:00:00-12:00:00','08:22:00-12:22:00','08:30:00-12:30:00']
+# cplxampre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
+# cplxampre=cplxampre[np.isin(cplxampre['time'],amlist)].reset_index(drop=True)
+# cplxampre=cplxampre.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
+# cplxampre=pd.merge(cplxampre,rc,how='left',left_on='unit',right_on='Remote')
+# cplxampre=cplxampre.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
+# cplxampre.columns=['CplxID','PreTime','PreEntries']
+# cplxampost=dfunitentry[np.isin(dfunitentry['firstdate'],postdates)].reset_index(drop=True)
+# cplxampost=cplxampost[np.isin(cplxampost['time'],amlist)].reset_index(drop=True)
+# cplxampost=cplxampost.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
+# cplxampost=pd.merge(cplxampost,rc,how='left',left_on='unit',right_on='Remote')
+# cplxampost=cplxampost.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
+# cplxampost.columns=['CplxID','PostTime','PostEntries']
+# cplxamdiff=pd.merge(cplxampre,cplxampost,how='inner',on='CplxID')
+# cplxamdiff['Time']=cplxamdiff['PreTime'].copy()
+# cplxamdiff['Diff']=cplxamdiff['PostEntries']-cplxamdiff['PreEntries']
+# cplxamdiff['DiffPct']=cplxamdiff['Diff']/cplxamdiff['PreEntries']
+# cplxamdiff=pd.merge(rc.drop('Remote',axis=1).drop_duplicates(keep='first').reset_index(drop=True),cplxamdiff,how='left',on='CplxID')
+# cplxamdiff=cplxamdiff[['CplxID','Borough','CplxName','Routes','CplxLat','CplxLong','Hub','Time','PreEntries','PostEntries','Diff','DiffPct']].reset_index(drop=True)
+# cplxamdiff.to_csv(path+'OUTPUT/cplxamdiff.csv',index=False)
 
-# PM Peak
-dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
-predates=['07/15/2019','07/16/2019','07/17/2019','07/18/2019','07/19/2019','07/22/2019','07/23/2019','07/24/2019','07/25/2019']
-postdates=['07/13/2020','07/14/2020','07/15/2020','07/16/2020','07/17/2020','07/20/2020','07/21/2020','07/22/2020','07/23/2020']
-pmlist=['13:00:00-17:00:00','14:00:00-18:00:00','14:30:00-18:30:00','15:00:00-19:00:00','16:00:00-20:00:00','16:22:00-20:22:00','16:30:00-20:30:00']
-cplxpmpre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
-cplxpmpre=cplxpmpre[np.isin(cplxpmpre['time'],pmlist)].reset_index(drop=True)
-cplxpmpre=cplxpmpre.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
-cplxpmpre=pd.merge(cplxpmpre,rc,how='left',left_on='unit',right_on='Remote')
-cplxpmpre=cplxpmpre.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
-cplxpmpre.columns=['CplxID','PreTime','PreEntries']
-cplxpmpost=dfunitentry[np.isin(dfunitentry['firstdate'],postdates)].reset_index(drop=True)
-cplxpmpost=cplxpmpost[np.isin(cplxpmpost['time'],pmlist)].reset_index(drop=True)
-cplxpmpost=cplxpmpost.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
-cplxpmpost=pd.merge(cplxpmpost,rc,how='left',left_on='unit',right_on='Remote')
-cplxpmpost=cplxpmpost.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
-cplxpmpost.columns=['CplxID','PostTime','PostEntries']
-cplxpmdiff=pd.merge(cplxpmpre,cplxpmpost,how='inner',on='CplxID')
-cplxpmdiff['Time']=cplxpmdiff['PreTime'].copy()
-cplxpmdiff['Diff']=cplxpmdiff['PostEntries']-cplxpmdiff['PreEntries']
-cplxpmdiff['DiffPct']=cplxpmdiff['Diff']/cplxpmdiff['PreEntries']
-cplxpmdiff=pd.merge(rc.drop('Remote',axis=1).drop_duplicates(keep='first').reset_index(drop=True),cplxpmdiff,how='left',on='CplxID')
-cplxpmdiff=cplxpmdiff[['CplxID','Borough','CplxName','Routes','CplxLat','CplxLong','Hub','Time','PreEntries','PostEntries','Diff','DiffPct']].reset_index(drop=True)
-cplxpmdiff.to_csv(path+'OUTPUT/cplxpmdiff.csv',index=False)
+# # PM Peak
+# dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
+# predates=['07/22/2019','07/23/2019','07/24/2019','07/25/2019','07/26/2019','07/29/2019','07/30/2019','07/31/2019','08/01/2019']
+# postdates=['07/20/2020','07/21/2020','07/22/2020','07/23/2020','07/24/2020','07/27/2020','07/28/2020','07/29/2020','07/30/2020']
+# pmlist=['13:00:00-17:00:00','14:00:00-18:00:00','14:30:00-18:30:00','15:00:00-19:00:00','16:00:00-20:00:00','16:22:00-20:22:00','16:30:00-20:30:00']
+# cplxpmpre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
+# cplxpmpre=cplxpmpre[np.isin(cplxpmpre['time'],pmlist)].reset_index(drop=True)
+# cplxpmpre=cplxpmpre.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
+# cplxpmpre=pd.merge(cplxpmpre,rc,how='left',left_on='unit',right_on='Remote')
+# cplxpmpre=cplxpmpre.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
+# cplxpmpre.columns=['CplxID','PreTime','PreEntries']
+# cplxpmpost=dfunitentry[np.isin(dfunitentry['firstdate'],postdates)].reset_index(drop=True)
+# cplxpmpost=cplxpmpost[np.isin(cplxpmpost['time'],pmlist)].reset_index(drop=True)
+# cplxpmpost=cplxpmpost.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
+# cplxpmpost=pd.merge(cplxpmpost,rc,how='left',left_on='unit',right_on='Remote')
+# cplxpmpost=cplxpmpost.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
+# cplxpmpost.columns=['CplxID','PostTime','PostEntries']
+# cplxpmdiff=pd.merge(cplxpmpre,cplxpmpost,how='inner',on='CplxID')
+# cplxpmdiff['Time']=cplxpmdiff['PreTime'].copy()
+# cplxpmdiff['Diff']=cplxpmdiff['PostEntries']-cplxpmdiff['PreEntries']
+# cplxpmdiff['DiffPct']=cplxpmdiff['Diff']/cplxpmdiff['PreEntries']
+# cplxpmdiff=pd.merge(rc.drop('Remote',axis=1).drop_duplicates(keep='first').reset_index(drop=True),cplxpmdiff,how='left',on='CplxID')
+# cplxpmdiff=cplxpmdiff[['CplxID','Borough','CplxName','Routes','CplxLat','CplxLong','Hub','Time','PreEntries','PostEntries','Diff','DiffPct']].reset_index(drop=True)
+# cplxpmdiff.to_csv(path+'OUTPUT/cplxpmdiff.csv',index=False)
 
-# Period Diff
-dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
-predates=['07/15/2019','07/16/2019','07/17/2019','07/18/2019','07/19/2019','07/22/2019','07/23/2019','07/24/2019','07/25/2019']
-postdates=['07/13/2020','07/14/2020','07/15/2020','07/16/2020','07/17/2020','07/20/2020','07/21/2020','07/22/2020','07/23/2020']
-period1=['01:00:00-05:00:00','02:00:00-06:00:00','02:30:00-06:30:00','03:00:00-07:00:00','04:00:00-08:00:00','04:22:00-08:22:00','04:30:00-08:30:00']
-period2=['05:00:00-09:00:00','06:00:00-10:00:00','06:30:00-10:30:00','07:00:00-11:00:00','08:00:00-12:00:00','08:22:00-12:22:00','08:30:00-12:30:00']
-period3=['09:00:00-13:00:00','10:00:00-14:00:00','10:30:00-14:30:00','11:00:00-15:00:00','12:00:00-16:00:00','12:22:00-16:22:00','12:30:00-16:30:00']
-period4=['13:00:00-17:00:00','14:00:00-18:00:00','14:30:00-18:30:00','15:00:00-19:00:00','16:00:00-20:00:00','16:22:00-20:22:00','16:30:00-20:30:00']
-period5=['17:00:00-21:00:00','18:00:00-22:00:00','18:30:00-22:30:00','19:00:00-23:00:00','20:00:00-00:00:00','20:22:00-00:22:00','20:30:00-00:30:00']
-period6=['21:00:00-01:00:00','22:00:00-02:00:00','22:30:00-02:30:00','23:00:00-03:00:00','00:00:00-04:00:00','00:22:00-04:22:00','00:30:00-04:30:00']
-period1=pd.DataFrame(period1,columns=['timeperiod'])
-period1['periodid']=1
-period2=pd.DataFrame(period2,columns=['timeperiod'])
-period2['periodid']=2
-period3=pd.DataFrame(period3,columns=['timeperiod'])
-period3['periodid']=3
-period4=pd.DataFrame(period4,columns=['timeperiod'])
-period4['periodid']=4
-period5=pd.DataFrame(period5,columns=['timeperiod'])
-period5['periodid']=5
-period6=pd.DataFrame(period6,columns=['timeperiod'])
-period6['periodid']=6
-periodlist=pd.concat([period1,period2,period3,period4,period5,period6],ignore_index=True)
-pdpre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
-pdpre=pd.merge(pdpre,periodlist,how='left',left_on='time',right_on='timeperiod')
-pdpre=pdpre.groupby(['firstdate','periodid'],as_index=False).agg({'entries':'sum'}).reset_index(drop=True)
-pdpre.columns=['Date','Period','PreEntries']
-pdpost=dfunitentry[np.isin(dfunitentry['firstdate'],postdates)].reset_index(drop=True)
-pdpost=pd.merge(pdpost,periodlist,how='left',left_on='time',right_on='timeperiod')
-pdpost=pdpost.groupby(['firstdate','periodid'],as_index=False).agg({'entries':'sum'}).reset_index(drop=True)
-pdpost.columns=['Date','Period','PostEntries']
-pddiff=pd.concat([pdpre,pdpost],ignore_index=True)
-pddiff.to_csv(path+'OUTPUT/pddiff.csv',index=False)
+# # Period Diff
+# dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
+# predates=['07/22/2019','07/23/2019','07/24/2019','07/25/2019','07/26/2019','07/29/2019','07/30/2019','07/31/2019','08/01/2019']
+# postdates=['07/20/2020','07/21/2020','07/22/2020','07/23/2020','07/24/2020','07/27/2020','07/28/2020','07/29/2020','07/30/2020']
+# period1=['01:00:00-05:00:00','02:00:00-06:00:00','02:30:00-06:30:00','03:00:00-07:00:00','04:00:00-08:00:00','04:22:00-08:22:00','04:30:00-08:30:00']
+# period2=['05:00:00-09:00:00','06:00:00-10:00:00','06:30:00-10:30:00','07:00:00-11:00:00','08:00:00-12:00:00','08:22:00-12:22:00','08:30:00-12:30:00']
+# period3=['09:00:00-13:00:00','10:00:00-14:00:00','10:30:00-14:30:00','11:00:00-15:00:00','12:00:00-16:00:00','12:22:00-16:22:00','12:30:00-16:30:00']
+# period4=['13:00:00-17:00:00','14:00:00-18:00:00','14:30:00-18:30:00','15:00:00-19:00:00','16:00:00-20:00:00','16:22:00-20:22:00','16:30:00-20:30:00']
+# period5=['17:00:00-21:00:00','18:00:00-22:00:00','18:30:00-22:30:00','19:00:00-23:00:00','20:00:00-00:00:00','20:22:00-00:22:00','20:30:00-00:30:00']
+# period6=['21:00:00-01:00:00','22:00:00-02:00:00','22:30:00-02:30:00','23:00:00-03:00:00','00:00:00-04:00:00','00:22:00-04:22:00','00:30:00-04:30:00']
+# period1=pd.DataFrame(period1,columns=['timeperiod'])
+# period1['periodid']=1
+# period2=pd.DataFrame(period2,columns=['timeperiod'])
+# period2['periodid']=2
+# period3=pd.DataFrame(period3,columns=['timeperiod'])
+# period3['periodid']=3
+# period4=pd.DataFrame(period4,columns=['timeperiod'])
+# period4['periodid']=4
+# period5=pd.DataFrame(period5,columns=['timeperiod'])
+# period5['periodid']=5
+# period6=pd.DataFrame(period6,columns=['timeperiod'])
+# period6['periodid']=6
+# periodlist=pd.concat([period1,period2,period3,period4,period5,period6],ignore_index=True)
+# pdpre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
+# pdpre=pd.merge(pdpre,periodlist,how='left',left_on='time',right_on='timeperiod')
+# pdpre=pdpre.groupby(['firstdate','periodid'],as_index=False).agg({'entries':'sum'}).reset_index(drop=True)
+# pdpre.columns=['Date','Period','PreEntries']
+# pdpost=dfunitentry[np.isin(dfunitentry['firstdate'],postdates)].reset_index(drop=True)
+# pdpost=pd.merge(pdpost,periodlist,how='left',left_on='time',right_on='timeperiod')
+# pdpost=pdpost.groupby(['firstdate','periodid'],as_index=False).agg({'entries':'sum'}).reset_index(drop=True)
+# pdpost.columns=['Date','Period','PostEntries']
+# pddiff=pd.concat([pdpre,pdpost],ignore_index=True)
+# pddiff.to_csv(path+'OUTPUT/pddiff.csv',index=False)
 
 # Hub Bound
 dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
@@ -359,7 +359,8 @@ predates=['03/11/2019','03/12/2019','03/13/2019','03/14/2019','03/15/2019','03/1
           '06/03/2019','06/04/2019','06/05/2019','06/06/2019','06/07/2019','06/10/2019','06/11/2019','06/12/2019','06/13/2019','06/14/2019',
           '06/17/2019','06/18/2019','06/19/2019','06/20/2019','06/21/2019','06/24/2019','06/25/2019','06/26/2019','06/27/2019','06/28/2019',
           '07/01/2019','07/02/2019','07/03/2019','07/08/2019','07/09/2019','07/10/2019','07/11/2019','07/12/2019',
-          '07/15/2019','07/16/2019','07/17/2019','07/18/2019','07/19/2019','07/22/2019','07/23/2019','07/24/2019','07/25/2019']
+          '07/15/2019','07/16/2019','07/17/2019','07/18/2019','07/19/2019','07/22/2019','07/23/2019','07/24/2019','07/25/2019','07/26/2019',
+          '07/29/2019','07/30/2019','07/31/2019','08/01/2019']
 postdates=['03/09/2020','03/10/2020','03/11/2020','03/12/2020','03/13/2020','03/16/2020','03/17/2020','03/18/2020','03/19/2020','03/20/2020',
             '03/23/2020','03/24/2020','03/25/2020','03/26/2020','03/27/2020','03/30/2020','03/31/2020','04/01/2020','04/02/2020','04/03/2020',
             '04/06/2020','04/07/2020','04/08/2020','04/09/2020','04/13/2020','04/14/2020','04/15/2020','04/16/2020','04/17/2020',
@@ -369,7 +370,8 @@ postdates=['03/09/2020','03/10/2020','03/11/2020','03/12/2020','03/13/2020','03/
             '06/01/2020','06/02/2020','06/03/2020','06/04/2020','06/05/2020','06/08/2020','06/09/2020','06/10/2020','06/11/2020','06/12/2020',
             '06/15/2020','06/16/2020','06/17/2020','06/18/2020','06/19/2020','06/22/2020','06/23/2020','06/24/2020','06/25/2020','06/26/2020',
             '06/29/2020','06/30/2020','07/01/2020','07/06/2020','07/07/2020','07/08/2020','07/09/2020','07/10/2020',
-            '07/13/2020','07/14/2020','07/15/2020','07/16/2020','07/17/2020','07/20/2020','07/21/2020','07/22/2020','07/23/2020']
+            '07/13/2020','07/14/2020','07/15/2020','07/16/2020','07/17/2020','07/20/2020','07/21/2020','07/22/2020','07/23/2020','07/24/2020',
+            '07/27/2020','07/28/2020','07/29/2020','07/30/2020']
 pmlist=['13:00:00-17:00:00','14:00:00-18:00:00','14:30:00-18:30:00','15:00:00-19:00:00','16:00:00-20:00:00','16:22:00-20:22:00','16:30:00-20:30:00']
 cplxpmpre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
 cplxpmpre=cplxpmpre[np.isin(cplxpmpre['time'],pmlist)].reset_index(drop=True)
@@ -542,232 +544,232 @@ hub.to_csv(path+'OUTPUT/hub.csv',index=False)
 #                       'pddiff4','pddiff5','pddiff6','pddiff']].reset_index(drop=True)
 #cplxpddiff.to_csv(path+'OUTPUT/cplxpddiff.csv',index=False)
 
-# AM Peak Pre-Nadir-Recent
-dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
-# predates=['03/11/2019','03/12/2019','03/13/2019','03/14/2019','03/15/2019',
-#           '03/18/2019','03/19/2019','03/20/2019','03/21/2019','03/22/2019',
-#           '03/25/2019','03/26/2019','03/27/2019','03/28/2019','03/29/2019',
-#           '04/01/2019','04/02/2019','04/03/2019','04/04/2019','04/05/2019',
-#           '04/08/2019','04/09/2019','04/10/2019','04/11/2019','04/12/2019',
-#           '04/15/2019','04/16/2019','04/17/2019','04/18/2019',
-#           '04/22/2019','04/23/2019','04/24/2019','04/25/2019','04/26/2019',
-#           '04/29/2019','04/30/2019','05/01/2019','05/02/2019','05/03/2019',
-#           '05/06/2019','05/07/2019','05/08/2019','05/09/2019','05/10/2019',
-#           '05/13/2019','05/14/2019','05/15/2019','05/16/2019','05/17/2019',
-#           '05/20/2019','05/21/2019','05/22/2019','05/23/2019','05/24/2019',
-#           '05/28/2019','05/29/2019','05/30/2019','05/31/2019',
-#           '06/03/2019','06/04/2019','06/05/2019','06/06/2019','06/07/2019',
+# # AM Peak Pre-Nadir-Recent
+# dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
+# # predates=['03/11/2019','03/12/2019','03/13/2019','03/14/2019','03/15/2019',
+# #           '03/18/2019','03/19/2019','03/20/2019','03/21/2019','03/22/2019',
+# #           '03/25/2019','03/26/2019','03/27/2019','03/28/2019','03/29/2019',
+# #           '04/01/2019','04/02/2019','04/03/2019','04/04/2019','04/05/2019',
+# #           '04/08/2019','04/09/2019','04/10/2019','04/11/2019','04/12/2019',
+# #           '04/15/2019','04/16/2019','04/17/2019','04/18/2019',
+# #           '04/22/2019','04/23/2019','04/24/2019','04/25/2019','04/26/2019',
+# #           '04/29/2019','04/30/2019','05/01/2019','05/02/2019','05/03/2019',
+# #           '05/06/2019','05/07/2019','05/08/2019','05/09/2019','05/10/2019',
+# #           '05/13/2019','05/14/2019','05/15/2019','05/16/2019','05/17/2019',
+# #           '05/20/2019','05/21/2019','05/22/2019','05/23/2019','05/24/2019',
+# #           '05/28/2019','05/29/2019','05/30/2019','05/31/2019',
+# #           '06/03/2019','06/04/2019','06/05/2019','06/06/2019','06/07/2019',
+# #           '06/10/2019','06/11/2019','06/12/2019','06/13/2019','06/14/2019',
+# #           '06/17/2019','06/18/2019','06/19/2019','06/20/2019','06/21/2019',
+# #           '06/24/2019','06/25/2019','06/26/2019','06/27/2019','06/28/2019']
+# predates=['06/03/2019','06/04/2019','06/05/2019','06/06/2019','06/07/2019',
 #           '06/10/2019','06/11/2019','06/12/2019','06/13/2019','06/14/2019',
 #           '06/17/2019','06/18/2019','06/19/2019','06/20/2019','06/21/2019',
-#           '06/24/2019','06/25/2019','06/26/2019','06/27/2019','06/28/2019']
-predates=['06/03/2019','06/04/2019','06/05/2019','06/06/2019','06/07/2019',
-          '06/10/2019','06/11/2019','06/12/2019','06/13/2019','06/14/2019',
-          '06/17/2019','06/18/2019','06/19/2019','06/20/2019','06/21/2019',
-          '06/24/2019','06/25/2019','06/26/2019','06/27/2019','06/28/2019',
-          '07/01/2019','07/02/2019','07/03/2019',
-          '07/08/2019','07/09/2019','07/10/2019','07/11/2019','07/12/2019',
-          '07/15/2019','07/16/2019','07/17/2019','07/18/2019','07/19/2019',
-          '07/22/2019','07/23/2019','07/24/2019','07/25/2019','07/26/2019',
-          '07/29/2019','07/30/2019','07/31/2019']
-nadirdates=['04/14/2020','04/15/2020','04/16/2020','04/17/2020']
-latestdates=['07/20/2020','07/21/2020','07/22/2020','07/23/2020']
-amlist=['05:00:00-09:00:00','06:00:00-10:00:00','06:30:00-10:30:00','07:00:00-11:00:00','08:00:00-12:00:00','08:22:00-12:22:00','08:30:00-12:30:00']
-cplxampre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
-cplxampre=cplxampre[np.isin(cplxampre['time'],amlist)].reset_index(drop=True)
-cplxampre=cplxampre.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
-cplxampre=pd.merge(cplxampre,rc,how='left',left_on='unit',right_on='Remote')
-cplxampre=cplxampre.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
-cplxampre.columns=['CplxID','PreTime','PreEntries']
-cplxamnadir=dfunitentry[np.isin(dfunitentry['firstdate'],nadirdates)].reset_index(drop=True)
-cplxamnadir=cplxamnadir[np.isin(cplxamnadir['time'],amlist)].reset_index(drop=True)
-cplxamnadir=cplxamnadir.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
-cplxamnadir=pd.merge(cplxamnadir,rc,how='left',left_on='unit',right_on='Remote')
-cplxamnadir=cplxamnadir.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
-cplxamnadir.columns=['CplxID','NadirTime','NadirEntries']
-cplxamlatest=dfunitentry[np.isin(dfunitentry['firstdate'],latestdates)].reset_index(drop=True)
-cplxamlatest=cplxamlatest[np.isin(cplxamlatest['time'],amlist)].reset_index(drop=True)
-cplxamlatest=cplxamlatest.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
-cplxamlatest=pd.merge(cplxamlatest,rc,how='left',left_on='unit',right_on='Remote')
-cplxamlatest=cplxamlatest.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
-cplxamlatest.columns=['CplxID','LatestTime','LatestEntries']
-cplxam=pd.merge(cplxampre,cplxamnadir,how='inner',on='CplxID')
-cplxam=pd.merge(cplxam,cplxamlatest,how='inner',on='CplxID')
-cplxam['Time']=cplxam['PreTime'].copy()
-cplxam['Diff1']=cplxam['NadirEntries']-cplxam['PreEntries']
-cplxam['DiffPct1']=cplxam['Diff1']/cplxam['PreEntries']
-cplxam['Diff2']=cplxam['LatestEntries']-cplxam['NadirEntries']
-cplxam['DiffPct2']=cplxam['Diff2']/cplxam['NadirEntries']
-cplxam=pd.merge(rc.drop('Remote',axis=1).drop_duplicates(keep='first').reset_index(drop=True),cplxam,how='left',on='CplxID')
-cplxam=cplxam[['CplxID','Borough','CplxName','Routes','CplxLat','CplxLong','Hub','Time','PreEntries','NadirEntries','LatestEntries','Diff1',
-                'DiffPct1','Diff2','DiffPct2']].reset_index(drop=True)
-cplxam=cplxam.fillna(0)
-cplxam.to_csv(path+'OUTPUT/cplxam.csv',index=False)
+#           '06/24/2019','06/25/2019','06/26/2019','06/27/2019','06/28/2019',
+#           '07/01/2019','07/02/2019','07/03/2019',
+#           '07/08/2019','07/09/2019','07/10/2019','07/11/2019','07/12/2019',
+#           '07/15/2019','07/16/2019','07/17/2019','07/18/2019','07/19/2019',
+#           '07/22/2019','07/23/2019','07/24/2019','07/25/2019','07/26/2019',
+#           '07/29/2019','07/30/2019','07/31/2019']
+# nadirdates=['04/14/2020','04/15/2020','04/16/2020','04/17/2020']
+# latestdates=['07/20/2020','07/21/2020','07/22/2020','07/23/2020']
+# amlist=['05:00:00-09:00:00','06:00:00-10:00:00','06:30:00-10:30:00','07:00:00-11:00:00','08:00:00-12:00:00','08:22:00-12:22:00','08:30:00-12:30:00']
+# cplxampre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
+# cplxampre=cplxampre[np.isin(cplxampre['time'],amlist)].reset_index(drop=True)
+# cplxampre=cplxampre.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
+# cplxampre=pd.merge(cplxampre,rc,how='left',left_on='unit',right_on='Remote')
+# cplxampre=cplxampre.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
+# cplxampre.columns=['CplxID','PreTime','PreEntries']
+# cplxamnadir=dfunitentry[np.isin(dfunitentry['firstdate'],nadirdates)].reset_index(drop=True)
+# cplxamnadir=cplxamnadir[np.isin(cplxamnadir['time'],amlist)].reset_index(drop=True)
+# cplxamnadir=cplxamnadir.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
+# cplxamnadir=pd.merge(cplxamnadir,rc,how='left',left_on='unit',right_on='Remote')
+# cplxamnadir=cplxamnadir.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
+# cplxamnadir.columns=['CplxID','NadirTime','NadirEntries']
+# cplxamlatest=dfunitentry[np.isin(dfunitentry['firstdate'],latestdates)].reset_index(drop=True)
+# cplxamlatest=cplxamlatest[np.isin(cplxamlatest['time'],amlist)].reset_index(drop=True)
+# cplxamlatest=cplxamlatest.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
+# cplxamlatest=pd.merge(cplxamlatest,rc,how='left',left_on='unit',right_on='Remote')
+# cplxamlatest=cplxamlatest.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
+# cplxamlatest.columns=['CplxID','LatestTime','LatestEntries']
+# cplxam=pd.merge(cplxampre,cplxamnadir,how='inner',on='CplxID')
+# cplxam=pd.merge(cplxam,cplxamlatest,how='inner',on='CplxID')
+# cplxam['Time']=cplxam['PreTime'].copy()
+# cplxam['Diff1']=cplxam['NadirEntries']-cplxam['PreEntries']
+# cplxam['DiffPct1']=cplxam['Diff1']/cplxam['PreEntries']
+# cplxam['Diff2']=cplxam['LatestEntries']-cplxam['NadirEntries']
+# cplxam['DiffPct2']=cplxam['Diff2']/cplxam['NadirEntries']
+# cplxam=pd.merge(rc.drop('Remote',axis=1).drop_duplicates(keep='first').reset_index(drop=True),cplxam,how='left',on='CplxID')
+# cplxam=cplxam[['CplxID','Borough','CplxName','Routes','CplxLat','CplxLong','Hub','Time','PreEntries','NadirEntries','LatestEntries','Diff1',
+#                 'DiffPct1','Diff2','DiffPct2']].reset_index(drop=True)
+# cplxam=cplxam.fillna(0)
+# cplxam.to_csv(path+'OUTPUT/cplxam.csv',index=False)
 
-# PM Peak Pre-Nadir-Recent
-dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
-# predates=['03/11/2019','03/12/2019','03/13/2019','03/14/2019','03/15/2019',
-#           '03/18/2019','03/19/2019','03/20/2019','03/21/2019','03/22/2019',
-#           '03/25/2019','03/26/2019','03/27/2019','03/28/2019','03/29/2019',
-#           '04/01/2019','04/02/2019','04/03/2019','04/04/2019','04/05/2019',
-#           '04/08/2019','04/09/2019','04/10/2019','04/11/2019','04/12/2019',
-#           '04/15/2019','04/16/2019','04/17/2019','04/18/2019',
-#           '04/22/2019','04/23/2019','04/24/2019','04/25/2019','04/26/2019',
-#           '04/29/2019','04/30/2019','05/01/2019','05/02/2019','05/03/2019',
-#           '05/06/2019','05/07/2019','05/08/2019','05/09/2019','05/10/2019',
-#           '05/13/2019','05/14/2019','05/15/2019','05/16/2019','05/17/2019',
-#           '05/20/2019','05/21/2019','05/22/2019','05/23/2019','05/24/2019',
-#           '05/28/2019','05/29/2019','05/30/2019','05/31/2019',
-#           '06/03/2019','06/04/2019','06/05/2019','06/06/2019','06/07/2019',
+# # PM Peak Pre-Nadir-Recent
+# dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
+# # predates=['03/11/2019','03/12/2019','03/13/2019','03/14/2019','03/15/2019',
+# #           '03/18/2019','03/19/2019','03/20/2019','03/21/2019','03/22/2019',
+# #           '03/25/2019','03/26/2019','03/27/2019','03/28/2019','03/29/2019',
+# #           '04/01/2019','04/02/2019','04/03/2019','04/04/2019','04/05/2019',
+# #           '04/08/2019','04/09/2019','04/10/2019','04/11/2019','04/12/2019',
+# #           '04/15/2019','04/16/2019','04/17/2019','04/18/2019',
+# #           '04/22/2019','04/23/2019','04/24/2019','04/25/2019','04/26/2019',
+# #           '04/29/2019','04/30/2019','05/01/2019','05/02/2019','05/03/2019',
+# #           '05/06/2019','05/07/2019','05/08/2019','05/09/2019','05/10/2019',
+# #           '05/13/2019','05/14/2019','05/15/2019','05/16/2019','05/17/2019',
+# #           '05/20/2019','05/21/2019','05/22/2019','05/23/2019','05/24/2019',
+# #           '05/28/2019','05/29/2019','05/30/2019','05/31/2019',
+# #           '06/03/2019','06/04/2019','06/05/2019','06/06/2019','06/07/2019',
+# #           '06/10/2019','06/11/2019','06/12/2019','06/13/2019','06/14/2019',
+# #           '06/17/2019','06/18/2019','06/19/2019','06/20/2019','06/21/2019',
+# #           '06/24/2019','06/25/2019','06/26/2019','06/27/2019','06/28/2019']
+# predates=['06/03/2019','06/04/2019','06/05/2019','06/06/2019','06/07/2019',
 #           '06/10/2019','06/11/2019','06/12/2019','06/13/2019','06/14/2019',
 #           '06/17/2019','06/18/2019','06/19/2019','06/20/2019','06/21/2019',
-#           '06/24/2019','06/25/2019','06/26/2019','06/27/2019','06/28/2019']
-predates=['06/03/2019','06/04/2019','06/05/2019','06/06/2019','06/07/2019',
-          '06/10/2019','06/11/2019','06/12/2019','06/13/2019','06/14/2019',
-          '06/17/2019','06/18/2019','06/19/2019','06/20/2019','06/21/2019',
-          '06/24/2019','06/25/2019','06/26/2019','06/27/2019','06/28/2019',
-          '07/01/2019','07/02/2019','07/03/2019',
-          '07/08/2019','07/09/2019','07/10/2019','07/11/2019','07/12/2019',
-          '07/15/2019','07/16/2019','07/17/2019','07/18/2019','07/19/2019',
-          '07/22/2019','07/23/2019','07/24/2019','07/25/2019','07/26/2019',
-          '07/29/2019','07/30/2019','07/31/2019']
-nadirdates=['04/14/2020','04/15/2020','04/16/2020','04/17/2020']
-latestdates=['07/20/2020','07/21/2020','07/22/2020','07/23/2020']
-pmlist=['13:00:00-17:00:00','14:00:00-18:00:00','14:30:00-18:30:00','15:00:00-19:00:00','16:00:00-20:00:00','16:22:00-20:22:00','16:30:00-20:30:00']
-cplxpmpre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
-cplxpmpre=cplxpmpre[np.isin(cplxpmpre['time'],pmlist)].reset_index(drop=True)
-cplxpmpre=cplxpmpre.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
-cplxpmpre=pd.merge(cplxpmpre,rc,how='left',left_on='unit',right_on='Remote')
-cplxpmpre=cplxpmpre.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
-cplxpmpre.columns=['CplxID','PreTime','PreEntries']
-cplxpmnadir=dfunitentry[np.isin(dfunitentry['firstdate'],nadirdates)].reset_index(drop=True)
-cplxpmnadir=cplxpmnadir[np.isin(cplxpmnadir['time'],pmlist)].reset_index(drop=True)
-cplxpmnadir=cplxpmnadir.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
-cplxpmnadir=pd.merge(cplxpmnadir,rc,how='left',left_on='unit',right_on='Remote')
-cplxpmnadir=cplxpmnadir.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
-cplxpmnadir.columns=['CplxID','NadirTime','NadirEntries']
-cplxpmlatest=dfunitentry[np.isin(dfunitentry['firstdate'],latestdates)].reset_index(drop=True)
-cplxpmlatest=cplxpmlatest[np.isin(cplxpmlatest['time'],pmlist)].reset_index(drop=True)
-cplxpmlatest=cplxpmlatest.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
-cplxpmlatest=pd.merge(cplxpmlatest,rc,how='left',left_on='unit',right_on='Remote')
-cplxpmlatest=cplxpmlatest.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
-cplxpmlatest.columns=['CplxID','LatestTime','LatestEntries']
-cplxpm=pd.merge(cplxpmpre,cplxpmnadir,how='inner',on='CplxID')
-cplxpm=pd.merge(cplxpm,cplxpmlatest,how='inner',on='CplxID')
-cplxpm['Time']=cplxpm['PreTime'].copy()
-cplxpm['Diff1']=cplxpm['NadirEntries']-cplxpm['PreEntries']
-cplxpm['DiffPct1']=cplxpm['Diff1']/cplxpm['PreEntries']
-cplxpm['Diff2']=cplxpm['LatestEntries']-cplxpm['NadirEntries']
-cplxpm['DiffPct2']=cplxpm['Diff2']/cplxpm['NadirEntries']
-cplxpm=pd.merge(rc.drop('Remote',axis=1).drop_duplicates(keep='first').reset_index(drop=True),cplxpm,how='left',on='CplxID')
-cplxpm=cplxpm[['CplxID','Borough','CplxName','Routes','CplxLat','CplxLong','Hub','Time','PreEntries','NadirEntries','LatestEntries','Diff1',
-                'DiffPct1','Diff2','DiffPct2']].reset_index(drop=True)
-cplxpm=cplxpm.fillna(0)
-cplxpm.to_csv(path+'OUTPUT/cplxpm.csv',index=False)
+#           '06/24/2019','06/25/2019','06/26/2019','06/27/2019','06/28/2019',
+#           '07/01/2019','07/02/2019','07/03/2019',
+#           '07/08/2019','07/09/2019','07/10/2019','07/11/2019','07/12/2019',
+#           '07/15/2019','07/16/2019','07/17/2019','07/18/2019','07/19/2019',
+#           '07/22/2019','07/23/2019','07/24/2019','07/25/2019','07/26/2019',
+#           '07/29/2019','07/30/2019','07/31/2019']
+# nadirdates=['04/14/2020','04/15/2020','04/16/2020','04/17/2020']
+# latestdates=['07/20/2020','07/21/2020','07/22/2020','07/23/2020']
+# pmlist=['13:00:00-17:00:00','14:00:00-18:00:00','14:30:00-18:30:00','15:00:00-19:00:00','16:00:00-20:00:00','16:22:00-20:22:00','16:30:00-20:30:00']
+# cplxpmpre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
+# cplxpmpre=cplxpmpre[np.isin(cplxpmpre['time'],pmlist)].reset_index(drop=True)
+# cplxpmpre=cplxpmpre.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
+# cplxpmpre=pd.merge(cplxpmpre,rc,how='left',left_on='unit',right_on='Remote')
+# cplxpmpre=cplxpmpre.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
+# cplxpmpre.columns=['CplxID','PreTime','PreEntries']
+# cplxpmnadir=dfunitentry[np.isin(dfunitentry['firstdate'],nadirdates)].reset_index(drop=True)
+# cplxpmnadir=cplxpmnadir[np.isin(cplxpmnadir['time'],pmlist)].reset_index(drop=True)
+# cplxpmnadir=cplxpmnadir.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
+# cplxpmnadir=pd.merge(cplxpmnadir,rc,how='left',left_on='unit',right_on='Remote')
+# cplxpmnadir=cplxpmnadir.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
+# cplxpmnadir.columns=['CplxID','NadirTime','NadirEntries']
+# cplxpmlatest=dfunitentry[np.isin(dfunitentry['firstdate'],latestdates)].reset_index(drop=True)
+# cplxpmlatest=cplxpmlatest[np.isin(cplxpmlatest['time'],pmlist)].reset_index(drop=True)
+# cplxpmlatest=cplxpmlatest.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
+# cplxpmlatest=pd.merge(cplxpmlatest,rc,how='left',left_on='unit',right_on='Remote')
+# cplxpmlatest=cplxpmlatest.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
+# cplxpmlatest.columns=['CplxID','LatestTime','LatestEntries']
+# cplxpm=pd.merge(cplxpmpre,cplxpmnadir,how='inner',on='CplxID')
+# cplxpm=pd.merge(cplxpm,cplxpmlatest,how='inner',on='CplxID')
+# cplxpm['Time']=cplxpm['PreTime'].copy()
+# cplxpm['Diff1']=cplxpm['NadirEntries']-cplxpm['PreEntries']
+# cplxpm['DiffPct1']=cplxpm['Diff1']/cplxpm['PreEntries']
+# cplxpm['Diff2']=cplxpm['LatestEntries']-cplxpm['NadirEntries']
+# cplxpm['DiffPct2']=cplxpm['Diff2']/cplxpm['NadirEntries']
+# cplxpm=pd.merge(rc.drop('Remote',axis=1).drop_duplicates(keep='first').reset_index(drop=True),cplxpm,how='left',on='CplxID')
+# cplxpm=cplxpm[['CplxID','Borough','CplxName','Routes','CplxLat','CplxLong','Hub','Time','PreEntries','NadirEntries','LatestEntries','Diff1',
+#                 'DiffPct1','Diff2','DiffPct2']].reset_index(drop=True)
+# cplxpm=cplxpm.fillna(0)
+# cplxpm.to_csv(path+'OUTPUT/cplxpm.csv',index=False)
 
-# AM Peak Pre and Post Phase1
-dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
-predates=['06/01/2020','06/02/2020','06/03/2020','06/04/2020']
-postdates=['07/20/2020','07/21/2020','07/22/2020','07/23/2020']
-amlist=['05:00:00-09:00:00','06:00:00-10:00:00','06:30:00-10:30:00','07:00:00-11:00:00','08:00:00-12:00:00','08:22:00-12:22:00','08:30:00-12:30:00']
-cplxampre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
-cplxampre=cplxampre[np.isin(cplxampre['time'],amlist)].reset_index(drop=True)
-cplxampre=cplxampre.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
-cplxampre=pd.merge(cplxampre,rc,how='left',left_on='unit',right_on='Remote')
-cplxampre=cplxampre.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
-cplxampre.columns=['CplxID','PreTime','PreEntries']
-cplxampost=dfunitentry[np.isin(dfunitentry['firstdate'],postdates)].reset_index(drop=True)
-cplxampost=cplxampost[np.isin(cplxampost['time'],amlist)].reset_index(drop=True)
-cplxampost=cplxampost.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
-cplxampost=pd.merge(cplxampost,rc,how='left',left_on='unit',right_on='Remote')
-cplxampost=cplxampost.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
-cplxampost.columns=['CplxID','PostTime','PostEntries']
-cplxamdiff=pd.merge(cplxampre,cplxampost,how='inner',on='CplxID')
-cplxamdiff['Time']=cplxamdiff['PreTime'].copy()
-cplxamdiff['Diff']=cplxamdiff['PostEntries']-cplxamdiff['PreEntries']
-cplxamdiff['DiffPct']=cplxamdiff['Diff']/cplxamdiff['PreEntries']
-cplxamdiff=pd.merge(rc.drop('Remote',axis=1).drop_duplicates(keep='first').reset_index(drop=True),cplxamdiff,how='left',on='CplxID')
-cplxamdiff=cplxamdiff[['CplxID','Borough','CplxName','Routes','CplxLat','CplxLong','Hub','Time','PreEntries','PostEntries','Diff','DiffPct']].reset_index(drop=True)
-cplxamdiff.to_csv(path+'OUTPUT/cplxamdiffp1.csv',index=False)
+# # AM Peak Pre and Post Phase1
+# dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
+# predates=['06/01/2020','06/02/2020','06/03/2020','06/04/2020']
+# postdates=['07/20/2020','07/21/2020','07/22/2020','07/23/2020']
+# amlist=['05:00:00-09:00:00','06:00:00-10:00:00','06:30:00-10:30:00','07:00:00-11:00:00','08:00:00-12:00:00','08:22:00-12:22:00','08:30:00-12:30:00']
+# cplxampre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
+# cplxampre=cplxampre[np.isin(cplxampre['time'],amlist)].reset_index(drop=True)
+# cplxampre=cplxampre.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
+# cplxampre=pd.merge(cplxampre,rc,how='left',left_on='unit',right_on='Remote')
+# cplxampre=cplxampre.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
+# cplxampre.columns=['CplxID','PreTime','PreEntries']
+# cplxampost=dfunitentry[np.isin(dfunitentry['firstdate'],postdates)].reset_index(drop=True)
+# cplxampost=cplxampost[np.isin(cplxampost['time'],amlist)].reset_index(drop=True)
+# cplxampost=cplxampost.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
+# cplxampost=pd.merge(cplxampost,rc,how='left',left_on='unit',right_on='Remote')
+# cplxampost=cplxampost.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
+# cplxampost.columns=['CplxID','PostTime','PostEntries']
+# cplxamdiff=pd.merge(cplxampre,cplxampost,how='inner',on='CplxID')
+# cplxamdiff['Time']=cplxamdiff['PreTime'].copy()
+# cplxamdiff['Diff']=cplxamdiff['PostEntries']-cplxamdiff['PreEntries']
+# cplxamdiff['DiffPct']=cplxamdiff['Diff']/cplxamdiff['PreEntries']
+# cplxamdiff=pd.merge(rc.drop('Remote',axis=1).drop_duplicates(keep='first').reset_index(drop=True),cplxamdiff,how='left',on='CplxID')
+# cplxamdiff=cplxamdiff[['CplxID','Borough','CplxName','Routes','CplxLat','CplxLong','Hub','Time','PreEntries','PostEntries','Diff','DiffPct']].reset_index(drop=True)
+# cplxamdiff.to_csv(path+'OUTPUT/cplxamdiffp1.csv',index=False)
 
-# PM Peak Pre and Post Phase1
-dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
-predates=['06/01/2020','06/02/2020','06/03/2020','06/04/2020']
-postdates=['07/20/2020','07/21/2020','07/22/2020','07/23/2020']
-pmlist=['13:00:00-17:00:00','14:00:00-18:00:00','14:30:00-18:30:00','15:00:00-19:00:00','16:00:00-20:00:00','16:22:00-20:22:00','16:30:00-20:30:00']
-cplxpmpre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
-cplxpmpre=cplxpmpre[np.isin(cplxpmpre['time'],pmlist)].reset_index(drop=True)
-cplxpmpre=cplxpmpre.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
-cplxpmpre=pd.merge(cplxpmpre,rc,how='left',left_on='unit',right_on='Remote')
-cplxpmpre=cplxpmpre.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
-cplxpmpre.columns=['CplxID','PreTime','PreEntries']
-cplxpmpost=dfunitentry[np.isin(dfunitentry['firstdate'],postdates)].reset_index(drop=True)
-cplxpmpost=cplxpmpost[np.isin(cplxpmpost['time'],pmlist)].reset_index(drop=True)
-cplxpmpost=cplxpmpost.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
-cplxpmpost=pd.merge(cplxpmpost,rc,how='left',left_on='unit',right_on='Remote')
-cplxpmpost=cplxpmpost.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
-cplxpmpost.columns=['CplxID','PostTime','PostEntries']
-cplxpmdiff=pd.merge(cplxpmpre,cplxpmpost,how='inner',on='CplxID')
-cplxpmdiff['Time']=cplxpmdiff['PreTime'].copy()
-cplxpmdiff['Diff']=cplxpmdiff['PostEntries']-cplxpmdiff['PreEntries']
-cplxpmdiff['DiffPct']=cplxpmdiff['Diff']/cplxpmdiff['PreEntries']
-cplxpmdiff=pd.merge(rc.drop('Remote',axis=1).drop_duplicates(keep='first').reset_index(drop=True),cplxpmdiff,how='left',on='CplxID')
-cplxpmdiff=cplxpmdiff[['CplxID','Borough','CplxName','Routes','CplxLat','CplxLong','Hub','Time','PreEntries','PostEntries','Diff','DiffPct']].reset_index(drop=True)
-cplxpmdiff.to_csv(path+'OUTPUT/cplxpmdiffp1.csv',index=False)
+# # PM Peak Pre and Post Phase1
+# dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
+# predates=['06/01/2020','06/02/2020','06/03/2020','06/04/2020']
+# postdates=['07/20/2020','07/21/2020','07/22/2020','07/23/2020']
+# pmlist=['13:00:00-17:00:00','14:00:00-18:00:00','14:30:00-18:30:00','15:00:00-19:00:00','16:00:00-20:00:00','16:22:00-20:22:00','16:30:00-20:30:00']
+# cplxpmpre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
+# cplxpmpre=cplxpmpre[np.isin(cplxpmpre['time'],pmlist)].reset_index(drop=True)
+# cplxpmpre=cplxpmpre.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
+# cplxpmpre=pd.merge(cplxpmpre,rc,how='left',left_on='unit',right_on='Remote')
+# cplxpmpre=cplxpmpre.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
+# cplxpmpre.columns=['CplxID','PreTime','PreEntries']
+# cplxpmpost=dfunitentry[np.isin(dfunitentry['firstdate'],postdates)].reset_index(drop=True)
+# cplxpmpost=cplxpmpost[np.isin(cplxpmpost['time'],pmlist)].reset_index(drop=True)
+# cplxpmpost=cplxpmpost.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
+# cplxpmpost=pd.merge(cplxpmpost,rc,how='left',left_on='unit',right_on='Remote')
+# cplxpmpost=cplxpmpost.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
+# cplxpmpost.columns=['CplxID','PostTime','PostEntries']
+# cplxpmdiff=pd.merge(cplxpmpre,cplxpmpost,how='inner',on='CplxID')
+# cplxpmdiff['Time']=cplxpmdiff['PreTime'].copy()
+# cplxpmdiff['Diff']=cplxpmdiff['PostEntries']-cplxpmdiff['PreEntries']
+# cplxpmdiff['DiffPct']=cplxpmdiff['Diff']/cplxpmdiff['PreEntries']
+# cplxpmdiff=pd.merge(rc.drop('Remote',axis=1).drop_duplicates(keep='first').reset_index(drop=True),cplxpmdiff,how='left',on='CplxID')
+# cplxpmdiff=cplxpmdiff[['CplxID','Borough','CplxName','Routes','CplxLat','CplxLong','Hub','Time','PreEntries','PostEntries','Diff','DiffPct']].reset_index(drop=True)
+# cplxpmdiff.to_csv(path+'OUTPUT/cplxpmdiffp1.csv',index=False)
 
-# AM Peak Previous and Curren Week during Phase 2
-dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
-predates=['07/13/2020','07/14/2020','07/15/2020','07/16/2020']
-postdates=['07/20/2020','07/21/2020','07/22/2020','07/23/2020']
-amlist=['05:00:00-09:00:00','06:00:00-10:00:00','06:30:00-10:30:00','07:00:00-11:00:00','08:00:00-12:00:00','08:22:00-12:22:00','08:30:00-12:30:00']
-cplxampre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
-cplxampre=cplxampre[np.isin(cplxampre['time'],amlist)].reset_index(drop=True)
-cplxampre=cplxampre.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
-cplxampre=pd.merge(cplxampre,rc,how='left',left_on='unit',right_on='Remote')
-cplxampre=cplxampre.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
-cplxampre.columns=['CplxID','PreTime','PreEntries']
-cplxampost=dfunitentry[np.isin(dfunitentry['firstdate'],postdates)].reset_index(drop=True)
-cplxampost=cplxampost[np.isin(cplxampost['time'],amlist)].reset_index(drop=True)
-cplxampost=cplxampost.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
-cplxampost=pd.merge(cplxampost,rc,how='left',left_on='unit',right_on='Remote')
-cplxampost=cplxampost.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
-cplxampost.columns=['CplxID','PostTime','PostEntries']
-cplxamdiff=pd.merge(cplxampre,cplxampost,how='inner',on='CplxID')
-cplxamdiff['Time']=cplxamdiff['PreTime'].copy()
-cplxamdiff['Diff']=cplxamdiff['PostEntries']-cplxamdiff['PreEntries']
-cplxamdiff['DiffPct']=cplxamdiff['Diff']/cplxamdiff['PreEntries']
-cplxamdiff=pd.merge(rc.drop('Remote',axis=1).drop_duplicates(keep='first').reset_index(drop=True),cplxamdiff,how='left',on='CplxID')
-cplxamdiff=cplxamdiff[['CplxID','Borough','CplxName','Routes','CplxLat','CplxLong','Hub','Time','PreEntries','PostEntries','Diff','DiffPct']].reset_index(drop=True)
-cplxamdiff.to_csv(path+'OUTPUT/cplxamdiffp2.csv',index=False)
+# # AM Peak Previous and Curren Week during Phase 2
+# dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
+# predates=['07/13/2020','07/14/2020','07/15/2020','07/16/2020']
+# postdates=['07/20/2020','07/21/2020','07/22/2020','07/23/2020']
+# amlist=['05:00:00-09:00:00','06:00:00-10:00:00','06:30:00-10:30:00','07:00:00-11:00:00','08:00:00-12:00:00','08:22:00-12:22:00','08:30:00-12:30:00']
+# cplxampre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
+# cplxampre=cplxampre[np.isin(cplxampre['time'],amlist)].reset_index(drop=True)
+# cplxampre=cplxampre.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
+# cplxampre=pd.merge(cplxampre,rc,how='left',left_on='unit',right_on='Remote')
+# cplxampre=cplxampre.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
+# cplxampre.columns=['CplxID','PreTime','PreEntries']
+# cplxampost=dfunitentry[np.isin(dfunitentry['firstdate'],postdates)].reset_index(drop=True)
+# cplxampost=cplxampost[np.isin(cplxampost['time'],amlist)].reset_index(drop=True)
+# cplxampost=cplxampost.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
+# cplxampost=pd.merge(cplxampost,rc,how='left',left_on='unit',right_on='Remote')
+# cplxampost=cplxampost.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
+# cplxampost.columns=['CplxID','PostTime','PostEntries']
+# cplxamdiff=pd.merge(cplxampre,cplxampost,how='inner',on='CplxID')
+# cplxamdiff['Time']=cplxamdiff['PreTime'].copy()
+# cplxamdiff['Diff']=cplxamdiff['PostEntries']-cplxamdiff['PreEntries']
+# cplxamdiff['DiffPct']=cplxamdiff['Diff']/cplxamdiff['PreEntries']
+# cplxamdiff=pd.merge(rc.drop('Remote',axis=1).drop_duplicates(keep='first').reset_index(drop=True),cplxamdiff,how='left',on='CplxID')
+# cplxamdiff=cplxamdiff[['CplxID','Borough','CplxName','Routes','CplxLat','CplxLong','Hub','Time','PreEntries','PostEntries','Diff','DiffPct']].reset_index(drop=True)
+# cplxamdiff.to_csv(path+'OUTPUT/cplxamdiffp2.csv',index=False)
 
-# PM Peak Previous and Curren Week during Phase 2
-dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
-predates=['07/13/2020','07/14/2020','07/15/2020','07/16/2020']
-postdates=['07/20/2020','07/21/2020','07/22/2020','07/23/2020']
-pmlist=['13:00:00-17:00:00','14:00:00-18:00:00','14:30:00-18:30:00','15:00:00-19:00:00','16:00:00-20:00:00','16:22:00-20:22:00','16:30:00-20:30:00']
-cplxpmpre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
-cplxpmpre=cplxpmpre[np.isin(cplxpmpre['time'],pmlist)].reset_index(drop=True)
-cplxpmpre=cplxpmpre.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
-cplxpmpre=pd.merge(cplxpmpre,rc,how='left',left_on='unit',right_on='Remote')
-cplxpmpre=cplxpmpre.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
-cplxpmpre.columns=['CplxID','PreTime','PreEntries']
-cplxpmpost=dfunitentry[np.isin(dfunitentry['firstdate'],postdates)].reset_index(drop=True)
-cplxpmpost=cplxpmpost[np.isin(cplxpmpost['time'],pmlist)].reset_index(drop=True)
-cplxpmpost=cplxpmpost.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
-cplxpmpost=pd.merge(cplxpmpost,rc,how='left',left_on='unit',right_on='Remote')
-cplxpmpost=cplxpmpost.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
-cplxpmpost.columns=['CplxID','PostTime','PostEntries']
-cplxpmdiff=pd.merge(cplxpmpre,cplxpmpost,how='inner',on='CplxID')
-cplxpmdiff['Time']=cplxpmdiff['PreTime'].copy()
-cplxpmdiff['Diff']=cplxpmdiff['PostEntries']-cplxpmdiff['PreEntries']
-cplxpmdiff['DiffPct']=cplxpmdiff['Diff']/cplxpmdiff['PreEntries']
-cplxpmdiff=pd.merge(rc.drop('Remote',axis=1).drop_duplicates(keep='first').reset_index(drop=True),cplxpmdiff,how='left',on='CplxID')
-cplxpmdiff=cplxpmdiff[['CplxID','Borough','CplxName','Routes','CplxLat','CplxLong','Hub','Time','PreEntries','PostEntries','Diff','DiffPct']].reset_index(drop=True)
-cplxpmdiff.to_csv(path+'OUTPUT/cplxpmdiffp2.csv',index=False)
+# # PM Peak Previous and Curren Week during Phase 2
+# dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
+# predates=['07/13/2020','07/14/2020','07/15/2020','07/16/2020']
+# postdates=['07/20/2020','07/21/2020','07/22/2020','07/23/2020']
+# pmlist=['13:00:00-17:00:00','14:00:00-18:00:00','14:30:00-18:30:00','15:00:00-19:00:00','16:00:00-20:00:00','16:22:00-20:22:00','16:30:00-20:30:00']
+# cplxpmpre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
+# cplxpmpre=cplxpmpre[np.isin(cplxpmpre['time'],pmlist)].reset_index(drop=True)
+# cplxpmpre=cplxpmpre.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
+# cplxpmpre=pd.merge(cplxpmpre,rc,how='left',left_on='unit',right_on='Remote')
+# cplxpmpre=cplxpmpre.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
+# cplxpmpre.columns=['CplxID','PreTime','PreEntries']
+# cplxpmpost=dfunitentry[np.isin(dfunitentry['firstdate'],postdates)].reset_index(drop=True)
+# cplxpmpost=cplxpmpost[np.isin(cplxpmpost['time'],pmlist)].reset_index(drop=True)
+# cplxpmpost=cplxpmpost.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
+# cplxpmpost=pd.merge(cplxpmpost,rc,how='left',left_on='unit',right_on='Remote')
+# cplxpmpost=cplxpmpost.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
+# cplxpmpost.columns=['CplxID','PostTime','PostEntries']
+# cplxpmdiff=pd.merge(cplxpmpre,cplxpmpost,how='inner',on='CplxID')
+# cplxpmdiff['Time']=cplxpmdiff['PreTime'].copy()
+# cplxpmdiff['Diff']=cplxpmdiff['PostEntries']-cplxpmdiff['PreEntries']
+# cplxpmdiff['DiffPct']=cplxpmdiff['Diff']/cplxpmdiff['PreEntries']
+# cplxpmdiff=pd.merge(rc.drop('Remote',axis=1).drop_duplicates(keep='first').reset_index(drop=True),cplxpmdiff,how='left',on='CplxID')
+# cplxpmdiff=cplxpmdiff[['CplxID','Borough','CplxName','Routes','CplxLat','CplxLong','Hub','Time','PreEntries','PostEntries','Diff','DiffPct']].reset_index(drop=True)
+# cplxpmdiff.to_csv(path+'OUTPUT/cplxpmdiffp2.csv',index=False)
 
 # AM Peak Pre and Post Phase1 by NTA
 dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
 predates=['06/01/2020','06/02/2020','06/03/2020','06/04/2020']
-postdates=['07/20/2020','07/21/2020','07/22/2020','07/23/2020']
+postdates=['07/27/2020','07/28/2020','07/29/2020','07/30/2020']
 amlist=['05:00:00-09:00:00','06:00:00-10:00:00','06:30:00-10:30:00','07:00:00-11:00:00','08:00:00-12:00:00','08:22:00-12:22:00','08:30:00-12:30:00']
 cplxampre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
 cplxampre=cplxampre[np.isin(cplxampre['time'],amlist)].reset_index(drop=True)
@@ -804,7 +806,7 @@ cplxamdiffnta.to_file(path+'OUTPUT/cplxamdiffp1nta.shp')
 # PM Peak Pre and Post Phase1 by NTA
 dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
 predates=['06/01/2020','06/02/2020','06/03/2020','06/04/2020']
-postdates=['07/20/2020','07/21/2020','07/22/2020','07/23/2020']
+postdates=['07/27/2020','07/28/2020','07/29/2020','07/30/2020']
 pmlist=['13:00:00-17:00:00','14:00:00-18:00:00','14:30:00-18:30:00','15:00:00-19:00:00','16:00:00-20:00:00','16:22:00-20:22:00','16:30:00-20:30:00']
 cplxpmpre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
 cplxpmpre=cplxpmpre[np.isin(cplxpmpre['time'],pmlist)].reset_index(drop=True)
@@ -840,8 +842,8 @@ cplxpmdiffnta.to_file(path+'OUTPUT/cplxpmdiffp1nta.shp')
 
 # AM Peak Previous and Current Week in Phase 2 by NTA
 dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
-predates=['07/13/2020','07/14/2020','07/15/2020','07/16/2020']
-postdates=['07/20/2020','07/21/2020','07/22/2020','07/23/2020']
+predates=['07/20/2020','07/21/2020','07/22/2020','07/23/2020']
+postdates=['07/27/2020','07/28/2020','07/29/2020','07/30/2020']
 amlist=['05:00:00-09:00:00','06:00:00-10:00:00','06:30:00-10:30:00','07:00:00-11:00:00','08:00:00-12:00:00','08:22:00-12:22:00','08:30:00-12:30:00']
 cplxampre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
 cplxampre=cplxampre[np.isin(cplxampre['time'],amlist)].reset_index(drop=True)
@@ -877,8 +879,8 @@ cplxamdiffnta.to_file(path+'OUTPUT/cplxamdiffp2nta.shp')
 
 # PM Peak Previous and Current Week in Phase 2 by NTA
 dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
-predates=['07/13/2020','07/14/2020','07/15/2020','07/16/2020']
-postdates=['07/20/2020','07/21/2020','07/22/2020','07/23/2020']
+predates=['07/20/2020','07/21/2020','07/22/2020','07/23/2020']
+postdates=['07/27/2020','07/28/2020','07/29/2020','07/30/2020']
 pmlist=['13:00:00-17:00:00','14:00:00-18:00:00','14:30:00-18:30:00','15:00:00-19:00:00','16:00:00-20:00:00','16:22:00-20:22:00','16:30:00-20:30:00']
 cplxpmpre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
 cplxpmpre=cplxpmpre[np.isin(cplxpmpre['time'],pmlist)].reset_index(drop=True)
@@ -948,10 +950,10 @@ cplxpmdiffnta.to_file(path+'OUTPUT/cplxpmdiffp2nta.shp')
 # cplxpmdbk=cplxpmdbk[['CplxID','Borough','CplxName','Routes','CplxLat','CplxLong','TimePeriod','Date','Entries']].reset_index(drop=True)
 # cplxpmdbk.to_csv(path+'OUTPUT/cplxpmdbk.csv',index=False)
 
-# AM Peak Pre and Post Phase1 by NTA
+# AM Peak Phase4 vs last year by NTA
 dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
-predates=['07/22/2019','07/23/2019','07/24/2019','07/25/2019']
-postdates=['07/20/2020','07/21/2020','07/22/2020','07/23/2020']
+predates=['07/29/2019','07/30/2019','07/31/2019','08/01/2019']
+postdates=['07/27/2020','07/28/2020','07/29/2020','07/30/2020']
 amlist=['05:00:00-09:00:00','06:00:00-10:00:00','06:30:00-10:30:00','07:00:00-11:00:00','08:00:00-12:00:00','08:22:00-12:22:00','08:30:00-12:30:00']
 cplxampre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
 cplxampre=cplxampre[np.isin(cplxampre['time'],amlist)].reset_index(drop=True)
@@ -985,10 +987,10 @@ cplxamdiffnta['DiffPct']=cplxamdiffnta['Diff']/cplxamdiffnta['PreEntries']
 cplxamdiffnta=pd.merge(nta,cplxamdiffnta,how='inner',on='NTACode')
 cplxamdiffnta.to_file(path+'OUTPUT/cplxamdiffp4nta.shp')
 
-# PM Peak Pre and Post Phase1 by NTA
+# PM Peak Phase4 vs last year by NTA
 dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
-predates=['07/22/2019','07/23/2019','07/24/2019','07/25/2019']
-postdates=['07/20/2020','07/21/2020','07/22/2020','07/23/2020']
+predates=['07/29/2019','07/30/2019','07/31/2019','08/01/2019']
+postdates=['07/27/2020','07/28/2020','07/29/2020','07/30/2020']
 pmlist=['13:00:00-17:00:00','14:00:00-18:00:00','14:30:00-18:30:00','15:00:00-19:00:00','16:00:00-20:00:00','16:22:00-20:22:00','16:30:00-20:30:00']
 cplxpmpre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
 cplxpmpre=cplxpmpre[np.isin(cplxpmpre['time'],pmlist)].reset_index(drop=True)
