@@ -914,7 +914,7 @@ cplxpmdiffnta.to_file(path+'OUTPUT/cplxpmdiffp1nta.shp')
 # cplxpmdiffnta=pd.merge(nta,cplxpmdiffnta,how='inner',on='NTACode')
 # cplxpmdiffnta.to_file(path+'OUTPUT/cplxpmdiffp2nta.shp')
 
-# # DBK AM Peak Pre and Post
+# DBK AM Peak Pre and Post
 # dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
 # unitlist=['R252','R301','R108','R089','R127','R225','R456','R099','R129','R217','R056','R318','R283','R057']
 # dbkdates=['03/29/2020','03/30/2020','03/31/2020','04/01/2020','04/02/2020','04/03/2020','04/04/2020',
@@ -931,6 +931,51 @@ cplxpmdiffnta.to_file(path+'OUTPUT/cplxpmdiffp1nta.shp')
 # cplxamdbk=pd.merge(cplxamdbk,rc.drop('Remote',axis=1).drop_duplicates(keep='first').reset_index(drop=True),how='left',on='CplxID')
 # cplxamdbk=cplxamdbk[['CplxID','Borough','CplxName','Routes','CplxLat','CplxLong','TimePeriod','Date','Entries']].reset_index(drop=True)
 # cplxamdbk.to_csv(path+'OUTPUT/cplxamdbk.csv',index=False)
+
+# dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
+# unitlist=['R252','R301','R108','R089','R127','R225','R456','R099','R129','R217','R056','R318','R283','R057']
+# dbkdates1=['03/31/2019','04/01/2019','04/02/2019','04/03/2019','04/04/2019','04/05/2019','04/06/2019']
+# dbkdates2=['06/30/2019','07/01/2019','07/02/2019','07/03/2019','07/04/2019','07/05/2019','07/06/2019']
+# amlist=['05:00:00-09:00:00','06:00:00-10:00:00','06:30:00-10:30:00','07:00:00-11:00:00','08:00:00-12:00:00','08:22:00-12:22:00','08:30:00-12:30:00']
+# pmlist=['13:00:00-17:00:00','14:00:00-18:00:00','14:30:00-18:30:00','15:00:00-19:00:00','16:00:00-20:00:00','16:22:00-20:22:00','16:30:00-20:30:00']
+# cplxamdbk1=dfunitentry[np.isin(dfunitentry['unit'],unitlist)].reset_index(drop=True)
+# cplxamdbk1=cplxamdbk1[np.isin(cplxamdbk1['firstdate'],dbkdates1)].reset_index(drop=True)
+# cplxamdbk1=cplxamdbk1[np.isin(cplxamdbk1['time'],amlist)].reset_index(drop=True)
+# cplxamdbk1=pd.merge(cplxamdbk1,rc,how='left',left_on='unit',right_on='Remote')
+# cplxamdbk1=cplxamdbk1.groupby(['CplxID','firstdate'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
+# cplxamdbk1.columns=['CplxID','Date','TimePeriod','Entries']
+# cplxamdbk1=pd.merge(cplxamdbk1,rc.drop('Remote',axis=1).drop_duplicates(keep='first').reset_index(drop=True),how='left',on='CplxID')
+# cplxamdbk1=cplxamdbk1[['CplxID','Borough','CplxName','Routes','CplxLat','CplxLong','TimePeriod','Date','Entries']].reset_index(drop=True)
+# cplxamdbk2=dfunitentry[np.isin(dfunitentry['unit'],unitlist)].reset_index(drop=True)
+# cplxamdbk2=cplxamdbk2[np.isin(cplxamdbk2['firstdate'],dbkdates2)].reset_index(drop=True)
+# cplxamdbk2=cplxamdbk2[np.isin(cplxamdbk2['time'],amlist)].reset_index(drop=True)
+# cplxamdbk2=pd.merge(cplxamdbk2,rc,how='left',left_on='unit',right_on='Remote')
+# cplxamdbk2=cplxamdbk2.groupby(['CplxID','firstdate'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
+# cplxamdbk2.columns=['CplxID','Date','TimePeriod','Entries']
+# cplxamdbk2=pd.merge(cplxamdbk2,rc.drop('Remote',axis=1).drop_duplicates(keep='first').reset_index(drop=True),how='left',on='CplxID')
+# cplxamdbk2=cplxamdbk2[['CplxID','Borough','CplxName','Routes','CplxLat','CplxLong','TimePeriod','Date','Entries']].reset_index(drop=True)
+# cplxpmdbk1=dfunitentry[np.isin(dfunitentry['unit'],unitlist)].reset_index(drop=True)
+# cplxpmdbk1=cplxpmdbk1[np.isin(cplxpmdbk1['firstdate'],dbkdates1)].reset_index(drop=True)
+# cplxpmdbk1=cplxpmdbk1[np.isin(cplxpmdbk1['time'],pmlist)].reset_index(drop=True)
+# cplxpmdbk1=pd.merge(cplxpmdbk1,rc,how='left',left_on='unit',right_on='Remote')
+# cplxpmdbk1=cplxpmdbk1.groupby(['CplxID','firstdate'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
+# cplxpmdbk1.columns=['CplxID','Date','TimePeriod','Entries']
+# cplxpmdbk1=pd.merge(cplxpmdbk1,rc.drop('Remote',axis=1).drop_duplicates(keep='first').reset_index(drop=True),how='left',on='CplxID')
+# cplxpmdbk1=cplxpmdbk1[['CplxID','Borough','CplxName','Routes','CplxLat','CplxLong','TimePeriod','Date','Entries']].reset_index(drop=True)
+# cplxpmdbk2=dfunitentry[np.isin(dfunitentry['unit'],unitlist)].reset_index(drop=True)
+# cplxpmdbk2=cplxpmdbk2[np.isin(cplxpmdbk2['firstdate'],dbkdates2)].reset_index(drop=True)
+# cplxpmdbk2=cplxpmdbk2[np.isin(cplxpmdbk2['time'],pmlist)].reset_index(drop=True)
+# cplxpmdbk2=pd.merge(cplxpmdbk2,rc,how='left',left_on='unit',right_on='Remote')
+# cplxpmdbk2=cplxpmdbk2.groupby(['CplxID','firstdate'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
+# cplxpmdbk2.columns=['CplxID','Date','TimePeriod','Entries']
+# cplxpmdbk2=pd.merge(cplxpmdbk2,rc.drop('Remote',axis=1).drop_duplicates(keep='first').reset_index(drop=True),how='left',on='CplxID')
+# cplxpmdbk2=cplxpmdbk2[['CplxID','Borough','CplxName','Routes','CplxLat','CplxLong','TimePeriod','Date','Entries']].reset_index(drop=True)
+# cplxdbk=pd.concat([cplxamdbk1,cplxamdbk2,cplxpmdbk1,cplxpmdbk2],axis=0,ignore_index=True)
+# cplxdbk.to_csv(path+'OUTPUT/cplxdbk.csv',index=False)
+
+
+
+
 
 # # PM Peak Pre and Post Phase1
 # dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
