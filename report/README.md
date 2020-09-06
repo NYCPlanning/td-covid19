@@ -1,3 +1,3 @@
 # Weekly Report
 
-https://NYCPlanning/td-covid19/report/revealjs/index.html
+https://nycplanning.github.io/td-covid19/report/revealjs/index.html
