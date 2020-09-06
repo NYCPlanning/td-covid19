@@ -14,6 +14,8 @@ path='C:/Users/mayij/Desktop/DOC/DCP2020/COVID19/STREET CLOSURE/'
 
 
 
+start=datetime.datetime.now()
+
 permit=pd.read_csv(path+'mome/MOME Shooting Permits2018_2019.csv',dtype=str)
 permit['eid']=pd.to_numeric(permit['ID'])
 permit['location']=permit['Cross streets and intersections'].copy()
@@ -45,41 +47,59 @@ permitclean=permitclean[permitclean['onstreet']!=''].reset_index(drop=True)
 permitclean.to_csv(path+'mome/permitclean.csv',index=False)
 
 
-start=datetime.datetime.now()
 g=Geosupport()
 permitclean=pd.read_csv(path+'mome/permitclean.csv',dtype=str,converters={'eid':float})
 snd=pd.read_csv(path+'mome/SND.csv',dtype=float,converters={'streetname':str})
 permitgeocode=[]
 for i in permitclean.index:
-    i=61218
     borocode=str(permitclean.loc[i,'boro'])
     onstreet=str(permitclean.loc[i,'onstreet'])
     fromstreet=str(permitclean.loc[i,'fromstreet'])
     tostreet=str(permitclean.loc[i,'tostreet'])
     try:
         stretch=g['3S']({'borough_code':borocode,'on':onstreet,'from':fromstreet,'to':tostreet,'compass_direction':'E'})
+        stretch=pd.DataFrame(stretch['LIST OF INTERSECTIONS'])
+        stretch['segfromnode']=pd.to_numeric(stretch['Node Number'])
+        stretch['segtonode']=pd.to_numeric(np.roll(stretch['Node Number'],-1))
+        stretch=stretch.loc[0:len(stretch)-2,['segfromnode','segtonode']].reset_index(drop=True)
+        segment=pd.concat([permitclean.loc[[i]]]*len(stretch),axis=0,ignore_index=True)
+        segment=pd.concat([segment,stretch],axis=1,ignore_index=False)
+        permitgeocode+=[segment]
     except:
         try:
             stretch=g['3S']({'borough_code':borocode,'on':onstreet,'from':fromstreet,'to':tostreet,'compass_direction':'S'})
+            stretch=pd.DataFrame(stretch['LIST OF INTERSECTIONS'])
+            stretch['segfromnode']=pd.to_numeric(stretch['Node Number'])
+            stretch['segtonode']=pd.to_numeric(np.roll(stretch['Node Number'],-1))
+            stretch=stretch.loc[0:len(stretch)-2,['segfromnode','segtonode']].reset_index(drop=True)
+            segment=pd.concat([permitclean.loc[[i]]]*len(stretch),axis=0,ignore_index=True)
+            segment=pd.concat([segment,stretch],axis=1,ignore_index=False)
+            permitgeocode+=[segment]
         except:
             try:
                 stretch=g['3S']({'borough_code':borocode,'on':onstreet,'from':fromstreet,'to':tostreet,'compass_direction':'W'})
+                stretch=pd.DataFrame(stretch['LIST OF INTERSECTIONS'])
+                stretch['segfromnode']=pd.to_numeric(stretch['Node Number'])
+                stretch['segtonode']=pd.to_numeric(np.roll(stretch['Node Number'],-1))
+                stretch=stretch.loc[0:len(stretch)-2,['segfromnode','segtonode']].reset_index(drop=True)
+                segment=pd.concat([permitclean.loc[[i]]]*len(stretch),axis=0,ignore_index=True)
+                segment=pd.concat([segment,stretch],axis=1,ignore_index=False)
+                permitgeocode+=[segment]
             except:
                 try:
                     stretch=g['3S']({'borough_code':borocode,'on':onstreet,'from':fromstreet,'to':tostreet,'compass_direction':'N'})
+                    stretch=pd.DataFrame(stretch['LIST OF INTERSECTIONS'])
+                    stretch['segfromnode']=pd.to_numeric(stretch['Node Number'])
+                    stretch['segtonode']=pd.to_numeric(np.roll(stretch['Node Number'],-1))
+                    stretch=stretch.loc[0:len(stretch)-2,['segfromnode','segtonode']].reset_index(drop=True)
+                    segment=pd.concat([permitclean.loc[[i]]]*len(stretch),axis=0,ignore_index=True)
+                    segment=pd.concat([segment,stretch],axis=1,ignore_index=False)
+                    permitgeocode+=[segment]
                 except:
                     print(str(i))
-    stretch=pd.DataFrame(stretch['LIST OF INTERSECTIONS'])
-    stretch['segfromnode']=pd.to_numeric(stretch['Node Number'])
-    stretch['segtonode']=pd.to_numeric(np.roll(stretch['Node Number'],-1))
-    stretch=stretch.loc[0:len(stretch)-2,['segfromnode','segtonode']].reset_index(drop=True)
-    segment=pd.concat([permitclean.loc[[i]]]*len(stretch),axis=0,ignore_index=True)
-    segment=pd.concat([segment,stretch],axis=1,ignore_index=False)
-    permitgeocode+=[segment]
 permitgeocode=pd.concat(permitgeocode,axis=0,ignore_index=True)
 permitgeocode=permitgeocode.drop_duplicates(keep='first').reset_index(drop=True)
 permitgeocode.to_csv(path+'mome/permitgeocode.csv',index=False)
-print(datetime.datetime.now()-start)
 
 
 permitgeocode=pd.read_csv(path+'mome/permitgeocode.csv',dtype=str,converters={'eid':float,'boro':float,
@@ -108,6 +128,15 @@ lion=lion.drop_duplicates(['segmentid'],keep='first').reset_index(drop=True)
 momegeocode=pd.merge(lion,momegeocode,how='inner',on='segmentid')
 momegeocode=momegeocode[['segmentid','count','eid','geometry']].reset_index(drop=True)
 momegeocode.to_file(path+'mome/momegeocode.shp')
+
+print(datetime.datetime.now()-start)
+
+
+
+
+
+
+
 
 
 
