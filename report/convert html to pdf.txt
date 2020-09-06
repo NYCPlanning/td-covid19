@@ -1,0 +1,10 @@
+npm install -g decktape
+
+decktape C:\Users\mayij\Desktop\DOC\GITHUB\MLGH\htmlslide\rpres\rprestest.html C:\Users\mayij\Desktop\DOC\GITHUB\MLGH\htmlslide\rpres\rprestest.pdf
+
+decktape C:\Users\mayij\Desktop\DOC\GITHUB\MLGH\htmlslide\rninja\rninjatest.html C:\Users\mayij\Desktop\DOC\GITHUB\MLGH\htmlslide\rninja\rninjatest.pdf -s 1600x900 --slides 1-10 --chrome-arg=--allow-file-access-from-files
+
+decktape C:\Users\mayij\Desktop\DOC\GITHUB\MLGH\htmlslide\s\s.html C:\Users\mayij\Desktop\DOC\GITHUB\MLGH\htmlslide\s\s.pdf --chrome-arg=--disable-web-security
+
+decktape C:\Users\mayij\Desktop\DOC\GITHUB\MLGH\htmlslide\s\revealjs\index.html C:\Users\mayij\Desktop\DOC\GITHUB\MLGH\htmlslide\s\revealjs.pdf  -s 1600x900 --chrome-arg=--allow-file-access-from-files
+
