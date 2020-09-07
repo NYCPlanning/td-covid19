@@ -1,4 +1,4 @@
 npm install -g decktape
 
-decktape C:\Users\mayij\Desktop\DOC\GITHUB\td-covid19\report\revealjs\index.html C:\Users\mayij\Desktop\DOC\GITHUB\td-covid19\report\revealjs.pdf  -s 1600x900 -p 2000
+decktape C:\Users\mayij\Desktop\DOC\GITHUB\td-covid19\report\revealjs\index.html C:\Users\mayij\Desktop\DOC\GITHUB\td-covid19\report\revealjs.pdf -p 2000
 
