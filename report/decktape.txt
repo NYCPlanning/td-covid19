@@ -2,3 +2,11 @@ npm install -g decktape
 
 decktape C:\Users\mayij\Desktop\DOC\GITHUB\td-covid19\report\revealjs\index.html C:\Users\mayij\Desktop\DOC\GITHUB\td-covid19\report\deck.pdf -p 2000
 
+
+
+
+-size 1600x900
+-p 2000
+--load-pause 2000
+--chrome-arg=--allow-file-access-from-files
+--chrome-arg=--disable-web-security
