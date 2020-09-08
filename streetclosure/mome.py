@@ -17,6 +17,9 @@ path='C:/Users/mayij/Desktop/DOC/DCP2020/COVID19/STREET CLOSURE/'
 start=datetime.datetime.now()
 
 permit=pd.read_csv(path+'mome/MOME Shooting Permits2018_2019.csv',dtype=str)
+permit['start']=[datetime.datetime.strptime(x,'%m/%d/%Y %H:%M') for x in permit['Start Date']]
+permit['end']=[datetime.datetime.strptime(x,'%m/%d/%Y %H:%M') for x in permit['End Date']]
+permit['duration']=permit['end']-permit['start']
 permit['eid']=pd.to_numeric(permit['ID'])
 permit['location']=permit['Cross streets and intersections'].copy()
 permit['boro']=np.where(permit['Boro']=='Manhattan',1,np.where(permit['Boro']=='Bronx',2,
