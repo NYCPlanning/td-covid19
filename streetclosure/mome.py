@@ -19,13 +19,14 @@ start=datetime.datetime.now()
 permit=pd.read_csv(path+'mome/MOME Shooting Permits2018_2019.csv',dtype=str)
 permit['start']=[datetime.datetime.strptime(x,'%m/%d/%Y %H:%M') for x in permit['Start Date']]
 permit['end']=[datetime.datetime.strptime(x,'%m/%d/%Y %H:%M') for x in permit['End Date']]
-permit['duration']=permit['end']-permit['start']
+permit['hours']=permit['end']-permit['start']
+permit['hours']=[x.total_seconds()/3600 for x in permit['hours']]
 permit['eid']=pd.to_numeric(permit['ID'])
 permit['location']=permit['Cross streets and intersections'].copy()
 permit['boro']=np.where(permit['Boro']=='Manhattan',1,np.where(permit['Boro']=='Bronx',2,
                 np.where(permit['Boro']=='Brooklyn',3,np.where(permit['Boro']=='Queens',4,
                 np.where(permit['Boro']=='Staten Island',5,0)))))
-permit=permit[['eid','location','boro']].reset_index(drop=True)
+permit=permit[['eid','start','end','hours','location','boro']].reset_index(drop=True)
 
 
 permitclean=[]
@@ -105,7 +106,7 @@ permitgeocode=permitgeocode.drop_duplicates(keep='first').reset_index(drop=True)
 permitgeocode.to_csv(path+'mome/permitgeocode.csv',index=False)
 
 
-permitgeocode=pd.read_csv(path+'mome/permitgeocode.csv',dtype=str,converters={'eid':float,'boro':float,
+permitgeocode=pd.read_csv(path+'mome/permitgeocode.csv',dtype=str,converters={'eid':float,'hours':float,'boro':float,
                                                                                'segfromnode':float,'segtonode':float})
 permitgeocoderev=permitgeocode.copy()
 permitgeocoderev['temp']=permitgeocoderev['segfromnode'].copy()
@@ -116,20 +117,21 @@ permitgeocode=pd.concat([permitgeocode,permitgeocoderev],axis=0,ignore_index=Tru
 lion=gpd.read_file(path+'sidewalk/input/lion/lion.shp')
 lion.crs={'init':'epsg:4326'}
 lion['segmentid']=pd.to_numeric(lion['SegmentID'],errors='coerce')
+lion['street']=[x.strip().upper() for x in lion['Street']]
 lion['segfromnode']=pd.to_numeric(lion['NodeIDFrom'],errors='coerce')
 lion['segtonode']=pd.to_numeric(lion['NodeIDTo'],errors='coerce')
-lion=lion[['segmentid','segfromnode','segtonode','geometry']].reset_index(drop=True)
-lion=lion.drop_duplicates(['segmentid','segfromnode','segtonode'],keep='first').reset_index(drop=True)
+lion=lion[['segmentid','street','segfromnode','segtonode','geometry']].reset_index(drop=True)
+lion=lion.drop_duplicates(['segmentid','street','segfromnode','segtonode'],keep='first').reset_index(drop=True)
 momegeocode=pd.merge(lion,permitgeocode,how='inner',on=['segfromnode','segtonode'])
 momegeocode=momegeocode.sort_values('segmentid').reset_index(drop=True)
 momegeocode=momegeocode.drop_duplicates(['eid','locsplit','segfromnode','segtonode'],keep='first').reset_index(drop=True)
-momegeocode=momegeocode[['segmentid','eid']].drop_duplicates(keep='first').reset_index(drop=True)
+momegeocode=momegeocode[['segmentid','eid','hours']].drop_duplicates(keep='first').reset_index(drop=True)
 momegeocode['eidconcat']=[str(int(x)) for x in momegeocode['eid']]
-momegeocode=momegeocode.groupby('segmentid',as_index=False).agg({'eid':'count','eidconcat':lambda x:'/'.join(x)}).reset_index(drop=True)
-momegeocode.columns=['segmentid','count','eid']
+momegeocode=momegeocode.groupby('segmentid',as_index=False).agg({'hours':'sum','eid':'count','eidconcat':lambda x:'/'.join(x)}).reset_index(drop=True)
+momegeocode.columns=['segmentid','hours','count','eid']
 lion=lion.drop_duplicates(['segmentid'],keep='first').reset_index(drop=True)
 momegeocode=pd.merge(lion,momegeocode,how='inner',on='segmentid')
-momegeocode=momegeocode[['segmentid','count','eid','geometry']].reset_index(drop=True)
+momegeocode=momegeocode[['segmentid','street','hours','count','eid','geometry']].reset_index(drop=True)
 momegeocode.to_file(path+'mome/momegeocode.shp')
 
 print(datetime.datetime.now()-start)
