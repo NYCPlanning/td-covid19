@@ -4,6 +4,9 @@ decktape C:\Users\mayij\Desktop\DOC\GITHUB\td-covid19\report\revealjs\index.html
 
 decktape C:\Users\mayij\Desktop\DOC\GITHUB\td-covid19\report\index.html C:\Users\mayij\Desktop\DOC\GITHUB\td-covid19\report\pdf\deck.pdf
 
+decktape C:\Users\mayij\Desktop\DOC\GITHUB\td-covid19\report\plotly\subway.html C:\Users\mayij\Desktop\DOC\GITHUB\td-covid19\report\pdf\subway.pdf
+
+
 
 
 
