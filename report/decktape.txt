@@ -2,7 +2,7 @@ npm install -g decktape
 
 decktape C:\Users\mayij\Desktop\DOC\GITHUB\td-covid19\report\revealjs\index.html C:\Users\mayij\Desktop\DOC\GITHUB\td-covid19\report\deck.pdf
 
-decktape C:\Users\mayij\Desktop\DOC\GITHUB\td-covid19\report\index.html C:\Users\mayij\Desktop\DOC\GITHUB\td-covid19\report\pdf\deck.pdf --chrome-arg=--allow-file-access-from-files
+decktape C:\Users\mayij\Desktop\DOC\GITHUB\td-covid19\report\index.html C:\Users\mayij\Desktop\DOC\GITHUB\td-covid19\report\pdf\deck.pdf -p 5000 --chrome-arg=--allow-file-access-from-files
 
 
 
