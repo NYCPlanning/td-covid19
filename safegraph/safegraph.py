@@ -256,3 +256,25 @@ bkgp.crs={'init':'epsg:4326'}
 k=pd.merge(bkgp,k,how='inner',left_on='blockgroup',right_on='destination')
 k.to_file(path+'kd.shp')
 
+
+
+
+# Shapefile and PostGIS
+# pip install geoalchemy2 to enable to_postgis
+engine=sal.create_engine(str(eg))
+bkgp=gpd.read_file(path+'quadstatebkgpclipped.shp')
+bkgp.crs={'init':'epsg:4326'}
+bkgp.to_postgis('quadstatebkgpclipped',engine)
+
+sql="""
+    SELECT * FROM quadstatebkgpclipped
+    WHERE blockgroup='360610247001'
+    """
+k=gpd.read_postgis(sql,engine,geom_col='geometry')
+
+
+
+
+
+
+
