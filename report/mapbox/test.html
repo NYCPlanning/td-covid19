@@ -29,6 +29,7 @@
         var map = new mapboxgl.Map({
             container: 'map',
             style: 'mapbox://styles/mapbox/light-v10',
+            hash: true,
             zoom: 9.5,
             center: [-73.978331, 40.765735],
             preserveDrawingBuffer: true
@@ -38,7 +39,7 @@
             map.addSource('subway', {
                 type: 'geojson',
                 // data: 'test.geojson'
-                data: 'https://raw.githubusercontent.com/nycplanning/td-covid19/master/mapbox/test.geojson'
+                data: 'https://raw.githubusercontent.com/NYCPlanning/td-covid19/master/report/mapbox/test.geojson'
             });
             map.addLayer({
                 'id': 'subway',
