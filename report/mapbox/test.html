@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>Style circles with a data-driven property</title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+    <script src="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js"></script>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css" rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="map"></div>
+    <script>
+        mapboxgl.accessToken = 'pk.eyJ1IjoibWF5aWp1biIsImEiOiJjaXg4ZmlyY20wMDBjMm9tcjI0bjQ0Z21zIn0.Io0XJ4JelN903V9HGo4TfQ';
+        var map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/light-v10',
+            zoom: 9.5,
+            center: [-73.978331, 40.765735],
+            preserveDrawingBuffer: true
+        });
+
+        map.on('load', function () {
+            map.addSource('subway', {
+                type: 'geojson',
+                // data: 'test.geojson'
+                data: 'https://raw.githubusercontent.com/nycplanning/td-covid19/master/mapbox/test.geojson'
+            });
+            map.addLayer({
+                'id': 'subway',
+                'type': 'circle',
+                'source': 'subway',
+                'paint': {
+                    'circle-radius': 6,
+                    'circle-color': '#B42222'
+                }
+            });
+        });
+    </script>
+
+</body>
+
+</html>
