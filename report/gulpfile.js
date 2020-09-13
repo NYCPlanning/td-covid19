@@ -11,7 +11,6 @@ var gulp = require('gulp'),
     flatmap = require('gulp-flatmap'),
     htmlmin = require('gulp-htmlmin');
 
-
 gulp.task('clean', function () {
     return del(['dist']);
 });
@@ -21,14 +20,14 @@ gulp.task('copyplotly', function () {
         .pipe(gulp.dest('dist/plotly'));
 });
 
-gulp.task('copypdf', function () {
-    return gulp.src('pdf/*')
-        .pipe(gulp.dest('dist/pdf'));
-});
-
 gulp.task('copymapbox', function () {
     return gulp.src('mapbox/*')
         .pipe(gulp.dest('dist/mapbox'));
+});
+
+gulp.task('copypdf', function () {
+    return gulp.src('pdf/*')
+        .pipe(gulp.dest('dist/pdf'));
 });
 
 gulp.task('imagemin', function () {
@@ -38,12 +37,12 @@ gulp.task('imagemin', function () {
 });
 
 gulp.task('usemin', function () {
-    return gulp.src('./*.html')
+    return gulp.src('index.html')
         .pipe(flatmap(function (stream, file) {
             return stream
                 .pipe(usemin({
-                    css: [rev()],
                     html: [function () { return htmlmin({ collapseWhitespace: true }) }],
+                    css: [rev()],
                     js: [uglify(), rev()],
                     inlinejs: [uglify()],
                     inlinecss: [cleanCss(), 'concat']
@@ -52,6 +51,7 @@ gulp.task('usemin', function () {
         .pipe(gulp.dest('dist/'));
 });
 
-gulp.task('build', gulp.series('clean', gulp.parallel('copyplotly')), function (done) {
+gulp.task('build', gulp.series('clean', gulp.parallel('copyplotly','copymapbox','copypdf','imagemin','usemin')), function (done) {
     done();
 });
+
