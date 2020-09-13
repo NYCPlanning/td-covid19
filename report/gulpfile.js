@@ -10,11 +10,13 @@ var gulp = require('gulp'),
     cleanCss = require('gulp-clean-css'),
     flatmap = require('gulp-flatmap'),
     htmlmin = require('gulp-htmlmin'),
-    zip = require('gulp-zip');
+    zip = require('gulp-zip'),
+    daterev = require('gulp-date-rev'),
 
 gulp.task('archive', function () {
     return gulp.src('dist/**')
         .pipe(zip('dist.zip'))
+        .pipe(daterev('dist.zip'))
         .pipe(gulp.dest('archive'));
 });
 

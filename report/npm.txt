@@ -1,6 +1,6 @@
 npm init
 
-npm install --save-dev gulp del gulp-imagemin gulp-uglify gulp-usemin gulp-rev gulp-clean-css gulp-flatmap gulp-htmlmin gulp-zip
+npm install --save-dev gulp del gulp-imagemin gulp-uglify gulp-usemin gulp-rev gulp-clean-css gulp-flatmap gulp-htmlmin gulp-zip gulp-date-rev
 
 
 
