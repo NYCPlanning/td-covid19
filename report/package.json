@@ -17,6 +17,7 @@
     "gulp-imagemin": "^7.1.0",
     "gulp-rev": "^9.0.0",
     "gulp-uglify": "^3.0.2",
-    "gulp-usemin": "^0.3.30"
+    "gulp-usemin": "^0.3.30",
+    "gulp-zip": "^5.0.2"
   }
 }
