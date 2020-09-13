@@ -1,0 +1,17 @@
+npm init
+
+npm install --save-dev gulp del gulp-imagemin gulp-uglify gulp-usemin gulp-rev gulp-clean-css gulp-flatmap gulp-htmlmin
+
+
+
+
+
+npm install -g decktape
+
+decktape C:\Users\mayij\Desktop\DOC\GITHUB\td-covid19\report\index.html C:\Users\mayij\Desktop\DOC\GITHUB\td-covid19\report\pdf\deck.pdf -p 5000 --chrome-arg=--allow-file-access-from-files
+
+-size 1600x900
+-p 2000
+--load-pause 2000
+--chrome-arg=--allow-file-access-from-files
+--chrome-arg=--disable-web-security
