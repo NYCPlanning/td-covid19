@@ -1,0 +1,3 @@
+npm init
+
+npm install --save-dev gulp gulp-sass del gulp-imagemin gulp-uglify gulp-usemin gulp-rev gulp-clean-css gulp-flatmap gulp-htmlmin

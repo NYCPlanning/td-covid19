@@ -7,14 +7,9 @@
 
     <title>reveal.js</title>
 
-    <!-- <link rel="stylesheet" href="dist/reset.css"> -->
-    <!-- <link rel="stylesheet" href="dist/reveal.css"> -->
-    <!-- <link rel="stylesheet" href="dist/theme/black.css" id="theme"> -->
-
-    <!-- Theme used for syntax highlighted code -->
-    <!-- <link rel="stylesheet" href="plugin/highlight/monokai.css" id="highlight-theme"> -->
-
+    <!-- build:css css/main.css -->
     <link rel="stylesheet" href="css/slides.css">
+    <!-- endbuild -->
 
 </head>
 
@@ -198,14 +193,13 @@
         </div>
     </div>
 
+
+    <!-- build:js js/main.js -->
     <script src="revealjs/dist/reveal.js"></script>
     <script src="revealjs/plugin/notes/notes.js"></script>
     <script src="revealjs/plugin/markdown/markdown.js"></script>
     <script src="revealjs/plugin/highlight/highlight.js"></script>
     <script>
-        // More info about initialization & config:
-        // - https://revealjs.com/initialization/
-        // - https://revealjs.com/config/
         Reveal.initialize({
             hash: true,
             width: 1600,
@@ -214,10 +208,11 @@
             backgroundTransition: "slide",
             center: false,
             slideNumber: true,
-            // Learn about plugins: https://revealjs.com/plugins/
             plugins: [RevealMarkdown, RevealHighlight, RevealNotes]
         });
     </script>
+    <!-- endbuild -->
+
 </body>
 
 </html>
