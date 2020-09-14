@@ -1,17 +1,17 @@
 'use strict';
 
 
-var gulp = require('gulp'),
-    del = require('del'),
-    imagemin = require('gulp-imagemin'),
-    uglify = require('gulp-uglify'),
-    usemin = require('gulp-usemin'),
-    rev = require('gulp-rev'),
-    cleanCss = require('gulp-clean-css'),
-    flatmap = require('gulp-flatmap'),
-    htmlmin = require('gulp-htmlmin'),
-    zip = require('gulp-zip'),
-    daterev = require('gulp-date-rev'),
+const gulp = require('gulp')
+const del = require('del')
+const imagemin = require('gulp-imagemin')
+const uglify = require('gulp-uglify')
+const usemin = require('gulp-usemin')
+const rev = require('gulp-rev')
+const cleanCss = require('gulp-clean-css')
+const flatmap = require('gulp-flatmap')
+const htmlmin = require('gulp-htmlmin')
+const zip = require('gulp-zip')
+const daterev = require('gulp-date-rev')
 
 gulp.task('archive', function () {
     return gulp.src('dist/**')
