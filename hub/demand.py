@@ -80,7 +80,8 @@ l=k[np.isin(k['origboro'],['Brooklyn'])].reset_index(drop=True)
 # l=l[np.isin(l['destboro'],['Manhattan'])].reset_index(drop=True)
 # l=l[np.isin(l['destboro'],['Bronx'])].reset_index(drop=True)
 l=l[np.isin(l['destboro'],['Queens'])].reset_index(drop=True)
-l=l[np.isin(l['tour_purpose'],['Work'])].reset_index(drop=True)
+# l=l[np.isin(l['tour_purpose'],['Work'])].reset_index(drop=True)
+l=l[np.isin(l['tour_purpose'],['K-12 School or daycare','College/University'])].reset_index(drop=True)
 l=l.groupby(['route_id'],as_index=False).agg({'per_weight_wd_trips_rsadj':'sum'}).reset_index(drop=True)
 
 
@@ -89,7 +90,8 @@ l=k[np.isin(k['origboro'],['Queens'])].reset_index(drop=True)
 # l=l[np.isin(l['destboro'],['Manhattan','Brooklyn'])].reset_index(drop=True)
 # l=l[np.isin(l['destboro'],['Manhattan'])].reset_index(drop=True)
 l=l[np.isin(l['destboro'],['Brooklyn'])].reset_index(drop=True)
-l=l[np.isin(l['tour_purpose'],['Work'])].reset_index(drop=True)
+# l=l[np.isin(l['tour_purpose'],['Work'])].reset_index(drop=True)
+l=l[np.isin(l['tour_purpose'],['K-12 School or daycare','College/University'])].reset_index(drop=True)
 l=l.groupby(['route_id'],as_index=False).agg({'per_weight_wd_trips_rsadj':'sum'}).reset_index(drop=True)
 
 
@@ -104,7 +106,8 @@ l=k[np.isin(k['origboro'],['Bronx'])].reset_index(drop=True)
 # l=l[np.isin(l['destboro'],['Manhattan','Brooklyn','Queens'])].reset_index(drop=True)
 # l=l[np.isin(l['destboro'],['Manhattan'])].reset_index(drop=True)
 l=l[np.isin(l['destboro'],['Brooklyn'])].reset_index(drop=True)
-l=l[np.isin(l['tour_purpose'],['Work'])].reset_index(drop=True)
+# l=l[np.isin(l['tour_purpose'],['Work'])].reset_index(drop=True)
+l=l[np.isin(l['tour_purpose'],['K-12 School or daycare','College/University'])].reset_index(drop=True)
 l=l.groupby(['route_id'],as_index=False).agg({'per_weight_wd_trips_rsadj':'sum'}).reset_index(drop=True)
 
 
