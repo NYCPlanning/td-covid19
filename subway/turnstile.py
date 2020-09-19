@@ -41,6 +41,8 @@ rt=pd.read_csv(path+'RemoteTime.csv',dtype=str)
 #ucsentry=tpunit[tpunit['id']=='R023|N507|00-06-01'].reset_index(drop=True)
 #ucsentry=tpunit[tpunit['id']=='R044|R210|00-00-01'].reset_index(drop=True)
 #ucsentry=tpunit[tpunit['id']=='R152|H041|00-00-01'].reset_index(drop=True)
+# ucsentry=tpunit[tpunit['id']=='R280|N006A|00-00-02'].reset_index(drop=True)
+# ucsentry=tpunit[tpunit['id']=='R104|N207|00-00-00'].reset_index(drop=True)
 def unitcascpentry(ucsentry):
     global rtunit
     ucsentry=ucsentry.reset_index(drop=True)
@@ -51,7 +53,7 @@ def unitcascpentry(ucsentry):
     ucsentry['nextdesc']=np.roll(ucsentry['firstdesc'],-1)
     ucsentry['nextentries']=np.roll(ucsentry['firstentries'],-1)
     ucsentry['time']=ucsentry['firsttime']+'-'+ucsentry['nexttime']
-    ucsentry['entries']=ucsentry['nextentries']-ucsentry['firstentries']
+    ucsentry['entries']=abs(ucsentry['nextentries']-ucsentry['firstentries'])
     ucsentry=ucsentry[:-1].reset_index(drop=True)
     ucsentry=ucsentry[['id','unit','firstdate','time','entries']].reset_index(drop=True)
     ucsentry['id']=ucsid
@@ -71,7 +73,7 @@ def unitcascpexit(ucsexit):
     ucsexit['nextdesc']=np.roll(ucsexit['firstdesc'],-1)
     ucsexit['nextexits']=np.roll(ucsexit['firstexits'],-1)
     ucsexit['time']=ucsexit['firsttime']+'-'+ucsexit['nexttime']
-    ucsexit['exits']=ucsexit['nextexits']-ucsexit['firstexits']
+    ucsexit['exits']=abs(ucsexit['nextexits']-ucsexit['firstexits'])
     ucsexit=ucsexit[:-1].reset_index(drop=True)
     ucsexit=ucsexit[['id','unit','firstdate','time','exits']].reset_index(drop=True)
     ucsexit['id']=ucsid
