@@ -231,9 +231,9 @@
                 'layerblur': 0, // blur circle
                 'layercolname': 'cat', // category column name
                 'layercat': ['<=10', '11~15', '16~20', '21~25', '>25'], // categories
-                'layercolor': ['rgba(255,245,235,1)', 'rgba(254,210,166,1)', 'rgba(253,146,67,1)', 'rgba(223,79,5,1)', 'rgba(127,39,4,1)'], // color for each category; use rgba
+                'layercolor': ['rgba(246,231,215,1)', 'rgba(254,210,166,1)', 'rgba(253,146,67,1)', 'rgba(223,79,5,1)', 'rgba(127,39,4,1)'], // color for each category; use rgba
                 'layeropacity': 1, // circle opacity
-                'layerradius': { 'base': 2, 'stops': [[12, 4], [22, 180]] }, // circle radius; change size based on zoom level
+                'layerradius': { 'base': 5, 'stops': [[12, 6], [22, 180]] }, // circle radius; change size based on zoom level
                 'layerstrokecolor': 'rgb(255,255,255)', // circle stroke color
                 'layerstrokeopacity': 1, // circle stroke opacity
                 'layerstrokewidth': 0.5, // circle stroke width
@@ -262,7 +262,6 @@
                 'id': layerContent['layerid'],
                 'type': layerContent['layertype'],
                 'source': layerContent['sourceid'],
-                'filter': layerContent['layerfilter'],
                 'layout': {
                     'visibility': layerContent['layervisibility'],
                 },
@@ -295,8 +294,8 @@
             // Add click event
             map.on('click', 'bxcb', function (e) {
                 var coordinates = e.features[0].geometry.coordinates.slice(); // get point coordinates
-                var description = "<b>Station: </b><span>" + e.features[0].properties.CplxName + "</span><br>"; // description in the popup
-                description += "<b>Entry: </b><span>" + e.features[0].properties.LatestEntries + "</span><br>";
+                var description = "<b>Station: </b><span>" + e.features[0].properties.name + "</span><br>"; // description in the popup
+                description += "<b>September Daily Trips (Start+End): </b><span>" + e.features[0].properties.dailytrips + "</span><br>";
                 popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
             });
             // Add hover events
