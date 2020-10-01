@@ -7,7 +7,7 @@ import shapely
 
 
 pd.set_option('display.max_columns', None)
-path='C:/Users/mayij/Desktop/DOC/DCP2020/COVID19/BRONX/'
+path='C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/bronx/'
 
 
 df=pd.read_csv(path+'bronxcitibike.csv')
