@@ -774,79 +774,79 @@ hub.to_csv(path+'OUTPUT/hub.csv',index=False)
 # cplxpmdiff=cplxpmdiff[['CplxID','Borough','CplxName','Routes','CplxLat','CplxLong','Hub','Time','PreEntries','PostEntries','Diff','DiffPct']].reset_index(drop=True)
 # cplxpmdiff.to_csv(path+'OUTPUT/cplxpmdiffp2.csv',index=False)
 
-# AM Peak Pre and Post Phase1 by NTA
-dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
-predates=['06/01/2020','06/03/2020','06/04/2020']
-postdates=['08/03/2020','08/05/2020','08/06/2020']
-amlist=['05:00:00-09:00:00','06:00:00-10:00:00','06:30:00-10:30:00','07:00:00-11:00:00','08:00:00-12:00:00','08:22:00-12:22:00','08:30:00-12:30:00']
-cplxampre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
-cplxampre=cplxampre[np.isin(cplxampre['time'],amlist)].reset_index(drop=True)
-cplxampre=cplxampre.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
-cplxampre=pd.merge(cplxampre,rc,how='left',left_on='unit',right_on='Remote')
-cplxampre=cplxampre.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
-cplxampre.columns=['CplxID','PreTime','PreEntries']
-cplxampost=dfunitentry[np.isin(dfunitentry['firstdate'],postdates)].reset_index(drop=True)
-cplxampost=cplxampost[np.isin(cplxampost['time'],amlist)].reset_index(drop=True)
-cplxampost=cplxampost.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
-cplxampost=pd.merge(cplxampost,rc,how='left',left_on='unit',right_on='Remote')
-cplxampost=cplxampost.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
-cplxampost.columns=['CplxID','PostTime','PostEntries']
-cplxamdiff=pd.merge(cplxampre,cplxampost,how='inner',on='CplxID')
-cplxamdiff['Time']=cplxamdiff['PreTime'].copy()
-cplxamdiff['Diff']=cplxamdiff['PostEntries']-cplxamdiff['PreEntries']
-cplxamdiff['DiffPct']=cplxamdiff['Diff']/cplxamdiff['PreEntries']
-cplxamdiff=pd.merge(rc.drop('Remote',axis=1).drop_duplicates(keep='first').reset_index(drop=True),cplxamdiff,how='left',on='CplxID')
-cplxamdiff=cplxamdiff[['CplxID','CplxLat','CplxLong','PreEntries','PostEntries']].reset_index(drop=True)
-cplxamdiff=gpd.GeoDataFrame(cplxamdiff,geometry=[shapely.geometry.Point(x,y) for x,y in zip(cplxamdiff['CplxLong'],cplxamdiff['CplxLat'])],crs={'init' :'epsg:4326'})
-cplxamdiff=cplxamdiff.to_crs({'init':'epsg:6539'})
-cplxamdiff['geometry']=cplxamdiff.buffer(2640)
-cplxamdiff=cplxamdiff.to_crs({'init':'epsg:4326'})
-nta=gpd.read_file(path+'ntaclippedadj.shp')
-nta.crs={'init' :'epsg:4326'}
-cplxamdiffnta=gpd.sjoin(nta,cplxamdiff,how='left',op='intersects')
-cplxamdiffnta=cplxamdiffnta.groupby(['NTACode'],as_index=False).agg({'PreEntries':'sum','PostEntries':'sum'}).reset_index(drop=True)
-cplxamdiffnta=cplxamdiffnta[cplxamdiffnta['PreEntries']!=0].reset_index(drop=True)
-cplxamdiffnta['Diff']=cplxamdiffnta['PostEntries']-cplxamdiffnta['PreEntries']
-cplxamdiffnta['DiffPct']=cplxamdiffnta['Diff']/cplxamdiffnta['PreEntries']
-cplxamdiffnta=pd.merge(nta,cplxamdiffnta,how='inner',on='NTACode')
-cplxamdiffnta.to_file(path+'OUTPUT/cplxamdiffp1nta.shp')
+# # AM Peak Pre and Post Phase1 by NTA
+# dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
+# predates=['06/01/2020','06/03/2020','06/04/2020']
+# postdates=['08/03/2020','08/05/2020','08/06/2020']
+# amlist=['05:00:00-09:00:00','06:00:00-10:00:00','06:30:00-10:30:00','07:00:00-11:00:00','08:00:00-12:00:00','08:22:00-12:22:00','08:30:00-12:30:00']
+# cplxampre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
+# cplxampre=cplxampre[np.isin(cplxampre['time'],amlist)].reset_index(drop=True)
+# cplxampre=cplxampre.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
+# cplxampre=pd.merge(cplxampre,rc,how='left',left_on='unit',right_on='Remote')
+# cplxampre=cplxampre.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
+# cplxampre.columns=['CplxID','PreTime','PreEntries']
+# cplxampost=dfunitentry[np.isin(dfunitentry['firstdate'],postdates)].reset_index(drop=True)
+# cplxampost=cplxampost[np.isin(cplxampost['time'],amlist)].reset_index(drop=True)
+# cplxampost=cplxampost.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
+# cplxampost=pd.merge(cplxampost,rc,how='left',left_on='unit',right_on='Remote')
+# cplxampost=cplxampost.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
+# cplxampost.columns=['CplxID','PostTime','PostEntries']
+# cplxamdiff=pd.merge(cplxampre,cplxampost,how='inner',on='CplxID')
+# cplxamdiff['Time']=cplxamdiff['PreTime'].copy()
+# cplxamdiff['Diff']=cplxamdiff['PostEntries']-cplxamdiff['PreEntries']
+# cplxamdiff['DiffPct']=cplxamdiff['Diff']/cplxamdiff['PreEntries']
+# cplxamdiff=pd.merge(rc.drop('Remote',axis=1).drop_duplicates(keep='first').reset_index(drop=True),cplxamdiff,how='left',on='CplxID')
+# cplxamdiff=cplxamdiff[['CplxID','CplxLat','CplxLong','PreEntries','PostEntries']].reset_index(drop=True)
+# cplxamdiff=gpd.GeoDataFrame(cplxamdiff,geometry=[shapely.geometry.Point(x,y) for x,y in zip(cplxamdiff['CplxLong'],cplxamdiff['CplxLat'])],crs={'init' :'epsg:4326'})
+# cplxamdiff=cplxamdiff.to_crs({'init':'epsg:6539'})
+# cplxamdiff['geometry']=cplxamdiff.buffer(2640)
+# cplxamdiff=cplxamdiff.to_crs({'init':'epsg:4326'})
+# nta=gpd.read_file(path+'ntaclippedadj.shp')
+# nta.crs={'init' :'epsg:4326'}
+# cplxamdiffnta=gpd.sjoin(nta,cplxamdiff,how='left',op='intersects')
+# cplxamdiffnta=cplxamdiffnta.groupby(['NTACode'],as_index=False).agg({'PreEntries':'sum','PostEntries':'sum'}).reset_index(drop=True)
+# cplxamdiffnta=cplxamdiffnta[cplxamdiffnta['PreEntries']!=0].reset_index(drop=True)
+# cplxamdiffnta['Diff']=cplxamdiffnta['PostEntries']-cplxamdiffnta['PreEntries']
+# cplxamdiffnta['DiffPct']=cplxamdiffnta['Diff']/cplxamdiffnta['PreEntries']
+# cplxamdiffnta=pd.merge(nta,cplxamdiffnta,how='inner',on='NTACode')
+# cplxamdiffnta.to_file(path+'OUTPUT/cplxamdiffp1nta.shp')
 
-# PM Peak Pre and Post Phase1 by NTA
-dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
-predates=['06/01/2020','06/03/2020','06/04/2020']
-postdates=['08/03/2020','08/05/2020','08/06/2020']
-pmlist=['13:00:00-17:00:00','14:00:00-18:00:00','14:30:00-18:30:00','15:00:00-19:00:00','16:00:00-20:00:00','16:22:00-20:22:00','16:30:00-20:30:00']
-cplxpmpre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
-cplxpmpre=cplxpmpre[np.isin(cplxpmpre['time'],pmlist)].reset_index(drop=True)
-cplxpmpre=cplxpmpre.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
-cplxpmpre=pd.merge(cplxpmpre,rc,how='left',left_on='unit',right_on='Remote')
-cplxpmpre=cplxpmpre.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
-cplxpmpre.columns=['CplxID','PreTime','PreEntries']
-cplxpmpost=dfunitentry[np.isin(dfunitentry['firstdate'],postdates)].reset_index(drop=True)
-cplxpmpost=cplxpmpost[np.isin(cplxpmpost['time'],pmlist)].reset_index(drop=True)
-cplxpmpost=cplxpmpost.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
-cplxpmpost=pd.merge(cplxpmpost,rc,how='left',left_on='unit',right_on='Remote')
-cplxpmpost=cplxpmpost.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
-cplxpmpost.columns=['CplxID','PostTime','PostEntries']
-cplxpmdiff=pd.merge(cplxpmpre,cplxpmpost,how='inner',on='CplxID')
-cplxpmdiff['Time']=cplxpmdiff['PreTime'].copy()
-cplxpmdiff['Diff']=cplxpmdiff['PostEntries']-cplxpmdiff['PreEntries']
-cplxpmdiff['DiffPct']=cplxpmdiff['Diff']/cplxpmdiff['PreEntries']
-cplxpmdiff=pd.merge(rc.drop('Remote',axis=1).drop_duplicates(keep='first').reset_index(drop=True),cplxpmdiff,how='left',on='CplxID')
-cplxpmdiff=cplxpmdiff[['CplxID','CplxLat','CplxLong','PreEntries','PostEntries']].reset_index(drop=True)
-cplxpmdiff=gpd.GeoDataFrame(cplxpmdiff,geometry=[shapely.geometry.Point(x,y) for x,y in zip(cplxpmdiff['CplxLong'],cplxpmdiff['CplxLat'])],crs={'init' :'epsg:4326'})
-cplxpmdiff=cplxpmdiff.to_crs({'init':'epsg:6539'})
-cplxpmdiff['geometry']=cplxpmdiff.buffer(2640)
-cplxpmdiff=cplxpmdiff.to_crs({'init':'epsg:4326'})
-nta=gpd.read_file(path+'ntaclippedadj.shp')
-nta.crs={'init' :'epsg:4326'}
-cplxpmdiffnta=gpd.sjoin(nta,cplxpmdiff,how='left',op='intersects')
-cplxpmdiffnta=cplxpmdiffnta.groupby(['NTACode'],as_index=False).agg({'PreEntries':'sum','PostEntries':'sum'}).reset_index(drop=True)
-cplxpmdiffnta=cplxpmdiffnta[cplxpmdiffnta['PreEntries']!=0].reset_index(drop=True)
-cplxpmdiffnta['Diff']=cplxpmdiffnta['PostEntries']-cplxpmdiffnta['PreEntries']
-cplxpmdiffnta['DiffPct']=cplxpmdiffnta['Diff']/cplxpmdiffnta['PreEntries']
-cplxpmdiffnta=pd.merge(nta,cplxpmdiffnta,how='inner',on='NTACode')
-cplxpmdiffnta.to_file(path+'OUTPUT/cplxpmdiffp1nta.shp')
+# # PM Peak Pre and Post Phase1 by NTA
+# dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
+# predates=['06/01/2020','06/03/2020','06/04/2020']
+# postdates=['08/03/2020','08/05/2020','08/06/2020']
+# pmlist=['13:00:00-17:00:00','14:00:00-18:00:00','14:30:00-18:30:00','15:00:00-19:00:00','16:00:00-20:00:00','16:22:00-20:22:00','16:30:00-20:30:00']
+# cplxpmpre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
+# cplxpmpre=cplxpmpre[np.isin(cplxpmpre['time'],pmlist)].reset_index(drop=True)
+# cplxpmpre=cplxpmpre.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
+# cplxpmpre=pd.merge(cplxpmpre,rc,how='left',left_on='unit',right_on='Remote')
+# cplxpmpre=cplxpmpre.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
+# cplxpmpre.columns=['CplxID','PreTime','PreEntries']
+# cplxpmpost=dfunitentry[np.isin(dfunitentry['firstdate'],postdates)].reset_index(drop=True)
+# cplxpmpost=cplxpmpost[np.isin(cplxpmpost['time'],pmlist)].reset_index(drop=True)
+# cplxpmpost=cplxpmpost.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
+# cplxpmpost=pd.merge(cplxpmpost,rc,how='left',left_on='unit',right_on='Remote')
+# cplxpmpost=cplxpmpost.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
+# cplxpmpost.columns=['CplxID','PostTime','PostEntries']
+# cplxpmdiff=pd.merge(cplxpmpre,cplxpmpost,how='inner',on='CplxID')
+# cplxpmdiff['Time']=cplxpmdiff['PreTime'].copy()
+# cplxpmdiff['Diff']=cplxpmdiff['PostEntries']-cplxpmdiff['PreEntries']
+# cplxpmdiff['DiffPct']=cplxpmdiff['Diff']/cplxpmdiff['PreEntries']
+# cplxpmdiff=pd.merge(rc.drop('Remote',axis=1).drop_duplicates(keep='first').reset_index(drop=True),cplxpmdiff,how='left',on='CplxID')
+# cplxpmdiff=cplxpmdiff[['CplxID','CplxLat','CplxLong','PreEntries','PostEntries']].reset_index(drop=True)
+# cplxpmdiff=gpd.GeoDataFrame(cplxpmdiff,geometry=[shapely.geometry.Point(x,y) for x,y in zip(cplxpmdiff['CplxLong'],cplxpmdiff['CplxLat'])],crs={'init' :'epsg:4326'})
+# cplxpmdiff=cplxpmdiff.to_crs({'init':'epsg:6539'})
+# cplxpmdiff['geometry']=cplxpmdiff.buffer(2640)
+# cplxpmdiff=cplxpmdiff.to_crs({'init':'epsg:4326'})
+# nta=gpd.read_file(path+'ntaclippedadj.shp')
+# nta.crs={'init' :'epsg:4326'}
+# cplxpmdiffnta=gpd.sjoin(nta,cplxpmdiff,how='left',op='intersects')
+# cplxpmdiffnta=cplxpmdiffnta.groupby(['NTACode'],as_index=False).agg({'PreEntries':'sum','PostEntries':'sum'}).reset_index(drop=True)
+# cplxpmdiffnta=cplxpmdiffnta[cplxpmdiffnta['PreEntries']!=0].reset_index(drop=True)
+# cplxpmdiffnta['Diff']=cplxpmdiffnta['PostEntries']-cplxpmdiffnta['PreEntries']
+# cplxpmdiffnta['DiffPct']=cplxpmdiffnta['Diff']/cplxpmdiffnta['PreEntries']
+# cplxpmdiffnta=pd.merge(nta,cplxpmdiffnta,how='inner',on='NTACode')
+# cplxpmdiffnta.to_file(path+'OUTPUT/cplxpmdiffp1nta.shp')
 
 # # AM Peak Previous and Current Week in Phase 2 by NTA
 # dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
@@ -1003,79 +1003,79 @@ cplxpmdiffnta.to_file(path+'OUTPUT/cplxpmdiffp1nta.shp')
 # cplxpmdbk=cplxpmdbk[['CplxID','Borough','CplxName','Routes','CplxLat','CplxLong','TimePeriod','Date','Entries']].reset_index(drop=True)
 # cplxpmdbk.to_csv(path+'OUTPUT/cplxpmdbk.csv',index=False)
 
-# AM Peak Phase4 vs last year by NTA
-dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
-predates=['08/05/2019','08/07/2019','08/08/2019']
-postdates=['08/03/2020','08/05/2020','08/06/2020']
-amlist=['05:00:00-09:00:00','06:00:00-10:00:00','06:30:00-10:30:00','07:00:00-11:00:00','08:00:00-12:00:00','08:22:00-12:22:00','08:30:00-12:30:00']
-cplxampre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
-cplxampre=cplxampre[np.isin(cplxampre['time'],amlist)].reset_index(drop=True)
-cplxampre=cplxampre.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
-cplxampre=pd.merge(cplxampre,rc,how='left',left_on='unit',right_on='Remote')
-cplxampre=cplxampre.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
-cplxampre.columns=['CplxID','PreTime','PreEntries']
-cplxampost=dfunitentry[np.isin(dfunitentry['firstdate'],postdates)].reset_index(drop=True)
-cplxampost=cplxampost[np.isin(cplxampost['time'],amlist)].reset_index(drop=True)
-cplxampost=cplxampost.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
-cplxampost=pd.merge(cplxampost,rc,how='left',left_on='unit',right_on='Remote')
-cplxampost=cplxampost.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
-cplxampost.columns=['CplxID','PostTime','PostEntries']
-cplxamdiff=pd.merge(cplxampre,cplxampost,how='inner',on='CplxID')
-cplxamdiff['Time']=cplxamdiff['PreTime'].copy()
-cplxamdiff['Diff']=cplxamdiff['PostEntries']-cplxamdiff['PreEntries']
-cplxamdiff['DiffPct']=cplxamdiff['Diff']/cplxamdiff['PreEntries']
-cplxamdiff=pd.merge(rc.drop('Remote',axis=1).drop_duplicates(keep='first').reset_index(drop=True),cplxamdiff,how='left',on='CplxID')
-cplxamdiff=cplxamdiff[['CplxID','CplxLat','CplxLong','PreEntries','PostEntries']].reset_index(drop=True)
-cplxamdiff=gpd.GeoDataFrame(cplxamdiff,geometry=[shapely.geometry.Point(x,y) for x,y in zip(cplxamdiff['CplxLong'],cplxamdiff['CplxLat'])],crs={'init' :'epsg:4326'})
-cplxamdiff=cplxamdiff.to_crs({'init':'epsg:6539'})
-cplxamdiff['geometry']=cplxamdiff.buffer(2640)
-cplxamdiff=cplxamdiff.to_crs({'init':'epsg:4326'})
-nta=gpd.read_file(path+'ntaclippedadj.shp')
-nta.crs={'init' :'epsg:4326'}
-cplxamdiffnta=gpd.sjoin(nta,cplxamdiff,how='left',op='intersects')
-cplxamdiffnta=cplxamdiffnta.groupby(['NTACode'],as_index=False).agg({'PreEntries':'sum','PostEntries':'sum'}).reset_index(drop=True)
-cplxamdiffnta=cplxamdiffnta[cplxamdiffnta['PreEntries']!=0].reset_index(drop=True)
-cplxamdiffnta['Diff']=cplxamdiffnta['PostEntries']-cplxamdiffnta['PreEntries']
-cplxamdiffnta['DiffPct']=cplxamdiffnta['Diff']/cplxamdiffnta['PreEntries']
-cplxamdiffnta=pd.merge(nta,cplxamdiffnta,how='inner',on='NTACode')
-cplxamdiffnta.to_file(path+'OUTPUT/cplxamdiffp4nta.shp')
+# # AM Peak Phase4 vs last year by NTA
+# dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
+# predates=['08/05/2019','08/07/2019','08/08/2019']
+# postdates=['08/03/2020','08/05/2020','08/06/2020']
+# amlist=['05:00:00-09:00:00','06:00:00-10:00:00','06:30:00-10:30:00','07:00:00-11:00:00','08:00:00-12:00:00','08:22:00-12:22:00','08:30:00-12:30:00']
+# cplxampre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
+# cplxampre=cplxampre[np.isin(cplxampre['time'],amlist)].reset_index(drop=True)
+# cplxampre=cplxampre.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
+# cplxampre=pd.merge(cplxampre,rc,how='left',left_on='unit',right_on='Remote')
+# cplxampre=cplxampre.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
+# cplxampre.columns=['CplxID','PreTime','PreEntries']
+# cplxampost=dfunitentry[np.isin(dfunitentry['firstdate'],postdates)].reset_index(drop=True)
+# cplxampost=cplxampost[np.isin(cplxampost['time'],amlist)].reset_index(drop=True)
+# cplxampost=cplxampost.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
+# cplxampost=pd.merge(cplxampost,rc,how='left',left_on='unit',right_on='Remote')
+# cplxampost=cplxampost.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
+# cplxampost.columns=['CplxID','PostTime','PostEntries']
+# cplxamdiff=pd.merge(cplxampre,cplxampost,how='inner',on='CplxID')
+# cplxamdiff['Time']=cplxamdiff['PreTime'].copy()
+# cplxamdiff['Diff']=cplxamdiff['PostEntries']-cplxamdiff['PreEntries']
+# cplxamdiff['DiffPct']=cplxamdiff['Diff']/cplxamdiff['PreEntries']
+# cplxamdiff=pd.merge(rc.drop('Remote',axis=1).drop_duplicates(keep='first').reset_index(drop=True),cplxamdiff,how='left',on='CplxID')
+# cplxamdiff=cplxamdiff[['CplxID','CplxLat','CplxLong','PreEntries','PostEntries']].reset_index(drop=True)
+# cplxamdiff=gpd.GeoDataFrame(cplxamdiff,geometry=[shapely.geometry.Point(x,y) for x,y in zip(cplxamdiff['CplxLong'],cplxamdiff['CplxLat'])],crs={'init' :'epsg:4326'})
+# cplxamdiff=cplxamdiff.to_crs({'init':'epsg:6539'})
+# cplxamdiff['geometry']=cplxamdiff.buffer(2640)
+# cplxamdiff=cplxamdiff.to_crs({'init':'epsg:4326'})
+# nta=gpd.read_file(path+'ntaclippedadj.shp')
+# nta.crs={'init' :'epsg:4326'}
+# cplxamdiffnta=gpd.sjoin(nta,cplxamdiff,how='left',op='intersects')
+# cplxamdiffnta=cplxamdiffnta.groupby(['NTACode'],as_index=False).agg({'PreEntries':'sum','PostEntries':'sum'}).reset_index(drop=True)
+# cplxamdiffnta=cplxamdiffnta[cplxamdiffnta['PreEntries']!=0].reset_index(drop=True)
+# cplxamdiffnta['Diff']=cplxamdiffnta['PostEntries']-cplxamdiffnta['PreEntries']
+# cplxamdiffnta['DiffPct']=cplxamdiffnta['Diff']/cplxamdiffnta['PreEntries']
+# cplxamdiffnta=pd.merge(nta,cplxamdiffnta,how='inner',on='NTACode')
+# cplxamdiffnta.to_file(path+'OUTPUT/cplxamdiffp4nta.shp')
 
-# PM Peak Phase4 vs last year by NTA
-dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
-predates=['08/05/2019','08/07/2019','08/08/2019']
-postdates=['08/03/2020','08/05/2020','08/06/2020']
-pmlist=['13:00:00-17:00:00','14:00:00-18:00:00','14:30:00-18:30:00','15:00:00-19:00:00','16:00:00-20:00:00','16:22:00-20:22:00','16:30:00-20:30:00']
-cplxpmpre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
-cplxpmpre=cplxpmpre[np.isin(cplxpmpre['time'],pmlist)].reset_index(drop=True)
-cplxpmpre=cplxpmpre.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
-cplxpmpre=pd.merge(cplxpmpre,rc,how='left',left_on='unit',right_on='Remote')
-cplxpmpre=cplxpmpre.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
-cplxpmpre.columns=['CplxID','PreTime','PreEntries']
-cplxpmpost=dfunitentry[np.isin(dfunitentry['firstdate'],postdates)].reset_index(drop=True)
-cplxpmpost=cplxpmpost[np.isin(cplxpmpost['time'],pmlist)].reset_index(drop=True)
-cplxpmpost=cplxpmpost.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
-cplxpmpost=pd.merge(cplxpmpost,rc,how='left',left_on='unit',right_on='Remote')
-cplxpmpost=cplxpmpost.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
-cplxpmpost.columns=['CplxID','PostTime','PostEntries']
-cplxpmdiff=pd.merge(cplxpmpre,cplxpmpost,how='inner',on='CplxID')
-cplxpmdiff['Time']=cplxpmdiff['PreTime'].copy()
-cplxpmdiff['Diff']=cplxpmdiff['PostEntries']-cplxpmdiff['PreEntries']
-cplxpmdiff['DiffPct']=cplxpmdiff['Diff']/cplxpmdiff['PreEntries']
-cplxpmdiff=pd.merge(rc.drop('Remote',axis=1).drop_duplicates(keep='first').reset_index(drop=True),cplxpmdiff,how='left',on='CplxID')
-cplxpmdiff=cplxpmdiff[['CplxID','CplxLat','CplxLong','PreEntries','PostEntries']].reset_index(drop=True)
-cplxpmdiff=gpd.GeoDataFrame(cplxpmdiff,geometry=[shapely.geometry.Point(x,y) for x,y in zip(cplxpmdiff['CplxLong'],cplxpmdiff['CplxLat'])],crs={'init' :'epsg:4326'})
-cplxpmdiff=cplxpmdiff.to_crs({'init':'epsg:6539'})
-cplxpmdiff['geometry']=cplxpmdiff.buffer(2640)
-cplxpmdiff=cplxpmdiff.to_crs({'init':'epsg:4326'})
-nta=gpd.read_file(path+'ntaclippedadj.shp')
-nta.crs={'init' :'epsg:4326'}
-cplxpmdiffnta=gpd.sjoin(nta,cplxpmdiff,how='left',op='intersects')
-cplxpmdiffnta=cplxpmdiffnta.groupby(['NTACode'],as_index=False).agg({'PreEntries':'sum','PostEntries':'sum'}).reset_index(drop=True)
-cplxpmdiffnta=cplxpmdiffnta[cplxpmdiffnta['PreEntries']!=0].reset_index(drop=True)
-cplxpmdiffnta['Diff']=cplxpmdiffnta['PostEntries']-cplxpmdiffnta['PreEntries']
-cplxpmdiffnta['DiffPct']=cplxpmdiffnta['Diff']/cplxpmdiffnta['PreEntries']
-cplxpmdiffnta=pd.merge(nta,cplxpmdiffnta,how='inner',on='NTACode')
-cplxpmdiffnta.to_file(path+'OUTPUT/cplxpmdiffp4nta.shp')
+# # PM Peak Phase4 vs last year by NTA
+# dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
+# predates=['08/05/2019','08/07/2019','08/08/2019']
+# postdates=['08/03/2020','08/05/2020','08/06/2020']
+# pmlist=['13:00:00-17:00:00','14:00:00-18:00:00','14:30:00-18:30:00','15:00:00-19:00:00','16:00:00-20:00:00','16:22:00-20:22:00','16:30:00-20:30:00']
+# cplxpmpre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
+# cplxpmpre=cplxpmpre[np.isin(cplxpmpre['time'],pmlist)].reset_index(drop=True)
+# cplxpmpre=cplxpmpre.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
+# cplxpmpre=pd.merge(cplxpmpre,rc,how='left',left_on='unit',right_on='Remote')
+# cplxpmpre=cplxpmpre.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
+# cplxpmpre.columns=['CplxID','PreTime','PreEntries']
+# cplxpmpost=dfunitentry[np.isin(dfunitentry['firstdate'],postdates)].reset_index(drop=True)
+# cplxpmpost=cplxpmpost[np.isin(cplxpmpost['time'],pmlist)].reset_index(drop=True)
+# cplxpmpost=cplxpmpost.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
+# cplxpmpost=pd.merge(cplxpmpost,rc,how='left',left_on='unit',right_on='Remote')
+# cplxpmpost=cplxpmpost.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
+# cplxpmpost.columns=['CplxID','PostTime','PostEntries']
+# cplxpmdiff=pd.merge(cplxpmpre,cplxpmpost,how='inner',on='CplxID')
+# cplxpmdiff['Time']=cplxpmdiff['PreTime'].copy()
+# cplxpmdiff['Diff']=cplxpmdiff['PostEntries']-cplxpmdiff['PreEntries']
+# cplxpmdiff['DiffPct']=cplxpmdiff['Diff']/cplxpmdiff['PreEntries']
+# cplxpmdiff=pd.merge(rc.drop('Remote',axis=1).drop_duplicates(keep='first').reset_index(drop=True),cplxpmdiff,how='left',on='CplxID')
+# cplxpmdiff=cplxpmdiff[['CplxID','CplxLat','CplxLong','PreEntries','PostEntries']].reset_index(drop=True)
+# cplxpmdiff=gpd.GeoDataFrame(cplxpmdiff,geometry=[shapely.geometry.Point(x,y) for x,y in zip(cplxpmdiff['CplxLong'],cplxpmdiff['CplxLat'])],crs={'init' :'epsg:4326'})
+# cplxpmdiff=cplxpmdiff.to_crs({'init':'epsg:6539'})
+# cplxpmdiff['geometry']=cplxpmdiff.buffer(2640)
+# cplxpmdiff=cplxpmdiff.to_crs({'init':'epsg:4326'})
+# nta=gpd.read_file(path+'ntaclippedadj.shp')
+# nta.crs={'init' :'epsg:4326'}
+# cplxpmdiffnta=gpd.sjoin(nta,cplxpmdiff,how='left',op='intersects')
+# cplxpmdiffnta=cplxpmdiffnta.groupby(['NTACode'],as_index=False).agg({'PreEntries':'sum','PostEntries':'sum'}).reset_index(drop=True)
+# cplxpmdiffnta=cplxpmdiffnta[cplxpmdiffnta['PreEntries']!=0].reset_index(drop=True)
+# cplxpmdiffnta['Diff']=cplxpmdiffnta['PostEntries']-cplxpmdiffnta['PreEntries']
+# cplxpmdiffnta['DiffPct']=cplxpmdiffnta['Diff']/cplxpmdiffnta['PreEntries']
+# cplxpmdiffnta=pd.merge(nta,cplxpmdiffnta,how='inner',on='NTACode')
+# cplxpmdiffnta.to_file(path+'OUTPUT/cplxpmdiffp4nta.shp')
 
 # # PM Peak Pre and Post Phase1 by NTA
 # dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
@@ -1134,8 +1134,8 @@ cplxpmdiffnta.to_file(path+'OUTPUT/cplxpmdiffp4nta.shp')
 
 # AM Peak Pre and Post by NTA for HED
 dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
-predates=['09/03/2019','09/04/2019','09/05/2019','09/06/2019','09/09/2019','09/10/2019','09/11/2019','09/12/2019']
-postdates=['08/31/2020','09/01/2020','09/02/2020','09/03/2020','09/04/2020','09/08/2020','09/09/2020','09/10/2020']
+predates=['09/23/2019','09/24/2019','09/25/2019','09/26/2019','09/27/2019','09/30/2019','10/01/2019','10/02/2019','10/03/2019']
+postdates=['09/21/2020','09/22/2020','09/23/2020','09/24/2020','09/25/2020','09/28/2020','09/29/2020','09/30/2020','10/01/2020']
 amlist=['05:00:00-09:00:00','06:00:00-10:00:00','06:30:00-10:30:00','07:00:00-11:00:00','08:00:00-12:00:00','08:22:00-12:22:00','08:30:00-12:30:00']
 cplxampre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
 cplxampre=cplxampre[np.isin(cplxampre['time'],amlist)].reset_index(drop=True)
@@ -1155,12 +1155,12 @@ cplxamdiff['Diff']=cplxamdiff['PostEntries']-cplxamdiff['PreEntries']
 cplxamdiff['DiffPct']=cplxamdiff['Diff']/cplxamdiff['PreEntries']
 cplxamdiff=pd.merge(rc.drop('Remote',axis=1).drop_duplicates(keep='first').reset_index(drop=True),cplxamdiff,how='left',on='CplxID')
 cplxamdiff=cplxamdiff[['CplxID','CplxLat','CplxLong','PreEntries','PostEntries']].reset_index(drop=True)
-cplxamdiff=gpd.GeoDataFrame(cplxamdiff,geometry=[shapely.geometry.Point(x,y) for x,y in zip(cplxamdiff['CplxLong'],cplxamdiff['CplxLat'])],crs={'init' :'epsg:4326'})
-cplxamdiff=cplxamdiff.to_crs({'init':'epsg:6539'})
+cplxamdiff=gpd.GeoDataFrame(cplxamdiff,geometry=[shapely.geometry.Point(x,y) for x,y in zip(cplxamdiff['CplxLong'],cplxamdiff['CplxLat'])],crs='epsg:4326')
+cplxamdiff=cplxamdiff.to_crs('epsg:6539')
 cplxamdiff['geometry']=cplxamdiff.buffer(2640)
-cplxamdiff=cplxamdiff.to_crs({'init':'epsg:4326'})
+cplxamdiff=cplxamdiff.to_crs('epsg:4326')
 nta=gpd.read_file(path+'ntaclippedadj.shp')
-nta.crs={'init' :'epsg:4326'}
+nta.crs='epsg:4326'
 cplxamdiffnta=gpd.sjoin(nta,cplxamdiff,how='left',op='intersects')
 cplxamdiffnta=cplxamdiffnta.groupby(['NTACode'],as_index=False).agg({'PreEntries':'sum','PostEntries':'sum'}).reset_index(drop=True)
 cplxamdiffnta=cplxamdiffnta[cplxamdiffnta['PreEntries']!=0].reset_index(drop=True)
@@ -1189,12 +1189,12 @@ cplxamdiff['Diff']=cplxamdiff['PostEntries']-cplxamdiff['PreEntries']
 cplxamdiff['DiffPct']=cplxamdiff['Diff']/cplxamdiff['PreEntries']
 cplxamdiff=pd.merge(rc.drop('Remote',axis=1).drop_duplicates(keep='first').reset_index(drop=True),cplxamdiff,how='left',on='CplxID')
 cplxamdiff=cplxamdiff[['CplxID','CplxLat','CplxLong','PreEntries','PostEntries']].reset_index(drop=True)
-cplxamdiff=gpd.GeoDataFrame(cplxamdiff,geometry=[shapely.geometry.Point(x,y) for x,y in zip(cplxamdiff['CplxLong'],cplxamdiff['CplxLat'])],crs={'init' :'epsg:4326'})
-cplxamdiff=cplxamdiff.to_crs({'init':'epsg:6539'})
+cplxamdiff=gpd.GeoDataFrame(cplxamdiff,geometry=[shapely.geometry.Point(x,y) for x,y in zip(cplxamdiff['CplxLong'],cplxamdiff['CplxLat'])],crs='epsg:4326')
+cplxamdiff=cplxamdiff.to_crs('epsg:6539')
 cplxamdiff['geometry']=cplxamdiff.buffer(2640)
-cplxamdiff=cplxamdiff.to_crs({'init':'epsg:4326'})
+cplxamdiff=cplxamdiff.to_crs('epsg:4326')
 nta=gpd.read_file(path+'ntaclippedadj.shp')
-nta.crs={'init' :'epsg:4326'}
+nta.crs='epsg:4326'
 cplxamdiffnta=gpd.sjoin(nta,cplxamdiff,how='left',op='intersects')
 cplxamdiffnta=cplxamdiffnta.groupby(['NTACode'],as_index=False).agg({'PreEntries':'sum','PostEntries':'sum'}).reset_index(drop=True)
 cplxamdiffnta=cplxamdiffnta[cplxamdiffnta['PreEntries']!=0].reset_index(drop=True)
@@ -1207,14 +1207,14 @@ cplxamhed['DiffPct2']=cplxamhed['Diff2']/cplxamhed['E202004']
 cplxamhed['Diff3']=cplxamhed['E202009']-cplxamhed['E202006']
 cplxamhed['DiffPct3']=cplxamhed['Diff3']/cplxamhed['E202006']
 cplxamhed=pd.merge(nta,cplxamhed,how='inner',on='NTACode')
-cplxamhed.to_file(path+'OUTPUT/cplxamhed.shp')
+cplxamhed.to_file(path+'OUTPUT/cplxamhed.geojson',driver='GeoJSON')
 
 
 
 # PM Peak Pre and Post by NTA for HED
 dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
-predates=['09/03/2019','09/04/2019','09/05/2019','09/06/2019','09/09/2019','09/10/2019','09/11/2019','09/12/2019']
-postdates=['08/31/2020','09/01/2020','09/02/2020','09/03/2020','09/04/2020','09/08/2020','09/09/2020','09/10/2020']
+predates=['09/23/2019','09/24/2019','09/25/2019','09/26/2019','09/27/2019','09/30/2019','10/01/2019','10/02/2019','10/03/2019']
+postdates=['09/21/2020','09/22/2020','09/23/2020','09/24/2020','09/25/2020','09/28/2020','09/29/2020','09/30/2020','10/01/2020']
 pmlist=['13:00:00-17:00:00','14:00:00-18:00:00','14:30:00-18:30:00','15:00:00-19:00:00','16:00:00-20:00:00','16:22:00-20:22:00','16:30:00-20:30:00']
 cplxpmpre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
 cplxpmpre=cplxpmpre[np.isin(cplxpmpre['time'],pmlist)].reset_index(drop=True)
@@ -1234,12 +1234,12 @@ cplxpmdiff['Diff']=cplxpmdiff['PostEntries']-cplxpmdiff['PreEntries']
 cplxpmdiff['DiffPct']=cplxpmdiff['Diff']/cplxpmdiff['PreEntries']
 cplxpmdiff=pd.merge(rc.drop('Remote',axis=1).drop_duplicates(keep='first').reset_index(drop=True),cplxpmdiff,how='left',on='CplxID')
 cplxpmdiff=cplxpmdiff[['CplxID','CplxLat','CplxLong','PreEntries','PostEntries']].reset_index(drop=True)
-cplxpmdiff=gpd.GeoDataFrame(cplxpmdiff,geometry=[shapely.geometry.Point(x,y) for x,y in zip(cplxpmdiff['CplxLong'],cplxpmdiff['CplxLat'])],crs={'init' :'epsg:4326'})
-cplxpmdiff=cplxpmdiff.to_crs({'init':'epsg:6539'})
+cplxpmdiff=gpd.GeoDataFrame(cplxpmdiff,geometry=[shapely.geometry.Point(x,y) for x,y in zip(cplxpmdiff['CplxLong'],cplxpmdiff['CplxLat'])],crs='epsg:4326')
+cplxpmdiff=cplxpmdiff.to_crs('epsg:6539')
 cplxpmdiff['geometry']=cplxpmdiff.buffer(2640)
-cplxpmdiff=cplxpmdiff.to_crs({'init':'epsg:4326'})
+cplxpmdiff=cplxpmdiff.to_crs('epsg:4326')
 nta=gpd.read_file(path+'ntaclippedadj.shp')
-nta.crs={'init' :'epsg:4326'}
+nta.crs='epsg:4326'
 cplxpmdiffnta=gpd.sjoin(nta,cplxpmdiff,how='left',op='intersects')
 cplxpmdiffnta=cplxpmdiffnta.groupby(['NTACode'],as_index=False).agg({'PreEntries':'sum','PostEntries':'sum'}).reset_index(drop=True)
 cplxpmdiffnta=cplxpmdiffnta[cplxpmdiffnta['PreEntries']!=0].reset_index(drop=True)
@@ -1268,12 +1268,12 @@ cplxpmdiff['Diff']=cplxpmdiff['PostEntries']-cplxpmdiff['PreEntries']
 cplxpmdiff['DiffPct']=cplxpmdiff['Diff']/cplxpmdiff['PreEntries']
 cplxpmdiff=pd.merge(rc.drop('Remote',axis=1).drop_duplicates(keep='first').reset_index(drop=True),cplxpmdiff,how='left',on='CplxID')
 cplxpmdiff=cplxpmdiff[['CplxID','CplxLat','CplxLong','PreEntries','PostEntries']].reset_index(drop=True)
-cplxpmdiff=gpd.GeoDataFrame(cplxpmdiff,geometry=[shapely.geometry.Point(x,y) for x,y in zip(cplxpmdiff['CplxLong'],cplxpmdiff['CplxLat'])],crs={'init' :'epsg:4326'})
-cplxpmdiff=cplxpmdiff.to_crs({'init':'epsg:6539'})
+cplxpmdiff=gpd.GeoDataFrame(cplxpmdiff,geometry=[shapely.geometry.Point(x,y) for x,y in zip(cplxpmdiff['CplxLong'],cplxpmdiff['CplxLat'])],crs='epsg:4326')
+cplxpmdiff=cplxpmdiff.to_crs('epsg:6539')
 cplxpmdiff['geometry']=cplxpmdiff.buffer(2640)
-cplxpmdiff=cplxpmdiff.to_crs({'init':'epsg:4326'})
+cplxpmdiff=cplxpmdiff.to_crs('epsg:4326')
 nta=gpd.read_file(path+'ntaclippedadj.shp')
-nta.crs={'init' :'epsg:4326'}
+nta.crs='epsg:4326'
 cplxpmdiffnta=gpd.sjoin(nta,cplxpmdiff,how='left',op='intersects')
 cplxpmdiffnta=cplxpmdiffnta.groupby(['NTACode'],as_index=False).agg({'PreEntries':'sum','PostEntries':'sum'}).reset_index(drop=True)
 cplxpmdiffnta=cplxpmdiffnta[cplxpmdiffnta['PreEntries']!=0].reset_index(drop=True)
@@ -1286,7 +1286,7 @@ cplxpmhed['DiffPct2']=cplxpmhed['Diff2']/cplxpmhed['E202004']
 cplxpmhed['Diff3']=cplxpmhed['E202009']-cplxpmhed['E202006']
 cplxpmhed['DiffPct3']=cplxpmhed['Diff3']/cplxpmhed['E202006']
 cplxpmhed=pd.merge(nta,cplxpmhed,how='inner',on='NTACode')
-cplxpmhed.to_file(path+'OUTPUT/cplxpmhed.shp')
+cplxpmhed.to_file(path+'OUTPUT/cplxpmhed.geojson',driver='GeoJSON')
 
 
 
@@ -1612,37 +1612,37 @@ cplxpknta=cplxpknta[[x not in ['MN21','MN22','MN27','MN25','MN19','MN15','MN17',
 
 
 
-# AM Peak for DOHMH
-dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
-predates=['09/03/2019','09/04/2019','09/05/2019','09/06/2019','09/09/2019','09/10/2019','09/11/2019','09/12/2019']
-postdates=['08/31/2020','09/01/2020','09/02/2020','09/03/2020','09/04/2020','09/08/2020','09/09/2020','09/10/2020']
-amlist=['05:00:00-09:00:00','05:30:00-09:30:00','06:00:00-10:00:00','06:30:00-10:30:00','07:00:00-11:00:00',
-        '07:22:00-11:22:00','07:30:00-11:30:00','08:00:00-12:00:00','08:22:00-12:22:00','08:30:00-12:30:00']
-cplxampre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
-cplxampre=cplxampre[np.isin(cplxampre['time'],amlist)].reset_index(drop=True)
-cplxampre=cplxampre.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
-cplxampre=pd.merge(cplxampre,rc,how='left',left_on='unit',right_on='Remote')
-cplxampre=cplxampre.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
-cplxampre.columns=['CplxID','PreTime','E201909']
-cplxampost=dfunitentry[np.isin(dfunitentry['firstdate'],postdates)].reset_index(drop=True)
-cplxampost=cplxampost[np.isin(cplxampost['time'],amlist)].reset_index(drop=True)
-cplxampost=cplxampost.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
-cplxampost=pd.merge(cplxampost,rc,how='left',left_on='unit',right_on='Remote')
-cplxampost=cplxampost.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
-cplxampost.columns=['CplxID','PostTime','E202009']
-cplxamcp=pd.merge(cplxampre,cplxampost,how='inner',on='CplxID')
-cplxamcp['Time']=cplxamcp['PreTime'].copy()
-cplxamcp=pd.merge(rc.drop('Remote',axis=1).drop_duplicates(keep='first').reset_index(drop=True),cplxamcp,how='left',on='CplxID')
-cplxamcp=cplxamcp[['CplxID','Borough','CplxName','Routes','CplxLat','CplxLong','Time','E201909','E202009']].reset_index(drop=True)
-cplxamcp.to_csv('C:/Users/mayij/Desktop/cplxamcp.csv',index=False)
-cplxamcp=gpd.GeoDataFrame(cplxamcp,geometry=[shapely.geometry.Point(x,y) for x,y in zip(cplxamcp['CplxLong'],cplxamcp['CplxLat'])],crs='epsg:4326')
-cplxamcp=cplxamcp.to_crs('epsg:6539')
-cplxamcp['geometry']=cplxamcp.buffer(2640)
-cplxamcp=cplxamcp.to_crs('epsg:4326')
-nta=gpd.read_file(path+'ntaclippedadj.shp')
-nta.crs='epsg:4326'
-cplxamcp=gpd.sjoin(cplxamcp,nta,how='left',op='intersects')
-cplxamcp.to_csv('C:/Users/mayij/Desktop/cplxamcpnta.csv',index=False)
+# # AM Peak for DOHMH
+# dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
+# predates=['09/03/2019','09/04/2019','09/05/2019','09/06/2019','09/09/2019','09/10/2019','09/11/2019','09/12/2019']
+# postdates=['08/31/2020','09/01/2020','09/02/2020','09/03/2020','09/04/2020','09/08/2020','09/09/2020','09/10/2020']
+# amlist=['05:00:00-09:00:00','05:30:00-09:30:00','06:00:00-10:00:00','06:30:00-10:30:00','07:00:00-11:00:00',
+#         '07:22:00-11:22:00','07:30:00-11:30:00','08:00:00-12:00:00','08:22:00-12:22:00','08:30:00-12:30:00']
+# cplxampre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
+# cplxampre=cplxampre[np.isin(cplxampre['time'],amlist)].reset_index(drop=True)
+# cplxampre=cplxampre.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
+# cplxampre=pd.merge(cplxampre,rc,how='left',left_on='unit',right_on='Remote')
+# cplxampre=cplxampre.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
+# cplxampre.columns=['CplxID','PreTime','E201909']
+# cplxampost=dfunitentry[np.isin(dfunitentry['firstdate'],postdates)].reset_index(drop=True)
+# cplxampost=cplxampost[np.isin(cplxampost['time'],amlist)].reset_index(drop=True)
+# cplxampost=cplxampost.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
+# cplxampost=pd.merge(cplxampost,rc,how='left',left_on='unit',right_on='Remote')
+# cplxampost=cplxampost.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
+# cplxampost.columns=['CplxID','PostTime','E202009']
+# cplxamcp=pd.merge(cplxampre,cplxampost,how='inner',on='CplxID')
+# cplxamcp['Time']=cplxamcp['PreTime'].copy()
+# cplxamcp=pd.merge(rc.drop('Remote',axis=1).drop_duplicates(keep='first').reset_index(drop=True),cplxamcp,how='left',on='CplxID')
+# cplxamcp=cplxamcp[['CplxID','Borough','CplxName','Routes','CplxLat','CplxLong','Time','E201909','E202009']].reset_index(drop=True)
+# cplxamcp.to_csv('C:/Users/mayij/Desktop/cplxamcp.csv',index=False)
+# cplxamcp=gpd.GeoDataFrame(cplxamcp,geometry=[shapely.geometry.Point(x,y) for x,y in zip(cplxamcp['CplxLong'],cplxamcp['CplxLat'])],crs='epsg:4326')
+# cplxamcp=cplxamcp.to_crs('epsg:6539')
+# cplxamcp['geometry']=cplxamcp.buffer(2640)
+# cplxamcp=cplxamcp.to_crs('epsg:4326')
+# nta=gpd.read_file(path+'ntaclippedadj.shp')
+# nta.crs='epsg:4326'
+# cplxamcp=gpd.sjoin(cplxamcp,nta,how='left',op='intersects')
+# cplxamcp.to_csv('C:/Users/mayij/Desktop/cplxamcpnta.csv',index=False)
 
 
 
