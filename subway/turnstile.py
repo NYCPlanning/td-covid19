@@ -1207,6 +1207,24 @@ cplxamhed['DiffPct2']=cplxamhed['Diff2']/cplxamhed['E202004']
 cplxamhed['Diff3']=cplxamhed['E202009']-cplxamhed['E202006']
 cplxamhed['DiffPct3']=cplxamhed['Diff3']/cplxamhed['E202006']
 cplxamhed=pd.merge(nta,cplxamhed,how='inner',on='NTACode')
+cplxamhed['DiffPct1'].describe(percentiles=np.arange(0.2,1,0.2))
+cplxamhed['DiffPctCat1']=np.where(cplxamhed['DiffPct1']>-0.6,'>-60%',
+          np.where(cplxamhed['DiffPct1']>-0.65,'-64%~-60%',
+          np.where(cplxamhed['DiffPct1']>-0.7,'-69%~-65%',
+          np.where(cplxamhed['DiffPct1']>-0.75,'-74%~-70%',
+          '<=-75%'))))
+cplxamhed['DiffPct2'].describe(percentiles=np.arange(0.2,1,0.2))
+cplxamhed['DiffPctCat2']=np.where(cplxamhed['DiffPct2']<=2,'<=200%',
+          np.where(cplxamhed['DiffPct2']<=2.5,'201%~250%',
+          np.where(cplxamhed['DiffPct2']<=3,'251%~300%',
+          np.where(cplxamhed['DiffPct2']<=3.5,'301%~350%',
+          '>350%'))))
+cplxamhed['DiffPct3'].describe(percentiles=np.arange(0.2,1,0.2))
+cplxamhed['DiffPctCat3']=np.where(cplxamhed['DiffPct3']<=0.7,'<=70%',
+          np.where(cplxamhed['DiffPct3']<=0.8,'71%~80%',
+          np.where(cplxamhed['DiffPct3']<=0.9,'81%~90%',
+          np.where(cplxamhed['DiffPct3']<=1,'91%~100%',
+          '>100%'))))
 cplxamhed.to_file(path+'OUTPUT/cplxamhed.geojson',driver='GeoJSON')
 
 
@@ -1286,6 +1304,24 @@ cplxpmhed['DiffPct2']=cplxpmhed['Diff2']/cplxpmhed['E202004']
 cplxpmhed['Diff3']=cplxpmhed['E202009']-cplxpmhed['E202006']
 cplxpmhed['DiffPct3']=cplxpmhed['Diff3']/cplxpmhed['E202006']
 cplxpmhed=pd.merge(nta,cplxpmhed,how='inner',on='NTACode')
+cplxpmhed['DiffPct1'].describe(percentiles=np.arange(0.2,1,0.2))
+cplxpmhed['DiffPctCat1']=np.where(cplxpmhed['DiffPct1']>-0.6,'>-60%',
+          np.where(cplxpmhed['DiffPct1']>-0.65,'-64%~-60%',
+          np.where(cplxpmhed['DiffPct1']>-0.7,'-69%~-65%',
+          np.where(cplxpmhed['DiffPct1']>-0.75,'-74%~-70%',
+          '<=-75%'))))
+cplxpmhed['DiffPct2'].describe(percentiles=np.arange(0.2,1,0.2))
+cplxpmhed['DiffPctCat2']=np.where(cplxpmhed['DiffPct2']<=2,'<=200%',
+          np.where(cplxpmhed['DiffPct2']<=2.5,'201%~250%',
+          np.where(cplxpmhed['DiffPct2']<=3,'251%~300%',
+          np.where(cplxpmhed['DiffPct2']<=3.5,'301%~350%',
+          '>350%'))))
+cplxpmhed['DiffPct3'].describe(percentiles=np.arange(0.2,1,0.2))
+cplxpmhed['DiffPctCat3']=np.where(cplxpmhed['DiffPct3']<=0.7,'<=70%',
+          np.where(cplxpmhed['DiffPct3']<=0.8,'71%~80%',
+          np.where(cplxpmhed['DiffPct3']<=0.9,'81%~90%',
+          np.where(cplxpmhed['DiffPct3']<=1,'91%~100%',
+          '>100%'))))
 cplxpmhed.to_file(path+'OUTPUT/cplxpmhed.geojson',driver='GeoJSON')
 
 
