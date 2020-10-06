@@ -38,12 +38,15 @@ for i in school.index:
 school['LAT']=np.where(pd.notna(school['LAT']),school['LAT'],pd.to_numeric(school['LATITUDE']))
 school['LONG']=np.where(pd.notna(school['LONG']),school['LONG'],pd.to_numeric(school['LONGITUDE']))
 school['BBL']=np.where(pd.notna(school['BBL']),school['BBL'],pd.to_numeric(school['Borough_block_lot']))
-school=school[['DBN','LAT','LONG','BBL']].drop_duplicates(keep='first').reset_index(drop=True)
+school['TYPE']=[str(x).strip().upper() for x in school['Managed_by_name']]
+school=school[['DBN','TYPE','LAT','LONG','BBL']].drop_duplicates(keep='first').reset_index(drop=True)
+
+k=school.groupby(['BBL','LAT','LONG'],as_index=False).agg({'TYPE': lambda x: '/'.join(x)}).reset_index(drop=True)
+k['TYPE']=['/'.join(set(x.split('/'))) for x in k['TYPE']]
 
 
-
-# School Yard Only 712/714
-syo=pd.read_excel(path+'openlearning/OL.MasterApprovals_1005.xlsx',sheet_name='School Yard Only',dtype=str)
+# School Yard Only 335/335
+syo=pd.read_excel(path+'openlearning/OL.MasterApprovals_1006.xlsx',sheet_name='School Yard Only',dtype=str)
 syo['DBN']=[str(x).strip().upper() for x in syo['DBN (if known)']]
 syo['ADDRESS']=[str(x).strip().upper() for x in syo['Address (include zipcode)']]
 syo=syo[['ID','DBN','ADDRESS']].reset_index(drop=True)
@@ -87,8 +90,8 @@ syo.to_file(path+'openlearning/school_yard_only.shp')
 
 
 
-# School Yard + Pending 710/716
-syp=pd.read_excel(path+'openlearning/OL.MasterApprovals_1005.xlsx',sheet_name='School Yard + Pending',dtype=str)
+# School Yard + Pending 122/124
+syp=pd.read_excel(path+'openlearning/OL.MasterApprovals_1006.xlsx',sheet_name='School Yard + Pending',dtype=str)
 syp['DBN']=[str(x).strip().upper() for x in syp['DBN (if known)']]
 syp['ADDRESS']=[str(x).strip().upper() for x in syp['Address (include zipcode)']]
 syp=syp[['ID','DBN','ADDRESS']].reset_index(drop=True)
@@ -132,8 +135,8 @@ syp.to_file(path+'openlearning/school_yard_pending.shp')
 
 
 
-# Streets Point 152/156
-stspt=pd.read_excel(path+'openlearning/OL.MasterApprovals_1005.xlsx',sheet_name='Streets',dtype=str)
+# Streets Point 112/114
+stspt=pd.read_excel(path+'openlearning/OL.MasterApprovals_1006.xlsx',sheet_name='Streets',dtype=str)
 stspt['DBN']=[str(x).strip().upper() for x in stspt['DBN # (DOE ONLY)']]
 stspt['BORO']=[str(x).strip().upper() for x in stspt['Borough']]
 stspt['ADDRESS']=[str(x).strip().upper() for x in stspt['Address']]
@@ -179,8 +182,8 @@ stspt.to_file(path+'openlearning/streets_point.shp')
 
 
 
-# Streets Segment 126/156
-stsseg=pd.read_excel(path+'openlearning/OL.MasterApprovals_1005.xlsx',sheet_name='Streets',dtype=str)
+# Streets Segment 90/114
+stsseg=pd.read_excel(path+'openlearning/OL.MasterApprovals_1006.xlsx',sheet_name='Streets',dtype=str)
 stsseg['BORO']=[str(x).strip().upper() for x in stsseg['Borough']]
 stsseg['BORO']=np.where(stsseg['BORO']=='MANHATTAN',1,np.where(stsseg['BORO']=='BRONX',2,
                np.where(stsseg['BORO']=='BROOKLYN',3,np.where(stsseg['BORO']=='QUEENS',4,
@@ -236,7 +239,7 @@ for i in stsseg.index:
                     stsseggeocode+=[segment]
                 except:
                     print(str(i))
-stsseggeocode=pd.concat(stsseggeocode,axis=0,ignore_index=True) # 193/197
+stsseggeocode=pd.concat(stsseggeocode,axis=0,ignore_index=True)
 stsseggeocode=stsseggeocode.drop_duplicates(keep='first').reset_index(drop=True)
 stsseggeocoderev=stsseggeocode.copy()
 stsseggeocoderev['temp']=stsseggeocoderev['segfromnode'].copy()
@@ -259,13 +262,13 @@ stsseggeocode=stsseggeocode[['segmentid','ID','BORO','ON','FROM','TO']].drop_dup
 stsseggeocode=stsseggeocode.groupby(['segmentid'],as_index=False).agg({'ID':lambda x:'/'.join(x)}).reset_index(drop=True)
 lion=lion.drop_duplicates(['segmentid'],keep='first').reset_index(drop=True)
 stsseggeocode=pd.merge(lion,stsseggeocode,how='inner',on='segmentid')
-stsseggeocode=stsseggeocode[['segmentid','street','ID','geometry']].reset_index(drop=True) # 193/197
+stsseggeocode=stsseggeocode[['segmentid','street','ID','geometry']].reset_index(drop=True) # 143/147
 stsseggeocode.to_file(path+'openlearning/streets_segment.shp')
 
 
 
 # Parks School 270/310
-pkssc=pd.read_excel(path+'openlearning/OL.MasterApprovals_1005.xlsx',sheet_name='Parks',dtype=str)
+pkssc=pd.read_excel(path+'openlearning/OL.MasterApprovals_1006.xlsx',sheet_name='Parks',dtype=str)
 pkssc['DBN']=[str(x).strip().upper() for x in pkssc['DBN']]
 pkssc['SCHOOL']=[str(x).strip().upper() for x in pkssc['School Name']]
 pkssc['ADDRESS']=[str(x).strip().upper() for x in pkssc['Address (include zipcode)']]
