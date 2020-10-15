@@ -58,6 +58,7 @@ sd=sd[['DISTRICT','geometry']].reset_index(drop=True)
 lcgms=pd.read_excel(path+'openlearning/LCGMS_SchoolData_20201006_1523.xlsx',dtype=str)
 lcgms['DBN']=[str(x).strip().upper() for x in lcgms['ATS System Code']]
 lcgms['TYPE']=[str(x).strip().upper() for x in lcgms['Managed By Name']]
+lcgms['SCHOOL']=[str(x).strip().upper() for x in lcgms['Location Name']]
 lcgms['ADDRESS']=[str(x).strip().upper() for x in lcgms['Primary Address']]
 lcgms['ZIP']=[str(x).strip().upper() for x in lcgms['Zip']]
 lcgms['BORO']=[str(x).strip().upper() for x in lcgms['City']]
@@ -65,7 +66,7 @@ lcgms['BBL1']=pd.to_numeric(lcgms['Borough Block Lot'])
 lcgms['BBL2']=np.nan
 lcgms['LAT']=np.nan
 lcgms['LONG']=np.nan
-lcgms=lcgms[['DBN','TYPE','ADDRESS','ZIP','BORO','BBL1','BBL2','LAT','LONG']].drop_duplicates(keep='first').reset_index(drop=True)
+lcgms=lcgms[['DBN','TYPE','SCHOOL','ADDRESS','ZIP','BORO','BBL1','BBL2','LAT','LONG']].drop_duplicates(keep='first').reset_index(drop=True)
 for i in lcgms.index:
     if pd.isna(lcgms.loc[i,'BBL2']):
         try:
@@ -109,31 +110,28 @@ for i in lcgms.index:
     except:
         print(str(lcgms.loc[i,'DBN'])+' not geocoded with bbl!')
 lcgms=lcgms[pd.notna(lcgms['LAT'])].reset_index(drop=True)
-lcgms=lcgms[['DBN','TYPE','BBL','LAT','LONG']].drop_duplicates(keep='first').reset_index(drop=True)
+lcgms=lcgms[['DBN','TYPE','SCHOOL','BBL','LAT','LONG']].drop_duplicates(keep='first').reset_index(drop=True)
 lcgms.to_csv(path+'openlearning/lcgms.csv',index=False)
 lcgmsbbl=lcgms.groupby(['BBL','LAT','LONG'],as_index=False).agg({'DBN': lambda x: '/'.join(x),
-                                                                 'TYPE': lambda x: '/'.join(x)}).reset_index(drop=True)
+                                                                 'TYPE': lambda x: '/'.join(x),
+                                                                 'SCHOOL': lambda x: '/'.join(x)}).reset_index(drop=True)
 lcgmsbbl['TYPE']=['/'.join(sorted(set(x.split('/')))) for x in lcgmsbbl['TYPE']]
+lcgmsbbl['SCHOOL']=['/'.join(sorted(set(x.split('/')))) for x in lcgmsbbl['SCHOOL']]
 lcgmsbbl['DBNCOUNT']=[len(x.split('/')) for x in lcgmsbbl['DBN']]
 lcgmsbbl=gpd.GeoDataFrame(lcgmsbbl,geometry=[shapely.geometry.Point(x,y) for x,y in zip(lcgmsbbl['LONG'],lcgmsbbl['LAT'])],crs='epsg:4326')
 lcgmsbbl=gpd.sjoin(lcgmsbbl,sd,how='left',op='intersects')
 lcgmsbbl['DISTRICT']=np.where(pd.notna(lcgmsbbl['DISTRICT']),lcgmsbbl['DISTRICT'],2)
-lcgmsbbl=lcgmsbbl[['BBL','DISTRICT','DBN','DBNCOUNT','TYPE','geometry']].reset_index(drop=True)
+lcgmsbbl=lcgmsbbl[['BBL','DISTRICT','DBN','DBNCOUNT','TYPE','SCHOOL','geometry']].reset_index(drop=True)
 lcgmsbbl.to_file(path+'openlearning/lcgms_bbl.shp')
-
-
-            
-            
-            
-
 
 
 
 # School Yard Only 714/714
-lcgms=pd.read_csv(path+'openlearning/lcgms.csv',dtype=float,converters={'DBN':str,'TYPE':str})
+lcgms=pd.read_csv(path+'openlearning/lcgms.csv',dtype=float,converters={'DBN':str,'TYPE':str,'SCHOOL':str})
 syo=pd.read_excel(path+'openlearning/OL.MasterApprovals_1007.xlsx',sheet_name='School Yard Only',dtype=str,keep_default_na=False)
 syo['DBN']=[str(x).strip().upper() for x in syo['DBN (if known)']]
 syo['TYPE']=[str(x).strip().upper() for x in syo['My school program classification is:']]
+syo['SCHOOLS']=[str(x).strip().upper() for x in syo['School Name']]
 syo['ADDRESS']=[str(x).strip().upper() for x in syo['ADDRESS']]
 syo['APPROVED']=pd.to_numeric(syo['APPROVED'])
 syo['DISAPPROVED']=pd.to_numeric(syo['DISAPPROVED'])
@@ -142,7 +140,7 @@ for i in syo.index:
         syo.loc[i,'ID']=syo.loc[i,'ID']+'(Y)'
     else:
         syo.loc[i,'ID']=syo.loc[i,'ID']+'(N)' 
-syo=syo[['ID','DBN','TYPE','ADDRESS','APPROVED','DISAPPROVED']].reset_index(drop=True)
+syo=syo[['ID','DBN','TYPE','SCHOOLS','ADDRESS','APPROVED','DISAPPROVED']].reset_index(drop=True)
 syo=pd.merge(syo,lcgms,how='left',on='DBN')
 for i in syo.index:
     if pd.isna(syo.loc[i,'BBL']):
@@ -178,22 +176,30 @@ for i in syo.index:
             print(str(syo.loc[i,'ID'])+' not geocoded with borough!')
 syo=syo[pd.notna(syo['BBL'])].reset_index(drop=True)
 syo['TYPE']=np.where(pd.notna(syo['TYPE_y']),syo['TYPE_y'],syo['TYPE_x'])
-syo=syo.groupby(['BBL','LAT','LONG'],as_index=False).agg({'DBN': lambda x: '/'.join(x),'TYPE': lambda x: '/'.join(x),'ADDRESS':'count','APPROVED':'sum','DISAPPROVED':'sum','ID': lambda x: '/'.join(x)}).reset_index(drop=True)
+syo['SCHOOLS']=np.where(pd.notna(syo['SCHOOL']),syo['SCHOOL'],syo['SCHOOLS'])
+syo=syo.groupby(['BBL','LAT','LONG'],as_index=False).agg({'DBN': lambda x: '/'.join(x),
+                                                          'TYPE': lambda x: '/'.join(x),
+                                                          'SCHOOLS': lambda x: '/'.join(x),
+                                                          'ADDRESS':'count',
+                                                          'APPROVED':'sum',
+                                                          'DISAPPROVED':'sum',
+                                                          'ID': lambda x: '/'.join(x)}).reset_index(drop=True)
 syo['DBN']=['/'.join(sorted(set(x.split('/')))) for x in syo['DBN']]
 syo['DBNCOUNT']=[len(x.split('/')) for x in syo['DBN']]
 syo['TYPE']=['/'.join(sorted(set(x.split('/')))) for x in syo['TYPE']]
+syo['SCHOOLS']=['/'.join(sorted(set(x.split('/')))) for x in syo['SCHOOLS']]
 syo['APPCOUNT']=syo['ADDRESS'].copy()
 syo['IDS']=syo['ID'].copy()
 syo=gpd.GeoDataFrame(syo,geometry=[shapely.geometry.Point(x,y) for x,y in zip(syo['LONG'],syo['LAT'])],crs='epsg:4326')
 syo=gpd.sjoin(syo,sd,how='left',op='intersects')
 syo['DISTRICT']=np.where(pd.notna(syo['DISTRICT']),syo['DISTRICT'],2)
-syo=syo[['BBL','DISTRICT','DBN','DBNCOUNT','TYPE','APPCOUNT','APPROVED','DISAPPROVED','IDS','geometry']].reset_index(drop=True)
+syo=syo[['BBL','DISTRICT','DBN','DBNCOUNT','TYPE','SCHOOLS','APPCOUNT','APPROVED','DISAPPROVED','IDS','SCHOOLS','geometry']].reset_index(drop=True)
 syo.to_file(path+'openlearning/school_yard_only.shp')
 
 
 
 # School Yard + Pending 711/711
-lcgms=pd.read_csv(path+'openlearning/lcgms.csv',dtype=float,converters={'DBN':str,'TYPE':str})
+lcgms=pd.read_csv(path+'openlearning/lcgms.csv',dtype=float,converters={'DBN':str,'TYPE':str,'SCHOOL':str})
 syp=pd.read_excel(path+'openlearning/OL.MasterApprovals_1007.xlsx',sheet_name='School Yard + Pending',dtype=str,keep_default_na=False)
 syp['DBN']=[str(x).strip().upper() for x in syp['DBN (if known)']]
 syp['TYPE']=[str(x).strip().upper() for x in syp['TYPE']]
@@ -241,8 +247,10 @@ for i in syp.index:
             print(str(syp.loc[i,'ID'])+' not geocoded with borough!')
 syp=syp[pd.notna(syp['BBL'])].reset_index(drop=True)
 syp['TYPE']=np.where(pd.notna(syp['TYPE_y']),syp['TYPE_y'],syp['TYPE_x'])
+syp['SCHOOLS']=np.where(pd.notna(syp['SCHOOL']),syp['SCHOOL'],'NA')
 syp=syp.groupby(['BBL','LAT','LONG'],as_index=False).agg({'DBN': lambda x: '/'.join(x),
                                                           'TYPE': lambda x: '/'.join(x),
+                                                          'SCHOOLS': lambda x: '/'.join(x),
                                                           'ADDRESS':'count',
                                                           'APPROVED':'sum',
                                                           'DISAPPROVED':'sum',
@@ -250,21 +258,23 @@ syp=syp.groupby(['BBL','LAT','LONG'],as_index=False).agg({'DBN': lambda x: '/'.j
 syp['DBN']=['/'.join(sorted(set(x.split('/')))) for x in syp['DBN']]
 syp['DBNCOUNT']=[len(x.split('/')) for x in syp['DBN']]
 syp['TYPE']=['/'.join(sorted(set(x.split('/')))) for x in syp['TYPE']]
+syp['SCHOOLS']=['/'.join(sorted(set(x.split('/')))) for x in syp['SCHOOLS']]
 syp['APPCOUNT']=syp['ADDRESS'].copy()
 syp['IDS']=syp['ID'].copy()
 syp=gpd.GeoDataFrame(syp,geometry=[shapely.geometry.Point(x,y) for x,y in zip(syp['LONG'],syp['LAT'])],crs='epsg:4326')
 syp=gpd.sjoin(syp,sd,how='left',op='intersects')
 syp['DISTRICT']=np.where(pd.notna(syp['DISTRICT']),syp['DISTRICT'],2)
-syp=syp[['BBL','DISTRICT','DBN','DBNCOUNT','TYPE','APPCOUNT','APPROVED','DISAPPROVED','IDS','geometry']].reset_index(drop=True)
+syp=syp[['BBL','DISTRICT','DBN','DBNCOUNT','TYPE','SCHOOLS','APPCOUNT','APPROVED','DISAPPROVED','IDS','geometry']].reset_index(drop=True)
 syp.to_file(path+'openlearning/school_yard_pending.shp')
 
 
 
 # Streets Point 157/157
-lcgms=pd.read_csv(path+'openlearning/lcgms.csv',dtype=float,converters={'DBN':str,'TYPE':str})
+lcgms=pd.read_csv(path+'openlearning/lcgms.csv',dtype=float,converters={'DBN':str,'TYPE':str,'SCHOOL':str})
 stspt=pd.read_excel(path+'openlearning/OL.MasterApprovals_1007.xlsx',sheet_name='Streets',dtype=str,keep_default_na=False)
 stspt['DBN']=[str(x).strip().upper() for x in stspt['DBN # (DOE ONLY)']]
 stspt['TYPE']=[str(x).strip().upper() for x in stspt['TYPE']]
+stspt['SCHOOLS']=[str(x).strip().upper() for x in stspt['School Name']]
 stspt['ADDRESS']=[str(x).strip().upper() for x in stspt['Address']]
 stspt['ZIPCODE']=[str(x).strip().upper() for x in stspt['Zip']]
 stspt['BORO']=[str(x).strip().upper() for x in stspt['Borough']]
@@ -275,7 +285,7 @@ for i in stspt.index:
         stspt.loc[i,'ID']=stspt.loc[i,'ID']+'(Y)'
     else:
         stspt.loc[i,'ID']=stspt.loc[i,'ID']+'(N)' 
-stspt=stspt[['ID','DBN','TYPE','ADDRESS','ZIPCODE','BORO','APPROVED','DISAPPROVED']].reset_index(drop=True)
+stspt=stspt[['ID','DBN','TYPE','SCHOOLS','ADDRESS','ZIPCODE','BORO','APPROVED','DISAPPROVED']].reset_index(drop=True)
 stspt=pd.merge(stspt,lcgms,how='left',on='DBN')
 for i in stspt.index:
     if pd.isna(stspt.loc[i,'BBL']):
@@ -311,21 +321,31 @@ for i in stspt.index:
             print(str(stspt.loc[i,'ID'])+' not geocoded with borough!')
 stspt=stspt[pd.notna(stspt['BBL'])].reset_index(drop=True)
 stspt['TYPE']=np.where(pd.notna(stspt['TYPE_y']),stspt['TYPE_y'],stspt['TYPE_x'])
-stspt=stspt.groupby(['BBL','LAT','LONG'],as_index=False).agg({'DBN': lambda x: '/'.join(x),'TYPE': lambda x: '/'.join(x),'ADDRESS':'count','APPROVED':'sum','DISAPPROVED':'sum','ID': lambda x: '/'.join(x)}).reset_index(drop=True)
+stspt['SCHOOLS']=np.where(pd.notna(stspt['SCHOOL']),stspt['SCHOOL'],stspt['SCHOOLS'])
+stspt=stspt.groupby(['BBL','LAT','LONG'],as_index=False).agg({'DBN': lambda x: '/'.join(x),
+                                                              'TYPE': lambda x: '/'.join(x),
+                                                              'SCHOOLS': lambda x: '/'.join(x),
+                                                              'ADDRESS':'count',
+                                                              'APPROVED':'sum',
+                                                              'DISAPPROVED':'sum',
+                                                              'ID': lambda x: '/'.join(x)}).reset_index(drop=True)
 stspt['DBN']=['/'.join(sorted(set(x.split('/')))) for x in stspt['DBN']]
-stspt['DBNCOUNT']=[len(x.split('/')) for x in stspt['DBN']]
 stspt['TYPE']=['/'.join(sorted(set(x.split('/')))) for x in stspt['TYPE']]
+stspt['SCHOOLS']=['/'.join(sorted(set(x.split('/')))) for x in stspt['SCHOOLS']]
 stspt['APPCOUNT']=stspt['ADDRESS'].copy()
 stspt['IDS']=stspt['ID'].copy()
 stspt=gpd.GeoDataFrame(stspt,geometry=[shapely.geometry.Point(x,y) for x,y in zip(stspt['LONG'],stspt['LAT'])],crs='epsg:4326')
 stspt=gpd.sjoin(stspt,sd,how='left',op='intersects')
-stspt=stspt[['BBL','DISTRICT','DBN','DBNCOUNT','TYPE','APPCOUNT','APPROVED','DISAPPROVED','IDS','geometry']].reset_index(drop=True)
+stspt=stspt[['BBL','DISTRICT','DBN','TYPE','SCHOOLS','APPCOUNT','APPROVED','DISAPPROVED','IDS','geometry']].reset_index(drop=True)
 stspt.to_file(path+'openlearning/streets_point.shp')
 
 
 
 # Streets Segment 157/157
+lcgms=pd.read_csv(path+'openlearning/lcgms.csv',dtype=float,converters={'DBN':str,'TYPE':str,'SCHOOL':str})
 stsseg=pd.read_excel(path+'openlearning/OL.MasterApprovals_1007.xlsx',sheet_name='Streets',dtype=str)
+stsseg['DBN']=[str(x).strip().upper() for x in stsseg['DBN # (DOE ONLY)']]
+stsseg['SCHOOLS']=[str(x).strip().upper() for x in stsseg['School Name']]
 stsseg['BORO']=[str(x).strip().upper() for x in stsseg['Borough']]
 stsseg['BORO']=np.where(stsseg['BORO']=='MANHATTAN',1,np.where(stsseg['BORO']=='BRONX',2,
                np.where(stsseg['BORO']=='BROOKLYN',3,np.where(stsseg['BORO']=='QUEENS',4,
@@ -335,7 +355,14 @@ stsseg['FROM']=[str(x).strip().upper() for x in stsseg['from_street']]
 stsseg['TO']=[str(x).strip().upper() for x in stsseg['to_street']]
 stsseg['APPROVED']=pd.to_numeric(stsseg['APPROVED'])
 stsseg['DISAPPROVED']=pd.to_numeric(stsseg['DISAPPROVED'])
-stsseg=stsseg[['ID','BORO','ON','FROM','TO','APPROVED','DISAPPROVED']].reset_index(drop=True)
+for i in stsseg.index:
+    if stsseg.loc[i,'APPROVED']==1:
+        stsseg.loc[i,'ID']=stsseg.loc[i,'ID']+'(Y)'
+    else:
+        stsseg.loc[i,'ID']=stsseg.loc[i,'ID']+'(N)' 
+stsseg=pd.merge(stsseg,lcgms,how='left',on='DBN')
+stsseg['SCHOOLS']=np.where(pd.notna(stsseg['SCHOOL']),stsseg['SCHOOL'],stsseg['SCHOOLS'])
+stsseg=stsseg[['ID','DBN','SCHOOLS','BORO','ON','FROM','TO','APPROVED','DISAPPROVED']].reset_index(drop=True)
 stsseggeocode=[]
 for i in stsseg.index:
     borocode=str(stsseg.loc[i,'BORO'])
@@ -375,8 +402,8 @@ lion=lion.drop_duplicates(['SEGMENTID','STREET','SEGFROMNODE','SEGTONODE'],keep=
 stsseggeocode=pd.merge(lion,stsseggeocode,how='inner',on=['SEGFROMNODE','SEGTONODE'])
 stsseggeocode=stsseggeocode.sort_values('SEGMENTID').reset_index(drop=True)
 stsseggeocode=stsseggeocode.drop_duplicates(['ID','SEGFROMNODE','SEGTONODE'],keep='first').reset_index(drop=True)
-stsseggeocode=stsseggeocode[['SEGMENTID','ID','APPROVED','DISAPPROVED']].drop_duplicates(keep='first').reset_index(drop=True)
-stsegadd=stsseg.loc[[26,36,54,88,95,95,133,134],['ID','APPROVED','DISAPPROVED']].copy()
+stsseggeocode=stsseggeocode[['SEGMENTID','ID','DBN','SCHOOLS','APPROVED','DISAPPROVED']].drop_duplicates(keep='first').reset_index(drop=True)
+stsegadd=stsseg.loc[[26,36,54,88,95,95,133,134],['ID','DBN','SCHOOLS','APPROVED','DISAPPROVED']].copy()
 stsegadd.loc[26,'SEGMENTID']=268
 stsegadd.loc[36,'SEGMENTID']=22566
 stsegadd.loc[54,'SEGMENTID']=21925
@@ -385,21 +412,28 @@ stsegadd.loc[95,'SEGMENTID']=[164398,33158]
 stsegadd.loc[133,'SEGMENTID']=79838
 stsegadd.loc[134,'SEGMENTID']=115724
 stsseggeocode=pd.concat([stsseggeocode,stsegadd],axis=0,ignore_index=True)
-stsseggeocode=stsseggeocode.groupby(['SEGMENTID'],as_index=False).agg({'ID':lambda x:'/'.join(x),'APPROVED':'sum','DISAPPROVED':'sum'}).reset_index(drop=True)
+stsseggeocode=stsseggeocode.groupby(['SEGMENTID'],as_index=False).agg({'ID':lambda x:'/'.join(x),
+                                                                       'DBN':lambda x:'/'.join(x),
+                                                                       'SCHOOLS':lambda x:'/'.join(x),
+                                                                       'APPROVED':'sum',
+                                                                       'DISAPPROVED':'sum'}).reset_index(drop=True)
+stsseggeocode['DBN']=['/'.join(sorted(set(x.split('/')))) for x in stsseggeocode['DBN']]
+stsseggeocode['SCHOOLS']=['/'.join(sorted(set(x.split('/')))) for x in stsseggeocode['SCHOOLS']]
 stsseggeocode['APPCOUNT']=stsseggeocode['APPROVED']+stsseggeocode['DISAPPROVED']
 stsseggeocode['IDS']=stsseggeocode['ID'].copy()
 lionsp=lion.drop_duplicates(['SEGMENTID'],keep='first').reset_index(drop=True)
 stsseggeocode=pd.merge(lionsp,stsseggeocode,how='inner',on='SEGMENTID')
-stsseggeocode=stsseggeocode[['SEGMENTID','STREET','APPCOUNT','APPROVED','DISAPPROVED','IDS','geometry']].reset_index(drop=True)
+stsseggeocode=stsseggeocode[['SEGMENTID','STREET','DBN','SCHOOLS','APPCOUNT','APPROVED','DISAPPROVED','IDS','geometry']].reset_index(drop=True)
 stsseggeocode.to_file(path+'openlearning/streets_segment.shp')
 
 
 
 # Parks School 310/310
-lcgms=pd.read_csv(path+'openlearning/lcgms.csv',dtype=float,converters={'DBN':str,'TYPE':str})
+lcgms=pd.read_csv(path+'openlearning/lcgms.csv',dtype=float,converters={'DBN':str,'TYPE':str,'SCHOOL':str})
 pkssc=pd.read_excel(path+'openlearning/OL.MasterApprovals_1007.xlsx',sheet_name='Parks',dtype=str,keep_default_na=False)
 pkssc['DBN']=[str(x).strip().upper() for x in pkssc['DBN']]
 pkssc['TYPE']=[str(x).strip().upper() for x in pkssc['TYPE']]
+pkssc['SCHOOLS']=[str(x).strip().upper() for x in pkssc['School Name']]
 pkssc['ADDRESS']=[str(x).strip().upper() for x in pkssc['ADDRESS']]
 pkssc['BORO']=[str(x).strip().upper() for x in pkssc['Borough']]
 pkssc['APPROVED']=pd.to_numeric(pkssc['APPROVED'])
@@ -410,7 +444,7 @@ for i in pkssc.index:
         pkssc.loc[i,'ID']=pkssc.loc[i,'ID']+'(Y)'
     else:
         pkssc.loc[i,'ID']=pkssc.loc[i,'ID']+'(N)' 
-pkssc=pkssc[['ID','DBN','TYPE','ADDRESS','BORO','APPROVED','DISAPPROVED','PARK']].reset_index(drop=True)
+pkssc=pkssc[['ID','DBN','TYPE','SCHOOLS','ADDRESS','BORO','APPROVED','DISAPPROVED','PARK']].reset_index(drop=True)
 pkssc=pd.merge(pkssc,lcgms,how='left',on='DBN')
 for i in pkssc.index:
     if pd.isna(pkssc.loc[i,'BBL']):
@@ -446,8 +480,10 @@ for i in pkssc.index:
             print(str(pkssc.loc[i,'ID'])+' not geocoded with borough!')
 pkssc=pkssc[pd.notna(pkssc['BBL'])].reset_index(drop=True)
 pkssc['TYPE']=np.where(pd.notna(pkssc['TYPE_y']),pkssc['TYPE_y'],pkssc['TYPE_x'])
+pkssc['SCHOOLS']=np.where(pd.notna(pkssc['SCHOOL']),pkssc['SCHOOL'],pkssc['SCHOOLS'])
 pkssc=pkssc.groupby(['BBL','LAT','LONG'],as_index=False).agg({'DBN': lambda x: '/'.join(x),
                                                               'TYPE': lambda x: '/'.join(x),
+                                                              'SCHOOLS': lambda x: '/'.join(x),
                                                               'ADDRESS':'count',
                                                               'APPROVED':'sum',
                                                               'DISAPPROVED':'sum',
@@ -456,12 +492,13 @@ pkssc=pkssc.groupby(['BBL','LAT','LONG'],as_index=False).agg({'DBN': lambda x: '
 pkssc['DBN']=['/'.join(sorted(set(x.split('/')))) for x in pkssc['DBN']]
 pkssc['DBNCOUNT']=[len(x.split('/')) for x in pkssc['DBN']]
 pkssc['TYPE']=['/'.join(sorted(set(x.split('/')))) for x in pkssc['TYPE']]
+pkssc['SCHOOLS']=['/'.join(sorted(set(x.split('/')))) for x in pkssc['SCHOOLS']]
 pkssc['APPCOUNT']=pkssc['ADDRESS'].copy()
 pkssc['IDS']=pkssc['ID'].copy()
 pkssc['PARKS']=['/'.join(sorted(set([y for y in x.split('|') if y!='']))) for x in pkssc['PARK']]
 pkssc=gpd.GeoDataFrame(pkssc,geometry=[shapely.geometry.Point(x,y) for x,y in zip(pkssc['LONG'],pkssc['LAT'])],crs='epsg:4326')
 pkssc=gpd.sjoin(pkssc,sd,how='left',op='intersects')
-pkssc=pkssc[['BBL','DISTRICT','DBN','DBNCOUNT','TYPE','APPCOUNT','APPROVED','DISAPPROVED','IDS','PARKS','geometry']].reset_index(drop=True)
+pkssc=pkssc[['BBL','DISTRICT','DBN','DBNCOUNT','TYPE','SCHOOLS','APPCOUNT','APPROVED','DISAPPROVED','IDS','PARKS','geometry']].reset_index(drop=True)
 pkssc.to_file(path+'openlearning/parks_school.shp')
 
 

@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>Mapbox Testing</title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+    <script src="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js"></script>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css" rel="stylesheet" />
+
+
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        #mainmap {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+
+        #legend {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            line-height: 1.5rem;
+            color: #000000;
+            background-color: rgba(255, 255, 255, 0);
+            font-family: sans-serif;
+            font-size: 1rem;
+        }
+
+        #legend1-title1 {
+            font-weight: bold;
+            background-color: rgba(255, 255, 255, 1);
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+            padding-right: 0.5rem;
+            padding-left: 0.5rem;
+            width: 22rem;
+            height: auto;
+        }
+
+        #legend1-title2 {
+            background-color: rgba(255, 255, 255, 1);
+            padding-right: 0.5rem;
+            padding-left: 0.5rem;
+            padding-bottom: 0.5rem;
+            width: 22rem;
+            height: auto;
+        }
+
+        #legend1-layer {
+            width: 8rem;
+            height: auto;
+            background-color: rgba(255, 255, 255, 1);
+            padding-right: 0.5rem;
+            padding-left: 0.5rem;
+            padding-bottom: 0.5rem;
+            width: 22rem;
+        }
+
+        #legend2-title1 {
+            font-weight: bold;
+            background-color: rgba(255, 255, 255, 1);
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+            padding-right: 0.5rem;
+            padding-left: 0.5rem;
+            width: auto;
+            height: auto;
+        }
+
+        #legend2-layer {
+            width: 8rem;
+            height: auto;
+            background-color: rgba(255, 255, 255, 1);
+            padding-right: 0.5rem;
+            padding-left: 0.5rem;
+            padding-bottom: 0.5rem;
+            width: auto;
+        }
+
+        .legend-key-circle {
+            width: 1rem;
+            height: 1rem;
+            margin-left: 0.25rem;
+            margin-right: 1rem;
+            border-radius: 100%;
+            display: inline-block;
+            vertical-align: -0.15rem;
+        }
+
+        .legend-key-line {
+            width: 1rem;
+            height: 0.3rem;
+            margin-left: 0.25rem;
+            margin-right: 1rem;
+            border-radius: 0%;
+            display: inline-block;
+            vertical-align: 0.25rem;
+        }
+
+        .legend-key-fill {
+            width: 1rem;
+            height: 1rem;
+            margin-left: 0.25rem;
+            margin-right: 1rem;
+            border-radius: 0%;
+            display: inline-block;
+            vertical-align: -0.15rem;
+        }
+
+        .legend-key-fill-extrusion {
+            width: 1rem;
+            height: 1rem;
+            margin-left: 0.25rem;
+            margin-right: 1rem;
+            border-radius: 0%;
+            display: inline-block;
+            vertical-align: -0.15rem;
+        }
+    </style>
+</head>
+
+
+
+<body>
+    <div id="mainmap"></div> <!-- placeholder for main map -->
+    <nav id="legend">
+        <div id="legend2-title1"></div>
+        <div id="legend2-layer"></div>
+    </nav> <!-- placeholder for layer selector and legend -->
+
+
+
+    <script>
+        'use strict';
+        // Set MapBox token
+        mapboxgl.accessToken = 'pk.eyJ1IjoibWF5aWp1biIsImEiOiJjaXg4ZmlyY20wMDBjMm9tcjI0bjQ0Z21zIn0.Io0XJ4JelN903V9HGo4TfQ'; // still need to find a way to store the token
+
+
+
+        // Initialize the map
+        var map = new mapboxgl.Map({ // creating a new map
+            container: 'mainmap', // same as the div id to place the map
+            style: 'mapbox://styles/mapbox/light-v10', // light base map
+            hash: true, // make sure it's on to get the url with map view
+            attributionControl: false, // show the credit bar
+            preserveDrawingBuffer: true, // make sure it's on to allow printing
+            center: [-73.5471, 40.7469], // testing to get the centroid of bounds
+            zoom: 9.8, // set the initial zoom of the map view
+            logoPosition: 'bottom-right', // no need to change 
+
+        });
+
+
+
+        // Add layers
+        map.on('load', function () {
+
+            var layerContentList = []; // store all the layer contents
+
+            // Add polygons
+            // Set layer contents
+            var layerContent = {
+                'sourceid': 'tel', // source id
+                'sourcetype': 'geojson', // source type
+                'sourcedata': 'telework.geojson', // data source
+                'layerid': 'telework', // layer id
+                'layertype': 'fill', // symbology type
+                'layername1': 'Telework Capability​', // layer name for the legend
+                'layervisibility': 'visible', // visibility of the layer
+                'layercolname': 'cat', // category column name
+                'layercat': ['28%~30%', '31%~35%', '36%~50%'], // categories
+                'layercolor': ['rgba(254,210,166,1)','rgba(253,146,67,1)','rgba(127,39,4,1)'], // color for each category; use rgba
+                'layeropacity': 1, // fill opacity
+            };
+
+            // Generate layer colors
+            var layerColor = ['match', ['get', layerContent['layercolname']]];
+            for (var i = 0; i < layerContent.layercat.length; i++) {
+                layerColor.push(layerContent.layercat[i]);
+                layerColor.push(layerContent.layercolor[i]);
+            };
+            layerColor.push('#000000');
+
+            // Add layer content to the overall layer content list
+            layerContentList.push(layerContent);
+
+            // Add data source
+            map.addSource(layerContent['sourceid'], {
+                'type': layerContent['sourcetype'],
+                'data': layerContent['sourcedata'],
+            });
+
+            // Add fill layer
+            map.addLayer({
+                'id': layerContent['layerid'],
+                'type': layerContent['layertype'],
+                'source': layerContent['sourceid'],
+                'layout': {
+                    'visibility': layerContent['layervisibility'],
+                },
+                'paint': {
+                    'fill-color': layerColor,
+                    'fill-opacity': layerContent['layeropacity'],
+                },
+            });
+
+ 
+
+ 
+
+
+
+            // Add layer selector and legend
+            var layerOrder = ['telework']; // set layer order in the legend
+            var layerContentListOrder = []; // create ordered layer content list
+            for (var i = 0; i < layerOrder.length; i++) {
+                layerContentListOrder.push(layerContentList.filter(e => e.layerid == layerOrder[i])[0]);
+            };
+
+            var legendTitle1 = document.getElementById('legend2-title1');
+            var legendLayer = document.getElementById('legend2-layer');
+
+            for (var i = 0; i < layerContentListOrder.length; i++) {
+                // Create legend title
+                var title1 = document.createElement('div'); // create title1
+                title1.innerHTML = layerContentListOrder[i]['layername1'];
+                legendTitle1.appendChild(title1);
+
+                // Create legend layer
+                for (var j = 0; j < layerContentListOrder[i]['layercat'].length; j++) {
+                    var item = document.createElement('div'); // create item
+                    item.className = layerContentListOrder[i]['layerid'] + 'legend';
+                    var key = document.createElement('span'); // create key
+                    key.className = 'legend-key-' + layerContentListOrder[i]['layertype'];
+                    key.style.backgroundColor = layerContentListOrder[i]['layercolor'][j]
+                        .replace(',1)', ',' + layerContentListOrder[i]['layeropacity'] + ')'); // set color with opacity
+                    var value = document.createElement('span'); // create label
+                    value.innerHTML = layerContentListOrder[i]['layercat'][j];
+                    item.appendChild(key);
+                    item.appendChild(value);
+                    legendLayer.appendChild(item);
+                };
+            };
+        });
+    </script>
+
+</body>
+
+</html>
