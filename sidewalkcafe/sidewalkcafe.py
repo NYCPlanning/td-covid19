@@ -11,118 +11,161 @@ import usaddress
 
 
 pd.set_option('display.max_columns', None)
-path='C:/Users/mayij/Desktop/DOC/DCP2020/COVID19/STREET CLOSURE/'
+path='C:/Users/mayij/Desktop/DOC/DCP2020/COVID19/'
 
 
 
+# Sidewalk Cafe Reg and MapPluto
+sdwkcafe=gpd.read_file(path+'SIDEWALK CAFE/sidewalk_cafe.shp')
+sdwkcafe.crs='epsg:4326'
+sdwkcafe=sdwkcafe.to_crs('epsg:6539')
+sdwkcafe['geometry']=[x.buffer(1) for x in sdwkcafe['geometry']]
+sdwkcafe=sdwkcafe.to_crs('epsg:4326')
+sdwkcafe['CAFETYPE']=[str(x).strip().upper() for x in sdwkcafe['CafeType']]
+mappluto=gpd.read_file(path+'POPS/pops/mappluto2020.shp')
+mappluto.crs='epsg:4326'
+mapplutosdwkcafe=gpd.sjoin(mappluto,sdwkcafe,how='left',op='intersects')
+mapplutosdwkcafe=mapplutosdwkcafe.loc[pd.notna(mapplutosdwkcafe['CAFETYPE']),['BBL','CAFETYPE']].drop_duplicates(keep='first').reset_index(drop=True)
+mapplutosdwkcafe=mapplutosdwkcafe.groupby(['BBL'],as_index=False).agg({'CAFETYPE': lambda x: '/'.join(x)}).reset_index(drop=True)
+mapplutosdwkcafe['CAFETYPE']=['/'.join(sorted(set(x.split('/')))) for x in mapplutosdwkcafe['CAFETYPE']]
+mapplutosdwkcafe=pd.merge(mappluto,mapplutosdwkcafe,how='left',on='BBL')
+mapplutosdwkcafe.to_file(path+'SIDEWALK CAFE/mappluto_sdwkcafe.shp')
+
+
+
+# Open Restaurant
 g = Geosupport()
 
-
-
-# School District
-sd=gpd.read_file(path+'openlearning/school_district.shp')
-sd.crs='epsg:4326'
-sd['DISTRICT']=pd.to_numeric(sd['school_dis'])
-sd=sd[['DISTRICT','geometry']].reset_index(drop=True)
-
-
-
-# # School
-# school=pd.read_csv(path+'openlearning/2019_-_2020_School_Locations.csv',dtype=str)
-# school['DBN']=[str(x).strip().upper() for x in school['system_code']]
-# for i in school.index:
-#     try:
-#         housenumber=' '.join([x[0].replace(',','').upper() for x in usaddress.parse(school.loc[i,'primary_address_line_1']) if re.search('AddressNumber',x[1])])
-#         streetname=' '.join([x[0].replace(',','').upper() for x in usaddress.parse(school.loc[i,'primary_address_line_1']) if re.search('StreetName',x[1])])
-#         boroughcode=np.where(school.loc[i,'DBN'][2]=='M',1,np.where(school.loc[i,'DBN'][2]=='X',2,
-#                     np.where(school.loc[i,'DBN'][2]=='K',3,np.where(school.loc[i,'DBN'][2]=='Q',4,
-#                     np.where(school.loc[i,'DBN'][2]=='R',5,0))))).tolist()
-#         addr=g['1B']({'house_number':housenumber,'street_name':streetname,'borough_code':boroughcode})
-#         if addr['BOROUGH BLOCK LOT (BBL)']['BOROUGH BLOCK LOT (BBL)']!='':
-#             school.loc[i,'LAT']=pd.to_numeric(addr['Latitude'])
-#             school.loc[i,'LONG']=pd.to_numeric(addr['Longitude'])
-#             school.loc[i,'BBL']=pd.to_numeric(addr['BOROUGH BLOCK LOT (BBL)']['BOROUGH BLOCK LOT (BBL)'])
-#         else:
-#             print(school.loc[i,'DBN']+' not geocoded!')
-#     except:
-#         print(school.loc[i,'DBN']+' not geocoded!')
-# school['LAT']=np.where(pd.notna(school['LAT']),school['LAT'],pd.to_numeric(school['LATITUDE']))
-# school['LONG']=np.where(pd.notna(school['LONG']),school['LONG'],pd.to_numeric(school['LONGITUDE']))
-# school['BBL']=np.where(pd.notna(school['BBL']),school['BBL'],pd.to_numeric(school['Borough_block_lot']))
-# school['TYPE']=[str(x).strip().upper() for x in school['Managed_by_name']]
-# school=school[['DBN','TYPE','LAT','LONG','BBL']].drop_duplicates(keep='first').reset_index(drop=True)
-
-
-
-# LCGMS
-lcgms=pd.read_excel(path+'openlearning/LCGMS_SchoolData_20201006_1523.xlsx',dtype=str)
-lcgms['DBN']=[str(x).strip().upper() for x in lcgms['ATS System Code']]
-lcgms['TYPE']=[str(x).strip().upper() for x in lcgms['Managed By Name']]
-lcgms['ADDRESS']=[str(x).strip().upper() for x in lcgms['Primary Address']]
-lcgms['ZIP']=[str(x).strip().upper() for x in lcgms['Zip']]
-lcgms['BORO']=[str(x).strip().upper() for x in lcgms['City']]
-lcgms['BBL1']=pd.to_numeric(lcgms['Borough Block Lot'])
-lcgms['BBL2']=np.nan
-lcgms['LAT']=np.nan
-lcgms['LONG']=np.nan
-lcgms=lcgms[['DBN','TYPE','ADDRESS','ZIP','BORO','BBL1','BBL2','LAT','LONG']].drop_duplicates(keep='first').reset_index(drop=True)
-for i in lcgms.index:
-    if pd.isna(lcgms.loc[i,'BBL2']):
+df=pd.read_csv(path+'SIDEWALK CAFE/Open_Restaurant_Applications_20201014.csv',dtype=str)
+df['TIME']=[datetime.datetime.strptime(x,'%m/%d/%Y %H:%M:%S %p') for x in df['Time of Submission']]
+df=df.sort_values('TIME',ascending=True).reset_index(drop=True)
+df['TIME']=[datetime.datetime.strftime(x,'%m/%d/%Y %H:%M:%S %p') for x in df['TIME']]
+df['ID']=range(0,len(df))
+df['TYPE']=[str(x).strip().upper() for x in df['Seating Interest (Sidewalk/Roadway/Both)']]
+df['NAME']=[str(x).strip().upper() for x in df['Restaurant Name']]
+df['LEGAL']=[str(x).strip().upper() for x in df['Legal Business Name']]
+df['DBA']=[str(x).strip().upper() for x in df['Doing Business As (DBA)']]
+df['ADDRESS']=[str(x).strip().upper() for x in df['Business Address']]
+df['BLDGNUM']=[str(x).strip().upper() for x in df['Building Number']]
+df['STNAME']=[str(x).strip().upper() for x in df['Street']]
+df['BORO']=[str(x).strip().upper() for x in df['Borough']]
+df['ZIP']=[str(x).strip().upper() for x in df['Postcode']]
+df['PMTNUM']=[str(x).strip().upper() for x in df['Food Service Establishment Permit #']]
+df['SDWKLEN']=pd.to_numeric(df['Sidewalk Dimensions (Length)'])
+df['SDWKWDTH']=pd.to_numeric(df['Sidewalk Dimensions (Width)'])
+df['SDWKAREA']=pd.to_numeric(df['Sidewalk Dimensions (Area)'])
+df['RDWYLEN']=pd.to_numeric(df['Roadway Dimensions (Length)'])
+df['RDWYWDTH']=pd.to_numeric(df['Roadway Dimensions (Width)'])
+df['RDWYAREA']=pd.to_numeric(df['Roadway Dimensions (Area)'])
+df['APPSDWK']=[str(x).strip().upper() for x in df['Approved for Sidewalk Seating']]
+df['APPRDWY']=[str(x).strip().upper() for x in df['Approved for Roadway Seating']]
+df['ALCOHOL']=[str(x).strip().upper() for x in df['Qualify Alcohol']]
+df['SLANUM']=[str(x).strip().upper() for x in df['SLA Serial Number']]
+df['SLATYPE']=[str(x).strip().upper() for x in df['SLA License Type']]
+df['LANDMARK']=[str(x).strip().upper() for x in df['Landmark District or Building']]
+df['TERMLDMK']=[str(x).strip().upper() for x in df['landmarkDistrict_terms']]
+df['TERMHEALTH']=[str(x).strip().upper() for x in df['healthCompliance_terms']]
+df['BBL']=np.nan
+df['LAT']=np.nan
+df['LONG']=np.nan
+df['BKFACE']=np.nan
+df=df[['ID','TIME','TYPE','NAME','LEGAL','DBA','ADDRESS','BLDGNUM','STNAME','BORO','ZIP','PMTNUM',
+       'SDWKLEN','SDWKWDTH','SDWKAREA','RDWYLEN','RDWYWDTH','RDWYAREA','APPSDWK','APPRDWY',
+       'ALCOHOL','SLANUM','SLATYPE','LANDMARK','TERMLDMK','TERMHEALTH','BBL','LAT','LONG','BKFACE']].reset_index(drop=True)
+for i in df.index:
+    if pd.isna(df.loc[i,'BBL']):
         try:
-            housenumber=' '.join([x[0].replace(',','').upper() for x in usaddress.parse(lcgms.loc[i,'ADDRESS']) if re.search('AddressNumber',x[1])])
-            streetname=' '.join([x[0].replace(',','').upper() for x in usaddress.parse(lcgms.loc[i,'ADDRESS']) if re.search('StreetName',x[1])])
-            zipcode=lcgms.loc[i,'ZIP']
+            housenumber=' '.join([x[0].replace(',','').upper() for x in usaddress.parse(df.loc[i,'ADDRESS']) if re.search('AddressNumber',x[1])])
+            streetname=' '.join([x[0].replace(',','').upper() for x in usaddress.parse(df.loc[i,'ADDRESS']) if re.search('StreetName',x[1])])
+            zipcode=df.loc[i,'ZIP']
             addr=g['1B']({'house_number':housenumber,'street_name':streetname,'zip_code':zipcode})
             if addr['BOROUGH BLOCK LOT (BBL)']['BOROUGH BLOCK LOT (BBL)']!='':
-                lcgms.loc[i,'BBL2']=pd.to_numeric(addr['BOROUGH BLOCK LOT (BBL)']['BOROUGH BLOCK LOT (BBL)'])
+                df.loc[i,'BBL']=pd.to_numeric(addr['BOROUGH BLOCK LOT (BBL)']['BOROUGH BLOCK LOT (BBL)'])
+                df.loc[i,'LAT']=pd.to_numeric(addr['Latitude'])
+                df.loc[i,'LONG']=pd.to_numeric(addr['Longitude'])
+                df.loc[i,'BKFACE']=pd.to_numeric(addr['Blockface ID'])
             else:
-                print(str(lcgms.loc[i,'DBN'])+' not geocoded with zipcode!')
+                print(str(df.loc[i,'ID'])+' not geocoded with zipcode!')
         except:
-            print(str(lcgms.loc[i,'DBN'])+' not geocoded with zipcode!')
-for i in lcgms.index:
-    if pd.isna(lcgms.loc[i,'BBL2']):
+            print(str(df.loc[i,'ID'])+' not geocoded with zipcode!')
+len(df[pd.notna(df['BBL'])])
+# 9947/11244
+for i in df.index:
+    if pd.isna(df.loc[i,'BBL']):
         try:
-            housenumber=' '.join([x[0].replace(',','').upper() for x in usaddress.parse(lcgms.loc[i,'ADDRESS']) if re.search('AddressNumber',x[1])])
-            streetname=' '.join([x[0].replace(',','').upper() for x in usaddress.parse(lcgms.loc[i,'ADDRESS']) if re.search('StreetName',x[1])])
-            boroughcode=np.where(lcgms.loc[i,'BORO']=='MANHATTAN',1,np.where(lcgms.loc[i,'BORO']=='NEW YORK',1,
-                        np.where(lcgms.loc[i,'BORO']=='NEW YORK CITY',1,np.where(lcgms.loc[i,'BORO']=='BRONX',2,
-                        np.where(lcgms.loc[i,'BORO']=='BROOKLYN',3,np.where(lcgms.loc[i,'BORO']=='STATEN ISLAND',5,
-                        np.where(lcgms.loc[i,'BORO']=='STATEN IS',5,4))))))).tolist()
+            housenumber=' '.join([x[0].replace(',','').upper() for x in usaddress.parse(df.loc[i,'ADDRESS']) if re.search('AddressNumber',x[1])])
+            streetname=' '.join([x[0].replace(',','').upper() for x in usaddress.parse(df.loc[i,'ADDRESS']) if re.search('StreetName',x[1])])
+            boroughcode=np.where(df.loc[i,'BORO']=='MANHATTAN',1,np.where(df.loc[i,'BORO']=='BRONX',2,
+                        np.where(df.loc[i,'BORO']=='BROOKLYN',3,np.where(df.loc[i,'BORO']=='QUEENS',4,
+                        np.where(df.loc[i,'BORO']=='STATEN ISLAND',5,0))))).tolist()
             addr=g['1B']({'house_number':housenumber,'street_name':streetname,'borough_code':boroughcode})
             if addr['BOROUGH BLOCK LOT (BBL)']['BOROUGH BLOCK LOT (BBL)']!='':
-                lcgms.loc[i,'BBL2']=pd.to_numeric(addr['BOROUGH BLOCK LOT (BBL)']['BOROUGH BLOCK LOT (BBL)'])
+                df.loc[i,'BBL']=pd.to_numeric(addr['BOROUGH BLOCK LOT (BBL)']['BOROUGH BLOCK LOT (BBL)'])
+                df.loc[i,'LAT']=pd.to_numeric(addr['Latitude'])
+                df.loc[i,'LONG']=pd.to_numeric(addr['Longitude'])
+                df.loc[i,'BKFACE']=pd.to_numeric(addr['Blockface ID'])
             else:
-                print(str(lcgms.loc[i,'DBN'])+' not geocoded with borough!')
+                print(str(df.loc[i,'ID'])+' not geocoded with borough!')
         except:
-            print(str(lcgms.loc[i,'DBN'])+' not geocoded with borough!')
-lcgms['BBL']=np.where(pd.notna(lcgms['BBL2']),lcgms['BBL2'],pd.to_numeric(lcgms['BBL1']))
-for i in lcgms.index:
-    try:
-        boroughcode=np.where(lcgms.loc[i,'BORO']=='MANHATTAN',1,np.where(lcgms.loc[i,'BORO']=='NEW YORK',1,
-                np.where(lcgms.loc[i,'BORO']=='NEW YORK CITY',1,np.where(lcgms.loc[i,'BORO']=='BRONX',2,
-                np.where(lcgms.loc[i,'BORO']=='BROOKLYN',3,np.where(lcgms.loc[i,'BORO']=='STATEN ISLAND',5,
-                np.where(lcgms.loc[i,'BORO']=='STATEN IS',5,4))))))).tolist()
-        bbl=str(lcgms.loc[i,'BBL'])
-        addr=g['BL']({'BBL':bbl,'borough_code':boroughcode})
-        lcgms.loc[i,'LAT']=pd.to_numeric(addr['Latitude'])
-        lcgms.loc[i,'LONG']=pd.to_numeric(addr['Longitude'])
-    except:
-        print(str(lcgms.loc[i,'DBN'])+' not geocoded with bbl!')
-lcgms=lcgms[pd.notna(lcgms['LAT'])].reset_index(drop=True)
-lcgms=lcgms[['DBN','TYPE','BBL','LAT','LONG']].drop_duplicates(keep='first').reset_index(drop=True)
-lcgms.to_csv(path+'openlearning/lcgms.csv',index=False)
-lcgmsbbl=lcgms.groupby(['BBL','LAT','LONG'],as_index=False).agg({'DBN': lambda x: '/'.join(x),
-                                                                 'TYPE': lambda x: '/'.join(x)}).reset_index(drop=True)
-lcgmsbbl['TYPE']=['/'.join(sorted(set(x.split('/')))) for x in lcgmsbbl['TYPE']]
-lcgmsbbl['DBNCOUNT']=[len(x.split('/')) for x in lcgmsbbl['DBN']]
-lcgmsbbl=gpd.GeoDataFrame(lcgmsbbl,geometry=[shapely.geometry.Point(x,y) for x,y in zip(lcgmsbbl['LONG'],lcgmsbbl['LAT'])],crs='epsg:4326')
-lcgmsbbl=gpd.sjoin(lcgmsbbl,sd,how='left',op='intersects')
-lcgmsbbl['DISTRICT']=np.where(pd.notna(lcgmsbbl['DISTRICT']),lcgmsbbl['DISTRICT'],2)
-lcgmsbbl=lcgmsbbl[['BBL','DISTRICT','DBN','DBNCOUNT','TYPE','geometry']].reset_index(drop=True)
-lcgmsbbl.to_file(path+'openlearning/lcgms_bbl.shp')
+            print(str(df.loc[i,'ID'])+' not geocoded with borough!')
+len(df[pd.notna(df['BBL'])])
+# 9996/11244
+for i in df.index:
+    if pd.isna(df.loc[i,'BBL']):
+        try:
+            housenumber=df.loc[i,'BLDGNUM']
+            streetname=df.loc[i,'STNAME']
+            zipcode=df.loc[i,'ZIP']
+            addr=g['1B']({'house_number':housenumber,'street_name':streetname,'zip_code':zipcode})
+            if addr['BOROUGH BLOCK LOT (BBL)']['BOROUGH BLOCK LOT (BBL)']!='':
+                df.loc[i,'BBL']=pd.to_numeric(addr['BOROUGH BLOCK LOT (BBL)']['BOROUGH BLOCK LOT (BBL)'])
+                df.loc[i,'LAT']=pd.to_numeric(addr['Latitude'])
+                df.loc[i,'LONG']=pd.to_numeric(addr['Longitude'])
+                df.loc[i,'BKFACE']=pd.to_numeric(addr['Blockface ID'])
+            else:
+                print(str(df.loc[i,'ID'])+' not geocoded with zipcode!')
+        except:
+            print(str(df.loc[i,'ID'])+' not geocoded with zipcode!')
+len(df[pd.notna(df['BBL'])])
+# 10058/11244
+for i in df.index:
+    if pd.isna(df.loc[i,'BBL']):
+        try:
+            housenumber=df.loc[i,'BLDGNUM']
+            streetname=df.loc[i,'STNAME']
+            boroughcode=np.where(df.loc[i,'BORO']=='MANHATTAN',1,np.where(df.loc[i,'BORO']=='BRONX',2,
+                        np.where(df.loc[i,'BORO']=='BROOKLYN',3,np.where(df.loc[i,'BORO']=='QUEENS',4,
+                        np.where(df.loc[i,'BORO']=='STATEN ISLAND',5,0))))).tolist()
+            addr=g['1B']({'house_number':housenumber,'street_name':streetname,'borough_code':boroughcode})
+            if addr['BOROUGH BLOCK LOT (BBL)']['BOROUGH BLOCK LOT (BBL)']!='':
+                df.loc[i,'BBL']=pd.to_numeric(addr['BOROUGH BLOCK LOT (BBL)']['BOROUGH BLOCK LOT (BBL)'])
+                df.loc[i,'LAT']=pd.to_numeric(addr['Latitude'])
+                df.loc[i,'LONG']=pd.to_numeric(addr['Longitude'])
+                df.loc[i,'BKFACE']=pd.to_numeric(addr['Blockface ID'])
+            else:
+                print(str(df.loc[i,'ID'])+' not geocoded with borough!')
+        except:
+            print(str(df.loc[i,'ID'])+' not geocoded with borough!')
+len(df[pd.notna(df['BBL'])])
+# 10060/11244
+df=df[(pd.notna(df['BBL']))&(df['BBL']!=0)&(pd.notna(df['LAT']))&(pd.notna(df['LONG']))&(pd.notna(df['BKFACE']))].reset_index(drop=True)
+# 10026/11244
+df=gpd.GeoDataFrame(df,geometry=[shapely.geometry.Point(x,y) for x,y in zip(df['LONG'],df['LAT'])],crs='epsg:4326')
+df.to_file(path+'SIDEWALK CAFE/open_restaurant.shp')
 
 
-            
+
+
+# Open Restaurant and Sidewalk Cafe Reg
+mapplutosdwkcafe=gpd.read_file(path+'SIDEWALK CAFE/mappluto_sdwkcafe.shp')
+mapplutosdwkcafe.crs='epsg:4326'
+mapplutosdwkcafe=mapplutosdwkcafe[['BBL','CAFETYPE']].reset_index(drop=True)
+df=gpd.read_file(path+'SIDEWALK CAFE/open_restaurant.shp')
+df.crs='epsg:4326'
+df=pd.merge(df,mapplutosdwkcafe,how='inner',on='BBL')
+# 10015/11244
+
+
             
             
 
