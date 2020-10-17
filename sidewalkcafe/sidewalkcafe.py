@@ -188,7 +188,41 @@ sdwkcafe=sdwkcafe[['CAFETYPE','geometry']].reset_index(drop=True)
 df=gpd.read_file(path+'SIDEWALK CAFE/open_restaurant_xyadj.shp')
 df.crs='epsg:4326'
 dfcafe=gpd.sjoin(df,sdwkcafe,how='left',op='intersects')
-dfcafe=dfcafe[['ID','CAFETYPE']].reset_index(drop=True)
+dfcafe=dfcafe[['ID','CAFETYPE']].drop_duplicates(['ID'],keep='first').reset_index(drop=True)
+dfcafe['CAFETYPE']=np.where(pd.notna(dfcafe['CAFETYPE']),dfcafe['CAFETYPE'],'NONE')
+dfcafe=pd.merge(df,dfcafe,how='inner',on='ID')
+dfcafe.to_file(path+'SIDEWALK CAFE/restaurant_cafe.shp')
+
+
+
+
+
+# Join Open Restaurant to Zoning District
+
+
+
+
+
+
+# Join Open Restaurant to Sidewalk Width
+dfcafe=gpd.read_file(path+'SIDEWALK CAFE/open_restaurant_sidewalk_cafe.shp')
+dfcafe.crs='epsg:4326'
+sdwkwdimp=gpd.read_file(path+'STREET CLOSURE/sidewalk/output/sdwkwdimp.shp')
+sdwkwdimp.crs='epsg:4326'
+sdwkwdimp=sdwkwdimp[['bkfaceid','orgswmedia','impswmedia','length']]
+sdwkwdimp['orgswlen']=sdwkwdimp['orgswmedia']*sdwkwdimp['length']
+sdwkwdimp['impswlen']=sdwkwdimp['impswmedia']*sdwkwdimp['length']
+sdwkwdimp=sdwkwdimp.groupby(['bkfaceid'],as_index=False).agg({'orgswlen':'sum',
+                                                              'impswlen':'sum',
+                                                              'length':'sum'}).reset_index(drop=True)
+sdwkwdimp['BKFACE']=pd.to_numeric(sdwkwdimp['bkfaceid'])
+sdwkwdimp['ORGSWMDN']=sdwkwdimp['orgswlen']/sdwkwdimp['length']
+sdwkwdimp['IMPSWMDN']=sdwkwdimp['impswlen']/sdwkwdimp['length']
+sdwkwdimp=sdwkwdimp[['BKFACE','ORGSWMDN','IMPSWMDN']].reset_index(drop=True)
+dfcafewd=pd.merge(dfcafe,sdwkwdimp,how='left',on='BKFACE')
+dfcafewd=dfcafewd[pd.notna(dfcafewd['ORGSWMDN'])].reset_index(drop=True)
+# 9913/11183
+dfcafewd.to_file(path+'SIDEWALK CAFE/restaurant_cafe_width.shp')
 
 
 
@@ -199,3 +233,24 @@ dfcafe=dfcafe[['ID','CAFETYPE']].reset_index(drop=True)
 
 
 
+
+import plotly.io as pio
+import plotly.express as px
+pio.renderers.default = "browser"
+px.box(k,x='SDWKWDTH',y='ORGSWMDN')
+
+
+
+
+import numpy as np
+a=list(range(1,11))
+b=[1-0.7**x for x in a]
+c=np.roll(b,-1)
+c-b
+import plotly.express as px
+import plotly.io as pio
+import plotly.graph_objects as go
+pio.renderers.default = "browser"
+px.scatter(x=a,y=b)
+fig=go.Figure()
+fig.add_trace(go.Scatter(x=a,y=b,mode='lines+markers'))
