@@ -299,7 +299,62 @@
 
 
 
-            // Add points
+            // Add Sidewalk Cafe
+            // Set layer contents
+            var layerContent = {
+                'sourceid': 'sdwkcafe', // source id
+                'sourcetype': 'geojson', // source type
+                'sourcedata': 'sdwkcafe.geojson', // data source
+                'layerid': 'sdwkcafe', // layer id
+                'layertype': 'line', // symbology type
+                'layername': 'Sidewalk Cafe Regulation', // layer name for the legend
+                'layerlinecap': 'round', // line endings; butt/round/square
+                'layerlinejoin': 'round', // line joining; bevel/round/miter
+                'layervisibility': 'visible', // visibility of the layer
+                'layercolname': 'CAFETYPE', // category column name
+                'layercat': ['ALL CAFES', 'NOT PERMITTED', 'UNENCLOSED ONLY', 'SMALL ONLY'], // categories
+                'layercolor': ['rgba(161,218,180,1)', 'rgba(65,182,196,1)', 'rgba(44,127,184,1)', 'rgba(186,187,219,1)'], // color for each category; use rgba
+                'layeropacity': 1, // line opacity
+                'layerwidth': 2, // line width
+            };
+
+            // Generate layer colors
+            var layerColor = ['match', ['get', layerContent['layercolname']]];
+            for (var i = 0; i < layerContent.layercat.length; i++) {
+                layerColor.push(layerContent.layercat[i]);
+                layerColor.push(layerContent.layercolor[i]);
+            };
+            layerColor.push('#000000');
+
+            // Add layer content to the overall layer content list
+            layerContentList.push(layerContent);
+
+            // Add data source
+            map.addSource(layerContent['sourceid'], {
+                'type': layerContent['sourcetype'],
+                'data': layerContent['sourcedata'],
+            });
+
+            // Add line layer
+            map.addLayer({
+                'id': layerContent['layerid'],
+                'type': layerContent['layertype'],
+                'source': layerContent['sourceid'],
+                'layout': {
+                    'line-cap': layerContent['layerlinecap'],
+                    'line-join': layerContent['layerlinejoin'],
+                    'visibility': layerContent['layervisibility'],
+                },
+                'paint': {
+                    'line-color': layerColor,
+                    'line-opacity': layerContent['layeropacity'],
+                    'line-width': layerContent['layerwidth'],
+                },
+            });
+
+
+
+            // Add Open Restaurant
             // Set layer contents
             var layerContent = {
                 'sourceid': 'orcafeznelwd', // source id
@@ -307,8 +362,8 @@
                 'sourcedata': 'or_cafe_zn_el_wd.geojson', // data source
                 'layerid': 'orcafeznelwd', // layer id
                 'layertype': 'circle', // symbology type
-                'layername': 'Point', // layer name for the legend
-                'layervisibility': 'none', // visibility of the layer
+                'layername': 'Open Restaurant', // layer name for the legend
+                'layervisibility': 'visible', // visibility of the layer
                 'layercolname': 'TYPE', // category column name
                 'layercat': ['BOTH', 'SIDEWALK', 'ROADWAY', 'OPENSTREETS'], // categories
                 'layercolor': ['rgba(255,0,0,1)', 'rgba(0,255,0,1)', 'rgba(0,0,255,1)', 'rgba(100,100,100,1)'], // color for each category; use rgba
@@ -419,7 +474,7 @@
 
 
             // Add layer selector and legend
-            var layerOrder = ['orcafeznelwd', 'sdwkwdimp', 'pg']; // set layer order in the legend
+            var layerOrder = ['orcafeznelwd', 'sdwkcafe', 'sdwkwdimp', 'pg']; // set layer order in the legend
             var layerContentListOrder = []; // create ordered layer content list
             for (var i = 0; i < layerOrder.length; i++) {
                 layerContentListOrder.push(layerContentList.filter(e => e.layerid == layerOrder[i])[0]);
@@ -432,7 +487,7 @@
                 var input = document.createElement('input'); // create input checkbox
                 input.type = 'checkbox';
                 input.id = layerContentListOrder[i]['layerid'];
-                if (layerContentListOrder[i]['layervisibility']==='visible'){
+                if (layerContentListOrder[i]['layervisibility'] === 'visible') {
                     input.checked = true;
                 } else {
                     input.checked = false;
@@ -449,6 +504,11 @@
                 for (var j = 0; j < layerContentListOrder[i]['layercat'].length; j++) {
                     var item = document.createElement('div'); // create item
                     item.className = layerContentListOrder[i]['layerid'] + '-item';
+                    if (layerContentListOrder[i]['layervisibility'] === 'visible') {
+                        item.style.display = 'block';
+                    } else {
+                        item.style.display = 'none';
+                    };
                     var layerInput = document.createElement('input'); // create input checkbox
                     layerInput.type = 'checkbox';
                     layerInput.className = layerContentListOrder[i]['layerid'] + '-item-input';

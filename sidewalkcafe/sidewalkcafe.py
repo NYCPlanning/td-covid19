@@ -262,6 +262,14 @@ dfcafeznelwd.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/sidewalkcafe/
 
 
 
+sdwkcafe=gpd.read_file(path+'SIDEWALK CAFE/sidewalk_cafe.shp')
+sdwkcafe.crs='epsg:4326'
+sdwkcafe['CAFETYPE']=[str(x).strip().upper() for x in sdwkcafe['CafeType']]
+sdwkcafe=sdwkcafe.loc[sdwkcafe['CAFETYPE']!='NONE',['CAFETYPE','geometry']].reset_index(drop=True)
+sdwkcafe.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/sidewalkcafe/sdwkcafe.geojson',driver='GeoJSON')
+
+
+
 
 
 
