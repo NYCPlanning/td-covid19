@@ -188,22 +188,158 @@
 
 
 
-            // Add polygons
+
+
+            // Add Special District
             // Set layer contents
             var layerContent = {
-                'sourceid': 'polygontest', // source id
+                'sourceid': 'sp', // source id
                 'sourcetype': 'geojson', // source type
-                'sourcedata': 'https://raw.githubusercontent.com/mayijun1203/MLGH/master/mapbox/polygontestcat.geojson', // data source
-                'layerid': 'pg', // layer id
+                'sourcedata': 'sp.geojson', // data source
+                'layerid': 'sp', // layer id
                 'layertype': 'fill', // symbology type
-                'layername': 'Polygon', // layer name for the legend
-                'layerfilter': ['==', 'BoroName', 'Queens'], // filter
+                'layername': 'Special District', // layer name for the legend
                 'layervisibility': 'none', // visibility of the layer
                 'layercolname': 'cat', // category column name
-                'layercat': ['<=100%', '101%~200%', '201%~300%', '301%~400%', '>400%'], // categories
-                'layercolor': ['rgba(228,227,240,1)', 'rgba(186,187,219,1)', 'rgba(140,136,192,1)', 'rgba(99,67,156,1)', 'rgba(63,0,125,1)'], // color for each category; use rgba
+                'layercat': [''], // categories
+                'layercolor': ['rgba(255,255,0,1)'], // extrusion color; use rgba
+                'layeropacity': 0.3, // fill opacity
+                'layeroutlinecolor': 'rgba(0,0,0,0)', // outline color; can only be set to 1px width; to change the outline width, add another line layer
+            };
+
+            // Add layer content to the overall layer content list
+            layerContentList.push(layerContent);
+
+            // Add data source
+            map.addSource(layerContent['sourceid'], {
+                'type': layerContent['sourcetype'],
+                'data': layerContent['sourcedata'],
+            });
+
+            // Add fill layer
+            map.addLayer({
+                'id': layerContent['layerid'],
+                'type': layerContent['layertype'],
+                'source': layerContent['sourceid'],
+                'layout': {
+                    'visibility': layerContent['layervisibility'],
+                },
+                'paint': {
+                    'fill-color': layerContent['layercolor'][0],
+                    'fill-opacity': layerContent['layeropacity'],
+                    'fill-outline-color': layerContent['layeroutlinecolor'],
+                },
+            });
+
+
+
+            // Add Zoning District
+            // Set layer contents
+            var layerContent = {
+                'sourceid': 'zd', // source id
+                'sourcetype': 'geojson', // source type
+                'sourcedata': 'zd.geojson', // data source
+                'layerid': 'zd', // layer id
+                'layertype': 'fill', // symbology type
+                'layername': 'Zoning District', // layer name for the legend
+                'layervisibility': 'none', // visibility of the layer
+                'layercolname': 'cat', // category column name
+                'layercat': [''], // categories
+                'layercolor': ['rgba(82,157,204,0)'], // extrusion color; use rgba
                 'layeropacity': 1, // fill opacity
-                'layeroutlinecolor': 'rgba(255,255,255,0.5)', // outline color; can only be set to 1px width; to change the outline width, add another line layer
+                'layeroutlinecolor': 'rgba(0,0,0,0.3)', // outline color; can only be set to 1px width; to change the outline width, add another line layer
+            };
+
+            // Add layer content to the overall layer content list
+            layerContentList.push(layerContent);
+
+            // Add data source
+            map.addSource(layerContent['sourceid'], {
+                'type': layerContent['sourcetype'],
+                'data': layerContent['sourcedata'],
+            });
+
+            // Add fill layer
+            map.addLayer({
+                'id': layerContent['layerid'],
+                'type': layerContent['layertype'],
+                'source': layerContent['sourceid'],
+                'layout': {
+                    'visibility': layerContent['layervisibility'],
+                },
+                'paint': {
+                    'fill-color': layerContent['layercolor'][0],
+                    'fill-opacity': layerContent['layeropacity'],
+                    'fill-outline-color': layerContent['layeroutlinecolor'],
+                },
+            });
+
+
+
+            // Add Commercial Overlay
+            // Set layer contents
+            var layerContent = {
+                'sourceid': 'co', // source id
+                'sourcetype': 'geojson', // source type
+                'sourcedata': 'co.geojson', // data source
+                'layerid': 'co', // layer id
+                'layertype': 'fill', // symbology type
+                'layername': 'Commercial Overlay', // layer name for the legend
+                'layervisibility': 'none', // visibility of the layer
+                'layercolname': 'cat', // category column name
+                'layercat': [''], // categories
+                'layercolor': ['rgba(82,157,204,0)'], // extrusion color; use rgba
+                'layeropacity': 1, // fill opacity
+                'layeroutlinecolor': 'rgba(255,0,0,0.3)', // outline color; can only be set to 1px width; to change the outline width, add another line layer
+            };
+
+            // Add layer content to the overall layer content list
+            layerContentList.push(layerContent);
+
+            // Add data source
+            map.addSource(layerContent['sourceid'], {
+                'type': layerContent['sourcetype'],
+                'data': layerContent['sourcedata'],
+            });
+
+            // Add fill layer
+            map.addLayer({
+                'id': layerContent['layerid'],
+                'type': layerContent['layertype'],
+                'source': layerContent['sourceid'],
+                'layout': {
+                    'visibility': layerContent['layervisibility'],
+                },
+                'paint': {
+                    'fill-color': layerContent['layercolor'][0],
+                    'fill-opacity': layerContent['layeropacity'],
+                    'fill-outline-color': layerContent['layeroutlinecolor'],
+                },
+            });
+
+
+
+            // Add Sidewalk Width Full
+            // Set layer contents
+            var q = "https://dcpbuilder.carto.com/api/v2/sql?q=";
+            q += "SELECT cartodb_id, the_geom, bkfaceid AS BKFACE, orgswmedia AS ORGSWMDN, impswmedia AS IMPSWMDN, CASE WHEN impswmedia < 11 THEN '<11' WHEN impswmedia <= 14 THEN '11~14' ELSE '>14' END AS CAT FROM dcpbuilder.sidewalkwidth";
+            q += "&format=GeoJSON&api_key=IUgfeLGvKOvbJSjvesj1lg"; // Carto API
+            var layerContent = {
+                'sourceid': 'sdwkwdimp', // source id
+                'sourcetype': 'geojson', // source type
+                'sourcedata': q, // data source
+                'layerid': 'sdwkwdimp', // layer id
+                'layertype': 'line', // symbology type
+                'layername': 'Median Sidewalk Width (ft) (Full)', // layer name for the legend
+                'layerlinecap': 'round', // line endings; butt/round/square
+                'layerlinejoin': 'round', // line joining; bevel/round/miter
+                'layervisibility': 'none', // visibility of the layer
+                'layercolname': 'cat', // category column name
+                'layercat': ['<11', '11~14', '>14'], // categories
+                'layercolor': ['rgba(161,218,180,1)', 'rgba(65,182,196,1)', 'rgba(44,127,184,1)'], // color for each category; use rgba
+                'layeropacity': 1, // line opacity
+                'layerwidth': 2, // line width
+                'layeroutlinecolor': 'rgba(0,0,0,0)', // outline color; for legend purpose only
             };
 
             // Generate layer colors
@@ -223,36 +359,34 @@
                 'data': layerContent['sourcedata'],
             });
 
-            // Add fill layer
+            // Add line layer
             map.addLayer({
                 'id': layerContent['layerid'],
                 'type': layerContent['layertype'],
                 'source': layerContent['sourceid'],
-                'filter': layerContent['layerfilter'],
                 'layout': {
+                    'line-cap': layerContent['layerlinecap'],
+                    'line-join': layerContent['layerlinejoin'],
                     'visibility': layerContent['layervisibility'],
                 },
                 'paint': {
-                    'fill-color': layerColor,
-                    'fill-opacity': layerContent['layeropacity'],
-                    'fill-outline-color': layerContent['layeroutlinecolor'],
+                    'line-color': layerColor,
+                    'line-opacity': layerContent['layeropacity'],
+                    'line-width': layerContent['layerwidth'],
                 },
             });
 
 
 
-            // Add Sidewalk Width
+            // Add Sidewalk Width Simplified
             // Set layer contents
-            var q = "https://dcpbuilder.carto.com/api/v2/sql?q=";
-            q += "SELECT cartodb_id, the_geom, bkfaceid AS BKFACE, orgswmedia AS ORGSWMDN, impswmedia AS IMPSWMDN, CASE WHEN impswmedia < 11 THEN '<11' WHEN impswmedia <= 14 THEN '11~14' ELSE '>14' END AS CAT FROM dcpbuilder.sidewalkwidth";
-            q += "&format=GeoJSON&api_key=IUgfeLGvKOvbJSjvesj1lg"; // Carto API
             var layerContent = {
-                'sourceid': 'sdwkwdimp', // source id
+                'sourceid': 'sdwkwdimpsp', // source id
                 'sourcetype': 'geojson', // source type
                 'sourcedata': 'sdwkwdimp.geojson', // data source
-                'layerid': 'sdwkwdimp', // layer id
+                'layerid': 'sdwkwdimpsp', // layer id
                 'layertype': 'line', // symbology type
-                'layername': 'Median Sidewalk Width (ft)', // layer name for the legend
+                'layername': 'Median Sidewalk Width (ft) (Simplified)', // layer name for the legend
                 'layerlinecap': 'round', // line endings; butt/round/square
                 'layerlinejoin': 'round', // line joining; bevel/round/miter
                 'layervisibility': 'none', // visibility of the layer
@@ -261,6 +395,7 @@
                 'layercolor': ['rgba(161,218,180,1)', 'rgba(65,182,196,1)', 'rgba(44,127,184,1)'], // color for each category; use rgba
                 'layeropacity': 1, // line opacity
                 'layerwidth': 2, // line width
+                'layeroutlinecolor': 'rgba(0,0,0,0)', // outline color; for legend purpose only
             };
 
             // Generate layer colors
@@ -316,6 +451,7 @@
                 'layercolor': ['rgba(161,218,180,1)', 'rgba(65,182,196,1)', 'rgba(44,127,184,1)', 'rgba(186,187,219,1)'], // color for each category; use rgba
                 'layeropacity': 1, // line opacity
                 'layerwidth': 2, // line width
+                'layeroutlinecolor': 'rgba(0,0,0,0)', // outline color; for legend purpose only
             };
 
             // Generate layer colors
@@ -354,7 +490,127 @@
 
 
 
-            // Add Open Restaurant
+            // Add Zoning District Label
+            // Set layer contents
+            var layerContent = {
+                'sourceid': 'zd', // source id
+                'sourcetype': 'geojson', // source type
+                'sourcedata': 'zd.geojson', // data source
+                'layerid': 'zd-label', // layer id
+                'layertype': 'symbol', // symbology type
+                'layername': 'Zoning District Label', // layer name for the legend
+                'layervisibility': 'none', // visibility of the layer
+                'layercolname': 'ZONEDIST', // category column name
+                'layercat': [''], // categories
+                'layerfield': ['get', 'ZONEDIST'], // categories
+                'layeroverlap': false,
+                'layeranchor': 'center',
+                'layersize': 12,
+                'layercolor': ['rgba(0,0,0,1)'], // color for each category; use rgba
+                'layeropacity': 0.5, // circle opacity
+            };
+
+            // Add label layer
+            map.addLayer({
+                'id': layerContent['layerid'],
+                'type': layerContent['layertype'],
+                'source': layerContent['sourceid'],
+                'layout': {
+                    'visibility': layerContent['layervisibility'],
+                    'text-field': layerContent['layerfield'],
+                    'text-size': layerContent['layersize'],
+                    'text-allow-overlap': layerContent['layeroverlap'],
+                    'text-anchor': layerContent['layeranchor'],
+                },
+                'paint': {
+                    'text-color': layerContent['layercolor'][0],
+                    'text-opacity': layerContent['layeropacity'],
+                },
+            });
+
+
+
+            // Add Commercial Overlay Label
+            // Set layer contents
+            var layerContent = {
+                'sourceid': 'co', // source id
+                'sourcetype': 'geojson', // source type
+                'sourcedata': 'co.geojson', // data source
+                'layerid': 'co-label', // layer id
+                'layertype': 'symbol', // symbology type
+                'layername': 'Commercial Overlay Label', // layer name for the legend
+                'layervisibility': 'none', // visibility of the layer
+                'layercolname': 'OVERLAY', // category column name
+                'layercat': [''], // categories
+                'layerfield': ['get', 'OVERLAY'], // categories
+                'layeroverlap': false,
+                'layeranchor': 'center',
+                'layersize': 12,
+                'layercolor': ['rgba(255,0,0,1)'], // color for each category; use rgba
+                'layeropacity': 0.5, // circle opacity
+            };
+
+            // Add label layer
+            map.addLayer({
+                'id': layerContent['layerid'],
+                'type': layerContent['layertype'],
+                'source': layerContent['sourceid'],
+                'layout': {
+                    'visibility': layerContent['layervisibility'],
+                    'text-field': layerContent['layerfield'],
+                    'text-size': layerContent['layersize'],
+                    'text-allow-overlap': layerContent['layeroverlap'],
+                    'text-anchor': layerContent['layeranchor'],
+                },
+                'paint': {
+                    'text-color': layerContent['layercolor'][0],
+                    'text-opacity': layerContent['layeropacity'],
+                },
+            });
+
+
+
+            // Add Special District Label
+            // Set layer contents
+            var layerContent = {
+                'sourceid': 'sp', // source id
+                'sourcetype': 'geojson', // source type
+                'sourcedata': 'sp.geojson', // data source
+                'layerid': 'sp-label', // layer id
+                'layertype': 'symbol', // symbology type
+                'layername': 'Special District Label', // layer name for the legend
+                'layervisibility': 'none', // visibility of the layer
+                'layercolname': 'SDLBL', // category column name
+                'layercat': [''], // categories
+                'layerfield': ['get', 'SDLBL'], // categories
+                'layeroverlap': false,
+                'layeranchor': 'center',
+                'layersize': 12,
+                'layercolor': ['rgba(0,0,0,1)'], // color for each category; use rgba
+                'layeropacity': 1, // circle opacity
+            };
+
+            // Add label layer
+            map.addLayer({
+                'id': layerContent['layerid'],
+                'type': layerContent['layertype'],
+                'source': layerContent['sourceid'],
+                'layout': {
+                    'visibility': layerContent['layervisibility'],
+                    'text-field': layerContent['layerfield'],
+                    'text-size': layerContent['layersize'],
+                    'text-allow-overlap': layerContent['layeroverlap'],
+                    'text-anchor': layerContent['layeranchor'],
+                },
+                'paint': {
+                    'text-color': layerContent['layercolor'][0],
+                    'text-opacity': layerContent['layeropacity'],
+                },
+            });
+
+
+
+            // Add Open Restaurant by Cafe Regulation
             // Set layer contents
             var layerContent = {
                 'sourceid': 'orcafeznelwd', // source id
@@ -362,17 +618,18 @@
                 'sourcedata': 'or_cafe_zn_el_wd.geojson', // data source
                 'layerid': 'orcafeznelwd', // layer id
                 'layertype': 'circle', // symbology type
-                'layername': 'Open Restaurant', // layer name for the legend
-                'layervisibility': 'visible', // visibility of the layer
+                'layername': 'Open Restaurant by Cafe Regulation', // layer name for the legend
+                'layervisibility': 'none', // visibility of the layer
                 'layercolname': 'CAFETYPE', // category column name
                 'layercat': ['ALL CAFES', 'UNENCLOSED ONLY', 'SMALL ONLY', 'NOT PERMITTED', 'NONE'], // categories
                 'layercolor': ['rgba(255,0,0,1)', 'rgba(0,255,0,1)', 'rgba(44,127,184,1)', 'rgba(0,0,255,1)', 'rgba(100,100,255,1)'], // color for each category; use rgba
                 'layeropacity': 1, // circle opacity
                 'layerradius': { 'base': 2, 'stops': [[12, 4], [22, 180]] }, // circle radius; change size based on zoom level
-                'layerstrokecolor': 'rgb(255,255,255)', // circle stroke color
+                'layerstrokecolor': 'rgba(255,255,255,1)', // circle stroke color
                 'layerstrokeopacity': 1, // circle stroke opacity
                 'layerstrokewidth': 0.5, // circle stroke width
                 'layerminzoom': 10, // only show if zoom in the certain level
+                'layeroutlinecolor': 'rgba(0,0,0,0)', // outline color; for legend purpose only
             };
 
             // Generate layer colors
@@ -440,7 +697,23 @@
                 map.getCanvas().style.cursor = '';
             });
 
-            // Add sidewalk width popup
+            // Add sidewalk width simpliefied popup
+            // Add click event
+            map.on('click', 'sdwkwdimpsp', function (e) {
+                var coordinates = e.lngLat; // get pointer coordinates
+                var description = "<b>Original Median Sidewalk Width (ft): </b><span>" + e.features[0].properties.orgswmdn.toFixed(2) + "</span><br>"; // description in the popup
+                description += "<b>Median Sidewalk Width Excluding Impediments (ft): </b><span>" + e.features[0].properties.impswmdn.toFixed(2) + "</span><br>";
+                popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
+            });
+            // Add hover events
+            map.on('mouseenter', 'sdwkwdimpsp', function () {
+                map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
+            });
+            map.on('mouseleave', 'sdwkwdimpsp', function () {
+                map.getCanvas().style.cursor = '';
+            });
+
+            // Add sidewalk width full popup
             // Add click event
             map.on('click', 'sdwkwdimp', function (e) {
                 var coordinates = e.lngLat; // get pointer coordinates
@@ -475,7 +748,7 @@
 
 
             // Add layer selector and legend
-            var layerOrder = ['orcafeznelwd', 'sdwkcafe', 'sdwkwdimp', 'pg']; // set layer order in the legend
+            var layerOrder = ['orcafeznelwd', 'sdwkcafe', 'sdwkwdimpsp', 'sdwkwdimp', 'zd', 'co','sp']; // set layer order in the legend
             var layerContentListOrder = []; // create ordered layer content list
             for (var i = 0; i < layerOrder.length; i++) {
                 layerContentListOrder.push(layerContentList.filter(e => e.layerid == layerOrder[i])[0]);
@@ -519,6 +792,9 @@
                     key.className = 'legend-key-' + layerContentListOrder[i]['layertype'];
                     key.style.backgroundColor = layerContentListOrder[i]['layercolor'][j]
                         .replace(',1)', ',' + layerContentListOrder[i]['layeropacity'] + ')'); // set color with opacity
+                    key.style.borderColor = layerContentListOrder[i]['layeroutlinecolor'];
+                    key.style.borderStyle = 'solid';
+                    key.style.borderWidth = 'thin';
                     var value = document.createElement('span'); // create label
                     value.innerHTML = layerContentListOrder[i]['layercat'][j];
                     item.appendChild(layerInput);
@@ -547,15 +823,18 @@
                 // Create click event
                 input.addEventListener('click', function (e) {
                     var clickedLayer = this.id;
+                    var clickedLayerLabel = this.id + '-label';
                     var visibility = map.getLayoutProperty(clickedLayer, 'visibility');
                     var legendGroup = document.getElementsByClassName(clickedLayer + '-item');
                     if (visibility === 'visible') {
                         map.setLayoutProperty(clickedLayer, 'visibility', 'none'); // set layer visibility
+                        map.setLayoutProperty(clickedLayerLabel, 'visibility', 'none'); // set layer visibility
                         for (var j = 0; j < legendGroup.length; j++) {
                             legendGroup[j].style.display = 'none';
                         } // set legend visibility
                     } else {
                         map.setLayoutProperty(clickedLayer, 'visibility', 'visible');
+                        map.setLayoutProperty(clickedLayerLabel, 'visibility', 'visible');
                         for (var j = 0; j < legendGroup.length; j++) {
                             legendGroup[j].style.display = 'block';
                         }

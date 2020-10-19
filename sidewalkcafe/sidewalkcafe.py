@@ -296,6 +296,11 @@ dfcafeznelwdan[dfcafeznelwdan['ID']==6474]
 4431+2325+1781
 [4431/8537,2325/8537,1781/8537]
 
+k=dfcafeznelwdan.groupby('BKFACE').agg({'ID':'count'})
+sum(k['ID'])
+sum(k.loc[np.isin(k['ID'],[1,2]),'ID'])/sum(k['ID'])
+sum(k.loc[np.isin(k['ID'],[3,4]),'ID'])/sum(k['ID'])
+sum(k.loc[k['ID']>=7,'ID'])/sum(k['ID'])
 
 
 
@@ -319,9 +324,29 @@ sdwkcafe['CAFETYPE']=[str(x).strip().upper() for x in sdwkcafe['CafeType']]
 sdwkcafe=sdwkcafe.loc[sdwkcafe['CAFETYPE']!='NONE',['CAFETYPE','geometry']].reset_index(drop=True)
 sdwkcafe.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/sidewalkcafe/sdwkcafe.geojson',driver='GeoJSON')
 
+# Zoning District
+zd=gpd.read_file(path+'SIDEWALK CAFE/nycgiszoningfeatures_202009shp/nyzd.shp')
+zd.crs='epsg:2263'
+zd=zd.to_crs('epsg:4326')
+zd['cat']=''
+zd=zd[['ZONEDIST','cat','geometry']].reset_index(drop=True)
+zd.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/sidewalkcafe/zd.geojson',driver='GeoJSON')
 
+# Comemrcial Overlay
+co=gpd.read_file(path+'SIDEWALK CAFE/nycgiszoningfeatures_202009shp/nyco.shp')
+co.crs='epsg:2263'
+co=co.to_crs('epsg:4326')
+co['cat']=''
+co=co[['OVERLAY','cat','geometry']].reset_index(drop=True)
+co.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/sidewalkcafe/co.geojson',driver='GeoJSON')
 
-
+# Special District
+sp=gpd.read_file(path+'SIDEWALK CAFE/nycgiszoningfeatures_202009shp/nysp.shp')
+sp.crs='epsg:2263'
+sp=sp.to_crs('epsg:4326')
+sp['cat']=''
+sp=sp[['SDNAME','SDLBL','cat','geometry']].reset_index(drop=True)
+sp.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/sidewalkcafe/sp.geojson',driver='GeoJSON')
 
 
 
