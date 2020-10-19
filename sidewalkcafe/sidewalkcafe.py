@@ -78,7 +78,7 @@ for i in df.index:
         except:
             print(str(df.loc[i,'ID'])+' not geocoded with zipcode!')
 len(df[pd.notna(df['BBL'])])
-# 9894/11183
+# 9888/11183
 for i in df.index:
     if pd.isna(df.loc[i,'BBL']):
         try:
@@ -100,7 +100,7 @@ for i in df.index:
         except:
             print(str(df.loc[i,'ID'])+' not geocoded with borough!')
 len(df[pd.notna(df['BBL'])])
-# 9943/11183
+# 9937/11183
 for i in df.index:
     if pd.isna(df.loc[i,'BBL']):
         try:
@@ -120,7 +120,7 @@ for i in df.index:
         except:
             print(str(df.loc[i,'ID'])+' not geocoded with zipcode!')
 len(df[pd.notna(df['BBL'])])
-# 10005/11183
+# 9993/11183
 for i in df.index:
     if pd.isna(df.loc[i,'BBL']):
         try:
@@ -142,22 +142,22 @@ for i in df.index:
         except:
             print(str(df.loc[i,'ID'])+' not geocoded with borough!')
 len(df[pd.notna(df['BBL'])])
-# 10007/11183
+# 9995/11183
 df=df[(pd.notna(df['BBL']))&(df['BBL']!=0)&(pd.notna(df['LAT']))&(pd.notna(df['LONG']))&(pd.notna(df['BKFACE']))].reset_index(drop=True)
-# 9973/11183
+# 9959/11183
 df=gpd.GeoDataFrame(df,geometry=[shapely.geometry.Point(x,y) for x,y in zip(df['LONG'],df['LAT'])],crs='epsg:4326')
-df.to_file(path+'SIDEWALK CAFE/open_restaurant.shp')
+df.to_file(path+'SIDEWALK CAFE/or.shp')
 df=gpd.GeoDataFrame(df,geometry=[shapely.geometry.Point(x,y) for x,y in zip(df['X'],df['Y'])],crs='epsg:6539')
 df=df.to_crs('epsg:4326')
-df.to_file(path+'SIDEWALK CAFE/open_restaurant_xy.shp')
+df.to_file(path+'SIDEWALK CAFE/or_xy.shp')
 
 
 
 # Adjust Open Restaurant to MapPluto Lot Line
-df=gpd.read_file(path+'SIDEWALK CAFE/open_restaurant_xy.shp')
+df=gpd.read_file(path+'SIDEWALK CAFE/or_xy.shp')
 df.crs='epsg:4326'
 df=df.to_crs('epsg:6539')
-mappluto=gpd.read_file(path+'POPS/pops/mappluto2020.shp')
+mappluto=gpd.read_file(path+'SIDEWALK CAFE/mappluto.shp')
 mappluto.crs='epsg:4326'
 mappluto=mappluto.to_crs('epsg:6539')
 df['XADJ']=np.nan
@@ -170,10 +170,10 @@ for i in df.index:
     except:
         print(str(i)+' error')
 df=df[pd.notna(df['XADJ'])].reset_index(drop=True)
-# 9962/11183
+# 9950/11183
 df=gpd.GeoDataFrame(df,geometry=[shapely.geometry.Point(x,y) for x,y in zip(df['XADJ'],df['YADJ'])],crs='epsg:6539')
 df=df.to_crs('epsg:4326')
-df.to_file(path+'SIDEWALK CAFE/open_restaurant_xyadj.shp')
+df.to_file(path+'SIDEWALK CAFE/or_xyadj.shp')
 
 
 
@@ -185,31 +185,61 @@ sdwkcafe['geometry']=[x.buffer(1) for x in sdwkcafe['geometry']]
 sdwkcafe=sdwkcafe.to_crs('epsg:4326')
 sdwkcafe['CAFETYPE']=[str(x).strip().upper() for x in sdwkcafe['CafeType']]
 sdwkcafe=sdwkcafe[['CAFETYPE','geometry']].reset_index(drop=True)
-df=gpd.read_file(path+'SIDEWALK CAFE/open_restaurant_xyadj.shp')
+df=gpd.read_file(path+'SIDEWALK CAFE/or_xyadj.shp')
 df.crs='epsg:4326'
 dfcafe=gpd.sjoin(df,sdwkcafe,how='left',op='intersects')
 dfcafe=dfcafe[['ID','CAFETYPE']].drop_duplicates(['ID'],keep='first').reset_index(drop=True)
 dfcafe['CAFETYPE']=np.where(pd.notna(dfcafe['CAFETYPE']),dfcafe['CAFETYPE'],'NONE')
 dfcafe=pd.merge(df,dfcafe,how='inner',on='ID')
-dfcafe.to_file(path+'SIDEWALK CAFE/restaurant_cafe.shp')
+dfcafe.to_file(path+'SIDEWALK CAFE/or_cafe.shp')
 
 
 
+# Join Open Restaurant to Zoning
+mappluto=gpd.read_file(path+'SIDEWALK CAFE/mappluto.shp')
+mappluto.crs='epsg:4326'
+dfcafe=gpd.read_file(path+'SIDEWALK CAFE/or_cafe.shp')
+dfcafe.crs='epsg:4326'
+dfcafezn=pd.merge(dfcafe,mappluto,how='left',on='BBL')
+dfcafezn=dfcafezn.loc[pd.notna(dfcafezn['ZoneDist1']),['ID','ZoneDist1','ZoneDist2','ZoneDist3','ZoneDist4',
+                                                       'Overlay1','Overlay2','SPDist1','SPDist2','SPDist3']].reset_index(drop=True)
+dfcafezn['ZD']=''
+dfcafezn['OL']=''
+dfcafezn['SP']=''
+for i in dfcafezn.index:
+    dfcafezn.loc[i,'ZD']='; '.join(sorted([x for x in list(dfcafezn.loc[i,['ZoneDist1','ZoneDist2','ZoneDist3','ZoneDist4']]) if pd.notna(x)]))
+    dfcafezn.loc[i,'OL']='; '.join(sorted([x for x in list(dfcafezn.loc[i,['Overlay1','Overlay2']]) if pd.notna(x)]))
+    dfcafezn.loc[i,'SP']='; '.join(sorted([x for x in list(dfcafezn.loc[i,['SPDist1','SPDist2','SPDist3']]) if pd.notna(x)]))
+dfcafezn=dfcafezn[['ID','ZD','OL','SP']].reset_index(drop=True)
+dfcafezn=pd.merge(dfcafe,dfcafezn,how='left',on='ID')
+dfcafezn.to_file(path+'SIDEWALK CAFE/or_cafe_zn.shp')
 
 
-# Join Open Restaurant to Zoning District
 
-
-
+# Join Open Restaurant to Elevated Rail
+el=gpd.read_file(path+'STREET CLOSURE/sidewalk/input/planimetrics/transpstruct.shp')
+el.crs='epsg:4326'
+el['EL']='YES'
+el=el.loc[np.isin(el['FEATURE_CO'],[2320,2340]),['EL','geometry']].reset_index(drop=True)
+dfcafezn=gpd.read_file(path+'SIDEWALK CAFE/or_cafe_zn.shp')
+dfcafezn.crs='epsg:4326'
+dfcafeznel=dfcafezn.copy()
+dfcafeznel=gpd.GeoDataFrame(dfcafeznel,geometry=[shapely.geometry.Point(x,y) for x,y in zip(dfcafeznel['X'],dfcafeznel['Y'])],crs='epsg:6539')
+dfcafeznel=dfcafeznel.to_crs('epsg:4326')
+dfcafeznel=gpd.sjoin(dfcafeznel,el,how='left',op='intersects')
+dfcafeznel['EL']=np.where(pd.notna(dfcafeznel['EL']),dfcafeznel['EL'],'NO')
+dfcafeznel=dfcafeznel[['ID','EL']].drop_duplicates(keep='first').reset_index(drop=True)
+dfcafeznel=pd.merge(dfcafezn,dfcafeznel,how='left',on='ID')
+dfcafeznel.to_file(path+'SIDEWALK CAFE/or_cafe_zn_el.shp')
 
 
 
 # Join Open Restaurant to Sidewalk Width
-dfcafe=gpd.read_file(path+'SIDEWALK CAFE/open_restaurant_sidewalk_cafe.shp')
-dfcafe.crs='epsg:4326'
+dfcafeznel=gpd.read_file(path+'SIDEWALK CAFE/or_cafe_zn_el.shp')
+dfcafeznel.crs='epsg:4326'
 sdwkwdimp=gpd.read_file(path+'STREET CLOSURE/sidewalk/output/sdwkwdimp.shp')
 sdwkwdimp.crs='epsg:4326'
-sdwkwdimp=sdwkwdimp[['bkfaceid','orgswmedia','impswmedia','length']]
+sdwkwdimp=sdwkwdimp[['bkfaceid','orgswmedia','impswmedia','length']].reset_index(drop=True)
 sdwkwdimp['orgswlen']=sdwkwdimp['orgswmedia']*sdwkwdimp['length']
 sdwkwdimp['impswlen']=sdwkwdimp['impswmedia']*sdwkwdimp['length']
 sdwkwdimp=sdwkwdimp.groupby(['bkfaceid'],as_index=False).agg({'orgswlen':'sum',
@@ -219,10 +249,9 @@ sdwkwdimp['BKFACE']=pd.to_numeric(sdwkwdimp['bkfaceid'])
 sdwkwdimp['ORGSWMDN']=sdwkwdimp['orgswlen']/sdwkwdimp['length']
 sdwkwdimp['IMPSWMDN']=sdwkwdimp['impswlen']/sdwkwdimp['length']
 sdwkwdimp=sdwkwdimp[['BKFACE','ORGSWMDN','IMPSWMDN']].reset_index(drop=True)
-dfcafewd=pd.merge(dfcafe,sdwkwdimp,how='left',on='BKFACE')
-dfcafewd=dfcafewd[pd.notna(dfcafewd['ORGSWMDN'])].reset_index(drop=True)
-# 9913/11183
-dfcafewd.to_file(path+'SIDEWALK CAFE/restaurant_cafe_width.shp')
+dfcafeznelwd=pd.merge(dfcafeznel,sdwkwdimp,how='left',on='BKFACE')
+dfcafeznelwd.to_file(path+'SIDEWALK CAFE/or_cafe_zn_el_wd.shp')
+dfcafeznelwd.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/sidewalkcafe/or_cafe_zn_el_wd.geojson',driver='GeoJSON')
 
 
 
@@ -230,6 +259,15 @@ dfcafewd.to_file(path+'SIDEWALK CAFE/restaurant_cafe_width.shp')
 
 
 
+sdwkwdimp=gpd.read_file(path+'STREET CLOSURE/sidewalk/output/sdwkwdimp.shp')
+sdwkwdimp.crs='epsg:4326'
+sdwkwdimp=sdwkwdimp[['bkfaceid','orgswmedia','impswmedia','geometry']].reset_index(drop=True)
+sdwkwdimp['BKFACE']=pd.to_numeric(sdwkwdimp['bkfaceid'])
+sdwkwdimp['ORGSWMDN']=pd.to_numeric(sdwkwdimp['orgswmedia'])
+sdwkwdimp['IMPSWMDN']=pd.to_numeric(sdwkwdimp['impswmedia'])
+sdwkwdimp['CAT']=np.where(sdwkwdimp['IMPSWMDN']<11,'<11',np.where(sdwkwdimp['IMPSWMDN']<=14,'11~14','>14'))
+sdwkwdimp=sdwkwdimp[['BKFACE','ORGSWMDN','IMPSWMDN','CAT','geometry']].reset_index(drop=True)
+sdwkwdimp.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/sidewalkcafe/sdwkwdimp.geojson',driver='GeoJSON')
 
 
 
