@@ -348,6 +348,23 @@ sp['cat']=''
 sp=sp[['SDNAME','SDLBL','cat','geometry']].reset_index(drop=True)
 sp.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/sidewalkcafe/sp.geojson',driver='GeoJSON')
 
+# Elevated Rail
+el=gpd.read_file(path+'STREET CLOSURE/sidewalk/input/planimetrics/transpstruct.shp')
+el.crs='epsg:4326'
+el['cat']=''
+el=el.loc[np.isin(el['FEATURE_CO'],[2320,2340]),['cat','geometry']].reset_index(drop=True)
+el.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/sidewalkcafe/el.geojson',driver='GeoJSON')
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -357,8 +374,6 @@ import plotly.io as pio
 import plotly.express as px
 pio.renderers.default = "browser"
 px.box(k,x='SDWKWDTH',y='ORGSWMDN')
-
-
 
 
 import numpy as np
