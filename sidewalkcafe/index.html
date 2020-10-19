@@ -66,27 +66,27 @@
         }
 
         #legend>div>input {
-            width: 1rem;
-            height: 1rem;
+            width: 0.8rem;
+            height: 0.8rem;
             margin-left: 2.3rem;
             margin-right: 1rem;
             margin-top: 0.5rem;
-            vertical-align: -0.1rem;
+            vertical-align: -0.05rem;
         }
 
         .legend-key-circle {
-            width: 1rem;
-            height: 1rem;
+            width: 0.8rem;
+            height: 0.8rem;
             margin-left: 0.25rem;
             margin-right: 1rem;
             border-radius: 100%;
             display: inline-block;
-            vertical-align: -0.15rem;
+            vertical-align:-0.05rem;
         }
 
         .legend-key-line {
             width: 1rem;
-            height: 0.3rem;
+            height: 0.2rem;
             margin-left: 0.25rem;
             margin-right: 1rem;
             border-radius: 0%;
@@ -95,13 +95,13 @@
         }
 
         .legend-key-fill {
-            width: 1rem;
-            height: 1rem;
+            width: 0.8rem;
+            height: 0.8rem;
             margin-left: 0.25rem;
             margin-right: 1rem;
             border-radius: 0%;
             display: inline-block;
-            vertical-align: -0.15rem;
+            vertical-align: -0.05rem;
         }
 
         .legend-key-fill-extrusion {
@@ -490,8 +490,8 @@
                 'layerlinejoin': 'round', // line joining; bevel/round/miter
                 'layervisibility': 'none', // visibility of the layer
                 'layercolname': 'CAFETYPE', // category column name
-                'layercat': ['ALL CAFES', 'NOT PERMITTED', 'UNENCLOSED ONLY', 'SMALL ONLY'], // categories
-                'layercolor': ['rgba(161,218,180,1)', 'rgba(65,182,196,1)', 'rgba(44,127,184,1)', 'rgba(186,187,219,1)'], // color for each category; use rgba
+                'layercat': ['ALL CAFES', 'SMALL ONLY','UNENCLOSED ONLY','NOT PERMITTED'], // categories
+                'layercolor': ['rgba(113,190,40,1)', 'rgba(246,189,0,1)', 'rgba(222,134,239,1)', 'rgba(255,109,109,1)'], // color for each category; use rgba
                 'layeropacity': 1, // line opacity
                 'layerwidth': 2, // line width
                 'layeroutlinecolor': 'rgba(0,0,0,0)', // outline color; for legend purpose only
@@ -662,16 +662,15 @@
                 'layerid': 'orcafeznelwd', // layer id
                 'layertype': 'circle', // symbology type
                 'layername': 'Open Restaurant by Cafe Regulation', // layer name for the legend
-                'layervisibility': 'none', // visibility of the layer
+                'layervisibility': 'visible', // visibility of the layer
                 'layercolname': 'CAFETYPE', // category column name
-                'layercat': ['ALL CAFES', 'UNENCLOSED ONLY', 'SMALL ONLY', 'NOT PERMITTED', 'NONE'], // categories
-                'layercolor': ['rgba(255,0,0,1)', 'rgba(0,255,0,1)', 'rgba(44,127,184,1)', 'rgba(0,0,255,1)', 'rgba(100,100,255,1)'], // color for each category; use rgba
+                'layercat': ['ALL CAFES', 'SMALL ONLY','UNENCLOSED ONLY','NOT PERMITTED', 'NONE'], // categories
+                'layercolor': ['rgba(113,190,40,1)', 'rgba(246,189,0,1)', 'rgba(222,134,239,1)', 'rgba(255,109,109,1)', 'rgba(100,100,255,1)'], // color for each category; use rgba
                 'layeropacity': 1, // circle opacity
-                'layerradius': { 'base': 2, 'stops': [[12, 4], [22, 180]] }, // circle radius; change size based on zoom level
+                'layerradius': { 'base': 2, 'stops': [[12, 3], [22, 180]] }, // circle radius; change size based on zoom level
                 'layerstrokecolor': 'rgba(255,255,255,1)', // circle stroke color
                 'layerstrokeopacity': 1, // circle stroke opacity
                 'layerstrokewidth': 0.5, // circle stroke width
-                'layerminzoom': 10, // only show if zoom in the certain level
                 'layeroutlinecolor': 'rgba(0,0,0,0)', // outline color; for legend purpose only
             };
 

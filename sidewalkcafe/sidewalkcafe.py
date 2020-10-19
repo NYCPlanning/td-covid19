@@ -160,6 +160,7 @@ df=df.to_crs('epsg:6539')
 mappluto=gpd.read_file(path+'SIDEWALK CAFE/mappluto.shp')
 mappluto.crs='epsg:4326'
 mappluto=mappluto.to_crs('epsg:6539')
+mappluto['geometry']=[x.boundary for x in mappluto['geometry']]
 df['XADJ']=np.nan
 df['YADJ']=np.nan
 for i in df.index:
@@ -181,7 +182,7 @@ df.to_file(path+'SIDEWALK CAFE/or_xyadj.shp')
 sdwkcafe=gpd.read_file(path+'SIDEWALK CAFE/sidewalk_cafe.shp')
 sdwkcafe.crs='epsg:4326'
 sdwkcafe=sdwkcafe.to_crs('epsg:6539')
-sdwkcafe['geometry']=[x.buffer(1) for x in sdwkcafe['geometry']]
+sdwkcafe['geometry']=[x.buffer(5) for x in sdwkcafe['geometry']]
 sdwkcafe=sdwkcafe.to_crs('epsg:4326')
 sdwkcafe['CAFETYPE']=[str(x).strip().upper() for x in sdwkcafe['CafeType']]
 sdwkcafe=sdwkcafe[['CAFETYPE','geometry']].reset_index(drop=True)
