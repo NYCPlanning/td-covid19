@@ -258,7 +258,16 @@ dfcafeznelwd.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/sidewalkcafe/
 
 
 
-
+sdwkwdimp=gpd.read_file(path+'STREET CLOSURE/sidewalk/output/sdwkwdimp.shp')
+sdwkwdimp.crs='epsg:4326'
+sdwkwdimp=sdwkwdimp[['bkfaceid','orgswmedia','impswmedia','geometry']].reset_index(drop=True)
+sdwkwdimp['BKFACE']=pd.to_numeric(sdwkwdimp['bkfaceid'])
+sdwkwdimp['ORGSWMDN']=pd.to_numeric(sdwkwdimp['orgswmedia'])
+sdwkwdimp['IMPSWMDN']=pd.to_numeric(sdwkwdimp['impswmedia'])
+sdwkwdimp['CAT']=np.where(sdwkwdimp['IMPSWMDN']<11,'<11',np.where(sdwkwdimp['IMPSWMDN']<=14,'11~14','>14'))
+sdwkwdimp['geometry']=[x.simplify(tolerance=0.01,preserve_topology=True) for x in sdwkwdimp['geometry']]
+sdwkwdimp=sdwkwdimp[['BKFACE','ORGSWMDN','IMPSWMDN','CAT','geometry']].reset_index(drop=True)
+sdwkwdimp.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/sidewalkcafe/sdwkwdimp.geojson',driver='GeoJSON')
 
 
 
