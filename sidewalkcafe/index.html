@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8" />
-    <title>Mapbox Testing</title>
+    <title>Open Restaurant</title>
     <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
     <script src="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js"></script>
     <link href="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css" rel="stylesheet" />
@@ -198,7 +198,7 @@
                 'layertype': 'fill', // symbology type
                 'layername': 'Polygon', // layer name for the legend
                 'layerfilter': ['==', 'BoroName', 'Queens'], // filter
-                'layervisibility': 'visible', // visibility of the layer
+                'layervisibility': 'none', // visibility of the layer
                 'layercolname': 'cat', // category column name
                 'layercat': ['<=100%', '101%~200%', '201%~300%', '301%~400%', '>400%'], // categories
                 'layercolor': ['rgba(228,227,240,1)', 'rgba(186,187,219,1)', 'rgba(140,136,192,1)', 'rgba(99,67,156,1)', 'rgba(63,0,125,1)'], // color for each category; use rgba
@@ -310,7 +310,7 @@
                 'layername': 'Sidewalk Cafe Regulation', // layer name for the legend
                 'layerlinecap': 'round', // line endings; butt/round/square
                 'layerlinejoin': 'round', // line joining; bevel/round/miter
-                'layervisibility': 'visible', // visibility of the layer
+                'layervisibility': 'none', // visibility of the layer
                 'layercolname': 'CAFETYPE', // category column name
                 'layercat': ['ALL CAFES', 'NOT PERMITTED', 'UNENCLOSED ONLY', 'SMALL ONLY'], // categories
                 'layercolor': ['rgba(161,218,180,1)', 'rgba(65,182,196,1)', 'rgba(44,127,184,1)', 'rgba(186,187,219,1)'], // color for each category; use rgba
@@ -364,9 +364,9 @@
                 'layertype': 'circle', // symbology type
                 'layername': 'Open Restaurant', // layer name for the legend
                 'layervisibility': 'visible', // visibility of the layer
-                'layercolname': 'TYPE', // category column name
-                'layercat': ['BOTH', 'SIDEWALK', 'ROADWAY', 'OPENSTREETS'], // categories
-                'layercolor': ['rgba(255,0,0,1)', 'rgba(0,255,0,1)', 'rgba(0,0,255,1)', 'rgba(100,100,100,1)'], // color for each category; use rgba
+                'layercolname': 'CAFETYPE', // category column name
+                'layercat': ['ALL CAFES', 'UNENCLOSED ONLY', 'SMALL ONLY', 'NOT PERMITTED', 'NONE'], // categories
+                'layercolor': ['rgba(255,0,0,1)', 'rgba(0,255,0,1)', 'rgba(44,127,184,1)', 'rgba(0,0,255,1)', 'rgba(100,100,255,1)'], // color for each category; use rgba
                 'layeropacity': 1, // circle opacity
                 'layerradius': { 'base': 2, 'stops': [[12, 4], [22, 180]] }, // circle radius; change size based on zoom level
                 'layerstrokecolor': 'rgb(255,255,255)', // circle stroke color
@@ -424,11 +424,12 @@
                 maxWidth: 'none', // max width of the popoup; 'none' to fit to the content                
             });
 
-            // Add point popup
+            // Add open restaurant popup
             // Add click event
             map.on('click', 'orcafeznelwd', function (e) {
                 var coordinates = e.features[0].geometry.coordinates.slice(); // get point coordinates
-                var description = "<b>TYPE: </b><span>" + e.features[0].properties.TYPE + "</span><br>"; // description in the popup
+                var description = "<b>ID: </b><span>" + e.features[0].properties.ID + "</span><br>"; // description in the popup
+                description += "<b>TYPE: </b><span>" + e.features[0].properties.TYPE + "</span><br>"; // description in the popup
                 popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
             });
             // Add hover events

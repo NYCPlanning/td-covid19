@@ -251,13 +251,56 @@ sdwkwdimp['IMPSWMDN']=sdwkwdimp['impswlen']/sdwkwdimp['length']
 sdwkwdimp=sdwkwdimp[['BKFACE','ORGSWMDN','IMPSWMDN']].reset_index(drop=True)
 dfcafeznelwd=pd.merge(dfcafeznel,sdwkwdimp,how='left',on='BKFACE')
 dfcafeznelwd.to_file(path+'SIDEWALK CAFE/or_cafe_zn_el_wd.shp')
+dfcafeznelwd=dfcafeznelwd[np.isin(dfcafeznelwd['TYPE'],['BOTH','SIDEWALK'])].reset_index(drop=True)
 dfcafeznelwd.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/sidewalkcafe/or_cafe_zn_el_wd.geojson',driver='GeoJSON')
 
 
 
+# Analyses
+dfcafeznelwd=gpd.read_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/sidewalkcafe/or_cafe_zn_el_wd.geojson',driver='GeoJSON')
+dfcafeznelwd.crs='epsg:4326'
+dfcafeznelwdan=dfcafeznelwd.copy()
+
+dfcafeznelwdan['CAFETYPE'].value_counts(dropna=False)
+
+dfcafeznelwdan['ZDR']=[x.find('R') for x in dfcafeznelwdan['ZD']]
+dfcafeznelwdan['ZDR']=np.where(dfcafeznelwdan['ZDR']==-1,0,1)
+dfcafeznelwdan['ZDR'].value_counts(dropna=False)
+dfcafeznelwdan['ZDOL']=np.where(pd.notna(dfcafeznelwdan['OL']),1,0)
+dfcafeznelwdan.loc[dfcafeznelwdan['ZDR']==1,'ZDOL'].value_counts(dropna=False)
+
+dfcafeznelwdan['ZDC']=[x.find('C') for x in dfcafeznelwdan['ZD']]
+dfcafeznelwdan['ZDC']=np.where(dfcafeznelwdan['ZDC']==-1,0,1)
+dfcafeznelwdan['ZDC'].value_counts(dropna=False)
+dfcafeznelwdan.loc[dfcafeznelwdan['ZDC']==1,'CAFETYPE'].value_counts(dropna=False)
+
+dfcafeznelwdan['ZDM1']=[x.find('M1') for x in dfcafeznelwdan['ZD']]
+dfcafeznelwdan['ZDM2']=[x.find('M2') for x in dfcafeznelwdan['ZD']]
+dfcafeznelwdan['ZDM3']=[x.find('M3') for x in dfcafeznelwdan['ZD']]
+dfcafeznelwdan['ZDM']=np.where(dfcafeznelwdan['ZDM1']>=0,1,
+                      np.where(dfcafeznelwdan['ZDM2']>=0,1,
+                      np.where(dfcafeznelwdan['ZDM3']>=0,1,0)))
+dfcafeznelwdan['ZDM'].value_counts(dropna=False)
+dfcafeznelwdan.loc[dfcafeznelwdan['ZDM']==1,'OL'].value_counts(dropna=False)
+
+dfcafeznelwdan['ZDSP']=np.where(pd.notna(dfcafeznelwdan['SP']),1,0)
+dfcafeznelwdan['ZDSP'].value_counts(dropna=False)
+dfcafeznelwdan.loc[dfcafeznelwdan['ZDSP']==1,'SP'].value_counts(dropna=False)
+
+dfcafeznelwdan['EL'].value_counts(dropna=False)
+
+
+dfcafeznelwdan['WD']=np.where(dfcafeznelwdan['IMPSWMDN']<11,'<11',np.where(dfcafeznelwdan['IMPSWMDN']<=14,'11~14','>14'))
+dfcafeznelwdan['WD'].value_counts(dropna=False)
+dfcafeznelwdan[dfcafeznelwdan['ID']==6474]
+4431+2325+1781
+[4431/8537,2325/8537,1781/8537]
 
 
 
+
+# Convert to GeoJSON
+# Sidewalk Width
 sdwkwdimp=gpd.read_file(path+'STREET CLOSURE/sidewalk/output/sdwkwdimp.shp')
 sdwkwdimp.crs='epsg:4326'
 sdwkwdimp=sdwkwdimp[['bkfaceid','orgswmedia','impswmedia','geometry']].reset_index(drop=True)
@@ -269,8 +312,7 @@ sdwkwdimp['geometry']=[x.simplify(tolerance=0.01,preserve_topology=True) for x i
 sdwkwdimp=sdwkwdimp[['bkface','orgswmdn','impswmdn','cat','geometry']].reset_index(drop=True)
 sdwkwdimp.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/sidewalkcafe/sdwkwdimp.geojson',driver='GeoJSON')
 
-
-
+# Sidewalk Cafe
 sdwkcafe=gpd.read_file(path+'SIDEWALK CAFE/sidewalk_cafe.shp')
 sdwkcafe.crs='epsg:4326'
 sdwkcafe['CAFETYPE']=[str(x).strip().upper() for x in sdwkcafe['CafeType']]
