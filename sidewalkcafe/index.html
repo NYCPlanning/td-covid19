@@ -373,7 +373,7 @@
                 'sourcedata': q, // data source
                 'layerid': 'sdwkwdimp', // layer id
                 'layertype': 'line', // symbology type
-                'layername': 'Median Sidewalk Width (ft) (Full)', // layer name for the legend
+                'layername': 'Median Sidewalk Width', // layer name for the legend
                 'layerlinecap': 'round', // line endings; butt/round/square
                 'layerlinejoin': 'round', // line joining; bevel/round/miter
                 'layervisibility': 'none', // visibility of the layer
@@ -421,59 +421,59 @@
 
 
 
-            // Add Sidewalk Width Simplified
-            // Set layer contents
-            var layerContent = {
-                'sourceid': 'sdwkwdimpsp', // source id
-                'sourcetype': 'geojson', // source type
-                'sourcedata': 'sdwkwdimp.geojson', // data source
-                'layerid': 'sdwkwdimpsp', // layer id
-                'layertype': 'line', // symbology type
-                'layername': 'Median Sidewalk Width (ft) (Simplified)', // layer name for the legend
-                'layerlinecap': 'round', // line endings; butt/round/square
-                'layerlinejoin': 'round', // line joining; bevel/round/miter
-                'layervisibility': 'none', // visibility of the layer
-                'layercolname': 'cat', // category column name
-                'layercat': ['<11 ft', '11 ft ~ 14 ft', '>14 ft'], // categories
-                'layercolor': ['rgba(161,218,180,1)', 'rgba(65,182,196,1)', 'rgba(44,127,184,1)'], // color for each category; use rgba
-                'layeropacity': 1, // line opacity
-                'layerwidth': 2, // line width
-                'layeroutlinecolor': 'rgba(0,0,0,0)', // outline color; for legend purpose only
-            };
+            // // Add Sidewalk Width Simplified
+            // // Set layer contents
+            // var layerContent = {
+            //     'sourceid': 'sdwkwdimpsp', // source id
+            //     'sourcetype': 'geojson', // source type
+            //     'sourcedata': 'sdwkwdimp.geojson', // data source
+            //     'layerid': 'sdwkwdimpsp', // layer id
+            //     'layertype': 'line', // symbology type
+            //     'layername': 'Median Sidewalk Width (Simplified)', // layer name for the legend
+            //     'layerlinecap': 'round', // line endings; butt/round/square
+            //     'layerlinejoin': 'round', // line joining; bevel/round/miter
+            //     'layervisibility': 'none', // visibility of the layer
+            //     'layercolname': 'cat', // category column name
+            //     'layercat': ['<11 ft', '11 ft ~ 14 ft', '>14 ft'], // categories
+            //     'layercolor': ['rgba(161,218,180,1)', 'rgba(65,182,196,1)', 'rgba(44,127,184,1)'], // color for each category; use rgba
+            //     'layeropacity': 1, // line opacity
+            //     'layerwidth': 2, // line width
+            //     'layeroutlinecolor': 'rgba(0,0,0,0)', // outline color; for legend purpose only
+            // };
 
-            // Generate layer colors
-            var layerColor = ['match', ['get', layerContent['layercolname']]];
-            for (var i = 0; i < layerContent.layercat.length; i++) {
-                layerColor.push(layerContent.layercat[i]);
-                layerColor.push(layerContent.layercolor[i]);
-            };
-            layerColor.push('#000000');
+            // // Generate layer colors
+            // var layerColor = ['match', ['get', layerContent['layercolname']]];
+            // for (var i = 0; i < layerContent.layercat.length; i++) {
+            //     layerColor.push(layerContent.layercat[i]);
+            //     layerColor.push(layerContent.layercolor[i]);
+            // };
+            // layerColor.push('#000000');
 
-            // Add layer content to the overall layer content list
-            layerContentList.push(layerContent);
+            // // Add layer content to the overall layer content list
+            // layerContentList.push(layerContent);
 
-            // Add data source
-            map.addSource(layerContent['sourceid'], {
-                'type': layerContent['sourcetype'],
-                'data': layerContent['sourcedata'],
-            });
+            // // Add data source
+            // map.addSource(layerContent['sourceid'], {
+            //     'type': layerContent['sourcetype'],
+            //     'data': layerContent['sourcedata'],
+            // });
 
-            // Add line layer
-            map.addLayer({
-                'id': layerContent['layerid'],
-                'type': layerContent['layertype'],
-                'source': layerContent['sourceid'],
-                'layout': {
-                    'line-cap': layerContent['layerlinecap'],
-                    'line-join': layerContent['layerlinejoin'],
-                    'visibility': layerContent['layervisibility'],
-                },
-                'paint': {
-                    'line-color': layerColor,
-                    'line-opacity': layerContent['layeropacity'],
-                    'line-width': layerContent['layerwidth'],
-                },
-            });
+            // // Add line layer
+            // map.addLayer({
+            //     'id': layerContent['layerid'],
+            //     'type': layerContent['layertype'],
+            //     'source': layerContent['sourceid'],
+            //     'layout': {
+            //         'line-cap': layerContent['layerlinecap'],
+            //         'line-join': layerContent['layerlinejoin'],
+            //         'visibility': layerContent['layervisibility'],
+            //     },
+            //     'paint': {
+            //         'line-color': layerColor,
+            //         'line-opacity': layerContent['layeropacity'],
+            //         'line-width': layerContent['layerwidth'],
+            //     },
+            // });
 
 
 
@@ -775,12 +775,32 @@
                 maxWidth: 'none', // max width of the popoup; 'none' to fit to the content                
             });
 
-            // Add open restaurant popup
+            // Add open restaurant by cafe regulation popup
             // Add click event
             map.on('click', 'orcafe', function (e) {
                 var coordinates = e.features[0].geometry.coordinates.slice(); // get point coordinates
                 var description = "<b>ID: </b><span>" + e.features[0].properties.ID + "</span><br>"; // description in the popup
-                description += "<b>TYPE: </b><span>" + e.features[0].properties.TYPE + "</span><br>"; // description in the popup
+                description += "<b>Submission Time: </b><span>" + e.features[0].properties.TIME + "</span><br>";
+                description += "<b>Sidewalk Cafe Regulation Type: </b><span>" + e.features[0].properties.TYPE + "</span><br>";
+                description += "<b>Restaurant Name: </b><span>" + e.features[0].properties.NAME + "</span><br>";
+                description += "<b>Legal Business Name: </b><span>" + e.features[0].properties.LEGAL + "</span><br>";
+                description += "<b>Doing Business As: </b><span>" + e.features[0].properties.DBA + "</span><br>";
+                description += "<b>Business Address: </b><span>" + e.features[0].properties.ADDRESS + "</span><br>";
+                description += "<b>Postcode: </b><span>" + e.features[0].properties.ZIP + "</span><br>";
+                description += "<b>Food Service Establishment Permit #: </b><span>" + e.features[0].properties.PMTNUM + "</span><br>";
+                description += "<b>Qualify Alcohol: </b><span>" + e.features[0].properties.ALCOHOL + "</span><br>";
+                description += "<b>SLA Serial Number: </b><span>" + e.features[0].properties.SLA + "</span><br>";
+                description += "<b>SLA License Type: </b><span>" + e.features[0].properties.SLATYPE + "</span><br>";
+                description += "<b>Landmark District or Building: </b><span>" + e.features[0].properties.LANDMARK + "</span><br>";
+                description += "<b>Landmark District Terms: </b><span>" + e.features[0].properties.TERMLDMK + "</span><br>";
+                description += "<b>Health Compliance Terms: </b><span>" + e.features[0].properties.TERMHEALTH + "</span><br>";
+                description += "<b>Borough-Block-Lot: </b><span>" + e.features[0].properties.BBL + "</span><br>";
+                description += "<b>Zoning District: </b><span>" + e.features[0].properties.ZD + "</span><br>";
+                description += "<b>Comemrcial Overlay: </b><span>" + e.features[0].properties.OL + "</span><br>";
+                description += "<b>Special District: </b><span>" + e.features[0].properties.SP + "</span><br>";
+                description += "<b>Elevated Rail: </b><span>" + e.features[0].properties.EL + "</span><br>";
+                description += "<b>Original Median Sidewalk Width (ft): </b><span>" + e.features[0].properties.ORGSWMDN.toFixed(2) + "</span><br>"; // description in the popup
+                description += "<b>Median Sidewalk Width Excluding Impediments (ft): </b><span>" + e.features[0].properties.IMPSWMDN.toFixed(2) + "</span><br>";
                 popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
             });
             // Add hover events
@@ -791,21 +811,57 @@
                 map.getCanvas().style.cursor = '';
             });
 
-            // Add sidewalk width simpliefied popup
+            // Add open restaurant by sidewalk width popup
             // Add click event
-            map.on('click', 'sdwkwdimpsp', function (e) {
-                var coordinates = e.lngLat; // get pointer coordinates
-                var description = "<b>Original Median Sidewalk Width (ft): </b><span>" + e.features[0].properties.orgswmdn.toFixed(2) + "</span><br>"; // description in the popup
-                description += "<b>Median Sidewalk Width Excluding Impediments (ft): </b><span>" + e.features[0].properties.impswmdn.toFixed(2) + "</span><br>";
+            map.on('click', 'orsw', function (e) {
+                var coordinates = e.features[0].geometry.coordinates.slice(); // get point coordinates
+                var description = "<b>ID: </b><span>" + e.features[0].properties.ID + "</span><br>"; // description in the popup
+                description += "<b>Submission Time: </b><span>" + e.features[0].properties.TIME + "</span><br>";
+                description += "<b>Sidewalk Cafe Regulation Type: </b><span>" + e.features[0].properties.TYPE + "</span><br>";
+                description += "<b>Restaurant Name: </b><span>" + e.features[0].properties.NAME + "</span><br>";
+                description += "<b>Legal Business Name: </b><span>" + e.features[0].properties.LEGAL + "</span><br>";
+                description += "<b>Doing Business As: </b><span>" + e.features[0].properties.DBA + "</span><br>";
+                description += "<b>Business Address: </b><span>" + e.features[0].properties.ADDRESS + "</span><br>";
+                description += "<b>Postcode: </b><span>" + e.features[0].properties.ZIP + "</span><br>";
+                description += "<b>Food Service Establishment Permit #: </b><span>" + e.features[0].properties.PMTNUM + "</span><br>";
+                description += "<b>Qualify Alcohol: </b><span>" + e.features[0].properties.ALCOHOL + "</span><br>";
+                description += "<b>SLA Serial Number: </b><span>" + e.features[0].properties.SLA + "</span><br>";
+                description += "<b>SLA License Type: </b><span>" + e.features[0].properties.SLATYPE + "</span><br>";
+                description += "<b>Landmark District or Building: </b><span>" + e.features[0].properties.LANDMARK + "</span><br>";
+                description += "<b>Landmark District Terms: </b><span>" + e.features[0].properties.TERMLDMK + "</span><br>";
+                description += "<b>Health Compliance Terms: </b><span>" + e.features[0].properties.TERMHEALTH + "</span><br>";
+                description += "<b>Borough-Block-Lot: </b><span>" + e.features[0].properties.BBL + "</span><br>";
+                description += "<b>Zoning District: </b><span>" + e.features[0].properties.ZD + "</span><br>";
+                description += "<b>Comemrcial Overlay: </b><span>" + e.features[0].properties.OL + "</span><br>";
+                description += "<b>Special District: </b><span>" + e.features[0].properties.SP + "</span><br>";
+                description += "<b>Elevated Rail: </b><span>" + e.features[0].properties.EL + "</span><br>";
+                description += "<b>Original Median Sidewalk Width (ft): </b><span>" + e.features[0].properties.ORGSWMDN.toFixed(2) + "</span><br>"; // description in the popup
+                description += "<b>Median Sidewalk Width Excluding Impediments (ft): </b><span>" + e.features[0].properties.IMPSWMDN.toFixed(2) + "</span><br>";
                 popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
             });
             // Add hover events
-            map.on('mouseenter', 'sdwkwdimpsp', function () {
+            map.on('mouseenter', 'orsw', function () {
                 map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
             });
-            map.on('mouseleave', 'sdwkwdimpsp', function () {
+            map.on('mouseleave', 'orsw', function () {
                 map.getCanvas().style.cursor = '';
             });
+
+            // // Add sidewalk width simpliefied popup
+            // // Add click event
+            // map.on('click', 'sdwkwdimpsp', function (e) {
+            //     var coordinates = e.lngLat; // get pointer coordinates
+            //     var description = "<b>Original Median Sidewalk Width (ft): </b><span>" + e.features[0].properties.orgswmdn.toFixed(2) + "</span><br>"; // description in the popup
+            //     description += "<b>Median Sidewalk Width Excluding Impediments (ft): </b><span>" + e.features[0].properties.impswmdn.toFixed(2) + "</span><br>";
+            //     popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
+            // });
+            // // Add hover events
+            // map.on('mouseenter', 'sdwkwdimpsp', function () {
+            //     map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
+            // });
+            // map.on('mouseleave', 'sdwkwdimpsp', function () {
+            //     map.getCanvas().style.cursor = '';
+            // });
 
             // Add sidewalk width full popup
             // Add click event
@@ -823,26 +879,12 @@
                 map.getCanvas().style.cursor = '';
             });
 
-            // Add polygon popup
-            // Add click event
-            map.on('click', 'pg', function (e) {
-                var coordinates = e.lngLat; // get pointer coordinates
-                var description = "<b>NTA: </b><span>" + e.features[0].properties.NTAName + "</span><br>"; // description in the popup
-                description += "<b>Percent Change: </b><span>" + e.features[0].properties.PKDiffPct3 + "</span><br>";
-                popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
-            });
-            // Add hover events
-            map.on('mouseenter', 'pg', function () {
-                map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
-            });
-            map.on('mouseleave', 'pg', function () {
-                map.getCanvas().style.cursor = '';
-            });
+
 
 
 
             // Add layer selector and legend
-            var layerOrder = ['orcafe', 'orsw', 'sdwkcafe', 'sdwkwdimpsp', 'sdwkwdimp', 'zd', 'co', 'sp', 'el']; // set layer order in the legend
+            var layerOrder = ['orcafe', 'orsw', 'sdwkcafe', 'sdwkwdimp', 'zd', 'co', 'sp', 'el']; // set layer order in the legend
             var layerContentListOrder = []; // create ordered layer content list
             for (var i = 0; i < layerOrder.length; i++) {
                 layerContentListOrder.push(layerContentList.filter(e => e.layerid == layerOrder[i])[0]);
