@@ -1475,16 +1475,48 @@ cplxamcp=gpd.GeoDataFrame(cplxamcp,geometry=[shapely.geometry.Point(x,y) for x,y
 cplxamcp.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/cplxamcp2.geojson',driver='GeoJSON')
 
 
+# Telework capability
+tel=gpd.read_file(path+'OUTPUT/telework0.geojson')
+tel['ntacode']=tel['NTACode'].copy()
+tel['telework']=pd.to_numeric(tel['NYC Employed by Workplace and Residence_Industry_Race-Ethn_TELE Sheet1_Telework'])
+tel['cat']=np.where(tel['telework']<=0.3,'28%~30%',
+            np.where(tel['telework']<=0.35,'31%~35%',
+                        '36%~50%'))
+tel=tel[['ntacode','telework','cat','geometry']].reset_index(drop=True)
+tel.to_file(path+'OUTPUT/telework.geojson',driver='GeoJSON')
 
-# # Telework capability
-# tel=gpd.read_file(path+'OUTPUT/telework0.geojson')
-# tel['ntacode']=tel['NTACode'].copy()
-# tel['telework']=pd.to_numeric(tel['NYC Employed by Workplace and Residence_Industry_Race-Ethn_TELE Sheet1_Telework'])
-# tel['cat']=np.where(tel['telework']<=0.3,'28%~30%',
-#            np.where(tel['telework']<=0.35,'31%~35%',
-#                        '36%~50%'))
-# tel=tel[['ntacode','telework','cat','geometry']].reset_index(drop=True)
-# tel.to_file(path+'OUTPUT/telework.geojson',driver='GeoJSON')
+
+# Scatter Plot
+cplxamcp=gpd.read_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/cplxamcp2.geojson')
+cplxamcp.crs='epsg:4326'
+tel=gpd.read_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/telework.geojson')
+tel.crs='epsg:4326'
+cplxamcptel=gpd.sjoin(cplxamcp,tel,how='left',op='intersects')
+cplxamcptelbf=cplxamcptel[pd.isna(cplxamcptel['ntacode'])]
+cplxamcptelbf=cplxamcptelbf.drop(['index_right','ntacode','telework'],axis=1)
+cplxamcptelbf=cplxamcptelbf.to_crs('epsg:6539')
+cplxamcptelbf['geometry']=[x.buffer(100) for x in cplxamcptelbf['geometry']]
+cplxamcptelbf=cplxamcptelbf.to_crs('epsg:4326')
+cplxamcptelbf=gpd.sjoin(cplxamcptelbf,tel,how='left',op='intersects')
+cplxamcptelbf=cplxamcptelbf[pd.notna(cplxamcptelbf['ntacode'])]
+cplxamcptelbf=cplxamcptelbf[['CplxID','ntacode','telework']].drop_duplicates('CplxID').reset_index(drop=True)
+cplxamcptel=pd.merge(cplxamcptel,cplxamcptelbf,how='left',on='CplxID')
+cplxamcptel['telework']=np.where(pd.notna(cplxamcptel['telework_x']),cplxamcptel['telework_x'],cplxamcptel['telework_y'])
+import plotly.io as pio
+import plotly.express as px
+pio.renderers.default = "browser"
+fig=px.scatter(cplxamcptel,x='telework', y='DiffPct',template='plotly_white',width=1000,height=1000)
+fig.update_layout(
+    xaxis_title="NTA Telework Capability",
+    yaxis_title="Current subway ridership vs early September 2020 ridership",
+    font=dict(
+        size=18,
+    )
+)
+fig.show()
+fig.write_html('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/scatter.html',include_plotlyjs='cdn')
+
+
 
 
 
