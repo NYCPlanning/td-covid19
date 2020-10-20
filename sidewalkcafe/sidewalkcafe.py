@@ -253,6 +253,7 @@ sdwkwdimp=sdwkwdimp[['BKFACE','ORGSWMDN','IMPSWMDN']].reset_index(drop=True)
 dfcafeznelwd=pd.merge(dfcafeznel,sdwkwdimp,how='left',on='BKFACE')
 dfcafeznelwd.to_file(path+'SIDEWALK CAFE/or_cafe_zn_el_wd.shp')
 dfcafeznelwd=dfcafeznelwd[np.isin(dfcafeznelwd['TYPE'],['BOTH','SIDEWALK'])].reset_index(drop=True)
+dfcafeznelwd['SWCAT']=np.where(dfcafeznelwd['IMPSWMDN']>14,'>14 ft',np.where(dfcafeznelwd['IMPSWMDN']>=11,'11 ft ~ 14 ft','<11 ft'))
 dfcafeznelwd.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/sidewalkcafe/or_cafe_zn_el_wd.geojson',driver='GeoJSON')
 
 
@@ -290,12 +291,11 @@ dfcafeznelwdan.loc[dfcafeznelwdan['ZDSP']==1,'SP'].value_counts(dropna=False)
 
 dfcafeznelwdan['EL'].value_counts(dropna=False)
 
-
-dfcafeznelwdan['WD']=np.where(dfcafeznelwdan['IMPSWMDN']<11,'<11',np.where(dfcafeznelwdan['IMPSWMDN']<=14,'11~14','>14'))
+dfcafeznelwdan['WD']=np.where(dfcafeznelwdan['IMPSWMDN']>14,'>14 ft',np.where(dfcafeznelwdan['IMPSWMDN']>=11,'11 ft ~ 14 ft','<11 ft'))
 dfcafeznelwdan['WD'].value_counts(dropna=False)
 dfcafeznelwdan[dfcafeznelwdan['ID']==6474]
-4431+2325+1781
-[4431/8537,2325/8537,1781/8537]
+4474+2325+1738
+[4474/8537,2325/8537,1738/8537]
 
 k=dfcafeznelwdan.groupby('BKFACE').agg({'ID':'count'})
 sum(k['ID'])
@@ -313,7 +313,7 @@ sdwkwdimp=sdwkwdimp[['bkfaceid','orgswmedia','impswmedia','geometry']].reset_ind
 sdwkwdimp['bkface']=pd.to_numeric(sdwkwdimp['bkfaceid'])
 sdwkwdimp['orgswmdn']=pd.to_numeric(sdwkwdimp['orgswmedia'])
 sdwkwdimp['impswmdn']=pd.to_numeric(sdwkwdimp['impswmedia'])
-sdwkwdimp['cat']=np.where(sdwkwdimp['impswmdn']<11,'<11',np.where(sdwkwdimp['impswmdn']<=14,'11~14','>14'))
+sdwkwdimp['cat']=np.where(sdwkwdimp['impswmdn']>14,'>14 ft',np.where(sdwkwdimp['impswmdn']>=11,'11 ft ~ 14 ft','<11 ft'))
 sdwkwdimp['geometry']=[x.simplify(tolerance=0.01,preserve_topology=True) for x in sdwkwdimp['geometry']]
 sdwkwdimp=sdwkwdimp[['bkface','orgswmdn','impswmdn','cat','geometry']].reset_index(drop=True)
 sdwkwdimp.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/sidewalkcafe/sdwkwdimp.geojson',driver='GeoJSON')
