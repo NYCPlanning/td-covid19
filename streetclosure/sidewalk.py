@@ -9,7 +9,7 @@ import multiprocessing as mp
 
 
 pd.set_option('display.max_columns', None)
-#path='C:/Users/Yijun Ma/Desktop/D/DOCUMENT/DCP2020/COVID19/STREET CLOSURE/sidewalk/'
+path='C:/Users/mayij/Desktop/DOC/DCP2020/COVID19/STREET CLOSURE/sidewalk/'
 path='/home/mayijun/sidewalk/'
 
 

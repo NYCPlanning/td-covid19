@@ -586,3 +586,51 @@ pkssc.to_file(path+'openlearning/parks_school.shp')
 # jop=jop[pd.notna(jop['BBL'])].reset_index(drop=True)
 # jop=gpd.GeoDataFrame(jop,geometry=[shapely.geometry.Point(x,y) for x,y in zip(jop['LONG'],jop['LAT'])],crs='epsg:4326')
 # jop.to_file(path+'openlearning/jop.shp')
+
+
+
+
+
+
+
+
+
+
+
+# Capital Planning Schools
+cs=gpd.read_file(path+'openlearning/All_Schools_2020-10-14/facilities_filtered_2020-10-14.shp')
+cs.crs='epsg:4326'
+cs['TYPE']=np.where(np.isin(cs['factype'],['JUNIOR HIGH-INTERMEDIATE-MIDDLE SCHOOL - PUBLIC','HIGH SCHOOL - PUBLIC','ELEMENTARY SCHOOL - PUBLIC','K-8 SCHOOL - PUBLIC','HIGH SCHOOL - PUBLIC, SPECIAL EDUCATION','SECONDARY SCHOOL - PUBLIC','K-12 ALL GRADES SCHOOL - PUBLIC','K-12 ALL GRADES SCHOOL - PUBLIC, SPECIAL EDUCATION','K-8 SCHOOL - PUBLIC, SPECIAL EDUCATION','ELEMENTARY SCHOOL - PUBLIC, SPECIAL EDUCATION','SECONDARY SCHOOL - PUBLIC, SPECIAL EDUCATION','GED-ALTERNATIVE HIGH SCHOOL EQUIVALENCY PREP PROGRAMS']),'DOE',
+           np.where(np.isin(cs['factype'],['ELEMENTARY SCHOOL - CHARTER','CHARTER SCHOOL','K-8 SCHOOL - CHARTER','K-12 ALL GRADES SCHOOL - CHARTER','SECONDARY SCHOOL - CHARTER','JUNIOR HIGH-INTERMEDIATE-MIDDLE SCHOOL - CHARTER','HIGH SCHOOL - CHARTER','UNGRADED SCHOOL - CHARTER, SPECIAL EDUCATION','UNGRADED SCHOOL - CHARTER']),'CHARTER',
+           np.where(np.isin(cs['factype'],['ELEMENTARY SCHOOL - NON-PUBLIC','APPROVED PRIVATE SCHOOLS FOR SWD','MIDDLE SCHOOL - NON-PUBLIC','HIGH SCHOOL - NON-PUBLIC','OTHER SCHOOL - NON-PUBLIC','INTERIM PLACEMENT FACILITIES FOR SWD','RESIDENTIAL FACILITIES FOR SWD COVERED UNDER THE NY JUSTICE CENTER','SATELLITE SITE FOR STUDENTS WITH DISABILITIES','SUMMER SCHOOL FOR HANDICAPPED','SPECIAL ED TRAINING RESOURCE CENTERS']),'PRIVATE','')))
+cs['BBL']=pd.to_numeric(cs['bbl'])
+cs['latitude']=pd.to_numeric(cs['latitude'])
+cs['longitude']=pd.to_numeric(cs['longitude'])
+cs['LAT']=np.nan
+cs['LONG']=np.nan
+for i in cs.index:
+    try:
+        boroughcode=str(cs.loc[i,'borocode'])
+        bbl=str(cs.loc[i,'BBL'])
+        addr=g['BL']({'BBL':bbl,'borough_code':boroughcode})
+        cs.loc[i,'LAT']=pd.to_numeric(addr['Latitude'])
+        cs.loc[i,'LONG']=pd.to_numeric(addr['Longitude'])
+    except:
+        print(str(i)+' not geocoded with bbl!')
+cs['LAT']=np.where(pd.notna(cs['LAT']),cs['LAT'],cs['latitude'])
+cs['LONG']=np.where(pd.notna(cs['LONG']),cs['LONG'],cs['longitude'])
+# cs=cs[cs['TYPE']=='DOE'].reset_index(drop=True)
+# cs=cs[cs['TYPE']=='CHARTER'].reset_index(drop=True)
+# cs=cs[cs['TYPE']=='PRIVATE'].reset_index(drop=True)
+cs=cs.groupby(['BBL','LAT','LONG'],as_index=False).agg({'TYPE': lambda x: '/'.join(x),
+                                                        'facname': lambda x: '/'.join(x),
+                                                        'address':'count'}).reset_index(drop=True)
+cs['TYPE']=['/'.join(sorted(set(x.split('/')))) for x in cs['TYPE']]
+cs=gpd.GeoDataFrame(cs,geometry=[shapely.geometry.Point(x,y) for x,y in zip(cs['LONG'],cs['LAT'])],crs='epsg:4326')
+cs=gpd.sjoin(cs,sd,how='left',op='intersects')
+cs['DISTRICT']=np.where(pd.notna(cs['DISTRICT']),cs['DISTRICT'],2)
+cs=cs[['BBL','DISTRICT','TYPE','facname','address','geometry']].reset_index(drop=True)
+cs.columns=['BBL','DISTRICT','TYPE','SCHOOLS','COUNT','geometry']
+# cs.to_file(path+'openlearning/capital_school_doe.shp')
+# cs.to_file(path+'openlearning/capital_school_charter.shp')
+# cs.to_file(path+'openlearning/capital_school_private.shp')

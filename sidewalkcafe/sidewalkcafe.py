@@ -298,10 +298,11 @@ dfcafeznelwdan[dfcafeznelwdan['ID']==6474]
 [4474/8537,2325/8537,1738/8537]
 
 k=dfcafeznelwdan.groupby('BKFACE').agg({'ID':'count'})
-sum(k['ID'])
-sum(k.loc[np.isin(k['ID'],[1,2]),'ID'])/sum(k['ID'])
-sum(k.loc[np.isin(k['ID'],[3,4]),'ID'])/sum(k['ID'])
-sum(k.loc[k['ID']>=7,'ID'])/sum(k['ID'])
+len(k['ID'])
+len(k[np.isin(k['ID'],[1,2])])/len(k['ID'])
+len(k[np.isin(k['ID'],[3,4])])/len(k['ID'])
+len(k[np.isin(k['ID'],[5,6])])/len(k['ID'])
+len(k[k['ID']>=7])/len(k['ID'])
 
 
 
@@ -356,6 +357,52 @@ el['cat']=''
 el=el.loc[np.isin(el['FEATURE_CO'],[2320,2340]),['cat','geometry']].reset_index(drop=True)
 el.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/sidewalkcafe/el.geojson',driver='GeoJSON')
 
+
+
+
+
+
+# # Lot front without reg
+# mappluto=gpd.read_file(path+'SIDEWALK CAFE/mappluto.shp')
+# mappluto.crs='epsg:4326'
+# mappluto=mappluto.to_crs('epsg:6539')
+# mapplutosplit=mappluto.copy()
+# mapplutosplit['Block']=[str(x)[0:6] for x in mapplutosplit['BBL']]
+# mapplutosplit=mapplutosplit[['Block','geometry']].reset_index(drop=True)
+# mapplutosplit=mapplutosplit.dissolve(by='Block',aggfunc='first').reset_index(drop=False)
+# mapplutosplit['geometry']=[x.boundary for x in mapplutosplit['geometry']]
+
+# dfcafeznelwd=gpd.read_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/sidewalkcafe/or_cafe_zn_el_wd.geojson',driver='GeoJSON')
+# dfcafeznelwd.crs='epsg:4326'
+# dfcafeznelwd=dfcafeznelwd.to_crs('epsg:6539')
+# dfcafeznelwd['Block']=[str(x)[0:6] for x in dfcafeznelwd['BBL']]
+# dfcafeznelwd=dfcafeznelwd.loc[dfcafeznelwd['CAFETYPE']=='NONE',['Block','geometry']].reset_index(drop=True)
+
+# k=pd.merge(mapplutosplit,dfcafeznelwd[['Block']],how='inner',on='Block')
+# dfcafeznelwd.to_file(path+'SIDEWALK CAFE/k.shp')
+
+# mapplutocafe=[]
+# for i in k.index:
+#     tps=k.loc[i,'geometry']
+#     if type(tps)==shapely.geometry.linestring.LineString:
+#         splitter=shapely.geometry.MultiPoint(tps.coords)
+#         splitseg=gpd.GeoDataFrame(shapely.ops.split(tps,splitter))
+#         splitseg['Block']=k.loc[i,'Block']
+#         mapplutocafe+=[splitseg]
+#     else:
+#         for j in range(0,len(tps)):
+#             splitter=shapely.geometry.MultiPoint(tps[j].coords)
+#             splitseg=gpd.GeoDataFrame(shapely.ops.split(tps[j],splitter))
+#             splitseg['Block']=k.loc[i,'Block']
+#             mapplutocafe+=[splitseg]
+# mapplutocafe=pd.concat(mapplutocafe,axis=0,ignore_index=True)
+# mapplutocafe.columns=['geometry','Block']
+# mapplutocafe=gpd.GeoDataFrame(mapplutocafe,geometry=mapplutocafe['geometry'],crs='epsg:6539')
+# mapplutocafe.to_file(path+'SIDEWALK CAFE/mappluto_cafe.shp')
+
+
+# mapplutocafe=gpd.sjoin(mapplutocafe,dfcafeznelwd,how='inner',op='intersects')
+# mapplutocafe.to_file(path+'SIDEWALK CAFE/mappluto_cafe.shp')
 
 
 

@@ -1505,7 +1505,7 @@ cplxamcptel['telework']=np.where(pd.notna(cplxamcptel['telework_x']),cplxamcptel
 import plotly.io as pio
 import plotly.express as px
 pio.renderers.default = "browser"
-fig=px.scatter(cplxamcptel,x='telework', y='DiffPct',template='plotly_white',width=800,height=600)
+fig=px.scatter(cplxamcptel,x='telework', y='DiffPct',trendline='ols',template='plotly_white',width=800,height=600)
 fig.update_layout(
     xaxis_title="NTA Telework Capability",
     yaxis_title="Current subway ridership vs early September 2020 ridership",
