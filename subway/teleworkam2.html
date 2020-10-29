@@ -61,7 +61,7 @@
             padding-right: 0.5rem;
             padding-left: 0.5rem;
             padding-bottom: 0.5rem;
-            width: 10rem;
+            width: 13rem;
         }
 
         #legend2-title1 {
@@ -71,7 +71,7 @@
             padding-bottom: 0.5rem;
             padding-right: 0.5rem;
             padding-left: 0.5rem;
-            width: 10rem;
+            width: 13rem;
             height: auto;
         }
 
@@ -82,7 +82,7 @@
             padding-right: 0.5rem;
             padding-left: 0.5rem;
             padding-bottom: 0.5rem;
-            width: 10rem;
+            width: 13rem;
         }
 
         .legend-key-circle {
@@ -173,10 +173,10 @@
             var layerContent = {
                 'sourceid': 'tel', // source id
                 'sourcetype': 'geojson', // source type
-                'sourcedata': 'telework.geojson', // data source
+                'sourcedata': 'teleworkam.geojson', // data source
                 'layerid': 'telework', // layer id
                 'layertype': 'fill', // symbology type
-                'layername1': 'Telework Capability​', // layer name for the legend
+                'layername1': 'Telework Capability by Place of Residence', // layer name for the legend
                 'layervisibility': 'visible', // visibility of the layer
                 'layercolname': 'cat', // category column name
                 'layercat': ['28%~30%', '31%~35%', '36%~50%'], // categories
@@ -223,14 +223,14 @@
             var layerContent = {
                 'sourceid': 'cp', // source id
                 'sourcetype': 'geojson', // source type
-                'sourcedata': 'cplxamcp.geojson', // data source
+                'sourcedata': 'cplxamcp2.geojson', // data source
                 'layerid': 'cplxamcp', // layer id
                 'layertype': 'circle', // symbology type
-                'layername1': 'Subway Ridership Changes: Current ridership as percent of early October 2019 ridership', // layer name for the legend
+                'layername1': 'Subway Ridership Changes: Current ridership vs early September 2020 ridership', // layer name for the legend
                 'layername2': 'Weekday AM Peak Average', // layer name for the legend
                 'layervisibility': 'visible', // visibility of the layer
                 'layercolname': 'DiffPctCat', // category column name
-                'layercat': ['>-50%', '-59%~-50%', '-69%~-60%', '-79%~-70%', '<=-80%'], // categories
+                'layercat': ['<=5%', '6%~10%', '11%~15%', '16%~20%', '>20%'], // categories
                 'layercolor': ['rgba(255,245,235,1)', 'rgba(254,210,166,1)', 'rgba(253,146,67,1)', 'rgba(223,79,5,1)', 'rgba(127,39,4,1)'], // color for each category; use rgba
                 'layeropacity': 1, // circle opacity
                 'layerradius': { 'base': 1, 'stops': [[15, 4], [22, 180]] }, // circle radius; change size based on zoom level
