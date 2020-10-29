@@ -1556,7 +1556,9 @@ cplxamcp.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/cplxpmcp2.
 # tel=tel[['ntacode','telework','cat','geometry']].reset_index(drop=True)
 # tel.to_file(path+'OUTPUT/teleworkam.geojson',driver='GeoJSON')
 
+
 tel=gpd.read_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/teleworkpm0.geojson')
+tel=tel[[x not in ['MN99','BX98','BX99','BK99','QN98','QN99','SI99'] for x in tel['ntacode']]]
 tel['telework']=pd.to_numeric(tel['teleworkable_rate'])
 tel['telework'].describe(percentiles=np.arange(0.2,1,0.2))
 tel['cat']=np.where(tel['telework']<=0.2,'15%~20%',
@@ -1564,8 +1566,6 @@ tel['cat']=np.where(tel['telework']<=0.2,'15%~20%',
                         '31%~58%'))
 tel=tel[['ntacode','telework','cat','geometry']].reset_index(drop=True)
 tel.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/teleworkpm.geojson',driver='GeoJSON')
-
-
 
 
 # Scatter Plot
