@@ -366,9 +366,10 @@
 
             // Add Sidewalk Width Full
             // Set layer contents
-            var q = "https://dcpbuilder.carto.com/api/v2/sql?q=";
-            q += "SELECT cartodb_id, the_geom, bkfaceid AS BKFACE, orgswmedia AS ORGSWMDN, impswmedia AS IMPSWMDN, CASE WHEN impswmedia >14 THEN '>14 ft' WHEN impswmedia <=14 AND impswmedia >=11 THEN '11 ft ~ 14 ft' ELSE '<11 ft' END AS CAT FROM dcpbuilder.sidewalkwidth";
-            q += "&format=GeoJSON&api_key=IUgfeLGvKOvbJSjvesj1lg"; // Carto API
+            var q = "https://dcptransportation.carto.com/api/v2/sql?q=";
+            q += "SELECT cartodb_id, the_geom, bkfaceid AS BKFACE, orgswmedia AS ORGSWMDN, impswmedia AS IMPSWMDN, CASE WHEN impswmedia >14 THEN '>14 ft' WHEN impswmedia <=14 AND impswmedia >=11 THEN '11 ft ~ 14 ft' ELSE '<11 ft' END AS CAT FROM dcptransportation.sidewalkwidth";
+            q += "&format=GeoJSON&api_key=4HYVy-SiySv8thsJdoUqKw"; // Carto API
+            console.log(q);
             var layerContent = {
                 'sourceid': 'sdwkwdimp', // source id
                 'sourcetype': 'geojson', // source type
