@@ -191,24 +191,20 @@
 
 
 
-            var q="http://159.65.64.166:3000/test?format=GeoJSON"
-            // var q = "https://dcpbuilder.carto.com/api/v2/sql?q=";
-            // q += "SELECT cartodb_id, the_geom, bkfaceid AS BKFACE, orgswmedia AS ORGSWMDN, impswmedia AS IMPSWMDN, CASE WHEN impswmedia >14 THEN '>14 ft' WHEN impswmedia <=14 AND impswmedia >=11 THEN '11 ft ~ 14 ft' ELSE '<11 ft' END AS CAT FROM dcpbuilder.sidewalkwidth";
-            // q += "&format=GeoJSON";
-
-            // Add Open Restaurant by Sidewalk Width
+            // Add Open Restaurant by Cafe Regulation
             // Set layer contents
             var layerContent = {
                 'sourceid': 'orcafeznelwd', // source id
                 'sourcetype': 'geojson', // source type
-                'sourcedata': q, // data source
-                'layerid': 'orsw', // layer id
+                'sourcedata': 'http://159.65.64.166:9000/collections/api.test/items.json', // data source
+                // 'sourcedata': 'or_cafe_zn_el_wd.geojson', // data source
+                'layerid': 'orcafe', // layer id
                 'layertype': 'circle', // symbology type
-                'layername': 'Open Restaurant by Sidewalk Width', // layer name for the legend
+                'layername': 'Open Restaurant by Cafe Regulation', // layer name for the legend
                 'layervisibility': 'visible', // visibility of the layer
-                'layercolname': 'SWCAT', // category column name
-                'layercat': ['<11 ft', '11 ft ~ 14 ft', '>14 ft'], // categories
-                'layercolor': ['rgba(161,218,180,1)', 'rgba(65,182,196,1)', 'rgba(44,127,184,1)'], // color for each category; use rgba
+                'layercolname': 'CAFETYPE', // category column name
+                'layercat': ['ALL CAFES', 'SMALL ONLY', 'UNENCLOSED ONLY', 'NOT PERMITTED', 'NONE'], // categories
+                'layercolor': ['rgba(113,190,40,1)', 'rgba(246,189,0,1)', 'rgba(222,134,239,1)', 'rgba(255,109,109,1)', 'rgba(100,100,255,1)'], // color for each category; use rgba
                 'layeropacity': 1, // circle opacity
                 'layerradius': { 'base': 2, 'stops': [[12, 3], [22, 180]] }, // circle radius; change size based on zoom level
                 'layerstrokecolor': 'rgba(255,255,255,1)', // circle stroke color
@@ -228,8 +224,8 @@
             // Add layer content to the overall layer content list
             layerContentList.push(layerContent);
 
-            // Add data source
-            map.addSource(layerContent['sourceid'], {
+           // Add data source
+           map.addSource(layerContent['sourceid'], {
                 'type': layerContent['sourcetype'],
                 'data': layerContent['sourcedata'],
             });
@@ -264,9 +260,9 @@
                 maxWidth: 'none', // max width of the popoup; 'none' to fit to the content                
             });
 
-            // Add open restaurant by sidewalk width popup
+            // Add open restaurant by cafe regulation popup
             // Add click event
-            map.on('click', 'orsw', function (e) {
+            map.on('click', 'orcafe', function (e) {
                 var coordinates = e.features[0].geometry.coordinates.slice(); // get point coordinates
                 var description = "<b>ID: </b><span>" + e.features[0].properties.ID + "</span><br>"; // description in the popup
                 description += "<b>Submission Time: </b><span>" + e.features[0].properties.TIME + "</span><br>";
@@ -293,17 +289,17 @@
                 popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
             });
             // Add hover events
-            map.on('mouseenter', 'orsw', function () {
+            map.on('mouseenter', 'orcafe', function () {
                 map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
             });
-            map.on('mouseleave', 'orsw', function () {
+            map.on('mouseleave', 'orcafe', function () {
                 map.getCanvas().style.cursor = '';
             });
 
 
 
             // Add layer selector and legend
-            var layerOrder = [ 'orsw']; // set layer order in the legend
+            var layerOrder = [ 'orcafe']; // set layer order in the legend
             var layerContentListOrder = []; // create ordered layer content list
             for (var i = 0; i < layerOrder.length; i++) {
                 layerContentListOrder.push(layerContentList.filter(e => e.layerid == layerOrder[i])[0]);
