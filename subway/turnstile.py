@@ -1136,8 +1136,8 @@ hub.to_csv(path+'OUTPUT/hub.csv',index=False)
 
 # AM Peak Pre and Post by NTA for HED
 dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
-predates=['11/04/2019','11/06/2019','11/07/2019','11/08/2019','11/12/2019','11/13/2019','11/14/2019']
-postdates=['11/02/2020','11/04/2020','11/05/2020','11/06/2020','11/09/2020','11/10/2020','11/12/2020']
+predates=['11/18/2019','11/19/2019','11/20/2019','11/21/2019','11/22/2019','11/25/2019','11/26/2019','11/27/2019']
+postdates=['11/16/2020','11/17/2020','11/18/2020','11/19/2020','11/20/2020','11/23/2020','11/24/2020','11/25/2020']
 amlist=['05:00:00-09:00:00','05:30:00-09:30:00','06:00:00-10:00:00','06:30:00-10:30:00','07:00:00-11:00:00',
         '07:22:00-11:22:00','07:30:00-11:30:00','08:00:00-12:00:00','08:22:00-12:22:00','08:30:00-12:30:00']
 cplxampre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
@@ -1229,14 +1229,14 @@ cplxamhed['DiffPctCat3']=np.where(cplxamhed['DiffPct3']<=0.7,'<=70%',
           np.where(cplxamhed['DiffPct3']<=0.9,'81%~90%',
           np.where(cplxamhed['DiffPct3']<=1,'91%~100%',
           '>100%'))))
-cplxamhed.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/cplxamhed.geojson',driver='GeoJSON')
+cplxamhed.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/ntaamhed.geojson',driver='GeoJSON')
 
 
 
 # PM Peak Pre and Post by NTA for HED
 dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
-predates=['11/04/2019','11/06/2019','11/07/2019','11/08/2019','11/12/2019','11/13/2019','11/14/2019']
-postdates=['11/02/2020','11/04/2020','11/05/2020','11/06/2020','11/09/2020','11/10/2020','11/12/2020']
+predates=['11/18/2019','11/19/2019','11/20/2019','11/21/2019','11/22/2019','11/25/2019','11/26/2019','11/27/2019']
+postdates=['11/16/2020','11/17/2020','11/18/2020','11/19/2020','11/20/2020','11/23/2020','11/24/2020','11/25/2020']
 pmlist=['13:00:00-17:00:00','13:30:00-17:30:00','14:00:00-18:00:00','14:30:00-18:30:00','15:00:00-19:00:00',
         '15:22:00-19:22:00','15:30:00-19:30:00','16:00:00-20:00:00','16:22:00-20:22:00','16:30:00-20:30:00']
 cplxpmpre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
@@ -1328,7 +1328,7 @@ cplxpmhed['DiffPctCat3']=np.where(cplxpmhed['DiffPct3']<=0.7,'<=70%',
           np.where(cplxpmhed['DiffPct3']<=0.9,'81%~90%',
           np.where(cplxpmhed['DiffPct3']<=1,'91%~100%',
           '>100%'))))
-cplxpmhed.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/cplxpmhed.geojson',driver='GeoJSON')
+cplxpmhed.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/ntapmhed.geojson',driver='GeoJSON')
 
 
 
@@ -1406,9 +1406,9 @@ cplxpmhed.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/cplxpmhed
 # Commuter Profile
 # AM Peak Mapbox
 dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
-predates=['11/04/2019','11/06/2019','11/07/2019','11/08/2019','11/12/2019','11/13/2019','11/14/2019']
-postdates=['11/02/2020','11/04/2020','11/05/2020','11/06/2020','11/09/2020','11/10/2020','11/12/2020']
-amlist=['05:00:00-09:00:00','05:30:00-09:30:00','06:00:00-10:00:00','06:30:00-10:30:00','07:00:00-11:00:00',
+predates=['11/18/2019','11/19/2019','11/20/2019','11/21/2019','11/22/2019','11/25/2019','11/26/2019','11/27/2019']
+postdates=['11/16/2020','11/17/2020','11/18/2020','11/19/2020','11/20/2020','11/23/2020','11/24/2020','11/25/2020']
+mlist=['05:00:00-09:00:00','05:30:00-09:30:00','06:00:00-10:00:00','06:30:00-10:30:00','07:00:00-11:00:00',
         '07:22:00-11:22:00','07:30:00-11:30:00','08:00:00-12:00:00','08:22:00-12:22:00','08:30:00-12:30:00']
 cplxampre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
 cplxampre=cplxampre[np.isin(cplxampre['time'],amlist)].reset_index(drop=True)
@@ -1477,8 +1477,8 @@ cplxamcp.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/cplxamcp.g
 
 # PM Peak Mapbox
 dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
-predates=['11/04/2019','11/06/2019','11/07/2019','11/08/2019','11/12/2019','11/13/2019','11/14/2019']
-postdates=['11/02/2020','11/04/2020','11/05/2020','11/06/2020','11/09/2020','11/10/2020','11/12/2020']
+predates=['11/18/2019','11/19/2019','11/20/2019','11/21/2019','11/22/2019','11/25/2019','11/26/2019','11/27/2019']
+postdates=['11/16/2020','11/17/2020','11/18/2020','11/19/2020','11/20/2020','11/23/2020','11/24/2020','11/25/2020']
 pmlist=['13:00:00-17:00:00','13:30:00-17:30:00','14:00:00-18:00:00','14:30:00-18:30:00','15:00:00-19:00:00',
         '15:22:00-19:22:00','15:30:00-19:30:00','16:00:00-20:00:00','16:22:00-20:22:00','16:30:00-20:30:00']
 cplxampre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
@@ -1568,35 +1568,35 @@ cplxamcp.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/cplxpmcp.g
 # tel.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/teleworkpm.geojson',driver='GeoJSON')
 
 
-# # Scatter Plot
-# cplxamcp=gpd.read_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/cplxamcp2.geojson')
-# cplxamcp.crs='epsg:4326'
-# tel=gpd.read_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/telework.geojson')
-# tel.crs='epsg:4326'
-# cplxamcptel=gpd.sjoin(cplxamcp,tel,how='left',op='intersects')
-# cplxamcptelbf=cplxamcptel[pd.isna(cplxamcptel['ntacode'])]
-# cplxamcptelbf=cplxamcptelbf.drop(['index_right','ntacode','telework'],axis=1)
-# cplxamcptelbf=cplxamcptelbf.to_crs('epsg:6539')
-# cplxamcptelbf['geometry']=[x.buffer(100) for x in cplxamcptelbf['geometry']]
-# cplxamcptelbf=cplxamcptelbf.to_crs('epsg:4326')
-# cplxamcptelbf=gpd.sjoin(cplxamcptelbf,tel,how='left',op='intersects')
-# cplxamcptelbf=cplxamcptelbf[pd.notna(cplxamcptelbf['ntacode'])]
-# cplxamcptelbf=cplxamcptelbf[['CplxID','ntacode','telework']].drop_duplicates('CplxID').reset_index(drop=True)
-# cplxamcptel=pd.merge(cplxamcptel,cplxamcptelbf,how='left',on='CplxID')
-# cplxamcptel['telework']=np.where(pd.notna(cplxamcptel['telework_x']),cplxamcptel['telework_x'],cplxamcptel['telework_y'])
-# import plotly.io as pio
-# import plotly.express as px
-# pio.renderers.default = "browser"
-# fig=px.scatter(cplxamcptel,x='telework', y='DiffPct',trendline='ols',template='plotly_white',width=800,height=600)
-# fig.update_layout(
-#     xaxis_title="NTA Telework Capability",
-#     yaxis_title="Current subway ridership vs early September 2020 ridership",
-#     font=dict(
-#         size=15,
-#     )
-# )
-# fig.show()
-# fig.write_html('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/scatter.html',include_plotlyjs='cdn')
+# Scatter Plot
+cplxamcp=gpd.read_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/cplxamcp.geojson')
+cplxamcp.crs='epsg:4326'
+tel=gpd.read_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/teleworkam.geojson')
+tel.crs='epsg:4326'
+cplxamcptel=gpd.sjoin(cplxamcp,tel,how='left',op='intersects')
+cplxamcptelbf=cplxamcptel[pd.isna(cplxamcptel['ntacode'])]
+cplxamcptelbf=cplxamcptelbf.drop(['index_right','ntacode','telework'],axis=1)
+cplxamcptelbf=cplxamcptelbf.to_crs('epsg:6539')
+cplxamcptelbf['geometry']=[x.buffer(100) for x in cplxamcptelbf['geometry']]
+cplxamcptelbf=cplxamcptelbf.to_crs('epsg:4326')
+cplxamcptelbf=gpd.sjoin(cplxamcptelbf,tel,how='left',op='intersects')
+cplxamcptelbf=cplxamcptelbf[pd.notna(cplxamcptelbf['ntacode'])]
+cplxamcptelbf=cplxamcptelbf[['CplxID','ntacode','telework']].drop_duplicates('CplxID').reset_index(drop=True)
+cplxamcptel=pd.merge(cplxamcptel,cplxamcptelbf,how='left',on='CplxID')
+cplxamcptel['telework']=np.where(pd.notna(cplxamcptel['telework_x']),cplxamcptel['telework_x'],cplxamcptel['telework_y'])
+import plotly.io as pio
+import plotly.express as px
+pio.renderers.default = "browser"
+fig=px.scatter(cplxamcptel,x='telework', y='DiffPct',trendline='ols',template='plotly_white',width=800,height=600)
+fig.update_layout(
+    xaxis_title="NTA Telework Capability",
+    yaxis_title="Current subway ridership vs early September 2020 ridership",
+    font=dict(
+        size=15,
+    )
+)
+fig.show()
+fig.write_html('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/scatter.html',include_plotlyjs='cdn')
 
 
 
