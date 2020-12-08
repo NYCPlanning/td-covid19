@@ -408,6 +408,62 @@ el.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/sidewalkcafe/el.geojson
 
 
 
+# Impediments Buffer
+imp=gpd.read_file(path+'STREET CLOSURE/sidewalk/output/impediment.shp')
+imp.crs='epsg:4326'
+imp=imp.to_crs('epsg:6539')
+imp=imp[imp['imptype']!='Utility Strip'].reset_index(drop=True)
+# Curb Tree
+impct=imp[imp['imptype']=='Curb Tree'].reset_index(drop=True)
+impct['geometry']=[x.buffer(8,cap_style=3,join_style=2) for x in impct['geometry']]
+# Hydrant
+imphd=imp[imp['imptype']=='Hydrant'].reset_index(drop=True)
+imphd['geometry']=[x.buffer(10,cap_style=3,join_style=2) for x in imphd['geometry']]
+# Litter Bin
+implb=imp[imp['imptype']=='Litter Bin'].reset_index(drop=True)
+implb['geometry']=[x.buffer(5,cap_style=3,join_style=2) for x in implb['geometry']]
+# Meter
+impmt=imp[imp['imptype']=='Meter'].reset_index(drop=True)
+impmt['geometry']=[x.buffer(5,cap_style=3,join_style=2) for x in impmt['geometry']]
+# Bus Shelter
+impbs=imp[imp['imptype']=='Bus Shelter'].reset_index(drop=True)
+impbs['geometry']=[x.buffer(15,cap_style=3,join_style=2) for x in impbs['geometry']]
+# Pay Phone
+imppp=imp[imp['imptype']=='Pay Phone'].reset_index(drop=True)
+imppp['geometry']=[x.buffer(8,cap_style=3,join_style=2) for x in imppp['geometry']]
+# LinkNYC
+impln=imp[imp['imptype']=='LinkNYC'].reset_index(drop=True)
+impln['geometry']=[x.buffer(5,cap_style=3,join_style=2) for x in impln['geometry']]
+# City Bench
+impcb=imp[imp['imptype']=='City Bench'].reset_index(drop=True)
+impcb['geometry']=[x.buffer(5,cap_style=3,join_style=2) for x in impcb['geometry']]
+# Railroad Structure
+imprs=imp[imp['imptype']=='Railroad Structure'].reset_index(drop=True)
+imprs['geometry']=[x.buffer(15,cap_style=3,join_style=2) for x in imprs['geometry']]
+imprs['imptype']='Transit Entrance'
+# WalkNYC
+impwn=imp[imp['imptype']=='WalkNYC'].reset_index(drop=True)
+impwn['geometry']=[x.buffer(5,cap_style=3,join_style=2) for x in impwn['geometry']]
+# Recycle Bin
+imprb=imp[imp['imptype']=='Recycle Bin'].reset_index(drop=True)
+imprb['geometry']=[x.buffer(5,cap_style=3,join_style=2) for x in imprb['geometry']]
+# News Stand
+impns=imp[imp['imptype']=='News Stand'].reset_index(drop=True)
+impns['geometry']=[x.buffer(15,cap_style=3,join_style=2) for x in impns['geometry']]
+# Combine All
+impbf=pd.concat([impct,imphd,implb,impmt,impbs,imppp,impln,impcb,imprs,impwn,imprb,impns],axis=0,ignore_index=True)
+impbf=impbf.to_crs('epsg:4326')
+impbf.to_file(path+'SIDEWALK CAFE/impbf.shp')
+
+
+
+
+
+
+
+
+
+
 
 
 

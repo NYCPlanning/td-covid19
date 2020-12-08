@@ -1990,6 +1990,47 @@ fig.write_html('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/scatter.html
 
 
 
+# AM Peak Pre and Post by PUMA
+dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
+predates=['11/18/2019','11/19/2019','11/20/2019','11/21/2019','11/22/2019','11/25/2019','11/26/2019','11/27/2019']
+postdates=['11/16/2020','11/17/2020','11/18/2020','11/19/2020','11/20/2020','11/23/2020','11/24/2020','11/25/2020']
+amlist=['05:00:00-09:00:00','05:30:00-09:30:00','06:00:00-10:00:00','06:30:00-10:30:00','07:00:00-11:00:00',
+        '07:22:00-11:22:00','07:30:00-11:30:00','08:00:00-12:00:00','08:22:00-12:22:00','08:30:00-12:30:00']
+cplxampre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
+cplxampre=cplxampre[np.isin(cplxampre['time'],amlist)].reset_index(drop=True)
+cplxampre=cplxampre.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
+cplxampre=pd.merge(cplxampre,rc,how='left',left_on='unit',right_on='Remote')
+cplxampre=cplxampre.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
+cplxampre.columns=['CplxID','PreTime','PreEntries']
+cplxampost=dfunitentry[np.isin(dfunitentry['firstdate'],postdates)].reset_index(drop=True)
+cplxampost=cplxampost[np.isin(cplxampost['time'],amlist)].reset_index(drop=True)
+cplxampost=cplxampost.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
+cplxampost=pd.merge(cplxampost,rc,how='left',left_on='unit',right_on='Remote')
+cplxampost=cplxampost.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
+cplxampost.columns=['CplxID','PostTime','PostEntries']
+cplxamdiff=pd.merge(cplxampre,cplxampost,how='inner',on='CplxID')
+cplxamdiff['Time']=cplxamdiff['PreTime'].copy()
+cplxamdiff['Diff']=cplxamdiff['PostEntries']-cplxamdiff['PreEntries']
+cplxamdiff['DiffPct']=cplxamdiff['Diff']/cplxamdiff['PreEntries']
+cplxamdiff=pd.merge(rc.drop('Remote',axis=1).drop_duplicates(keep='first').reset_index(drop=True),cplxamdiff,how='left',on='CplxID')
+cplxamdiff=cplxamdiff[['CplxID','CplxLat','CplxLong','PreEntries','PostEntries']].reset_index(drop=True)
+cplxamdiff=gpd.GeoDataFrame(cplxamdiff,geometry=[shapely.geometry.Point(x,y) for x,y in zip(cplxamdiff['CplxLong'],cplxamdiff['CplxLat'])],crs='epsg:4326')
+puma=gpd.read_file(path+'nycpuma.shp')
+puma.crs='epsg:4326'
+cplxamdiffpuma=gpd.sjoin(puma,cplxamdiff,how='left',op='intersects')
+cplxamdiffpuma=cplxamdiffpuma.groupby(['puma'],as_index=False).agg({'PreEntries':'sum','PostEntries':'sum'}).reset_index(drop=True)
+cplxamdiffpuma=cplxamdiffpuma[cplxamdiffpuma['PreEntries']!=0].reset_index(drop=True)
+cplxamdiffpuma.columns=['PUMA','E201911','E202011']
+cplxamdiffpuma['Diff']=cplxamdiffpuma['E202011']-cplxamdiffpuma['E201911']
+cplxamdiffpuma['DiffPct']=cplxamdiffpuma['Diff']/cplxamdiffpuma['E201911']
+cplxamdiffpuma['DiffPct'].describe(percentiles=np.arange(0.2,1,0.2))
+cplxamdiffpuma['DiffPctCat']=np.where(cplxamdiffpuma['DiffPct']>-0.6,'>-60%',
+          np.where(cplxamdiffpuma['DiffPct']>-0.65,'-64%~-60%',
+          np.where(cplxamdiffpuma['DiffPct']>-0.7,'-69%~-65%',
+          np.where(cplxamdiffpuma['DiffPct']>-0.75,'-74%~-70%',
+          '<=-75%'))))
+cplxamdiffpuma.to_csv(path+'OUTPUT/amdiffpuma.csv',index=False)
+
 
 
 
