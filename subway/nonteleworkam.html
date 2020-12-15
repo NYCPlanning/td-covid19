@@ -171,15 +171,15 @@
             // Add polygons
             // Set layer contents
             var layerContent = {
-                'sourceid': 'nontel', // source id
+                'sourceid': 'nontelsub', // source id
                 'sourcetype': 'geojson', // source type
-                'sourcedata': 'nonteleworkam.geojson', // data source
-                'layerid': 'nontel', // layer id
+                'sourcedata': 'nontelsubam.geojson', // data source
+                'layerid': 'nontelsub', // layer id
                 'layertype': 'fill', // symbology type
-                'layername1': 'Non-Telework Capability by Place of Residence​', // layer name for the legend
+                'layername1': 'Non-Telework Capability of Subway Commuters by Place of Residence​', // layer name for the legend
                 'layervisibility': 'visible', // visibility of the layer
                 'layercolname': 'cat', // category column name
-                'layercat': ['50%~64%', '65%~69%', '70%~72%'], // categories
+                'layercat': ['46%~64%', '65%~69%', '70%~78%'], // categories
                 'layercolor': ['rgba(209,227,243,1)', 'rgba(154,200,225,1)', 'rgba(82,157,204,1)'], // color for each category; use rgba
                 'layeropacity': 1, // fill opacity
             };
@@ -230,7 +230,7 @@
                 'layername2': 'Weekday AM Peak Average', // layer name for the legend
                 'layervisibility': 'visible', // visibility of the layer
                 'layercolname': 'PctCat', // category column name
-                'layercat': ['<=20%', '21%~25%', '26%~30%', '31%~35%', '>35%'], // categories
+                'layercat': ['8%~20%', '21%~25%', '26%~30%', '31%~35%', '36%~51%'], // categories
                 'layercolor': ['rgba(255,245,235,1)', 'rgba(254,210,166,1)', 'rgba(253,146,67,1)', 'rgba(223,79,5,1)', 'rgba(127,39,4,1)'], // color for each category; use rgba
                 'layeropacity': 1, // circle opacity
                 'layerradius': { 'base': 1, 'stops': [[15, 4], [22, 180]] }, // circle radius; change size based on zoom level
@@ -312,7 +312,7 @@
 
 
             // Add layer selector and legend
-            var layerOrder = ['nontel']; // set layer order in the legend
+            var layerOrder = ['nontelsub']; // set layer order in the legend
             var layerContentListOrder = []; // create ordered layer content list
             for (var i = 0; i < layerOrder.length; i++) {
                 layerContentListOrder.push(layerContentList.filter(e => e.layerid == layerOrder[i])[0]);

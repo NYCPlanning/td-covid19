@@ -1408,7 +1408,7 @@ cplxpmhed.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/ntapmhed.
 dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
 predates=['12/03/2019','12/04/2019','12/05/2019','12/06/2019','12/09/2019','12/10/2019','12/11/2019','12/12/2019']
 postdates=['12/01/2020','12/02/2020','12/03/2020','12/04/2020','12/07/2020','12/08/2020','12/09/2020','12/10/2020']
-mlist=['05:00:00-09:00:00','05:30:00-09:30:00','06:00:00-10:00:00','06:30:00-10:30:00','07:00:00-11:00:00',
+amlist=['05:00:00-09:00:00','05:30:00-09:30:00','06:00:00-10:00:00','06:30:00-10:30:00','07:00:00-11:00:00',
         '07:22:00-11:22:00','07:30:00-11:30:00','08:00:00-12:00:00','08:22:00-12:22:00','08:30:00-12:30:00']
 cplxampre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
 cplxampre=cplxampre[np.isin(cplxampre['time'],amlist)].reset_index(drop=True)
@@ -1435,11 +1435,11 @@ cplxamcp['DiffPctCat']=np.where(cplxamcp['DiffPct']>-0.5,'>-50%',
                        '<=-80%'))))
 cplxamcp['Pct']=cplxamcp['E202010']/cplxamcp['E201910']
 cplxamcp['Pct'].describe(percentiles=np.arange(0.2,1,0.2))
-cplxamcp['PctCat']=np.where(cplxamcp['Pct']<=0.2,'<=20%',
+cplxamcp['PctCat']=np.where(cplxamcp['Pct']<=0.2,'8%~20%',
                    np.where(cplxamcp['Pct']<=0.25,'21%~25%',
                    np.where(cplxamcp['Pct']<=0.3,'26%~30%',
                    np.where(cplxamcp['Pct']<=0.35,'31%~35%',
-                            '>35%'))))
+                            '36%~51%'))))
 cplxamcp=pd.merge(rc.drop('Remote',axis=1).drop_duplicates(keep='first').reset_index(drop=True),cplxamcp,how='inner',on='CplxID')
 cplxamcp=cplxamcp[['CplxID','Borough','CplxName','Routes','CplxLat','CplxLong','Time','E201910','E202010',
                    'Diff','DiffPct','DiffPctCat','Pct','PctCat']].reset_index(drop=True)
@@ -1620,6 +1620,19 @@ nontel['cat']=np.where(nontel['nontelework']>=0.7,'70%~72%',
 nontel=nontel[['ntacode','nontelework','cat','geometry']].reset_index(drop=True)
 nontel.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/nonteleworkam.geojson',driver='GeoJSON')
 
+# Non-Telework Subway Commuters
+nontelsub=pd.read_csv(path+'notel subway.csv')
+nontelsub['notelsubpct']=nontelsub['nonTeleSubway']/nontelsub['totalWorkerbySubway']
+puma=gpd.read_file(path+'nypuma.shp')
+puma=puma.to_crs('epsg:4326')
+puma['puma']=pd.to_numeric(puma['PUMA'])
+nontelsub=pd.merge(puma,nontelsub,left_on='puma',right_on='PUMA',how='inner')
+nontelsub['notelsubpct'].describe(percentiles=np.arange(0.2,1,0.2))
+nontelsub['cat']=np.where(nontelsub['notelsubpct']>=0.7,'70%~78%',
+              np.where(nontelsub['notelsubpct']>=0.65,'65%~69%',
+                       '46%~64%'))
+nontelsub=nontelsub[['puma','notelsubpct','cat','geometry']].reset_index(drop=True)
+nontelsub.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/nontelsubam.geojson',driver='GeoJSON')
 
 
 
