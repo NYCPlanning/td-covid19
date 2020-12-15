@@ -1433,9 +1433,16 @@ cplxamcp['DiffPctCat']=np.where(cplxamcp['DiffPct']>-0.5,'>-50%',
                        np.where(cplxamcp['DiffPct']>-0.7,'-69%~-60%',
                        np.where(cplxamcp['DiffPct']>-0.8,'-79%~-70%',
                        '<=-80%'))))
+cplxamcp['Pct']=cplxamcp['E202010']/cplxamcp['E201910']
+cplxamcp['Pct'].describe(percentiles=np.arange(0.2,1,0.2))
+cplxamcp['PctCat']=np.where(cplxamcp['Pct']<=0.2,'<=20%',
+                   np.where(cplxamcp['Pct']<=0.25,'21%~25%',
+                   np.where(cplxamcp['Pct']<=0.3,'26%~30%',
+                   np.where(cplxamcp['Pct']<=0.35,'31%~35%',
+                            '>35%'))))
 cplxamcp=pd.merge(rc.drop('Remote',axis=1).drop_duplicates(keep='first').reset_index(drop=True),cplxamcp,how='inner',on='CplxID')
 cplxamcp=cplxamcp[['CplxID','Borough','CplxName','Routes','CplxLat','CplxLong','Time','E201910','E202010',
-                   'Diff','DiffPct','DiffPctCat']].reset_index(drop=True)
+                   'Diff','DiffPct','DiffPctCat','Pct','PctCat']].reset_index(drop=True)
 cplxamcp=gpd.GeoDataFrame(cplxamcp,geometry=[shapely.geometry.Point(x,y) for x,y in zip(cplxamcp['CplxLong'],cplxamcp['CplxLat'])],crs='epsg:4326')
 cplxamcp.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/cplxamcp.geojson',driver='GeoJSON')
 
@@ -1598,6 +1605,20 @@ fig.update_layout(
 fig.show()
 fig.write_html('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/scatter.html',include_plotlyjs='cdn')
 
+
+
+
+
+
+# Non-Telework
+# Non-Telework capability
+nontel=gpd.read_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/teleworkam.geojson')
+nontel['nontelework']=1-nontel['telework']
+nontel['cat']=np.where(nontel['nontelework']>=0.7,'70%~72%',
+              np.where(nontel['nontelework']>=0.65,'65%~69%',
+                       '50%~64%'))
+nontel=nontel[['ntacode','nontelework','cat','geometry']].reset_index(drop=True)
+nontel.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/nonteleworkam.geojson',driver='GeoJSON')
 
 
 
