@@ -462,9 +462,16 @@ impbf.to_file(path+'SIDEWALK CAFE/impbf.shp')
 
 
 
-
-
-
+# Restaurant Buffer
+dfcafeznelwd=gpd.read_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/sidewalkcafe/or_cafe_zn_el_wd.geojson',driver='GeoJSON')
+dfcafeznelwd.crs='epsg:4326'
+dfcafeznelwdbf=dfcafeznelwd.to_crs('epsg:6539')
+dfcafeznelwdbf['geometry']=[x.buffer(3) for x in dfcafeznelwdbf['geometry']]
+dfcafeznelwdbf=dfcafeznelwdbf.to_crs('epsg:4326')
+impbf=gpd.read_file(path+'SIDEWALK CAFE/impbf.shp')
+impbf.crs='epsg:4326'
+dfcafeznelwdbfimp=gpd.sjoin(dfcafeznelwdbf,impbf,how='inner',op='intersects')
+dfcafeznelwdbfimp.imptype.value_counts()
 
 
 
