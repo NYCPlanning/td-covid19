@@ -1406,8 +1406,18 @@ cplxpmhed.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/ntapmhed.
 # Commuter Profile
 # AM Peak Mapbox
 dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
-predates=['12/03/2019','12/04/2019','12/05/2019','12/06/2019','12/09/2019','12/10/2019','12/11/2019','12/12/2019']
-postdates=['12/01/2020','12/02/2020','12/03/2020','12/04/2020','12/07/2020','12/08/2020','12/09/2020','12/10/2020']
+predates=['10/21/2019','10/22/2019','10/23/2019','10/24/2019','10/25/2019','10/28/2019','10/29/2019','10/30/2019','10/31/2019']
+postdates=['10/19/2020','10/20/2020','10/21/2020','10/22/2020','10/23/2020','10/26/2020','10/27/2020','10/28/2020','10/29/2020']
+# predates=['12/03/2019','12/04/2019','12/05/2019','12/06/2019',
+#           '12/09/2019','12/10/2019','12/11/2019','12/12/2019','12/13/2019',
+#           '12/16/2019','12/17/2019','12/18/2019','12/19/2019','12/20/2019',
+#           '12/23/2019','12/26/2019','12/27/2019',
+#           '12/30/2019','12/31/2019','01/02/2020','01/03/2020']
+# postdates=['12/01/2020','12/02/2020','12/03/2020','12/04/2020',
+#            '12/07/2020','12/08/2020','12/09/2020','12/10/2020','12/11/2020',
+#            '12/14/2020','12/15/2020','12/16/2020','12/17/2020','12/18/2020',
+#            '12/21/2020','12/22/2020','12/23/2020',
+#            '12/28/2020','12/29/2020','12/30/2020','12/31/2020']
 amlist=['05:00:00-09:00:00','05:30:00-09:30:00','06:00:00-10:00:00','06:30:00-10:30:00','07:00:00-11:00:00',
         '07:22:00-11:22:00','07:30:00-11:30:00','08:00:00-12:00:00','08:22:00-12:22:00','08:30:00-12:30:00']
 cplxampre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
@@ -1573,6 +1583,22 @@ cplxamcp.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/cplxpmcp.g
 #                         '31%~58%'))
 # tel=tel[['ntacode','telework','cat','geometry']].reset_index(drop=True)
 # tel.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/teleworkpm.geojson',driver='GeoJSON')
+
+# Telework Subway Commuters
+telsub=pd.read_csv(path+'notel subway.csv')
+telsub['telsubpct']=telsub['teleworkbySubway']/telsub['totalWorkerbySubway']
+puma=gpd.read_file(path+'nypuma.shp')
+puma=puma.to_crs('epsg:4326')
+puma['puma']=pd.to_numeric(puma['PUMA'])
+telsub=pd.merge(puma,telsub,left_on='puma',right_on='PUMA',how='inner')
+telsub['telsubpct'].describe(percentiles=np.arange(0.2,1,0.2))
+telsub['cat']=np.where(telsub['telsubpct']<=0.3,'22%~30%',
+              np.where(telsub['telsubpct']<=0.35,'31%~35%',
+                       '36%~54%'))
+telsub=telsub[['puma','telsubpct','cat','geometry']].reset_index(drop=True)
+telsub.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/telsubam.geojson',driver='GeoJSON')
+
+
 
 
 # Scatter Plot
