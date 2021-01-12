@@ -1136,8 +1136,8 @@ hub.to_csv(path+'OUTPUT/hub.csv',index=False)
 
 # AM Peak Pre and Post by NTA for HED
 dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
-predates=['12/23/2019','12/26/2019','12/27/2019','12/30/2019','12/31/2019','01/02/2020','01/03/2020']
-postdates=['12/21/2020','12/22/2020','12/23/2020','12/28/2020','12/29/2020','12/30/2020','12/31/2020']
+predates=['10/21/2019','10/22/2019','10/23/2019','10/24/2019','10/25/2019','10/28/2019','10/29/2019','10/30/2019','10/31/2019']
+postdates=['10/19/2020','10/20/2020','10/21/2020','10/22/2020','10/23/2020','10/26/2020','10/27/2020','10/28/2020','10/29/2020']
 amlist=['05:00:00-09:00:00','05:30:00-09:30:00','06:00:00-10:00:00','06:30:00-10:30:00','07:00:00-11:00:00',
         '07:22:00-11:22:00','07:30:00-11:30:00','08:00:00-12:00:00','08:22:00-12:22:00','08:30:00-12:30:00']
 cplxampre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
@@ -1229,14 +1229,21 @@ cplxamhed['DiffPctCat3']=np.where(cplxamhed['DiffPct3']<=0.7,'<=70%',
           np.where(cplxamhed['DiffPct3']<=0.9,'81%~90%',
           np.where(cplxamhed['DiffPct3']<=1,'91%~100%',
           '>100%'))))
+cplxamhed['Pct']=cplxamhed['E202009']/cplxamhed['E201909']
+cplxamhed['Pct'].describe(percentiles=np.arange(0.2,1,0.2))
+cplxamhed['PctCat']=np.where(cplxamhed['Pct']<=0.25,'13%~25%',
+                    np.where(cplxamhed['Pct']<=0.3,'26%~30%',
+                    np.where(cplxamhed['Pct']<=0.35,'31%~35%',
+                    np.where(cplxamhed['Pct']<=0.4,'36%~40%',
+                             '41%~51%'))))
 cplxamhed.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/ntaamhed.geojson',driver='GeoJSON')
 
 
 
 # PM Peak Pre and Post by NTA for HED
 dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
-predates=['12/23/2019','12/26/2019','12/27/2019','12/30/2019','12/31/2019','01/02/2020','01/03/2020']
-postdates=['12/21/2020','12/22/2020','12/23/2020','12/28/2020','12/29/2020','12/30/2020','12/31/2020']
+predates=['10/21/2019','10/22/2019','10/23/2019','10/24/2019','10/25/2019','10/28/2019','10/29/2019','10/30/2019','10/31/2019']
+postdates=['10/19/2020','10/20/2020','10/21/2020','10/22/2020','10/23/2020','10/26/2020','10/27/2020','10/28/2020','10/29/2020']
 pmlist=['13:00:00-17:00:00','13:30:00-17:30:00','14:00:00-18:00:00','14:30:00-18:30:00','15:00:00-19:00:00',
         '15:22:00-19:22:00','15:30:00-19:30:00','16:00:00-20:00:00','16:22:00-20:22:00','16:30:00-20:30:00']
 cplxpmpre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
@@ -1328,6 +1335,13 @@ cplxpmhed['DiffPctCat3']=np.where(cplxpmhed['DiffPct3']<=0.7,'<=70%',
           np.where(cplxpmhed['DiffPct3']<=0.9,'81%~90%',
           np.where(cplxpmhed['DiffPct3']<=1,'91%~100%',
           '>100%'))))
+cplxpmhed['Pct']=cplxpmhed['E202009']/cplxpmhed['E201909']
+cplxpmhed['Pct'].describe(percentiles=np.arange(0.2,1,0.2))
+cplxpmhed['PctCat']=np.where(cplxpmhed['Pct']<=0.25,'16%~25%',
+                    np.where(cplxpmhed['Pct']<=0.3,'26%~30%',
+                    np.where(cplxpmhed['Pct']<=0.35,'31%~35%',
+                    np.where(cplxpmhed['Pct']<=0.4,'36%~40%',
+                             '41%~55%'))))
 cplxpmhed.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/ntapmhed.geojson',driver='GeoJSON')
 
 
