@@ -2114,6 +2114,48 @@ cplxamdiffpuma.to_csv(path+'OUTPUT/amdiffpuma.csv',index=False)
 
 
 
+# Nadir AM
+# AM Peak Mapbox
+dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
+predates=['04/15/2019','04/16/2019','04/17/2019','04/18/2019']
+postdates=['04/14/2020','04/15/2020','04/16/2020','04/17/2020']
+amlist=['05:00:00-09:00:00','05:30:00-09:30:00','06:00:00-10:00:00','06:30:00-10:30:00','07:00:00-11:00:00',
+        '07:22:00-11:22:00','07:30:00-11:30:00','08:00:00-12:00:00','08:22:00-12:22:00','08:30:00-12:30:00']
+cplxampre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
+cplxampre=cplxampre[np.isin(cplxampre['time'],amlist)].reset_index(drop=True)
+cplxampre=cplxampre.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
+cplxampre=pd.merge(cplxampre,rc,how='left',left_on='unit',right_on='Remote')
+cplxampre=cplxampre.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
+cplxampre.columns=['CplxID','PreTime','E201910']
+cplxampost=dfunitentry[np.isin(dfunitentry['firstdate'],postdates)].reset_index(drop=True)
+cplxampost=cplxampost[np.isin(cplxampost['time'],amlist)].reset_index(drop=True)
+cplxampost=cplxampost.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
+cplxampost=pd.merge(cplxampost,rc,how='left',left_on='unit',right_on='Remote')
+cplxampost=cplxampost.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
+cplxampost.columns=['CplxID','PostTime','E202010']
+cplxamcp=pd.merge(cplxampre,cplxampost,how='inner',on='CplxID')
+cplxamcp['Time']=cplxamcp['PreTime'].copy()
+cplxamcp=cplxamcp[['CplxID','Time','E201910','E202010']].reset_index(drop=True)
+cplxamcp['Diff']=cplxamcp['E202010']-cplxamcp['E201910']
+cplxamcp['DiffPct']=cplxamcp['Diff']/cplxamcp['E201910']
+cplxamcp['DiffPct'].describe(percentiles=np.arange(0.2,1,0.2))
+cplxamcp['DiffPctCat']=np.where(cplxamcp['DiffPct']>=-0.8,'-80%~-77%',
+                       np.where(cplxamcp['DiffPct']>=-0.85,'-85%~-81%',
+                       np.where(cplxamcp['DiffPct']>=-0.9,'-90%~-86%',
+                       np.where(cplxamcp['DiffPct']>=-0.95,'-95%~-91%',
+                       '-99%~-96%'))))
+cplxamcp['Pct']=cplxamcp['E202010']/cplxamcp['E201910']
+cplxamcp['Pct'].describe(percentiles=np.arange(0.2,1,0.2))
+cplxamcp['PctCat']=np.where(cplxamcp['Pct']<=0.04,'1%~4%',
+                   np.where(cplxamcp['Pct']<=0.06,'5%~6%',
+                   np.where(cplxamcp['Pct']<=0.08,'7%~8%',
+                   np.where(cplxamcp['Pct']<=0.1,'9%~10%',
+                            '11%~23%'))))
+cplxamcp=pd.merge(rc.drop('Remote',axis=1).drop_duplicates(keep='first').reset_index(drop=True),cplxamcp,how='inner',on='CplxID')
+cplxamcp=cplxamcp[['CplxID','Borough','CplxName','Routes','CplxLat','CplxLong','Time','E201910','E202010',
+                   'Diff','DiffPct','DiffPctCat','Pct','PctCat']].reset_index(drop=True)
+cplxamcp=gpd.GeoDataFrame(cplxamcp,geometry=[shapely.geometry.Point(x,y) for x,y in zip(cplxamcp['CplxLong'],cplxamcp['CplxLat'])],crs='epsg:4326')
+cplxamcp.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/nadiram.geojson',driver='GeoJSON')
 
 
 

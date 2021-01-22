@@ -41,7 +41,7 @@
             padding-bottom: 0.5rem;
             padding-right: 0.5rem;
             padding-left: 0.5rem;
-            width: 16rem;
+            width: 20rem;
             height: auto;
         }
 
@@ -50,7 +50,7 @@
             padding-right: 0.5rem;
             padding-left: 0.5rem;
             padding-bottom: 0.5rem;
-            width: 16rem;
+            width: 13rem;
             height: auto;
         }
 
@@ -61,7 +61,7 @@
             padding-right: 0.5rem;
             padding-left: 0.5rem;
             padding-bottom: 0.5rem;
-            width: 16rem;
+            width: 13rem;
         }
 
         #legend2-title1 {
@@ -71,16 +71,7 @@
             padding-bottom: 0.5rem;
             padding-right: 0.5rem;
             padding-left: 0.5rem;
-            width: 16rem;
-            height: auto;
-        }
-
-        #legend2-title2 {
-            background-color: rgba(255, 255, 255, 1);
-            padding-right: 0.5rem;
-            padding-left: 0.5rem;
-            padding-bottom: 0.5rem;
-            width: 16rem;
+            width: 13rem;
             height: auto;
         }
 
@@ -91,7 +82,7 @@
             padding-right: 0.5rem;
             padding-left: 0.5rem;
             padding-bottom: 0.5rem;
-            width: 16rem;
+            width: 13rem;
         }
 
         .legend-key-circle {
@@ -145,7 +136,6 @@
         <div id="legend1-title2"></div>
         <div id="legend1-layer"></div>
         <div id="legend2-title1"></div>
-        <div id="legend2-title2"></div>
         <div id="legend2-layer"></div>
     </nav> <!-- placeholder for layer selector and legend -->
 
@@ -181,16 +171,15 @@
             // Add polygons
             // Set layer contents
             var layerContent = {
-                'sourceid': 'healthcare', // source id
+                'sourceid': 'nontelsub', // source id
                 'sourcetype': 'geojson', // source type
-                'sourcedata': 'healthcareworkersnta.geojson', // data source
-                'layerid': 'healthcare', // layer id
+                'sourcedata': 'nontelsubam.geojson', // data source
+                'layerid': 'nontelsub', // layer id
                 'layertype': 'fill', // symbology type
-                'layername1': 'Healthcare Workers​', // layer name for the legend
-                'layername2': '% of Health Care Workers by NTA', // layer name for the legend
+                'layername1': 'Non-Telework Capability of Subway Commuters by Place of Residence​', // layer name for the legend
                 'layervisibility': 'visible', // visibility of the layer
-                'layercolname': 'category', // category column name
-                'layercat': ['6%-13%', '14%-23%', '24%-33%'], // categories
+                'layercolname': 'cat', // category column name
+                'layercat': ['46%~64%', '65%~69%', '70%~78%'], // categories
                 'layercolor': ['rgba(209,227,243,1)', 'rgba(154,200,225,1)', 'rgba(82,157,204,1)'], // color for each category; use rgba
                 'layeropacity': 1, // fill opacity
             };
@@ -226,23 +215,23 @@
                 },
             });
 
+ 
 
-
-
+ 
             // Add points
             // Set layer contents
             var layerContent = {
                 'sourceid': 'cp', // source id
                 'sourcetype': 'geojson', // source type
-                'sourcedata': 'nadir.geojson', // data source
+                'sourcedata': 'nadiram.geojson', // data source
                 'layerid': 'cplxamcp', // layer id
                 'layertype': 'circle', // symbology type
-                'layername1': '% Change of Swipes by Station​', // layer name for the legend
-                'layername2': '4/11-17 vs Weekly Avg of 1/4-2/28', // layer name for the legend
+                'layername1': 'Mid April 2020 as Percentage of Mid April 2019 Subway Ridership', // layer name for the legend
+                'layername2': 'Weekday AM Peak Average', // layer name for the legend
                 'layervisibility': 'visible', // visibility of the layer
-                'layercolname': 'category', // category column name
-                'layercat': [ '-79%~-70%','-89%~-80%','-99%~-90%'], // categories
-                'layercolor': [ 'rgba(254,210,166,1)', 'rgba(253,146,67,1)', 'rgba(127,39,4,1)'], // color for each category; use rgba
+                'layercolname': 'PctCat', // category column name
+                'layercat': ['1%~4%', '5%~6%', '7%~8%', '9%~10%', '11%~23%'], // categories
+                'layercolor': ['rgba(255,245,235,1)', 'rgba(254,210,166,1)', 'rgba(253,146,67,1)', 'rgba(223,79,5,1)', 'rgba(127,39,4,1)'], // color for each category; use rgba
                 'layeropacity': 1, // circle opacity
                 'layerradius': { 'base': 1, 'stops': [[15, 4], [22, 180]] }, // circle radius; change size based on zoom level
             };
@@ -323,14 +312,13 @@
 
 
             // Add layer selector and legend
-            var layerOrder = ['healthcare']; // set layer order in the legend
+            var layerOrder = ['nontelsub']; // set layer order in the legend
             var layerContentListOrder = []; // create ordered layer content list
             for (var i = 0; i < layerOrder.length; i++) {
                 layerContentListOrder.push(layerContentList.filter(e => e.layerid == layerOrder[i])[0]);
             };
 
             var legendTitle1 = document.getElementById('legend2-title1');
-            var legendTitle2 = document.getElementById('legend2-title2');
             var legendLayer = document.getElementById('legend2-layer');
 
             for (var i = 0; i < layerContentListOrder.length; i++) {
@@ -338,10 +326,6 @@
                 var title1 = document.createElement('div'); // create title1
                 title1.innerHTML = layerContentListOrder[i]['layername1'];
                 legendTitle1.appendChild(title1);
-
-                var title2 = document.createElement('div'); // create title2
-                title2.innerHTML = layerContentListOrder[i]['layername2'];
-                legendTitle2.appendChild(title2);
 
                 // Create legend layer
                 for (var j = 0; j < layerContentListOrder[i]['layercat'].length; j++) {
