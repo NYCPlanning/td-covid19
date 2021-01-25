@@ -235,6 +235,49 @@
 
 
 
+            // Add Historic District
+            // Set layer contents
+            var layerContent = {
+                'sourceid': 'hd', // source id
+                'sourcetype': 'geojson', // source type
+                'sourcedata': 'hd.geojson', // data source
+                'layerid': 'hd', // layer id
+                'layertype': 'fill', // symbology type
+                'layername': 'Historic District', // layer name for the legend
+                'layervisibility': 'none', // visibility of the layer
+                'layercolname': 'cat', // category column name
+                'layercat': [''], // categories
+                'layercolor': ['rgba(0,0,255,1)'], // extrusion color; use rgba
+                'layeropacity': 0.2, // fill opacity
+                'layeroutlinecolor': 'rgba(0,0,0,0)', // outline color; can only be set to 1px width; to change the outline width, add another line layer
+            };
+
+            // Add layer content to the overall layer content list
+            layerContentList.push(layerContent);
+
+            // Add data source
+            map.addSource(layerContent['sourceid'], {
+                'type': layerContent['sourcetype'],
+                'data': layerContent['sourcedata'],
+            });
+
+            // Add fill layer
+            map.addLayer({
+                'id': layerContent['layerid'],
+                'type': layerContent['layertype'],
+                'source': layerContent['sourceid'],
+                'layout': {
+                    'visibility': layerContent['layervisibility'],
+                },
+                'paint': {
+                    'fill-color': layerContent['layercolor'][0],
+                    'fill-opacity': layerContent['layeropacity'],
+                    'fill-outline-color': layerContent['layeroutlinecolor'],
+                },
+            });
+
+
+
             // Add Special District
             // Set layer contents
             var layerContent = {
@@ -887,7 +930,7 @@
 
 
             // Add layer selector and legend
-            var layerOrder = ['orcafe', 'orsw', 'sdwkcafe', 'sdwkwdimp', 'zd', 'co', 'sp', 'el']; // set layer order in the legend
+            var layerOrder = ['orcafe', 'orsw', 'sdwkcafe', 'sdwkwdimp', 'zd', 'co', 'sp', 'hd','el']; // set layer order in the legend
             var layerContentListOrder = []; // create ordered layer content list
             for (var i = 0; i < layerOrder.length; i++) {
                 layerContentListOrder.push(layerContentList.filter(e => e.layerid == layerOrder[i])[0]);
