@@ -5,6 +5,8 @@ import pandas as pd
 import numpy as np
 import datetime
 import pytz
+import geopandas as gpd
+import shapely
 
 
 
@@ -49,6 +51,7 @@ tp=tp[['unit','week','fare']].reset_index(drop=True)
 tp.to_csv(path+'fare.csv',index=False)
 
 
+
 # Compare the data
 df=pd.read_csv(path+'fare.csv',dtype=str,converters={'fare':float})
 preweek='04/20/2019-04/26/2019'
@@ -62,9 +65,21 @@ cplxpost=pd.merge(cplxpost,rc,how='left',left_on='unit',right_on='Remote')
 cplxpost=cplxpost.groupby(['CplxID'],as_index=False).agg({'fare':'sum'}).reset_index(drop=True)
 cplxpost.columns=['CplxID','PostEntries']
 cplxdiff=pd.merge(cplxpre,cplxpost,how='inner',on='CplxID')
-cplxdiff['Diff']=cplxdiff['PostEntries']-cplxdiff['PreEntries']
-cplxdiff['DiffPct']=cplxdiff['Diff']/cplxdiff['PreEntries']
+cplxdiff['Pct']=cplxdiff['PostEntries']/cplxdiff['PreEntries']
+cplxdiff['Pct'].describe(percentiles=np.arange(0.2,1,0.2))
+cplxdiff['PctCat']=np.where(cplxdiff['Pct']<=0.1,'1%~10%',
+                   np.where(cplxdiff['Pct']<=0.15,'11%~15%',
+                            '16%~38%'))
 cplxdiff=pd.merge(cplxdiff,rc.drop('Remote',axis=1).drop_duplicates(keep='first').reset_index(drop=True),how='left',on='CplxID')
-cplxdiff=cplxdiff[['CplxID','Borough','CplxName','Routes','CplxLat','CplxLong','Hub','PreEntries','PostEntries','Diff','DiffPct']].reset_index(drop=True)
-cplxdiff.to_csv(path+'cplxfarediff.csv',index=False)
+cplxdiff=cplxdiff[['CplxID','Borough','CplxName','Routes','CplxLat','CplxLong','Hub','PreEntries','PostEntries','Pct','PctCat']].reset_index(drop=True)
+cplxdiff=gpd.GeoDataFrame(cplxdiff,geometry=[shapely.geometry.Point(x,y) for x,y in zip(cplxdiff['CplxLong'],cplxdiff['CplxLat'])],crs='epsg:4326')
+cplxdiff.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/nadirfare.geojson',driver='GeoJSON')
+
+
+
+
+
+
+
+
 
