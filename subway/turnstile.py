@@ -2146,11 +2146,9 @@ cplxamcp['DiffPctCat']=np.where(cplxamcp['DiffPct']>=-0.8,'-80%~-77%',
                        '-99%~-96%'))))
 cplxamcp['Pct']=cplxamcp['E202010']/cplxamcp['E201910']
 cplxamcp['Pct'].describe(percentiles=np.arange(0.2,1,0.2))
-cplxamcp['PctCat']=np.where(cplxamcp['Pct']<=0.04,'1%~4%',
-                   np.where(cplxamcp['Pct']<=0.06,'5%~6%',
-                   np.where(cplxamcp['Pct']<=0.08,'7%~8%',
-                   np.where(cplxamcp['Pct']<=0.1,'9%~10%',
-                            '11%~23%'))))
+cplxamcp['PctCat']=np.where(cplxamcp['Pct']<=0.05,'1%~5%',
+                   np.where(cplxamcp['Pct']<=0.1,'6%~10%',
+                            '11%~23%'))
 cplxamcp=pd.merge(rc.drop('Remote',axis=1).drop_duplicates(keep='first').reset_index(drop=True),cplxamcp,how='inner',on='CplxID')
 cplxamcp=cplxamcp[['CplxID','Borough','CplxName','Routes','CplxLat','CplxLong','Time','E201910','E202010',
                    'Diff','DiffPct','DiffPctCat','Pct','PctCat']].reset_index(drop=True)

@@ -41,7 +41,7 @@
             padding-bottom: 0.5rem;
             padding-right: 0.5rem;
             padding-left: 0.5rem;
-            width: 20rem;
+            width: 17rem;
             height: auto;
         }
 
@@ -50,7 +50,7 @@
             padding-right: 0.5rem;
             padding-left: 0.5rem;
             padding-bottom: 0.5rem;
-            width: 13rem;
+            width: 17rem;
             height: auto;
         }
 
@@ -61,7 +61,7 @@
             padding-right: 0.5rem;
             padding-left: 0.5rem;
             padding-bottom: 0.5rem;
-            width: 13rem;
+            width: 17rem;
         }
 
         #legend2-title1 {
@@ -71,7 +71,7 @@
             padding-bottom: 0.5rem;
             padding-right: 0.5rem;
             padding-left: 0.5rem;
-            width: 13rem;
+            width: 17rem;
             height: auto;
         }
 
@@ -82,7 +82,7 @@
             padding-right: 0.5rem;
             padding-left: 0.5rem;
             padding-bottom: 0.5rem;
-            width: 13rem;
+            width: 17rem;
         }
 
         .legend-key-circle {
@@ -221,7 +221,7 @@
             // Add points
             // Set layer contents
             var layerContent = {
-                'sourceid': 'cp', // source id
+                'sourceid': 'cplxamcp', // source id
                 'sourcetype': 'geojson', // source type
                 'sourcedata': 'nadiram.geojson', // data source
                 'layerid': 'cplxamcp', // layer id
@@ -230,8 +230,8 @@
                 'layername2': 'Weekday AM Peak Average', // layer name for the legend
                 'layervisibility': 'visible', // visibility of the layer
                 'layercolname': 'PctCat', // category column name
-                'layercat': ['1%~4%', '5%~6%', '7%~8%', '9%~10%', '11%~23%'], // categories
-                'layercolor': ['rgba(255,245,235,1)', 'rgba(254,210,166,1)', 'rgba(253,146,67,1)', 'rgba(223,79,5,1)', 'rgba(127,39,4,1)'], // color for each category; use rgba
+                'layercat': ['1%~5%','6%~10%', '11%~23%'], // categories
+                'layercolor': ['rgba(255,245,235,1)', 'rgba(253,146,67,1)', 'rgba(127,39,4,1)'], // color for each category; use rgba
                 'layeropacity': 1, // circle opacity
                 'layerradius': { 'base': 1, 'stops': [[15, 4], [22, 180]] }, // circle radius; change size based on zoom level
             };
@@ -267,6 +267,74 @@
                     'circle-radius': layerContent['layerradius'],
                 },
             });
+
+
+
+
+
+
+
+            // Add popup
+            var popup = new mapboxgl.Popup({
+                closeButton: true, // close button
+                closeOnClick: false, // close if click on map
+                closeOnMove: false, // close if move the map
+                anchor: 'bottom', // anchor of the popup
+                offset: 0, // offset from the feature
+                maxWidth: 'none', // max width of the popoup; 'none' to fit to the content                
+            });
+
+           // Add nontelsub popup
+            // Add click event
+            map.on('click', 'nontelsub', function (e) {
+                var coordinates = e.lngLat; // get pointer coordinates
+                var description = "<b>PUMA: </b><span>" + e.features[0].properties.puma + "</span><br>"; // description in the popup
+                description += "<b>Non-Telework Capability of Subway Commuters by Place of Residence​: </b><span>" + (Number(e.features[0].properties.notelsubpct) * 100).toFixed(2) + "%</span><br>";
+                popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
+            });
+            // Add hover events
+            map.on('mouseenter', 'nontelsub', function () {
+                map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
+            });
+            map.on('mouseleave', 'nontelsub', function () {
+                map.getCanvas().style.cursor = '';
+            });
+
+
+
+
+            // Add fare popup
+            // Add click event
+            map.on('click', 'cplxamcp', function (e) {
+                var coordinates = e.features[0].geometry.coordinates.slice(); // get point coordinates
+                var description = "<b>Complex ID: </b><span>" + e.features[0].properties.CplxID + "</span><br>"; // description in the popup
+                description += "<b>Borough: </b><span>" + e.features[0].properties.Borough + "</span><br>";
+                description += "<b>Complex Name: </b><span>" + e.features[0].properties.CplxName + "</span><br>";
+                description += "<b>Routes: </b><span>" + e.features[0].properties.Routes + "</span><br>";
+                description += "<b>Mid April 2019 Average Weekday AM Peak Ridership: </b><span>" + e.features[0].properties.E201910.toFixed(2) + "</span><br>";
+                description += "<b>Mid April 2020 Average Weekday AM Peak Ridership: </b><span>" + e.features[0].properties.E202010.toFixed(2) + "</span><br>";
+                description += "<b>Mid April 2020 as Percentage of Mid April 2019: </b><span>" + (Number(e.features[0].properties.Pct) * 100).toFixed(2) + "%</span><br>";
+                popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
+            });
+            // Add hover events
+            map.on('mouseenter', 'am', function () {
+                map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
+            });
+            map.on('mouseleave', 'am', function () {
+                map.getCanvas().style.cursor = '';
+            });
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
