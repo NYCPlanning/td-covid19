@@ -221,10 +221,10 @@
             // Add points
             // Set layer contents
             var layerContent = {
-                'sourceid': 'cp', // source id
+                'sourceid': 'cplxfare', // source id
                 'sourcetype': 'geojson', // source type
                 'sourcedata': 'nadirfare.geojson', // data source
-                'layerid': 'cplxamcp', // layer id
+                'layerid': 'cplxfare', // layer id
                 'layertype': 'circle', // symbology type
                 'layername1': 'Mid April 2020 as Percentage of Mid April 2019 Subway Ridership', // layer name for the legend
                 'layername2': '', // layer name for the legend
@@ -271,10 +271,61 @@
 
 
 
+            // Add popup
+            var popup = new mapboxgl.Popup({
+                closeButton: true, // close button
+                closeOnClick: false, // close if click on map
+                closeOnMove: false, // close if move the map
+                anchor: 'bottom', // anchor of the popup
+                offset: 0, // offset from the feature
+                maxWidth: 'none', // max width of the popoup; 'none' to fit to the content                
+            });
+
+           // Add nontelsub popup
+            // Add click event
+            map.on('click', 'nontelsub', function (e) {
+                var coordinates = e.lngLat; // get pointer coordinates
+                var description = "<b>PUMA: </b><span>" + e.features[0].properties.puma + "</span><br>"; // description in the popup
+                description += "<b>Non-Telework Capability of Subway Commuters by Place of Residence​: </b><span>" + (Number(e.features[0].properties.notelsubpct) * 100).toFixed(2) + "%</span><br>";
+                popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
+            });
+            // Add hover events
+            map.on('mouseenter', 'nontelsub', function () {
+                map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
+            });
+            map.on('mouseleave', 'nontelsub', function () {
+                map.getCanvas().style.cursor = '';
+            });
+
+
+
+
+            // Add fare popup
+            // Add click event
+            map.on('click', 'cplxfare', function (e) {
+                var coordinates = e.features[0].geometry.coordinates.slice(); // get point coordinates
+                var description = "<b>Complex ID: </b><span>" + e.features[0].properties.CplxID + "</span><br>"; // description in the popup
+                description += "<b>Borough: </b><span>" + e.features[0].properties.Borough + "</span><br>";
+                description += "<b>Complex Name: </b><span>" + e.features[0].properties.CplxName + "</span><br>";
+                description += "<b>Routes: </b><span>" + e.features[0].properties.Routes + "</span><br>";
+                description += "<b>04/20/2019-04/26/2019 Weekly Ridership: </b><span>" + e.features[0].properties.PreEntries.toFixed(0) + "</span><br>";
+                description += "<b>04/18/2020-04/24/2020 Weekly Ridership: </b><span>" + e.features[0].properties.PostEntries.toFixed(0) + "</span><br>";
+                description += "<b>Mid April 2020 as Percentage of Mid April 2019: </b><span>" + (Number(e.features[0].properties.Pct) * 100).toFixed(2) + "%</span><br>";
+                popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
+            });
+            // Add hover events
+            map.on('mouseenter', 'am', function () {
+                map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
+            });
+            map.on('mouseleave', 'am', function () {
+                map.getCanvas().style.cursor = '';
+            });
+
+
 
 
             // Add layer selector and legend
-            var layerOrder = ['cplxamcp']; // set layer order in the legend
+            var layerOrder = ['cplxfare']; // set layer order in the legend
             var layerContentListOrder = []; // create ordered layer content list
             for (var i = 0; i < layerOrder.length; i++) {
                 layerContentListOrder.push(layerContentList.filter(e => e.layerid == layerOrder[i])[0]);
