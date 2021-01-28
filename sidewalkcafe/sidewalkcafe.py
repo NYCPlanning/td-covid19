@@ -691,10 +691,10 @@ dfcafeznelwd.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/sidewalkcafe/
 
 
 
-# DCA License in Commercial Overlays
+# DCA License
 dfcafeznelwd=gpd.read_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/sidewalkcafe/dca_cafe_zn_el_wd.geojson')
 dfcafeznelwd.crs='epsg:4326'
-dfcafeznelwdco=dfcafeznelwd[pd.notna(dfcafeznelwd['OL'])].reset_index(drop=True)
+dfcafeznelwdco=dfcafeznelwd.reset_index(drop=True)
 dfcafeznelwdco['CP']=np.where(dfcafeznelwdco['IMPSWMDN']>=15,'>=12 ft',
                      np.where(dfcafeznelwdco['IMPSWMDN']>=11,'8 ft ~ 12 ft',
                               '<8 ft'))
