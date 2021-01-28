@@ -163,7 +163,8 @@
             container: 'mainmap', // same as the div id to place the map
             style: 'mapbox://styles/mapbox/light-v10', // light base map
             hash: true, // make sure it's on to get the url with map view
-            attributionControl: false, // show the credit bar
+            attributionControl: true, // show the credit bar
+            customAttribution: '<b> Data Sources: MTA Fare Data; Census Bureau PUMS 2014-2018</b>', // add overall credit to the beggining
             preserveDrawingBuffer: true, // make sure it's on to allow printing
             center: [-73.5471, 40.7469], // testing to get the centroid of bounds
             zoom: 9.8, // set the initial zoom of the map view
@@ -229,7 +230,7 @@
 
 
 
-             // Add points
+            // Add points
             // Set layer contents
             var layerContent = {
                 'sourceid': 'cplxfare', // source id
@@ -242,7 +243,7 @@
                 'layervisibility': 'visible', // visibility of the layer
                 'layercolname': 'PctCat', // category column name
                 'layercat': ['1%~10%', '11%~15%', '16%~38%'], // categories
-                'layercolor': [ 'rgba(255,245,235,1)', 'rgba(253,146,67,1)', 'rgba(127,39,4,1)'], // color for each category; use rgba
+                'layercolor': ['rgba(255,245,235,1)', 'rgba(253,146,67,1)', 'rgba(127,39,4,1)'], // color for each category; use rgba
                 'layeropacity': 1, // circle opacity
                 'layerradius': 3, // circle radius; change size based on zoom level
             };
@@ -294,15 +295,15 @@
                 maxWidth: 'none', // max width of the popoup; 'none' to fit to the content                
             });
 
-           // Add nontelsub popup
+            // Add nontelsub popup
             // Add click event
             map.on('click', 'healthcare', function (e) {
                 var coordinates = e.lngLat; // get pointer coordinates
                 var description = "<b>NTA Code: </b><span>" + e.features[0].properties.ntacode + "</span><br>"; // description in the popup
-                description += "<b>NTA Name: </b><span>"  + e.features[0].properties.ntaname + "</span><br>";
-                description += "<b>Civilian Employees: </b><span>"  + e.features[0].properties.civilian_e.toFixed(0) + "</span><br>";
-                description += "<b>Healtcare Employees: </b><span>"  + e.features[0].properties.healthcare.toFixed(0) + "</span><br>";
-               description += "<b>Percent of Healthcare Workers: </b><span>" + (Number(e.features[0].properties.percentage) * 100).toFixed(2) + "%</span><br>";
+                description += "<b>NTA Name: </b><span>" + e.features[0].properties.ntaname + "</span><br>";
+                description += "<b>Civilian Employees: </b><span>" + e.features[0].properties.civilian_e.toFixed(0) + "</span><br>";
+                description += "<b>Healtcare Employees: </b><span>" + e.features[0].properties.healthcare.toFixed(0) + "</span><br>";
+                description += "<b>Percent of Healthcare Workers: </b><span>" + (Number(e.features[0].properties.percentage) * 100).toFixed(2) + "%</span><br>";
                 popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
             });
             // Add hover events
