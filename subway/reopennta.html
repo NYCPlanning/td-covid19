@@ -45,28 +45,6 @@
             font-size: 0.8rem;
         }
 
-        #legend2 {
-            position: absolute;
-            bottom: 1rem;
-            left: 1rem;
-            line-height: 1rem;
-            color: #000000;
-            background-color: rgba(255, 255, 255, 0);
-            font-family: sans-serif;
-            font-size: 0.8rem;
-        }
-
-        #legend3 {
-            position: absolute;
-            bottom: 1rem;
-            left: 51%;
-            line-height: 1rem;
-            color: #000000;
-            background-color: rgba(255, 255, 255, 0);
-            font-family: sans-serif;
-            font-size: 0.8rem;
-        }
-
         #legend-title1 {
             font-weight: bold;
             background-color: rgba(255, 255, 255, 1);
@@ -75,28 +53,6 @@
             padding-right: 0.5rem;
             padding-left: 0.5rem;
             width: 22rem;
-            height: auto;
-        }
-
-        #legend-title2 {
-            font-weight: bold;
-            background-color: rgba(255, 255, 255, 1);
-            padding-top: 0.5rem;
-            padding-right: 0.5rem;
-            padding-left: 0.5rem;
-            padding-bottom: 0.5rem;
-            width: 11rem;
-            height: auto;
-        }
-
-        #legend-title3 {
-            font-weight: bold;
-            background-color: rgba(255, 255, 255, 1);
-            padding-top: 0.5rem;
-            padding-right: 0.5rem;
-            padding-left: 0.5rem;
-            padding-bottom: 0.5rem;
-            width: 11rem;
             height: auto;
         }
 
@@ -148,6 +104,50 @@
             display: inline-block;
             vertical-align: -0.15rem;
         }
+
+        #legend2 {
+            position: absolute;
+            bottom: 1rem;
+            left: 1rem;
+            line-height: 1rem;
+            color: #000000;
+            background-color: rgba(255, 255, 255, 0);
+            font-family: sans-serif;
+            font-size: 0.8rem;
+        }
+        
+        #legend2-title1 {
+            font-weight: bold;
+            background-color: rgba(255, 255, 255, 1);
+            padding-top: 0.5rem;
+            padding-right: 0.5rem;
+            padding-left: 0.5rem;
+            padding-bottom: 0.5rem;
+            width: 11rem;
+            height: auto;
+        }
+ 
+        #legend3 {
+            position: absolute;
+            bottom: 1rem;
+            left: 51%;
+            line-height: 1rem;
+            color: #000000;
+            background-color: rgba(255, 255, 255, 0);
+            font-family: sans-serif;
+            font-size: 0.8rem;
+        }
+
+       #legend3-title1 {
+            font-weight: bold;
+            background-color: rgba(255, 255, 255, 1);
+            padding-top: 0.5rem;
+            padding-right: 0.5rem;
+            padding-left: 0.5rem;
+            padding-bottom: 0.5rem;
+            width: 11rem;
+            height: auto;
+        }
     </style>
 </head>
 
@@ -164,10 +164,10 @@
         <div id="legend-layer"></div>
     </nav> <!-- placeholder for layer selector and legend -->
     <nav id="legend2">
-        <div id="legend-title2"></div>
+        <div id="legend2-title1"></div>
     </nav> <!-- placeholder for layer selector and legend -->
     <nav id="legend3">
-        <div id="legend-title3"></div>
+        <div id="legend3-title1"></div>
     </nav> <!-- placeholder for layer selector and legend -->
 
     <script>
@@ -224,7 +224,7 @@
                 'layername2': 'Weekday AM Peak Average​', // layer name for the legend
                 'layervisibility': 'visible', // visibility of the layer
                 'layercolname': 'DiffPctCat2', // category column name
-                'layercat': ['<=200%', '201%~250%', '251%~300%', '301%~350%', '>350%'], // categories
+                'layercat': ['79%~200%', '201%~250%', '251%~300%', '301%~350%', '351%~581%'], // categories
                 'layercolor': ['rgba(209,227,243,1)', 'rgba(154,200,225,1)', 'rgba(82,157,204,1)', 'rgba(28,108,177,1)', 'rgba(8,48,107,1)'], // color for each category; use rgba
                 'layeropacity': 1, // fill opacity
             };
@@ -350,7 +350,7 @@
             };
 
             var legendTitle1 = document.getElementById('legend-title1');
-            var legendTitle2 = document.getElementById('legend-title2');
+            var legendTitle2 = document.getElementById('legend2-title1');
             var legendLayer = document.getElementById('legend-layer');
 
             for (var i = 0; i < layerContentListOrder.length; i++) {
@@ -415,7 +415,7 @@
                 'layername2': 'Weekday PM Peak Average​', // layer name for the legend
                 'layervisibility': 'visible', // visibility of the layer
                 'layercolname': 'DiffPctCat2', // category column name
-                'layercat': ['<=200%', '201%~250%', '251%~300%', '301%~350%', '>350%'], // categories
+                'layercat': ['79%~200%', '201%~250%', '251%~300%', '301%~350%', '351%~581%'], // categories
                 'layercolor': ['rgba(209,227,243,1)', 'rgba(154,200,225,1)', 'rgba(82,157,204,1)', 'rgba(28,108,177,1)', 'rgba(8,48,107,1)'], // color for each category; use rgba
                 'layeropacity': 1, // fill opacity
             };
@@ -537,7 +537,7 @@
                 layerContentListOrder.push(layerContentList.filter(e => e.layerid == layerOrder[i])[0]);
             };
 
-            var legendTitle3 = document.getElementById('legend-title3');
+            var legendTitle3 = document.getElementById('legend3-title1');
 
             for (var i = 0; i < layerContentListOrder.length; i++) {
 
