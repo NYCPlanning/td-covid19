@@ -308,6 +308,40 @@
 
 
 
+
+            // Add popup
+            var popup = new mapboxgl.Popup({
+                closeButton: true, // close button
+                closeOnClick: false, // close if click on map
+                closeOnMove: false, // close if move the map
+                anchor: 'bottom', // anchor of the popup
+                offset: 0, // offset from the feature
+                maxWidth: 'none', // max width of the popoup; 'none' to fit to the content                
+            });
+
+            // Add ntaamhed popup
+            // Add click event
+            map.on('click', 'ntaamhed', function (e) {
+                var coordinates = e.lngLat; // get pointer coordinates
+                var description = "<b>NTA Code: </b><span>" + e.features[0].properties.NTACode + "</span><br>"; // description in the popup
+                description += "<b>NTA Name: </b><span>" + e.features[0].properties.NTAName + "</span><br>"
+                description += "<b>Mid April 2020 Subway Ridership: </b><span>" + e.features[0].properties.E202004.toFixed(2) + "</span><br>"
+                description += "<b>Mid September 2020 Subway Ridership: </b><span>" + e.features[0].properties.E202009.toFixed(2) + "</span><br>"
+                description += "<b>Percent Change: </b><span>" + (Number(e.features[0].properties.Pct) * 100).toFixed(2)+ "%</span><br>"
+              popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
+            });
+            // Add hover events
+            map.on('mouseenter', 'ntaamhed', function () {
+                map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
+            });
+            map.on('mouseleave', 'ntaamhed', function () {
+                map.getCanvas().style.cursor = '';
+            });
+
+
+
+
+
             // Add layer selector and legend
             var layerOrder = ['ntaamhed']; // set layer order in the legend
             var layerContentListOrder = []; // create ordered layer content list
@@ -459,6 +493,37 @@
                     'line-opacity': layerContent['layeropacity'],
                     'line-width': layerContent['layerwidth'],
                 },
+            });
+
+
+
+            // Add popup
+            var popup = new mapboxgl.Popup({
+                closeButton: true, // close button
+                closeOnClick: false, // close if click on map
+                closeOnMove: false, // close if move the map
+                anchor: 'bottom', // anchor of the popup
+                offset: 0, // offset from the feature
+                maxWidth: 'none', // max width of the popoup; 'none' to fit to the content                
+            });
+
+            // Add ntapmhed popup
+            // Add click event
+            map2.on('click', 'ntapmhed', function (e) {
+                var coordinates = e.lngLat; // get pointer coordinates
+                var description = "<b>NTA Code: </b><span>" + e.features[0].properties.NTACode + "</span><br>"; // description in the popup
+                description += "<b>NTA Name: </b><span>" + e.features[0].properties.NTAName + "</span><br>"
+                description += "<b>Mid April 2020 Subway Ridership: </b><span>" + e.features[0].properties.E202004.toFixed(2) + "</span><br>"
+                description += "<b>Mid September 2020 Subway Ridership: </b><span>" + e.features[0].properties.E202009.toFixed(2) + "</span><br>"
+                description += "<b>Percent Change: </b><span>" + (Number(e.features[0].properties.Pct) * 100).toFixed(2)+ "%</span><br>"
+              popup.setLngLat(coordinates).setHTML(description).addTo(map2); //add popup
+            });
+            // Add hover events
+            map2.on('mouseenter', 'ntapmhed', function () {
+                map2.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
+            });
+            map2.on('mouseleave', 'ntapmhed', function () {
+                map2.getCanvas().style.cursor = '';
             });
 
 

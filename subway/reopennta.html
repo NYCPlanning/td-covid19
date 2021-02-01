@@ -327,7 +327,7 @@
                 description += "<b>NTA Name: </b><span>" + e.features[0].properties.NTAName + "</span><br>"
                 description += "<b>Mid April 2020 Subway Ridership: </b><span>" + e.features[0].properties.E202004.toFixed(2) + "</span><br>"
                 description += "<b>Mid September 2020 Subway Ridership: </b><span>" + e.features[0].properties.E202009.toFixed(2) + "</span><br>"
-                description += "<b>Percent Change: </b><span>" + (Number(e.features[0].properties.Pct) * 100).toFixed(2)+ "%</span><br>"
+                description += "<b>Percent Change: </b><span>" + (Number(e.features[0].properties.DiffPct2) * 100).toFixed(2)+ "%</span><br>"
               popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
             });
             // Add hover events
@@ -515,7 +515,7 @@
                 description += "<b>NTA Name: </b><span>" + e.features[0].properties.NTAName + "</span><br>"
                 description += "<b>Mid April 2020 Subway Ridership: </b><span>" + e.features[0].properties.E202004.toFixed(2) + "</span><br>"
                 description += "<b>Mid September 2020 Subway Ridership: </b><span>" + e.features[0].properties.E202009.toFixed(2) + "</span><br>"
-                description += "<b>Percent Change: </b><span>" + (Number(e.features[0].properties.Pct) * 100).toFixed(2)+ "%</span><br>"
+                description += "<b>Percent Change: </b><span>" + (Number(e.features[0].properties.DiffPct2) * 100).toFixed(2)+ "%</span><br>"
               popup.setLngLat(coordinates).setHTML(description).addTo(map2); //add popup
             });
             // Add hover events
