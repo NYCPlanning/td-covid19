@@ -207,6 +207,7 @@
 
 
 
+
         // Add layers
         map.on('load', function () {
 
@@ -215,17 +216,16 @@
             // Add polygons
             // Set layer contents
             var layerContent = {
-                'sourceid': 'ntaamhed', // source id
+                'sourceid': 'nontelsub', // source id
                 'sourcetype': 'geojson', // source type
-                'sourcedata': 'reopenntaam.geojson', // data source
-                'layerid': 'ntaamhed', // layer id
+                'sourcedata': 'nontelsubam.geojson', // data source
+                'layerid': 'nontelsub', // layer id
                 'layertype': 'fill', // symbology type
-                'layername1': 'Mid September 2020 vs Mid April 2020 Subway Ridership', // layer name for the legend
-                'layername2': 'Weekday AM Peak Average​', // layer name for the legend
+                'layername1': 'Non-Telework Capability of Subway Commuters by Place of Residence (Left) and Workplace (Right)​', // layer name for the legend
                 'layervisibility': 'visible', // visibility of the layer
-                'layercolname': 'DiffPctCat2', // category column name
-                'layercat': ['<=200%', '201%~250%', '251%~300%', '301%~350%', '>350%'], // categories
-                'layercolor': ['rgba(209,227,243,1)', 'rgba(154,200,225,1)', 'rgba(82,157,204,1)', 'rgba(28,108,177,1)', 'rgba(8,48,107,1)'], // color for each category; use rgba
+                'layercolname': 'cat', // category column name
+                'layercat': ['46%~64%', '65%~69%', '70%~78%'], // categories
+                'layercolor': ['rgba(209,227,243,1)', 'rgba(154,200,225,1)', 'rgba(82,157,204,1)'], // color for each category; use rgba
                 'layeropacity': 1, // fill opacity
             };
 
@@ -262,22 +262,32 @@
 
 
 
-            // Add lines
+
+            // Add points
             // Set layer contents
             var layerContent = {
-                'sourceid': 'subwayline', // source id
+                'sourceid': 'cp', // source id
                 'sourcetype': 'geojson', // source type
-                'sourcedata': 'subwayline.geojson', // data source
-                'layerid': 'subwayline', // layer id
-                'layertype': 'line', // symbology type
-                'layername': 'Subway Line', // layer name for the legend
-                'layerlinecap': 'round', // line endings; butt/round/square
-                'layerlinejoin': 'round', // line joining; bevel/round/miter
+                'sourcedata': 'cplxamcp.geojson', // data source
+                'layerid': 'cplxamcp', // layer id
+                'layertype': 'circle', // symbology type
+                'layername1': 'Late October 2020 as Percentage of Late October 2019 Subway Ridership', // layer name for the legend
+                'layername2': 'Weekday AM Peak Average', // layer name for the legend
                 'layervisibility': 'visible', // visibility of the layer
-                'layercolor': 'rgba(255,94,0,1)', // color for each category; use rgba
-                'layeropacity': 1, // line opacity
-                'layerwidth': 1, // line width
+                'layercolname': 'PctCat', // category column name
+                'layercat': ['8%~20%', '21%~25%', '26%~30%', '31%~35%', '36%~51%'], // categories
+                'layercolor': ['rgba(255,245,235,1)', 'rgba(254,210,166,1)', 'rgba(253,146,67,1)', 'rgba(223,79,5,1)', 'rgba(127,39,4,1)'], // color for each category; use rgba
+                'layeropacity': 1, // circle opacity
+                'layerradius': { 'base': 1, 'stops': [[15, 4], [22, 180]] }, // circle radius; change size based on zoom level
             };
+
+            // Generate layer colors
+            var layerColor = ['match', ['get', layerContent['layercolname']]];
+            for (var i = 0; i < layerContent.layercat.length; i++) {
+                layerColor.push(layerContent.layercat[i]);
+                layerColor.push(layerContent.layercolor[i]);
+            };
+            layerColor.push('#000000');
 
             // Add layer content to the overall layer content list
             layerContentList.push(layerContent);
@@ -288,70 +298,36 @@
                 'data': layerContent['sourcedata'],
             });
 
-            // Add line layer
+            // Add circle layer
             map.addLayer({
                 'id': layerContent['layerid'],
                 'type': layerContent['layertype'],
                 'source': layerContent['sourceid'],
                 'layout': {
-                    'line-cap': layerContent['layerlinecap'],
-                    'line-join': layerContent['layerlinejoin'],
                     'visibility': layerContent['layervisibility'],
                 },
                 'paint': {
-                    'line-color': layerContent['layercolor'],
-                    'line-opacity': layerContent['layeropacity'],
-                    'line-width': layerContent['layerwidth'],
+                    'circle-color': layerColor,
+                    'circle-opacity': layerContent['layeropacity'],
+                    'circle-radius': layerContent['layerradius'],
                 },
             });
 
-
-
-
-
-            // Add popup
-            var popup = new mapboxgl.Popup({
-                closeButton: true, // close button
-                closeOnClick: false, // close if click on map
-                closeOnMove: false, // close if move the map
-                anchor: 'bottom', // anchor of the popup
-                offset: 0, // offset from the feature
-                maxWidth: 'none', // max width of the popoup; 'none' to fit to the content                
-            });
-
-            // Add ntaamhed popup
-            // Add click event
-            map.on('click', 'ntaamhed', function (e) {
-                var coordinates = e.lngLat; // get pointer coordinates
-                var description = "<b>NTA Code: </b><span>" + e.features[0].properties.NTACode + "</span><br>"; // description in the popup
-                description += "<b>NTA Name: </b><span>" + e.features[0].properties.NTAName + "</span><br>"
-                description += "<b>Mid April 2020 Subway Ridership: </b><span>" + e.features[0].properties.E202004.toFixed(2) + "</span><br>"
-                description += "<b>Mid September 2020 Subway Ridership: </b><span>" + e.features[0].properties.E202009.toFixed(2) + "</span><br>"
-                description += "<b>Percent Change: </b><span>" + (Number(e.features[0].properties.Pct) * 100).toFixed(2)+ "%</span><br>"
-              popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
-            });
-            // Add hover events
-            map.on('mouseenter', 'ntaamhed', function () {
-                map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
-            });
-            map.on('mouseleave', 'ntaamhed', function () {
-                map.getCanvas().style.cursor = '';
-            });
 
 
 
 
 
             // Add layer selector and legend
-            var layerOrder = ['ntaamhed']; // set layer order in the legend
+            var layerOrder = ['cplxamcp']; // set layer order in the legend
             var layerContentListOrder = []; // create ordered layer content list
             for (var i = 0; i < layerOrder.length; i++) {
                 layerContentListOrder.push(layerContentList.filter(e => e.layerid == layerOrder[i])[0]);
             };
 
-            var legendTitle1 = document.getElementById('legend-title1');
-            var legendTitle2 = document.getElementById('legend-title2');
-            var legendLayer = document.getElementById('legend-layer');
+            var legendTitle1 = document.getElementById('legend1-title1');
+            var legendTitle2 = document.getElementById('legend1-title2');
+            var legendLayer = document.getElementById('legend1-layer');
 
             for (var i = 0; i < layerContentListOrder.length; i++) {
                 // Create legend title
@@ -378,6 +354,111 @@
                     legendLayer.appendChild(item);
                 };
             };
+
+
+            // Add layer selector and legend
+            var layerOrder = ['nontelsub']; // set layer order in the legend
+            var layerContentListOrder = []; // create ordered layer content list
+            for (var i = 0; i < layerOrder.length; i++) {
+                layerContentListOrder.push(layerContentList.filter(e => e.layerid == layerOrder[i])[0]);
+            };
+
+            var legendTitle1 = document.getElementById('legend2-title1');
+            var legendLayer = document.getElementById('legend2-layer');
+
+            for (var i = 0; i < layerContentListOrder.length; i++) {
+                // Create legend title
+                var title1 = document.createElement('div'); // create title1
+                title1.innerHTML = layerContentListOrder[i]['layername1'];
+                legendTitle1.appendChild(title1);
+
+                // Create legend layer
+                for (var j = 0; j < layerContentListOrder[i]['layercat'].length; j++) {
+                    var item = document.createElement('div'); // create item
+                    item.className = layerContentListOrder[i]['layerid'] + 'legend';
+                    var key = document.createElement('span'); // create key
+                    key.className = 'legend-key-' + layerContentListOrder[i]['layertype'];
+                    key.style.backgroundColor = layerContentListOrder[i]['layercolor'][j]
+                        .replace(',1)', ',' + layerContentListOrder[i]['layeropacity'] + ')'); // set color with opacity
+                    var value = document.createElement('span'); // create label
+                    value.innerHTML = layerContentListOrder[i]['layercat'][j];
+                    item.appendChild(key);
+                    item.appendChild(value);
+                    legendLayer.appendChild(item);
+                };
+            };
+        });
+
+
+        // Add popup
+        var popup = new mapboxgl.Popup({
+            closeButton: true, // close button
+            closeOnClick: false, // close if click on map
+            closeOnMove: false, // close if move the map
+            anchor: 'bottom', // anchor of the popup
+            offset: 0, // offset from the feature
+            maxWidth: 'none', // max width of the popoup; 'none' to fit to the content                
+        });
+
+        // Add ntaamhed popup
+        // Add click event
+        map.on('click', 'ntaamhed', function (e) {
+            var coordinates = e.lngLat; // get pointer coordinates
+            var description = "<b>NTA Code: </b><span>" + e.features[0].properties.NTACode + "</span><br>"; // description in the popup
+            description += "<b>NTA Name: </b><span>" + e.features[0].properties.NTAName + "</span><br>"
+            description += "<b>Mid April 2020 Subway Ridership: </b><span>" + e.features[0].properties.E202004.toFixed(2) + "</span><br>"
+            description += "<b>Mid September 2020 Subway Ridership: </b><span>" + e.features[0].properties.E202009.toFixed(2) + "</span><br>"
+            description += "<b>Percent Change: </b><span>" + (Number(e.features[0].properties.DiffPct2) * 100).toFixed(2) + "%</span><br>"
+            popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
+        });
+        // Add hover events
+        map.on('mouseenter', 'ntaamhed', function () {
+            map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
+        });
+        map.on('mouseleave', 'ntaamhed', function () {
+            map.getCanvas().style.cursor = '';
+        });
+
+
+
+
+
+        // Add layer selector and legend
+        var layerOrder = ['ntaamhed']; // set layer order in the legend
+        var layerContentListOrder = []; // create ordered layer content list
+        for (var i = 0; i < layerOrder.length; i++) {
+            layerContentListOrder.push(layerContentList.filter(e => e.layerid == layerOrder[i])[0]);
+        };
+
+        var legendTitle1 = document.getElementById('legend-title1');
+        var legendTitle2 = document.getElementById('legend-title2');
+        var legendLayer = document.getElementById('legend-layer');
+
+        for (var i = 0; i < layerContentListOrder.length; i++) {
+            // Create legend title
+            var title1 = document.createElement('div'); // create title1
+            title1.innerHTML = layerContentListOrder[i]['layername1'];
+            legendTitle1.appendChild(title1);
+
+            var title2 = document.createElement('div'); // create title2
+            title2.innerHTML = layerContentListOrder[i]['layername2'];
+            legendTitle2.appendChild(title2);
+
+            // Create legend layer
+            for (var j = 0; j < layerContentListOrder[i]['layercat'].length; j++) {
+                var item = document.createElement('div'); // create item
+                item.className = layerContentListOrder[i]['layerid'] + 'legend';
+                var key = document.createElement('span'); // create key
+                key.className = 'legend-key-' + layerContentListOrder[i]['layertype'];
+                key.style.backgroundColor = layerContentListOrder[i]['layercolor'][j]
+                    .replace(',1)', ',' + layerContentListOrder[i]['layeropacity'] + ')'); // set color with opacity
+                var value = document.createElement('span'); // create label
+                value.innerHTML = layerContentListOrder[i]['layercat'][j];
+                item.appendChild(key);
+                item.appendChild(value);
+                legendLayer.appendChild(item);
+            };
+        };
         });
 
 
@@ -515,8 +596,8 @@
                 description += "<b>NTA Name: </b><span>" + e.features[0].properties.NTAName + "</span><br>"
                 description += "<b>Mid April 2020 Subway Ridership: </b><span>" + e.features[0].properties.E202004.toFixed(2) + "</span><br>"
                 description += "<b>Mid September 2020 Subway Ridership: </b><span>" + e.features[0].properties.E202009.toFixed(2) + "</span><br>"
-                description += "<b>Percent Change: </b><span>" + (Number(e.features[0].properties.Pct) * 100).toFixed(2)+ "%</span><br>"
-              popup.setLngLat(coordinates).setHTML(description).addTo(map2); //add popup
+                description += "<b>Percent Change: </b><span>" + (Number(e.features[0].properties.DiffPct2) * 100).toFixed(2) + "%</span><br>"
+                popup.setLngLat(coordinates).setHTML(description).addTo(map2); //add popup
             });
             // Add hover events
             map2.on('mouseenter', 'ntapmhed', function () {
