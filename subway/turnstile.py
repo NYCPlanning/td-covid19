@@ -1422,6 +1422,9 @@ cplxpmhed.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/ntapmhed.
 dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
 predates=['10/21/2019','10/22/2019','10/23/2019','10/24/2019','10/25/2019','10/28/2019','10/29/2019','10/30/2019','10/31/2019']
 postdates=['10/19/2020','10/20/2020','10/21/2020','10/22/2020','10/23/2020','10/26/2020','10/27/2020','10/28/2020','10/29/2020']
+
+# predates=['10/21/2019','10/22/2019','10/23/2019','10/24/2019','10/25/2019','10/28/2019','10/29/2019','10/30/2019','10/31/2019']
+# postdates=['10/19/2020','10/20/2020','10/21/2020','10/22/2020','10/23/2020','10/26/2020','10/27/2020','10/28/2020','10/29/2020']
 # predates=['12/03/2019','12/04/2019','12/05/2019','12/06/2019',
 #           '12/09/2019','12/10/2019','12/11/2019','12/12/2019','12/13/2019',
 #           '12/16/2019','12/17/2019','12/18/2019','12/19/2019','12/20/2019',
@@ -2164,8 +2167,8 @@ cplxamcp.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/nadiram.ge
 # Reopening
 # AM Peak Pre and Post by NTA for HED
 dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
-predates=['09/23/2019','09/24/2019','09/25/2019','09/26/2019','09/27/2019']
-postdates=['09/21/2020','09/22/2020','09/23/2020','09/24/2020','09/25/2020']
+predates=['09/16/2019','09/17/2019','09/18/2019','09/19/2019','09/20/2019']
+postdates=['09/14/2020','09/15/2020','09/16/2020','09/17/2020','09/18/2020']
 amlist=['05:00:00-09:00:00','05:30:00-09:30:00','06:00:00-10:00:00','06:30:00-10:30:00','07:00:00-11:00:00',
         '07:22:00-11:22:00','07:30:00-11:30:00','08:00:00-12:00:00','08:22:00-12:22:00','08:30:00-12:30:00']
 cplxampre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
@@ -2274,8 +2277,8 @@ cplxamhed.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/reopennta
 
 # PM Peak Pre and Post by NTA for HED
 dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
-predates=['09/23/2019','09/24/2019','09/25/2019','09/26/2019','09/27/2019']
-postdates=['09/21/2020','09/22/2020','09/23/2020','09/24/2020','09/25/2020']
+predates=['09/16/2019','09/17/2019','09/18/2019','09/19/2019','09/20/2019']
+postdates=['09/14/2020','09/15/2020','09/16/2020','09/17/2020','09/18/2020']
 pmlist=['13:00:00-17:00:00','13:30:00-17:30:00','14:00:00-18:00:00','14:30:00-18:30:00','15:00:00-19:00:00',
         '15:22:00-19:22:00','15:30:00-19:30:00','16:00:00-20:00:00','16:22:00-20:22:00','16:30:00-20:30:00']
 cplxpmpre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
