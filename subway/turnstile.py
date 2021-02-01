@@ -2157,6 +2157,128 @@ cplxamcp.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/nadiram.ge
 
 
 
+
+
+
+
+# Reopening
+# AM Peak Pre and Post by NTA for HED
+dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
+predates=['09/23/2019','09/24/2019','09/25/2019','09/26/2019','09/27/2019']
+postdates=['09/21/2020','09/22/2020','09/23/2020','09/24/2020','09/25/2020']
+amlist=['05:00:00-09:00:00','05:30:00-09:30:00','06:00:00-10:00:00','06:30:00-10:30:00','07:00:00-11:00:00',
+        '07:22:00-11:22:00','07:30:00-11:30:00','08:00:00-12:00:00','08:22:00-12:22:00','08:30:00-12:30:00']
+cplxampre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
+cplxampre=cplxampre[np.isin(cplxampre['time'],amlist)].reset_index(drop=True)
+cplxampre=cplxampre.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
+cplxampre=pd.merge(cplxampre,rc,how='left',left_on='unit',right_on='Remote')
+cplxampre=cplxampre.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
+cplxampre.columns=['CplxID','PreTime','PreEntries']
+cplxampost=dfunitentry[np.isin(dfunitentry['firstdate'],postdates)].reset_index(drop=True)
+cplxampost=cplxampost[np.isin(cplxampost['time'],amlist)].reset_index(drop=True)
+cplxampost=cplxampost.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
+cplxampost=pd.merge(cplxampost,rc,how='left',left_on='unit',right_on='Remote')
+cplxampost=cplxampost.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
+cplxampost.columns=['CplxID','PostTime','PostEntries']
+cplxamdiff=pd.merge(cplxampre,cplxampost,how='inner',on='CplxID')
+cplxamdiff['Time']=cplxamdiff['PreTime'].copy()
+cplxamdiff['Diff']=cplxamdiff['PostEntries']-cplxamdiff['PreEntries']
+cplxamdiff['DiffPct']=cplxamdiff['Diff']/cplxamdiff['PreEntries']
+cplxamdiff=pd.merge(rc.drop('Remote',axis=1).drop_duplicates(keep='first').reset_index(drop=True),cplxamdiff,how='left',on='CplxID')
+cplxamdiff=cplxamdiff[['CplxID','CplxLat','CplxLong','PreEntries','PostEntries']].reset_index(drop=True)
+cplxamdiff=gpd.GeoDataFrame(cplxamdiff,geometry=[shapely.geometry.Point(x,y) for x,y in zip(cplxamdiff['CplxLong'],cplxamdiff['CplxLat'])],crs='epsg:4326')
+cplxamdiff=cplxamdiff.to_crs('epsg:6539')
+cplxamdiff['geometry']=cplxamdiff.buffer(2640)
+cplxamdiff=cplxamdiff.to_crs('epsg:4326')
+nta=gpd.read_file(path+'ntaclippedadj.shp')
+nta.crs='epsg:4326'
+cplxamdiffnta=gpd.sjoin(nta,cplxamdiff,how='left',op='intersects')
+cplxamdiffnta=cplxamdiffnta.groupby(['NTACode'],as_index=False).agg({'PreEntries':'sum','PostEntries':'sum'}).reset_index(drop=True)
+cplxamdiffnta=cplxamdiffnta[cplxamdiffnta['PreEntries']!=0].reset_index(drop=True)
+cplxamdiffnta.columns=['NTACode','E201909','E202009']
+cplxamhed=cplxamdiffnta.copy()
+predates=['04/14/2020','04/15/2020','04/16/2020','04/17/2020']
+postdates=['06/01/2020','06/02/2020','06/03/2020','06/04/2020','06/05/2020','06/08/2020','06/09/2020','06/10/2020','06/11/2020','06/12/2020',
+            '06/15/2020','06/16/2020','06/17/2020','06/18/2020','06/19/2020','06/22/2020','06/23/2020','06/24/2020','06/25/2020','06/26/2020',
+            '06/29/2020','06/30/2020']
+amlist=['05:00:00-09:00:00','05:30:00-09:30:00','06:00:00-10:00:00','06:30:00-10:30:00','07:00:00-11:00:00',
+        '07:22:00-11:22:00','07:30:00-11:30:00','08:00:00-12:00:00','08:22:00-12:22:00','08:30:00-12:30:00']
+cplxampre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
+cplxampre=cplxampre[np.isin(cplxampre['time'],amlist)].reset_index(drop=True)
+cplxampre=cplxampre.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
+cplxampre=pd.merge(cplxampre,rc,how='left',left_on='unit',right_on='Remote')
+cplxampre=cplxampre.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
+cplxampre.columns=['CplxID','PreTime','PreEntries']
+cplxampost=dfunitentry[np.isin(dfunitentry['firstdate'],postdates)].reset_index(drop=True)
+cplxampost=cplxampost[np.isin(cplxampost['time'],amlist)].reset_index(drop=True)
+cplxampost=cplxampost.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
+cplxampost=pd.merge(cplxampost,rc,how='left',left_on='unit',right_on='Remote')
+cplxampost=cplxampost.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
+cplxampost.columns=['CplxID','PostTime','PostEntries']
+cplxamdiff=pd.merge(cplxampre,cplxampost,how='inner',on='CplxID')
+cplxamdiff['Time']=cplxamdiff['PreTime'].copy()
+cplxamdiff['Diff']=cplxamdiff['PostEntries']-cplxamdiff['PreEntries']
+cplxamdiff['DiffPct']=cplxamdiff['Diff']/cplxamdiff['PreEntries']
+cplxamdiff=pd.merge(rc.drop('Remote',axis=1).drop_duplicates(keep='first').reset_index(drop=True),cplxamdiff,how='left',on='CplxID')
+cplxamdiff=cplxamdiff[['CplxID','CplxLat','CplxLong','PreEntries','PostEntries']].reset_index(drop=True)
+cplxamdiff=gpd.GeoDataFrame(cplxamdiff,geometry=[shapely.geometry.Point(x,y) for x,y in zip(cplxamdiff['CplxLong'],cplxamdiff['CplxLat'])],crs='epsg:4326')
+cplxamdiff=cplxamdiff.to_crs('epsg:6539')
+cplxamdiff['geometry']=cplxamdiff.buffer(2640)
+cplxamdiff=cplxamdiff.to_crs('epsg:4326')
+nta=gpd.read_file(path+'ntaclippedadj.shp')
+nta.crs='epsg:4326'
+cplxamdiffnta=gpd.sjoin(nta,cplxamdiff,how='left',op='intersects')
+cplxamdiffnta=cplxamdiffnta.groupby(['NTACode'],as_index=False).agg({'PreEntries':'sum','PostEntries':'sum'}).reset_index(drop=True)
+cplxamdiffnta=cplxamdiffnta[cplxamdiffnta['PreEntries']!=0].reset_index(drop=True)
+cplxamdiffnta.columns=['NTACode','E202004','E202006']
+cplxamhed=pd.merge(cplxamhed,cplxamdiffnta,how='inner',on='NTACode')
+cplxamhed['Diff1']=cplxamhed['E202009']-cplxamhed['E201909']
+cplxamhed['DiffPct1']=cplxamhed['Diff1']/cplxamhed['E201909']
+cplxamhed['Diff2']=cplxamhed['E202009']-cplxamhed['E202004']
+cplxamhed['DiffPct2']=cplxamhed['Diff2']/cplxamhed['E202004']
+cplxamhed['Diff3']=cplxamhed['E202009']-cplxamhed['E202006']
+cplxamhed['DiffPct3']=cplxamhed['Diff3']/cplxamhed['E202006']
+cplxamhed=pd.merge(nta,cplxamhed,how='inner',on='NTACode')
+cplxamhed['DiffPct1'].describe(percentiles=np.arange(0.2,1,0.2))
+cplxamhed['DiffPctCat1']=np.where(cplxamhed['DiffPct1']>-0.6,'>-60%',
+          np.where(cplxamhed['DiffPct1']>-0.65,'-64%~-60%',
+          np.where(cplxamhed['DiffPct1']>-0.7,'-69%~-65%',
+          np.where(cplxamhed['DiffPct1']>-0.75,'-74%~-70%',
+          '<=-75%'))))
+cplxamhed['DiffPct2'].describe(percentiles=np.arange(0.2,1,0.2))
+cplxamhed['DiffPctCat2']=np.where(cplxamhed['DiffPct2']<=2,'<=200%',
+          np.where(cplxamhed['DiffPct2']<=2.5,'201%~250%',
+          np.where(cplxamhed['DiffPct2']<=3,'251%~300%',
+          np.where(cplxamhed['DiffPct2']<=3.5,'301%~350%',
+          '>350%'))))
+cplxamhed['DiffPct3'].describe(percentiles=np.arange(0.2,1,0.2))
+cplxamhed['DiffPctCat3']=np.where(cplxamhed['DiffPct3']<=0.7,'<=70%',
+          np.where(cplxamhed['DiffPct3']<=0.8,'71%~80%',
+          np.where(cplxamhed['DiffPct3']<=0.9,'81%~90%',
+          np.where(cplxamhed['DiffPct3']<=1,'91%~100%',
+          '>100%'))))
+cplxamhed['Pct']=cplxamhed['E202009']/cplxamhed['E201909']
+cplxamhed['Pct'].describe(percentiles=np.arange(0.2,1,0.2))
+cplxamhed['PctCat']=np.where(cplxamhed['Pct']<=0.25,'13%~25%',
+                    np.where(cplxamhed['Pct']<=0.3,'26%~30%',
+                    np.where(cplxamhed['Pct']<=0.35,'31%~35%',
+                    np.where(cplxamhed['Pct']<=0.4,'36%~40%',
+                             '41%~51%'))))
+cplxamhed.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/reopenntaam.geojson',driver='GeoJSON')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # predates=['04/15/2019','04/16/2019','04/17/2019','04/18/2019']
 # predates=['09/03/2019','09/04/2019','09/05/2019','09/06/2019','09/09/2019','09/10/2019','09/11/2019','09/12/2019']
 # predates=['04/14/2020','04/15/2020','04/16/2020','04/17/2020']
