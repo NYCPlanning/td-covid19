@@ -319,25 +319,23 @@
                 maxWidth: 'none', // max width of the popoup; 'none' to fit to the content                
             });
 
-            // Add ntaamhed popup
+
+            // Add fhv2019 popup
             // Add click event
-            map.on('click', 'ntaamhed', function (e) {
+            map.on('click', 'fhv2019', function (e) {
                 var coordinates = e.lngLat; // get pointer coordinates
-                var description = "<b>NTA Code: </b><span>" + e.features[0].properties.NTACode + "</span><br>"; // description in the popup
-                description += "<b>NTA Name: </b><span>" + e.features[0].properties.NTAName + "</span><br>"
-                description += "<b>Mid April 2020 Subway Ridership: </b><span>" + e.features[0].properties.E202004.toFixed(2) + "</span><br>"
-                description += "<b>Mid September 2020 Subway Ridership: </b><span>" + e.features[0].properties.E202009.toFixed(2) + "</span><br>"
-                description += "<b>Percent Change: </b><span>" + (Number(e.features[0].properties.DiffPct2) * 100).toFixed(2) + "%</span><br>"
+                var description = "<b>NTA Code: </b><span>" + e.features[0].properties.ntacode + "</span><br>"; // description in the popup
+                description += "<b>NTA Name: </b><span>" + e.features[0].properties.ntaname + "</span><br>";
+                description += "<b>April 2019: </b><span>" + e.features[0].properties.Average2019.toFixed(2) + "</span><br>";
                 popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
             });
             // Add hover events
-            map.on('mouseenter', 'ntaamhed', function () {
+            map.on('mouseenter', 'fhv2019', function () {
                 map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
             });
-            map.on('mouseleave', 'ntaamhed', function () {
+            map.on('mouseleave', 'fhv2019', function () {
                 map.getCanvas().style.cursor = '';
             });
-
 
 
 
@@ -508,25 +506,22 @@
                 maxWidth: 'none', // max width of the popoup; 'none' to fit to the content                
             });
 
-            // Add ntapmhed popup
+            // Add fhv2020 popup
             // Add click event
-            map2.on('click', 'ntapmhed', function (e) {
+            map2.on('click', 'fhv2020', function (e) {
                 var coordinates = e.lngLat; // get pointer coordinates
-                var description = "<b>NTA Code: </b><span>" + e.features[0].properties.NTACode + "</span><br>"; // description in the popup
-                description += "<b>NTA Name: </b><span>" + e.features[0].properties.NTAName + "</span><br>"
-                description += "<b>Mid April 2020 Subway Ridership: </b><span>" + e.features[0].properties.E202004.toFixed(2) + "</span><br>"
-                description += "<b>Mid September 2020 Subway Ridership: </b><span>" + e.features[0].properties.E202009.toFixed(2) + "</span><br>"
-                description += "<b>Percent Change: </b><span>" + (Number(e.features[0].properties.DiffPct2) * 100).toFixed(2) + "%</span><br>"
-                popup.setLngLat(coordinates).setHTML(description).addTo(map2); //add popup
+                var description = "<b>NTA Code: </b><span>" + e.features[0].properties.ntacode + "</span><br>"; // description in the popup
+                description += "<b>NTA Name: </b><span>" + e.features[0].properties.ntaname + "</span><br>";
+                description += "<b>April 2020: </b><span>" + e.features[0].properties.Average2019.toFixed(2) + "</span><br>";
+              popup.setLngLat(coordinates).setHTML(description).addTo(map2); //add popup
             });
             // Add hover events
-            map2.on('mouseenter', 'ntapmhed', function () {
+            map2.on('mouseenter', 'fhv2020', function () {
                 map2.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
             });
-            map2.on('mouseleave', 'ntapmhed', function () {
+            map2.on('mouseleave', 'fhv2020', function () {
                 map2.getCanvas().style.cursor = '';
             });
-
 
 
 
