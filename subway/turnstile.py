@@ -1461,7 +1461,7 @@ cplxamcp['Pct']=cplxamcp['E202010']/cplxamcp['E201910']
 cplxamcp['Pct'].describe(percentiles=np.arange(0.2,1,0.2))
 cplxamcp['PctCat']=np.where(cplxamcp['Pct']<=0.2,'8%~20%',
                    np.where(cplxamcp['Pct']<=0.4,'21%~40%',
-                            '41%~184%'))
+                            '>40%'))
 cplxamcp=pd.merge(rc.drop('Remote',axis=1).drop_duplicates(keep='first').reset_index(drop=True),cplxamcp,how='inner',on='CplxID')
 cplxamcp=cplxamcp[['CplxID','Borough','CplxName','Routes','CplxLat','CplxLong','Time','E201910','E202010',
                    'Diff','DiffPct','DiffPctCat','Pct','PctCat']].reset_index(drop=True)
@@ -1539,7 +1539,7 @@ cplxamcp['Pct']=cplxamcp['E202010']/cplxamcp['E201910']
 cplxamcp['Pct'].describe(percentiles=np.arange(0.2,1,0.2))
 cplxamcp['PctCat']=np.where(cplxamcp['Pct']<=0.2,'8%~20%',
                    np.where(cplxamcp['Pct']<=0.4,'21%~40%',
-                            '41%~184%'))
+                            '>40%'))
 cplxamcp=pd.merge(rc.drop('Remote',axis=1).drop_duplicates(keep='first').reset_index(drop=True),cplxamcp,how='inner',on='CplxID')
 cplxamcp=cplxamcp[['CplxID','Borough','CplxName','Routes','CplxLat','CplxLong','Time','E201910','E202010',
                    'Diff','DiffPct','DiffPctCat','Pct','PctCat']].reset_index(drop=True)
