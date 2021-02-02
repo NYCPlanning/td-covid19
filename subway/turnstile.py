@@ -1656,14 +1656,31 @@ fig.write_html('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/scatter.html
 
 
 # Non-Telework
-# Non-Telework capability
+# Non-Telework capability by Residence Place
 nontel=gpd.read_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/teleworkam.geojson')
 nontel['nontelework']=1-nontel['telework']
-nontel['cat']=np.where(nontel['nontelework']>=0.7,'70%~72%',
+nontel['nontelework'].describe(percentiles=np.arange(0.2,1,0.2))
+nontel['cat']=np.where(nontel['nontelework']>=0.7,'70%~85%',
               np.where(nontel['nontelework']>=0.65,'65%~69%',
-                       '50%~64%'))
+                       '42%~64%'))
 nontel=nontel[['ntacode','nontelework','cat','geometry']].reset_index(drop=True)
 nontel.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/nonteleworkam.geojson',driver='GeoJSON')
+
+# Non-Telework capability by Workplace
+nontel=gpd.read_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/teleworkpm.geojson')
+nontel['nontelework']=1-nontel['telework']
+nontel['nontelework'].describe(percentiles=np.arange(0.2,1,0.2))
+nontel['cat']=np.where(nontel['nontelework']>=0.7,'70%~85%',
+              np.where(nontel['nontelework']>=0.65,'65%~69%',
+                       '42%~64%'))
+nontel=nontel[['ntacode','nontelework','cat','geometry']].reset_index(drop=True)
+nontel.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/nonteleworkpm.geojson',driver='GeoJSON')
+
+
+
+
+
+
 
 # Non-Telework Subway Commuters
 nontelsub=pd.read_csv(path+'notel subway.csv')

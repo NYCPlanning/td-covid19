@@ -52,7 +52,7 @@
             padding-bottom: 0.5rem;
             padding-right: 0.5rem;
             padding-left: 0.5rem;
-            width: 17rem;
+            width: 15rem;
             height: auto;
         }
 
@@ -63,7 +63,7 @@
             padding-right: 0.5rem;
             padding-left: 0.5rem;
             padding-bottom: 0.5rem;
-            width: 17rem;
+            width: 15rem;
         }
 
         #legend-title2 {
@@ -73,7 +73,7 @@
             padding-bottom: 0.5rem;
             padding-right: 0.5rem;
             padding-left: 0.5rem;
-            width: 17rem;
+            width: 15rem;
             height: auto;
         }
 
@@ -84,7 +84,7 @@
             padding-right: 0.5rem;
             padding-left: 0.5rem;
             padding-bottom: 0.5rem;
-            width: 17rem;
+            width: 15rem;
         }
 
         .legend-key-circle {
@@ -241,15 +241,15 @@
             // Add polygons
             // Set layer contents
             var layerContent = {
-                'sourceid': 'nontelsub', // source id
+                'sourceid': 'nontelam', // source id
                 'sourcetype': 'geojson', // source type
-                'sourcedata': 'nontelsubam.geojson', // data source
-                'layerid': 'nontelsub', // layer id
+                'sourcedata': 'nonteleworkam.geojson', // data source
+                'layerid': 'nontelam', // layer id
                 'layertype': 'fill', // symbology type
-                'layername1': 'Non-Telework Capability of Subway Commuters by Place of Residence (Left) and Workplace (Right)​', // layer name for the legend
+                'layername1': 'Non-Telework Capability by Place of Residence (Left) and Workplace (Right)​', // layer name for the legend
                 'layervisibility': 'visible', // visibility of the layer
                 'layercolname': 'cat', // category column name
-                'layercat': ['46%~64%', '65%~69%', '70%~78%'], // categories
+                'layercat': ['42%~64%', '65%~69%','70%~85%'], // categories
                 'layercolor': ['rgba(209,227,243,1)', 'rgba(154,200,225,1)', 'rgba(82,157,204,1)'], // color for each category; use rgba
                 'layeropacity': 1, // fill opacity
             };
@@ -291,7 +291,7 @@
             // Add points
             // Set layer contents
             var layerContent = {
-                'sourceid': 'cp', // source id
+                'sourceid': 'cplxamcp', // source id
                 'sourcetype': 'geojson', // source type
                 'sourcedata': 'cplxamcp.geojson', // data source
                 'layerid': 'cplxamcp', // layer id
@@ -303,7 +303,7 @@
                 'layercat': ['8%~20%', '21%~40%', '41%~184%'], // categories
                 'layercolor': ['rgba(255,245,235,1)', 'rgba(253,146,67,1)', 'rgba(127,39,4,1)'], // color for each category; use rgba
                 'layeropacity': 1, // circle opacity
-                'layerradius': { 'base': 1, 'stops': [[15, 4], [22, 180]] }, // circle radius; change size based on zoom level
+                'layerradius': 3, // circle radius; change size based on zoom level
             };
 
             // Generate layer colors
@@ -353,17 +353,17 @@
 
             // Add nontelsub popup
             // Add click event
-            map.on('click', 'nontelsub', function (e) {
+            map.on('click', 'nontelam', function (e) {
                 var coordinates = e.lngLat; // get pointer coordinates
                 var description = "<b>PUMA: </b><span>" + e.features[0].properties.puma + "</span><br>"; // description in the popup
                 description += "<b>Non-Telework Capability of Subway Commuters by Place of Residence​: </b><span>" + (Number(e.features[0].properties.notelsubpct) * 100).toFixed(2) + "%</span><br>";
                 popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
             });
             // Add hover events
-            map.on('mouseenter', 'nontelsub', function () {
+            map.on('mouseenter', 'nontelam', function () {
                 map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
             });
-            map.on('mouseleave', 'nontelsub', function () {
+            map.on('mouseleave', 'nontelam', function () {
                 map.getCanvas().style.cursor = '';
             });
 
@@ -410,7 +410,7 @@
 
 
             // Add layer selector and legend
-            var layerOrder = ['nontelsub']; // set layer order in the legend
+            var layerOrder = ['nontelam']; // set layer order in the legend
             var layerContentListOrder = []; // create ordered layer content list
             for (var i = 0; i < layerOrder.length; i++) {
                 layerContentListOrder.push(layerContentList.filter(e => e.layerid == layerOrder[i])[0]);
@@ -454,7 +454,7 @@
             style: 'mapbox://styles/mapbox/light-v10', // light base map
             hash: true, // make sure it's on to get the url with map view
             attributionControl: true, // show the credit bar
-            customAttribution: '<b> Data Sources: MTA Fare Data; Census Bureau PUMS 2014-2018</b>', // add overall credit to the beggining
+            customAttribution: '<b> Data Sources: MTA Turnstile Data; Census Bureau LEHD 2017</b>', // add overall credit to the beggining
             center: [-73.5471, 40.7469], // testing to get the centroid of bounds
             zoom: 9.8, // set the initial zoom of the map view
             logoPosition: 'bottom-right', // no need to change 
@@ -472,15 +472,15 @@
             // Add polygons
             // Set layer contents
             var layerContent = {
-                'sourceid': 'nontelsub', // source id
+                'sourceid': 'nontelpm', // source id
                 'sourcetype': 'geojson', // source type
-                'sourcedata': 'nontelsubam.geojson', // data source
-                'layerid': 'nontelsub', // layer id
+                'sourcedata': 'nonteleworkpm.geojson', // data source
+                'layerid': 'nontelpm', // layer id
                 'layertype': 'fill', // symbology type
-                'layername1': 'Non-Telework Capability of Subway Commuters by Place of Residence (Left) and Workplace (Right)​', // layer name for the legend
+                'layername1': 'Non-Telework Capability by Place of Residence (Left) and Workplace (Right)​', // layer name for the legend
                 'layervisibility': 'visible', // visibility of the layer
                 'layercolname': 'cat', // category column name
-                'layercat': ['46%~64%', '65%~69%', '70%~78%'], // categories
+                'layercat': ['42%~64%', '65%~69%','70%~85%'], // categories
                 'layercolor': ['rgba(209,227,243,1)', 'rgba(154,200,225,1)', 'rgba(82,157,204,1)'], // color for each category; use rgba
                 'layeropacity': 1, // fill opacity
             };
@@ -534,7 +534,7 @@
                 'layercat': ['8%~20%', '21%~40%', '41%~184%'], // categories
                 'layercolor': ['rgba(255,245,235,1)', 'rgba(253,146,67,1)', 'rgba(127,39,4,1)'], // color for each category; use rgba
                 'layeropacity': 1, // circle opacity
-                'layerradius': { 'base': 1, 'stops': [[15, 4], [22, 180]] }, // circle radius; change size based on zoom level
+                'layerradius': 3, // circle radius; change size based on zoom level
             };
 
             // Generate layer colors
@@ -584,17 +584,17 @@
 
             // Add nontelsub popup
             // Add click event
-            map2.on('click', 'nontelsub', function (e) {
+            map2.on('click', 'nontelpm', function (e) {
                 var coordinates = e.lngLat; // get pointer coordinates
                 var description = "<b>PUMA: </b><span>" + e.features[0].properties.puma + "</span><br>"; // description in the popup
                 description += "<b>Non-Telework Capability of Subway Commuters by Place of Residence​: </b><span>" + (Number(e.features[0].properties.notelsubpct) * 100).toFixed(2) + "%</span><br>";
                 popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
             });
             // Add hover events
-            map2.on('mouseenter', 'nontelsub', function () {
+            map2.on('mouseenter', 'nontelpm', function () {
                 map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
             });
-            map2.on('mouseleave', 'nontelsub', function () {
+            map2.on('mouseleave', 'nontelpm', function () {
                 map.getCanvas().style.cursor = '';
             });
 
