@@ -17,7 +17,6 @@ path='C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/'
 df=gpd.read_file(path+'fhv/PercentChange_NTA_April.geojson')
 df.crs='epsg:4326'
 df=df[(df['ntacode']!='BX98')&(df['ntacode']!='QN98')].reset_index(drop=True)
-
 df['perc'].describe(percentiles=np.arange(0.2,1,0.2))
 df['DiffPctCat']=np.where(df['perc']>-0.65,'>-65%',
           np.where(df['perc']>-0.7,'-69%~-65%',
