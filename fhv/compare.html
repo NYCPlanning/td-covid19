@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8" />
-    <title>Subway Ridership During Reopening</title>
+    <title>FHV Trips in April</title>
     <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
     <script src="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js"></script>
     <link href="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css" rel="stylesheet" />
@@ -52,12 +52,12 @@
             padding-bottom: 0.5rem;
             padding-right: 0.5rem;
             padding-left: 0.5rem;
-            width: 11rem;
+            width: 8rem;
             height: auto;
         }
 
         #legend-layer {
-            width: 11rem;
+            width: 8rem;
             height: auto;
             background-color: rgba(255, 255, 255, 1);
             padding-right: 0.5rem;
@@ -115,7 +115,7 @@
             font-family: sans-serif;
             font-size: 0.8rem;
         }
-        
+
         #legend2-title1 {
             font-weight: bold;
             background-color: rgba(255, 255, 255, 1);
@@ -126,7 +126,7 @@
             width: auto;
             height: auto;
         }
- 
+
         #legend3 {
             position: absolute;
             bottom: 1rem;
@@ -138,7 +138,7 @@
             font-size: 0.8rem;
         }
 
-       #legend3-title1 {
+        #legend3-title1 {
             font-weight: bold;
             background-color: rgba(255, 255, 255, 1);
             padding-top: 0.5rem;
@@ -215,16 +215,16 @@
             // Add polygons
             // Set layer contents
             var layerContent = {
-                'sourceid': 'ntaamhed', // source id
+                'sourceid': 'fhv2019', // source id
                 'sourcetype': 'geojson', // source type
-                'sourcedata': 'reopenntaam.geojson', // data source
-                'layerid': 'ntaamhed', // layer id
+                'sourcedata': 'fhv.geojson', // data source
+                'layerid': 'fhv2019', // layer id
                 'layertype': 'fill', // symbology type
-                'layername1': 'Mid September 2020 vs Mid April 2020 Subway Ridership', // layer name for the legend
-                'layername2': 'Weekday AM Peak Average​', // layer name for the legend
+                'layername1': 'Average Weekday FHV Trips by Origin', // layer name for the legend
+                'layername2': 'April 2019​', // layer name for the legend
                 'layervisibility': 'visible', // visibility of the layer
-                'layercolname': 'DiffPctCat2', // category column name
-                'layercat': ['79%~200%', '201%~250%', '251%~300%', '301%~350%', '351%~581%'], // categories
+                'layercolname': 'Cat2019', // category column name
+                'layercat': ['0~1000', '1001~2000', '2001~3000', '3001~4000', '4001~38435'], // categories
                 'layercolor': ['rgba(209,227,243,1)', 'rgba(154,200,225,1)', 'rgba(82,157,204,1)', 'rgba(28,108,177,1)', 'rgba(8,48,107,1)'], // color for each category; use rgba
                 'layeropacity': 1, // fill opacity
             };
@@ -343,7 +343,7 @@
 
 
             // Add layer selector and legend
-            var layerOrder = ['ntaamhed']; // set layer order in the legend
+            var layerOrder = ['fhv2019']; // set layer order in the legend
             var layerContentListOrder = []; // create ordered layer content list
             for (var i = 0; i < layerOrder.length; i++) {
                 layerContentListOrder.push(layerContentList.filter(e => e.layerid == layerOrder[i])[0]);
@@ -390,7 +390,7 @@
             style: 'mapbox://styles/mapbox/light-v10', // light base map
             hash: true, // make sure it's on to get the url with map view
             attributionControl: true, // show the credit bar
-            customAttribution: '<b> Data Sources: MTA Turnstile Data</b>', // add overall credit to the beggining
+            customAttribution: '<b> Data Sources: TLC</b>', // add overall credit to the beggining
             preserveDrawingBuffer: true, // make sure it's on to allow printing
             center: [-73.5471, 40.7469], // testing to get the centroid of bounds
             zoom: 9.8, // set the initial zoom of the map view
@@ -406,16 +406,16 @@
             // Add polygons
             // Set layer contents
             var layerContent = {
-                'sourceid': 'ntapmhed', // source id
+                'sourceid': 'fhv2020', // source id
                 'sourcetype': 'geojson', // source type
-                'sourcedata': 'reopenntapm.geojson', // data source
-                'layerid': 'ntapmhed', // layer id
+                'sourcedata': 'fhv.geojson', // data source
+                'layerid': 'fhv2020', // layer id
                 'layertype': 'fill', // symbology type
-                'layername1': 'Late September 2020 vs Mid April 2020 Subway Ridership', // layer name for the legend
-                'layername2': 'Weekday PM Peak Average​', // layer name for the legend
+                'layername1': 'Average Weekday FHV Trips by Origin', // layer name for the legend
+                'layername2': 'April 2020', // layer name for the legend
                 'layervisibility': 'visible', // visibility of the layer
-                'layercolname': 'DiffPctCat2', // category column name
-                'layercat': ['79%~200%', '201%~250%', '251%~300%', '301%~350%', '351%~581%'], // categories
+                'layercolname': 'Cat2020', // category column name
+                'layercat': ['0~1000', '1001~2000', '2001~3000', '3001~4000', '4001~38435'], // categories
                 'layercolor': ['rgba(209,227,243,1)', 'rgba(154,200,225,1)', 'rgba(82,157,204,1)', 'rgba(28,108,177,1)', 'rgba(8,48,107,1)'], // color for each category; use rgba
                 'layeropacity': 1, // fill opacity
             };
@@ -531,7 +531,7 @@
 
 
             // Add layer selector and legend
-            var layerOrder = ['ntapmhed']; // set layer order in the legend
+            var layerOrder = ['fhv2020']; // set layer order in the legend
             var layerContentListOrder = []; // create ordered layer content list
             for (var i = 0; i < layerOrder.length; i++) {
                 layerContentListOrder.push(layerContentList.filter(e => e.layerid == layerOrder[i])[0]);
