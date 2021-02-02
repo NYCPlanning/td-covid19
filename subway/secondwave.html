@@ -351,12 +351,12 @@
                 maxWidth: 'none', // max width of the popoup; 'none' to fit to the content                
             });
 
-            // Add nontelsub popup
+            // Add nontelam popup
             // Add click event
             map.on('click', 'nontelam', function (e) {
                 var coordinates = e.lngLat; // get pointer coordinates
-                var description = "<b>PUMA: </b><span>" + e.features[0].properties.puma + "</span><br>"; // description in the popup
-                description += "<b>Non-Telework Capability of Subway Commuters by Place of Residence​: </b><span>" + (Number(e.features[0].properties.notelsubpct) * 100).toFixed(2) + "%</span><br>";
+                var description = "<b>NTA Code: </b><span>" + e.features[0].properties.ntacode + "</span><br>"; // description in the popup
+                description += "<b>Non-Telework Capability by Place of Residence​: </b><span>" + (Number(e.features[0].properties.nontelework) * 100).toFixed(2) + "%</span><br>";
                 popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
             });
             // Add hover events
@@ -368,7 +368,27 @@
             });
 
 
-
+            // Add cplxamcp popup
+            // Add click event
+            map.on('click', 'cplxamcp', function (e) {
+                var coordinates = e.features[0].geometry.coordinates.slice(); // get point coordinates
+                var description = "<b>Complex ID: </b><span>" + e.features[0].properties.CplxID + "</span><br>"; // description in the popup
+                description += "<b>Borough: </b><span>" + e.features[0].properties.Borough + "</span><br>";
+                description += "<b>Complex Name: </b><span>" + e.features[0].properties.CplxName + "</span><br>";
+                description += "<b>Routes: </b><span>" + e.features[0].properties.Routes + "</span><br>";
+                description += "<b>Late October 2019 Subway Ridership: </b><span>" + e.features[0].properties.E201910.toFixed(2) + "</span><br>";
+                description += "<b>Late October 2020 Subway Ridership: </b><span>" + e.features[0].properties.E202010.toFixed(2) + "</span><br>";
+                description += "<b>Late October 2020 as Percentage of Late October 2019: </b><span>" + (Number(e.features[0].properties.Pct) * 100).toFixed(2) + "%</span><br>";
+                popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
+            });
+            // Add hover events
+            map.on('mouseenter', 'cplxamcp', function () {
+                map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
+            });
+            map.on('mouseleave', 'cplxamcp', function () {
+                map.getCanvas().style.cursor = '';
+            });
+            
 
 
             // Add layer selector and legend
@@ -582,20 +602,43 @@
                 maxWidth: 'none', // max width of the popoup; 'none' to fit to the content                
             });
 
-            // Add nontelsub popup
+
+            // Add nontelam popup
             // Add click event
             map2.on('click', 'nontelpm', function (e) {
                 var coordinates = e.lngLat; // get pointer coordinates
-                var description = "<b>PUMA: </b><span>" + e.features[0].properties.puma + "</span><br>"; // description in the popup
-                description += "<b>Non-Telework Capability of Subway Commuters by Place of Residence​: </b><span>" + (Number(e.features[0].properties.notelsubpct) * 100).toFixed(2) + "%</span><br>";
-                popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
+                var description = "<b>NTA Code: </b><span>" + e.features[0].properties.ntacode + "</span><br>"; // description in the popup
+                description += "<b>Non-Telework Capability by Workplace </b><span>" + (Number(e.features[0].properties.nontelework) * 100).toFixed(2) + "%</span><br>";
+                popup.setLngLat(coordinates).setHTML(description).addTo(map2); //add popup
             });
             // Add hover events
             map2.on('mouseenter', 'nontelpm', function () {
-                map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
+                map2.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
             });
             map2.on('mouseleave', 'nontelpm', function () {
-                map.getCanvas().style.cursor = '';
+                map2.getCanvas().style.cursor = '';
+            });
+
+
+            // Add cplxpmcp popup
+            // Add click event
+            map2.on('click', 'cplxpmcp', function (e) {
+                var coordinates = e.features[0].geometry.coordinates.slice(); // get point coordinates
+                var description = "<b>Complex ID: </b><span>" + e.features[0].properties.CplxID + "</span><br>"; // description in the popup
+                description += "<b>Borough: </b><span>" + e.features[0].properties.Borough + "</span><br>";
+                description += "<b>Complex Name: </b><span>" + e.features[0].properties.CplxName + "</span><br>";
+                description += "<b>Routes: </b><span>" + e.features[0].properties.Routes + "</span><br>";
+                description += "<b>Late October 2019 Subway Ridership: </b><span>" + e.features[0].properties.E201910.toFixed(2) + "</span><br>";
+                description += "<b>Late October 2020 Subway Ridership: </b><span>" + e.features[0].properties.E202010.toFixed(2) + "</span><br>";
+                description += "<b>Late October 2020 as Percentage of Late October 2019: </b><span>" + (Number(e.features[0].properties.Pct) * 100).toFixed(2) + "%</span><br>";
+                popup.setLngLat(coordinates).setHTML(description).addTo(map2); //add popup
+            });
+            // Add hover events
+            map2.on('mouseenter', 'cplxamcp', function () {
+                map2.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
+            });
+            map2.on('mouseleave', 'cplxamcp', function () {
+                map2.getCanvas().style.cursor = '';
             });
 
 
