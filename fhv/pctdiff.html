@@ -41,8 +41,8 @@
             padding-bottom: 0.5rem;
             padding-right: 0.5rem;
             padding-left: 0.5rem;
-            width:12rem;
-            height:auto;
+            width: 12rem;
+            height: auto;
         }
 
         #legend-title2 {
@@ -50,8 +50,8 @@
             padding-right: 0.5rem;
             padding-left: 0.5rem;
             padding-bottom: 0.5rem;
-            width:12rem;
-            height:auto;
+            width: 12rem;
+            height: auto;
         }
 
         #legend-layer {
@@ -157,7 +157,7 @@
                 'layername2': 'April 2020 vs April 2019​', // layer name for the legend
                 'layervisibility': 'visible', // visibility of the layer
                 'layercolname': 'DiffPctCat', // category column name
-                'layercat': ['>-65%','-69%~-65%', '-74%~-70%','-79%~-75%', '<=-80%'], // categories
+                'layercat': ['>-65%', '-69%~-65%', '-74%~-70%', '-79%~-75%', '<=-80%'], // categories
                 'layercolor': ['rgba(255,245,235,1)', 'rgba(254,210,166,1)', 'rgba(253,146,67,1)', 'rgba(223,79,5,1)', 'rgba(127,39,4,1)'], // color for each category; use rgba
                 'layeropacity': 1, // fill opacity
             };
@@ -240,6 +240,38 @@
 
 
 
+            // Add popup
+            var popup = new mapboxgl.Popup({
+                closeButton: true, // close button
+                closeOnClick: false, // close if click on map
+                closeOnMove: false, // close if move the map
+                anchor: 'bottom', // anchor of the popup
+                offset: 0, // offset from the feature
+                maxWidth: 'none', // max width of the popoup; 'none' to fit to the content                
+            });
+
+
+            // Add nontelam popup
+            // Add click event
+            map.on('click', 'fhv', function (e) {
+                var coordinates = e.lngLat; // get pointer coordinates
+                var description = "<b>NTA Code: </b><span>" + e.features[0].properties.ntacode + "</span><br>"; // description in the popup
+                description += "<b>NTA Name: </b><span>" + e.features[0].properties.ntaname + "</span><br>";
+                description += "<b>April 2019: </b><span>" + e.features[0].properties.Average2019.toFixed(2) + "</span><br>";
+                description += "<b>April 2020: </b><span>" + e.features[0].properties.Average2020.toFixed(2) + "</span><br>";
+                description += "<b>Percent Change: </b><span>" + (Number(e.features[0].properties.perc) * 100).toFixed(2) + "%</span><br>";
+                popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
+            });
+            // Add hover events
+            map.on('mouseenter', 'fhv', function () {
+                map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
+            });
+            map.on('mouseleave', 'fhv', function () {
+                map.getCanvas().style.cursor = '';
+            });
+
+
+
             // Add layer selector and legend
             var layerOrder = ['fhv']; // set layer order in the legend
             var layerContentListOrder = []; // create ordered layer content list
@@ -256,10 +288,10 @@
                 var title1 = document.createElement('div'); // create title1
                 title1.innerHTML = layerContentListOrder[i]['layername1'];
                 legendTitle1.appendChild(title1);
-                
+
                 var title2 = document.createElement('div'); // create title2
                 title2.innerHTML = layerContentListOrder[i]['layername2'];
-                legendTitle2.appendChild(title2);             
+                legendTitle2.appendChild(title2);
 
                 // Create legend layer
                 for (var j = 0; j < layerContentListOrder[i]['layercat'].length; j++) {
