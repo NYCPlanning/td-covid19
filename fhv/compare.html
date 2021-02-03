@@ -512,7 +512,7 @@
                 var coordinates = e.lngLat; // get pointer coordinates
                 var description = "<b>NTA Code: </b><span>" + e.features[0].properties.ntacode + "</span><br>"; // description in the popup
                 description += "<b>NTA Name: </b><span>" + e.features[0].properties.ntaname + "</span><br>";
-                description += "<b>April 2020: </b><span>" + e.features[0].properties.Average2019.toFixed(2) + "</span><br>";
+                description += "<b>April 2020: </b><span>" + e.features[0].properties.Average2020.toFixed(2) + "</span><br>";
               popup.setLngLat(coordinates).setHTML(description).addTo(map2); //add popup
             });
             // Add hover events
