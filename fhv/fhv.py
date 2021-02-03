@@ -1,12 +1,6 @@
-import urllib.request
-import shutil
-import os
 import pandas as pd
 import numpy as np
-import datetime
-import pytz
 import geopandas as gpd
-import shapely
 
 
 
@@ -36,7 +30,6 @@ df['Cat2020']=np.where(df['Average2020']<=1000,'0~1000',
           np.where(df['Average2020']<=4000,'3001~4000',
          '4001~38435'))))
 df.to_file(path+'fhv/fhv.geojson',driver='GeoJSON')
-
 
 
 
