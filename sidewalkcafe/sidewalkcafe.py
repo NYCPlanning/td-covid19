@@ -740,6 +740,86 @@ dfcafeznelwdrm.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/sidewalkcaf
 
 
 
+
+
+
+
+
+
+
+
+# Lot front based analyses
+mappluto=gpd.read_file(path+'SIDEWALK CAFE/mappluto.shp')
+mappluto.crs='epsg:4326'
+
+
+
+mappluto=gpd.read_file('C:/Users/mayij/Desktop/mapplutotest.geojson')
+mappluto.crs='epsg:4326'
+mappluto=mappluto.to_crs('epsg:6539')
+mappluto['Block']=[str(x)[0:6] for x in mappluto['BBL']]
+mappluto=mappluto[['Block','BBL','geometry']].reset_index(drop=True)
+mapplutobk=mappluto[['Block','geometry']].reset_index(drop=True)
+mapplutobk=mapplutobk.dissolve(by='Block',aggfunc='first').reset_index(drop=False)
+mapplutobk['geometry']=[x.boundary for x in mapplutobk['geometry']]
+mapplutolf=[]
+for i in mapplutobk.index:
+    tps=mapplutobk.loc[i,'geometry']
+    if type(tps)==shapely.geometry.linestring.LineString:
+        splitter=shapely.geometry.MultiPoint(tps.coords)
+        splitseg=gpd.GeoDataFrame(shapely.ops.split(tps,splitter))
+        splitseg['Block']=mapplutobk.loc[i,'Block']
+        mapplutolf+=[splitseg]
+    else:
+        for j in range(0,len(tps)):
+            splitter=shapely.geometry.MultiPoint(tps[j].coords)
+            splitseg=gpd.GeoDataFrame(shapely.ops.split(tps[j],splitter))
+            splitseg['Block']=mapplutobk.loc[i,'Block']
+            mapplutolf+=[splitseg]
+mapplutolf=pd.concat(mapplutolf,axis=0,ignore_index=True)
+mapplutolf.columns=['geometry','Block']
+mapplutolf=gpd.GeoDataFrame(mapplutolf,geometry=mapplutolf['geometry'],crs='epsg:6539')
+mapplutolf['ID']=range(0,len(mapplutolf))
+mapplutoctd=mapplutolf[['ID','geometry']].reset_index(drop=True)
+mapplutoctd['geometry']=[x.centroid.buffer(5) for x in mapplutoctd['geometry']]
+mapplutoctd=gpd.sjoin(mapplutoctd,mappluto,how='left',op='intersects')
+mapplutoctd=mapplutoctd[['ID','BBL','geometry']].reset_index(drop=True)
+sdwkcafe=gpd.read_file(path+'SIDEWALK CAFE/sidewalk_cafe.shp')
+sdwkcafe.crs='epsg:4326'
+sdwkcafe=sdwkcafe.to_crs('epsg:6539')
+sdwkcafe['geometry']=[x.buffer(5) for x in sdwkcafe['geometry']]
+mapplutoctd=gpd.sjoin(mapplutoctd,sdwkcafe,how='left',op='intersects')
+mapplutoctd=mapplutoctd[['ID','BBL','CafeType']].reset_index(drop=True)
+
+
+
+
+mapplutolf=pd.merge(mapplutolf,mapplutoctd,how='left',on='ID')
+mapplutolf=mapplutolf[['ID','Block','BBL','CafeType','geometry']].reset_index(drop=True)
+mapplutolf.to_file('C:/Users/mayij/Desktop/mapplutolf.geojson',driver='GeoJSON')
+
+
+
+sdwktmimp=gpd.read_file(path+'STREET CLOSURE/sidewalk/output/sdwktmimp.shp')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 import plotly.io as pio
 import plotly.express as px
 pio.renderers.default = "browser"
