@@ -7,6 +7,7 @@ import datetime
 from shapely import wkt
 from geosupport import Geosupport
 import usaddress
+import multiprocessing as mp
 
 
 
@@ -777,65 +778,32 @@ sdwkwdimp=gpd.read_file(path+'STREET CLOSURE/sidewalk/output/sdwkwdimp.shp')
 sdwkwdimp.crs='epsg:4326'
 sdwkwdimp=sdwkwdimp.to_crs('epsg:6539')
 mapplutolfctdbf=gpd.sjoin(mapplutolfctdbf,sdwkwdimp,how='inner',op='intersects')
-mapplutolfctdsw=[]
-for i in mapplutolfctd['lfid']:
-    mapplutolfctdtp=mapplutolfctd[mapplutolfctd['lfid']==i,'lfid'].reset_index(drop=True)
-    mapplutolfctdbfpv=sdwkwdimp[np.isin(sdwkwdimp['pvid'],mapplutolfctdbf.loc[mapplutolfctdbf['lfid']==i,'pvid'])].reset_index(drop=True)
-    if len(mapplutolfctdbfpv)>0:
+
+
+
+
+ctd=mapplutolfctd[mapplutolfctd['lfid']==58]
+
+def ctdsw(ctd):
+    global mapplutolfctdbf
+    global sdwkwdimp
+    ctd=ctd[['lfid','geometry']].reset_index(drop=True)
+    lfctdbfpv=sdwkwdimp[np.isin(sdwkwdimp['pvid'],mapplutolfctdbf.loc[mapplutolfctdbf['lfid']==ctd.loc[0,'lfid'],'pvid'])].reset_index(drop=True)
+    if len(lfctdbfpv)>0:
         try:
-            mapplutolfctdbfpv=mapplutolfctdbfpv.loc[[np.argmin([mapplutolfctdtp.loc[0,'geometry'].distance(x) for x in mapplutolfctdbfpv['geometry']])]].reset_index(drop=True)
-            mapplutolfctdbfpv=mapplutolfctdbfpv.drop(['length','geometry'],axis=1).reset_index(drop=True)
-            mapplutolfctdtp=pd.concat([mapplutolfctdtp,mapplutolfctdbfpv],axis=1,ignore_index=False)
-            mapplutolfctdsw+=[mapplutolfctdtp]
+            lfctdbfpv=lfctdbfpv.loc[[np.argmin([ctd.loc[0,'geometry'].distance(x) for x in lfctdbfpv['geometry']])]].reset_index(drop=True)
+            lfctdbfpv=lfctdbfpv.drop(['length','geometry'],axis=1).reset_index(drop=True)
+            ctd=ctd.drop('geometry',axis=1).reset_index(drop=True)
+            ctdswtp=pd.concat([ctd,lfctdbfpv],axis=1,ignore_index=False)
+            return ctdswtp
         except:
-            print(str(i)+' error!')
+            print(str(ctd.loc[0,'lfid'])+' error!')
     else:
-        print(str(i)+' no pvid joined!')
-    print(str(i))
-mapplutolfctdsw=pd.concat(mapplutolfctdsw,ignore_index=True)
-
-mapplutolfctdsw=mapplutolfctdsw.drop('geometry',axis=1)
-
-
-mapplutolfsw=pd.merge(mapplutolf,mapplutolfctdsw,how='left',on='lfid')
-mapplutolfsw=mapplutolfsw[['lfid','block','bbl','cafe','pvid','bkfaceid','spid','side','orgswmin','orgswmax',
-                            'orgswmedia','impswmin','impswmax','impswmedia','geometry']].reset_index(drop=True)
-mapplutolfsw=mapplutolfsw.to_crs('epsg:4326')
-mapplutolfsw.to_file('C:/Users/mayij/Desktop/mapplutolfsw.geojson',driver='GeoJSON')
-
-
-
-
-
-
-
-def curbtreeadjust(ct):
-    global curbtree
-    global pvmtsp
-    global curbtreebuffer
-    ct=ct.reset_index(drop=True)
-    curbtreetp=pd.concat([ct]*2,ignore_index=True)
-    curbtreepv=pvmtsp[np.isin(pvmtsp['pvid'],curbtreebuffer.loc[curbtreebuffer['ctid']==ct.loc[0,'ctid'],'pvid'])].reset_index(drop=True)
-    if len(curbtreepv)>0:
-        try:
-            curbtreepv=curbtreepv.loc[[np.argmin([curbtreetp.loc[0,'geometry'].distance(x) for x in curbtreepv['geometry']])]].reset_index(drop=True)
-            curbtreetp['pvid']=curbtreepv.loc[0,'pvid']
-            curbtreetp['snapdist']=curbtreetp.loc[0,'geometry'].distance(curbtreepv.loc[0,'geometry'])
-            adjgeom=shapely.ops.nearest_points(curbtreetp.loc[0,'geometry'],curbtreepv.loc[0,'geometry'])[1]
-            intplt=curbtreepv.loc[0,'geometry'].project(adjgeom)
-            splitter=shapely.geometry.MultiPoint([curbtreepv.loc[0,'geometry'].interpolate(x) for x in [intplt-2.5,intplt+2.5]])
-            splitseg=shapely.ops.split(curbtreepv.loc[0,'geometry'],splitter.buffer(0.01))[2]
-            curbtreetp.loc[0,'adjgeom']=shapely.geometry.MultiLineString([splitseg.parallel_offset(1),splitseg.parallel_offset(6)]).convex_hull.wkt
-            curbtreetp.loc[1,'adjgeom']=shapely.geometry.MultiLineString([splitseg.parallel_offset(-1),splitseg.parallel_offset(-6)]).convex_hull.wkt
-            return curbtreetp
-        except:
-            print(str(ct.loc[0,'ctid'])+' error!')
-    else:
-        print(str(ct.loc[0,'ctid'])+' no pvid joined!')
-
-def curbtreeadjustcompile(ctcp):
-    curbtreeadjtp=ctcp.groupby('ctid',as_index=False).apply(curbtreeadjust)
-    return curbtreeadjtp
+        print(str(ctd.loc[0,'lfid'])+' no pvid joined!')
+    
+def ctdswcompile(ctdcp):
+    ctdswtp=ctdcp.groupby('lfid',as_index=False).apply(ctdsw)
+    return ctdswtp
 
 def parallelize(data,func):
     data_split=np.array_split(data,mp.cpu_count()-1)
@@ -847,8 +815,60 @@ def parallelize(data,func):
     return dt
 
 if __name__=='__main__':
-    curbtreeadj=parallelize(curbtree,curbtreeadjustcompile)
+    mapplutolfctdsw=parallelize(mapplutolfctd,ctdswcompile)
+    mapplutolfctdsw=mapplutolfctdsw.drop('geometry',axis=1)
+    mapplutolfsw=pd.merge(mapplutolf,mapplutolfctdsw,how='left',on='lfid')
+    mapplutolfsw=mapplutolfsw[['lfid','block','bbl','cafe','pvid','bkfaceid','spid','side','orgswmin','orgswmax',
+                                'orgswmedia','impswmin','impswmax','impswmedia','geometry']].reset_index(drop=True)
+    mapplutolfsw=mapplutolfsw.to_crs('epsg:4326')
+    mapplutolfsw.to_file('C:/Users/mayij/Desktop/mapplutolfsw.geojson',driver='GeoJSON')
+    
 
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+# Back up
+# start=datetime.datetime.now()
+# mapplutolfctd=gpd.read_file(path+'SIDEWALK CAFE/mapplutolfctd.shp')
+# mapplutolfctd.crs='epsg:4326'
+# mapplutolfctd=mapplutolfctd.to_crs('epsg:6539')
+# mapplutolfctdbf=mapplutolfctd.copy()
+# mapplutolfctdbf['geometry']=mapplutolfctdbf.buffer(50)
+# sdwkwdimp=gpd.read_file(path+'STREET CLOSURE/sidewalk/output/sdwkwdimp.shp')
+# sdwkwdimp.crs='epsg:4326'
+# sdwkwdimp=sdwkwdimp.to_crs('epsg:6539')
+# mapplutolfctdbf=gpd.sjoin(mapplutolfctdbf,sdwkwdimp,how='inner',op='intersects')
+# mapplutolfctdsw=[]
+# for i in mapplutolfctd['lfid']:
+#     mapplutolfctdtp=mapplutolfctd[mapplutolfctd['lfid']==i,'lfid'].reset_index(drop=True)
+#     mapplutolfctdbfpv=sdwkwdimp[np.isin(sdwkwdimp['pvid'],mapplutolfctdbf.loc[mapplutolfctdbf['lfid']==i,'pvid'])].reset_index(drop=True)
+#     if len(mapplutolfctdbfpv)>0:
+#         try:
+#             mapplutolfctdbfpv=mapplutolfctdbfpv.loc[[np.argmin([mapplutolfctdtp.loc[0,'geometry'].distance(x) for x in mapplutolfctdbfpv['geometry']])]].reset_index(drop=True)
+#             mapplutolfctdbfpv=mapplutolfctdbfpv.drop(['length','geometry'],axis=1).reset_index(drop=True)
+#             mapplutolfctdtp=pd.concat([mapplutolfctdtp,mapplutolfctdbfpv],axis=1,ignore_index=False)
+#             mapplutolfctdsw+=[mapplutolfctdtp]
+#         except:
+#             print(str(i)+' error!')
+#     else:
+#         print(str(i)+' no pvid joined!')
+#     print(str(i))
+# mapplutolfctdsw=pd.concat(mapplutolfctdsw,ignore_index=True)
+# mapplutolfctdsw=mapplutolfctdsw.drop('geometry',axis=1)
+# mapplutolfsw=pd.merge(mapplutolf,mapplutolfctdsw,how='left',on='lfid')
+# mapplutolfsw=mapplutolfsw[['lfid','block','bbl','cafe','pvid','bkfaceid','spid','side','orgswmin','orgswmax',
+#                             'orgswmedia','impswmin','impswmax','impswmedia','geometry']].reset_index(drop=True)
+# mapplutolfsw=mapplutolfsw.to_crs('epsg:4326')
+# mapplutolfsw.to_file('C:/Users/mayij/Desktop/mapplutolfsw.geojson',driver='GeoJSON')
 
 
 
@@ -926,7 +946,6 @@ if __name__=='__main__':
 # import plotly.express as px
 # pio.renderers.default = "browser"
 # px.box(k,x='SDWKWDTH',y='ORGSWMDN')
-
 
 # import numpy as np
 # a=list(range(1,11))
