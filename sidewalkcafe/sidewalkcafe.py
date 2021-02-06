@@ -746,21 +746,17 @@ dfcafeznelwdrm.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/sidewalkcaf
 
 
 
-
-
 # Lot front based analyses
+# Create lot front
+start=datetime.datetime.now()
 mappluto=gpd.read_file(path+'SIDEWALK CAFE/mappluto.shp')
 mappluto.crs='epsg:4326'
-
-
-
-mappluto=gpd.read_file('C:/Users/mayij/Desktop/mapplutotest.geojson')
-mappluto.crs='epsg:4326'
 mappluto=mappluto.to_crs('epsg:6539')
-mappluto['Block']=[str(x)[0:6] for x in mappluto['BBL']]
-mappluto=mappluto[['Block','BBL','geometry']].reset_index(drop=True)
-mapplutobk=mappluto[['Block','geometry']].reset_index(drop=True)
-mapplutobk=mapplutobk.dissolve(by='Block',aggfunc='first').reset_index(drop=False)
+mappluto['block']=[str(x)[0:6] for x in mappluto['BBL']]
+mappluto['bbl']=mappluto['BBL'].copy()
+mappluto=mappluto[['block','bbl','geometry']].reset_index(drop=True)
+mapplutobk=mappluto[['block','geometry']].reset_index(drop=True)
+mapplutobk=mapplutobk.dissolve(by='block',aggfunc='first').reset_index(drop=False)
 mapplutobk['geometry']=[x.boundary for x in mapplutobk['geometry']]
 mapplutolf=[]
 for i in mapplutobk.index:
@@ -768,39 +764,84 @@ for i in mapplutobk.index:
     if type(tps)==shapely.geometry.linestring.LineString:
         splitter=shapely.geometry.MultiPoint(tps.coords)
         splitseg=gpd.GeoDataFrame(shapely.ops.split(tps,splitter))
-        splitseg['Block']=mapplutobk.loc[i,'Block']
+        splitseg['block']=mapplutobk.loc[i,'block']
         mapplutolf+=[splitseg]
     else:
         for j in range(0,len(tps)):
             splitter=shapely.geometry.MultiPoint(tps[j].coords)
             splitseg=gpd.GeoDataFrame(shapely.ops.split(tps[j],splitter))
-            splitseg['Block']=mapplutobk.loc[i,'Block']
+            splitseg['block']=mapplutobk.loc[i,'block']
             mapplutolf+=[splitseg]
+    print(str(i))
 mapplutolf=pd.concat(mapplutolf,axis=0,ignore_index=True)
-mapplutolf.columns=['geometry','Block']
+mapplutolf.columns=['geometry','block']
 mapplutolf=gpd.GeoDataFrame(mapplutolf,geometry=mapplutolf['geometry'],crs='epsg:6539')
-mapplutolf['ID']=range(0,len(mapplutolf))
-mapplutoctd=mapplutolf[['ID','geometry']].reset_index(drop=True)
-mapplutoctd['geometry']=[x.centroid.buffer(5) for x in mapplutoctd['geometry']]
-mapplutoctd=gpd.sjoin(mapplutoctd,mappluto,how='left',op='intersects')
-mapplutoctd=mapplutoctd[['ID','BBL','geometry']].reset_index(drop=True)
+mapplutolf['lfid']=range(0,len(mapplutolf))
+mapplutolf=mapplutolf[['lfid','block','geometry']].reset_index(drop=True)
+mapplutolf=mapplutolf.to_crs('epsg:4326')
+mapplutolf.to_file(path+'SIDEWALK CAFE/mapplutolf.shp')
+print(datetime.datetime.now()-start)
+# 20 mins
+
+# Join BBL and Cafe Reg to centroid
+start=datetime.datetime.now()
+mapplutolf=gpd.read_file(path+'SIDEWALK CAFE/mapplutolf.shp')
+mapplutolf.crs='epsg:4326'
+mapplutolf=mapplutolf.to_crs('epsg:6539')
+mapplutolfctd=mapplutolf[['lfid','geometry']].reset_index(drop=True)
+mapplutolfctd['geometry']=mapplutolfctd.centroid.buffer(5)
+mapplutolfctd=gpd.sjoin(mapplutolfctd,mappluto,how='left',op='intersects')
+mapplutolfctd=mapplutolfctd[['lfid','bbl','geometry']].reset_index(drop=True)
+mapplutolfctd['geometry']=[x.centroid for x in mapplutolfctd['geometry']]
 sdwkcafe=gpd.read_file(path+'SIDEWALK CAFE/sidewalk_cafe.shp')
 sdwkcafe.crs='epsg:4326'
 sdwkcafe=sdwkcafe.to_crs('epsg:6539')
-sdwkcafe['geometry']=[x.buffer(5) for x in sdwkcafe['geometry']]
-mapplutoctd=gpd.sjoin(mapplutoctd,sdwkcafe,how='left',op='intersects')
-mapplutoctd=mapplutoctd[['ID','BBL','CafeType']].reset_index(drop=True)
+sdwkcafe['cafe']=sdwkcafe['CafeType'].copy()
+sdwkcafe['geometry']=sdwkcafe.buffer(5)
+mapplutolfctd=gpd.sjoin(mapplutolfctd,sdwkcafe,how='left',op='intersects')
+mapplutolfctd=mapplutolfctd[['lfid','bbl','cafe','geometry']].reset_index(drop=True)
+mapplutolfctd=mapplutolfctd.to_crs('epsg:4326')
+mapplutolfctd.to_file(path+'SIDEWALK CAFE/mapplutolfctd.shp')
+print(datetime.datetime.now()-start)
+# 20 mins
+
+# Join sidewalk width to centroid
+start=datetime.datetime.now()
+mapplutolfctd=gpd.read_file(path+'SIDEWALK CAFE/mapplutolfctd.shp')
+mapplutolfctd.crs='epsg:4326'
+mapplutolfctd=mapplutolfctd.to_crs('epsg:6539')
+mapplutolfctdbf=mapplutolfctd.copy()
+mapplutolfctdbf['geometry']=mapplutolfctdbf.buffer(50)
+sdwkwdimp=gpd.read_file(path+'STREET CLOSURE/sidewalk/output/sdwkwdimp.shp')
+sdwkwdimp.crs='epsg:4326'
+sdwkwdimp=sdwkwdimp.to_crs('epsg:6539')
+mapplutolfctdbf=gpd.sjoin(mapplutolfctdbf,sdwkwdimp,how='inner',op='intersects')
+mapplutolfctdsw=[]
+for i in mapplutolfctdbf['lfid']:
+    mapplutolfctdtp=mapplutolfctd[mapplutolfctd['lfid']==i].reset_index(drop=True)
+    mapplutolfctdbfpv=sdwkwdimp[np.isin(sdwkwdimp['pvid'],mapplutolfctdbf.loc[mapplutolfctdbf['lfid']==i,'pvid'])].reset_index(drop=True)
+    if len(mapplutolfctdbfpv)>0:
+        try:
+            mapplutolfctdbfpv=mapplutolfctdbfpv.loc[[np.argmin([mapplutolfctdtp.loc[0,'geometry'].distance(x) for x in mapplutolfctdbfpv['geometry']])]].reset_index(drop=True)
+            mapplutolfctdbfpv=mapplutolfctdbfpv.drop(['length','geometry'],axis=1).reset_index(drop=True)
+            mapplutolfctdtp=pd.concat([mapplutolfctdtp,mapplutolfctdbfpv],axis=1,ignore_index=False)
+            mapplutolfctdsw+=[mapplutolfctdtp]
+        except:
+            print(str(i)+' error!')
+    else:
+        print(str(i)+' no pvid joined!')
+    print(str(i))
+mapplutolfctdsw=pd.concat(mapplutolfctdsw,ignore_index=True)
+mapplutolfctdsw=mapplutolfctdsw.drop('geometry',axis=1)
+mapplutolfsw=pd.merge(mapplutolf,mapplutolfctdsw,how='left',on='lfid')
+mapplutolfsw=mapplutolfsw[['lfid','block','bbl','cafe','pvid','bkfaceid','spid','side','orgswmin','orgswmax',
+                           'orgswmedia','impswmin','impswmax','impswmedia','geometry']].reset_index(drop=True)
+mapplutolfsw=mapplutolfsw.to_crs('epsg:4326')
+mapplutolfsw.to_file('C:/Users/mayij/Desktop/mapplutolfsw.geojson',driver='GeoJSON')
 
 
 
 
-mapplutolf=pd.merge(mapplutolf,mapplutoctd,how='left',on='ID')
-mapplutolf=mapplutolf[['ID','Block','BBL','CafeType','geometry']].reset_index(drop=True)
-mapplutolf.to_file('C:/Users/mayij/Desktop/mapplutolf.geojson',driver='GeoJSON')
-
-
-
-sdwktmimp=gpd.read_file(path+'STREET CLOSURE/sidewalk/output/sdwktmimp.shp')
 
 
 
