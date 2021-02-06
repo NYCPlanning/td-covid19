@@ -11,7 +11,8 @@ import usaddress
 
 
 pd.set_option('display.max_columns', None)
-path='C:/Users/mayij/Desktop/DOC/DCP2020/COVID19/'
+# path='C:/Users/mayij/Desktop/DOC/DCP2020/COVID19/'
+path='/home/mayijun/'
 
 
 
@@ -765,42 +766,42 @@ mapplutolfctd.to_file(path+'SIDEWALK CAFE/mapplutolfctd.shp')
 print(datetime.datetime.now()-start)
 # 15 mins
 
-# Join sidewalk width to centroid
-start=datetime.datetime.now()
-mapplutolfctd=gpd.read_file(path+'SIDEWALK CAFE/mapplutolfctd.shp')
-mapplutolfctd.crs='epsg:4326'
-mapplutolfctd=mapplutolfctd.to_crs('epsg:6539')
-mapplutolfctdbf=mapplutolfctd.copy()
-mapplutolfctdbf['geometry']=mapplutolfctdbf.buffer(50)
-sdwkwdimp=gpd.read_file(path+'STREET CLOSURE/sidewalk/output/sdwkwdimp.shp')
-sdwkwdimp.crs='epsg:4326'
-sdwkwdimp=sdwkwdimp.to_crs('epsg:6539')
-mapplutolfctdbf=gpd.sjoin(mapplutolfctdbf,sdwkwdimp,how='inner',op='intersects')
-mapplutolfctdsw=[]
-for i in mapplutolfctd['lfid']:
-    mapplutolfctdtp=mapplutolfctd[mapplutolfctd['lfid']==i,'lfid'].reset_index(drop=True)
-    mapplutolfctdbfpv=sdwkwdimp[np.isin(sdwkwdimp['pvid'],mapplutolfctdbf.loc[mapplutolfctdbf['lfid']==i,'pvid'])].reset_index(drop=True)
-    if len(mapplutolfctdbfpv)>0:
-        try:
-            mapplutolfctdbfpv=mapplutolfctdbfpv.loc[[np.argmin([mapplutolfctdtp.loc[0,'geometry'].distance(x) for x in mapplutolfctdbfpv['geometry']])]].reset_index(drop=True)
-            mapplutolfctdbfpv=mapplutolfctdbfpv.drop(['length','geometry'],axis=1).reset_index(drop=True)
-            mapplutolfctdtp=pd.concat([mapplutolfctdtp,mapplutolfctdbfpv],axis=1,ignore_index=False)
-            mapplutolfctdsw+=[mapplutolfctdtp]
-        except:
-            print(str(i)+' error!')
-    else:
-        print(str(i)+' no pvid joined!')
-    print(str(i))
-mapplutolfctdsw=pd.concat(mapplutolfctdsw,ignore_index=True)
+# # Join sidewalk width to centroid
+# start=datetime.datetime.now()
+# mapplutolfctd=gpd.read_file(path+'SIDEWALK CAFE/mapplutolfctd.shp')
+# mapplutolfctd.crs='epsg:4326'
+# mapplutolfctd=mapplutolfctd.to_crs('epsg:6539')
+# mapplutolfctdbf=mapplutolfctd.copy()
+# mapplutolfctdbf['geometry']=mapplutolfctdbf.buffer(50)
+# sdwkwdimp=gpd.read_file(path+'STREET CLOSURE/sidewalk/output/sdwkwdimp.shp')
+# sdwkwdimp.crs='epsg:4326'
+# sdwkwdimp=sdwkwdimp.to_crs('epsg:6539')
+# mapplutolfctdbf=gpd.sjoin(mapplutolfctdbf,sdwkwdimp,how='inner',op='intersects')
+# mapplutolfctdsw=[]
+# for i in mapplutolfctd['lfid']:
+#     mapplutolfctdtp=mapplutolfctd[mapplutolfctd['lfid']==i,'lfid'].reset_index(drop=True)
+#     mapplutolfctdbfpv=sdwkwdimp[np.isin(sdwkwdimp['pvid'],mapplutolfctdbf.loc[mapplutolfctdbf['lfid']==i,'pvid'])].reset_index(drop=True)
+#     if len(mapplutolfctdbfpv)>0:
+#         try:
+#             mapplutolfctdbfpv=mapplutolfctdbfpv.loc[[np.argmin([mapplutolfctdtp.loc[0,'geometry'].distance(x) for x in mapplutolfctdbfpv['geometry']])]].reset_index(drop=True)
+#             mapplutolfctdbfpv=mapplutolfctdbfpv.drop(['length','geometry'],axis=1).reset_index(drop=True)
+#             mapplutolfctdtp=pd.concat([mapplutolfctdtp,mapplutolfctdbfpv],axis=1,ignore_index=False)
+#             mapplutolfctdsw+=[mapplutolfctdtp]
+#         except:
+#             print(str(i)+' error!')
+#     else:
+#         print(str(i)+' no pvid joined!')
+#     print(str(i))
+# mapplutolfctdsw=pd.concat(mapplutolfctdsw,ignore_index=True)
 
-mapplutolfctdsw=mapplutolfctdsw.drop('geometry',axis=1)
+# mapplutolfctdsw=mapplutolfctdsw.drop('geometry',axis=1)
 
 
-mapplutolfsw=pd.merge(mapplutolf,mapplutolfctdsw,how='left',on='lfid')
-mapplutolfsw=mapplutolfsw[['lfid','block','bbl','cafe','pvid','bkfaceid','spid','side','orgswmin','orgswmax',
-                           'orgswmedia','impswmin','impswmax','impswmedia','geometry']].reset_index(drop=True)
-mapplutolfsw=mapplutolfsw.to_crs('epsg:4326')
-mapplutolfsw.to_file('C:/Users/mayij/Desktop/mapplutolfsw.geojson',driver='GeoJSON')
+# mapplutolfsw=pd.merge(mapplutolf,mapplutolfctdsw,how='left',on='lfid')
+# mapplutolfsw=mapplutolfsw[['lfid','block','bbl','cafe','pvid','bkfaceid','spid','side','orgswmin','orgswmax',
+#                            'orgswmedia','impswmin','impswmax','impswmedia','geometry']].reset_index(drop=True)
+# mapplutolfsw=mapplutolfsw.to_crs('epsg:4326')
+# mapplutolfsw.to_file('C:/Users/mayij/Desktop/mapplutolfsw.geojson',driver='GeoJSON')
 
 
 
