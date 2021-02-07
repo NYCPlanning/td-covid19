@@ -12,8 +12,8 @@ import multiprocessing as mp
 
 
 pd.set_option('display.max_columns', None)
-# path='C:/Users/mayij/Desktop/DOC/DCP2020/COVID19/'
-path='/home/mayijun/'
+path='C:/Users/mayij/Desktop/DOC/DCP2020/COVID19/'
+# path='/home/mayijun/'
 
 
 
@@ -845,6 +845,12 @@ mapplutolftmsw.to_file(path+'SIDEWALK CAFE/mapplutolftmsw.shp')
 print(datetime.datetime.now()-start)
 # 120 mins
 
+# Clean lot front sidewalk tickmarks for upload
+mapplutolftmsw=gpd.read_file(path+'SIDEWALK CAFE/mapplutolftmsw.shp')
+mapplutolftmsw.crs='epsg:4326'
+mapplutolftmswsp=mapplutolftmsw[['cafe','impswmdn','geometry']].reset_index(drop=True)
+mapplutolftmswsp['impswmdn']=[round(x,2) for x in mapplutolftmswsp['impswmdn']]
+mapplutolftmswsp.to_file(path+'SIDEWALK CAFE/mapplutolftmswsp.geojson',driver='GeoJSON')
 
 
 
