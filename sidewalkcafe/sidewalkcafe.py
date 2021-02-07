@@ -765,7 +765,7 @@ path='/home/mayijun/'
 
 # Join sidewalk width to centroid
 start=datetime.datetime.now()
-mapplutolf=gpd.read_file(path+'SIDEWALK CAFE/mapplutolf.shp')[0:1000]
+mapplutolf=gpd.read_file(path+'SIDEWALK CAFE/mapplutolf.shp')[0:10000]
 mapplutolf.crs='epsg:4326'
 mapplutolf=mapplutolf.to_crs('epsg:6539')
 mapplutolfctd=mapplutolf[['lfid','geometry']].reset_index(drop=True)
@@ -814,6 +814,8 @@ if __name__=='__main__':
     mapplutolfsw=mapplutolfsw[['lfid','block','bbl','cafe','pvid','impswmedia','geometry']].reset_index(drop=True)
     mapplutolfsw=mapplutolfsw.to_crs('epsg:4326')
     mapplutolfsw.to_file(path+'SIDEWALK CAFE/mapplutolfsw.shp')
+    print(datetime.datetime.now()-start)
+    # 30 mins
 
 
 
