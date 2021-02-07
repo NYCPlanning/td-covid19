@@ -768,7 +768,7 @@ path='/home/mayijun/'
 
 # Join sidewalk width to centroid
 start=datetime.datetime.now()
-mapplutolf=gpd.read_file(path+'SIDEWALK CAFE/mapplutolf.shp')[0:10000]
+mapplutolf=gpd.read_file(path+'SIDEWALK CAFE/mapplutolf.shp')
 mapplutolf.crs='epsg:4326'
 mapplutolf=mapplutolf.to_crs('epsg:6539')
 mapplutolfctd=mapplutolf[['lfid','geometry']].reset_index(drop=True)
