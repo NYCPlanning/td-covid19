@@ -12,8 +12,8 @@ import multiprocessing as mp
 
 
 pd.set_option('display.max_columns', None)
-path='C:/Users/mayij/Desktop/DOC/DCP2020/COVID19/'
-# path='/home/mayijun/'
+# path='C:/Users/mayij/Desktop/DOC/DCP2020/COVID19/'
+path='/home/mayijun/'
 
 
 
@@ -815,20 +815,17 @@ if __name__=='__main__':
                                 'orgswmedia','impswmin','impswmax','impswmedia','geometry']].reset_index(drop=True)
     mapplutolfsw=mapplutolfsw.to_crs('epsg:4326')
     mapplutolfsw.to_file(path+'SIDEWALK CAFE/mapplutolfsw.shp')
-    
 
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
+
+
+
+
 # Back up
 # start=datetime.datetime.now()
 # mapplutolfctd=gpd.read_file(path+'SIDEWALK CAFE/mapplutolfctd.shp')
@@ -842,7 +839,7 @@ if __name__=='__main__':
 # mapplutolfctdbf=gpd.sjoin(mapplutolfctdbf,sdwkwdimp,how='inner',op='intersects')
 # mapplutolfctdsw=[]
 # for i in mapplutolfctd['lfid']:
-#     mapplutolfctdtp=mapplutolfctd[mapplutolfctd['lfid']==i,'lfid'].reset_index(drop=True)
+#     mapplutolfctdtp=mapplutolfctd.loc[mapplutolfctd['lfid']==i,['lfid','geometry']].reset_index(drop=True)
 #     mapplutolfctdbfpv=sdwkwdimp[np.isin(sdwkwdimp['pvid'],mapplutolfctdbf.loc[mapplutolfctdbf['lfid']==i,'pvid'])].reset_index(drop=True)
 #     if len(mapplutolfctdbfpv)>0:
 #         try:
@@ -865,6 +862,50 @@ if __name__=='__main__':
 
 
 
+
+
+
+# Join sidewalk cafe regulation to sidewalk width
+start=datetime.datetime.now()
+sdwkcafe=gpd.read_file(path+'SIDEWALK CAFE/sidewalk_cafe.shp')
+sdwkcafe.crs='epsg:4326'
+sdwkcafe=sdwkcafe.to_crs('epsg:6539')
+sdwkcafe['cfid']=range(0,len(sdwkcafe))
+sdwkcafe['cafe']=[str(x).strip().upper() for x in sdwkcafe['CafeType']]
+sdwkcafe=sdwkcafe[['cfid','cafe','geometry']].reset_index(drop=True)
+sdwkwdimp=gpd.read_file(path+'STREET CLOSURE/sidewalk/output/sdwkwdimp.shp')
+sdwkwdimp.crs='epsg:4326'
+sdwkwdimp=sdwkwdimp.to_crs('epsg:6539')
+sdwkwdimpctd=sdwkwdimp[['pvid','geometry']].reset_index(drop=True)
+sdwkwdimpctd['geometry']=sdwkwdimpctd.centroid
+sdwkwdimpctdbf=sdwkwdimpctd.copy()
+sdwkwdimpctdbf['geometry']=sdwkwdimpctd.buffer(50)
+sdwkwdimpctdbf=gpd.sjoin(sdwkwdimpctdbf,sdwkcafe,how='inner',op='intersects')
+sdwkwdimpcafe=[]
+for i in sdwkwdimp['pvid']:
+    sdwkwdimptp=sdwkwdimpctd.loc[sdwkwdimpctd['pvid']==i,['pvid','geometry']].reset_index(drop=True)
+    sdwkwdimpctdbfcf=sdwkcafe[np.isin(sdwkcafe['cfid'],sdwkwdimpctdbf.loc[sdwkwdimpctdbf['pvid']==i,'cfid'])].reset_index(drop=True)
+    if len(sdwkwdimpctdbfcf)>0:
+        try:
+            sdwkwdimpctdbfcf=sdwkwdimpctdbfcf.loc[[np.argmin([sdwkwdimptp.loc[0,'geometry'].distance(x) for x in sdwkwdimpctdbfcf['geometry']])]].reset_index(drop=True)
+            sdwkwdimpctdbfcf=sdwkwdimpctdbfcf.drop('geometry',axis=1).reset_index(drop=True)
+            sdwkwdimptp=sdwkwdimptp.drop('geometry',axis=1).reset_index(drop=True)
+            sdwkwdimptp=pd.concat([sdwkwdimptp,sdwkwdimpctdbfcf],axis=1,ignore_index=False)
+            sdwkwdimpcafe+=[sdwkwdimptp]
+        except:
+            print(str(i)+' error!')
+    else:
+        print(str(i)+' no pvid joined!')
+    print(str(i))
+sdwkwdimpcafe=pd.concat(sdwkwdimpcafe,ignore_index=True)
+sdwkwdimpcafe=sdwkwdimpcafe.drop_duplicates('cfid',keep='first').reset_index(drop=True)
+sdwkwdimpcafe=pd.merge(sdwkwdimp,sdwkwdimpcafe,how='left',on='pvid')
+sdwkwdimpcafe['cafe']=sdwkwdimpcafe['cafe'].fillna('NONE')
+sdwkwdimpcafe=sdwkwdimpcafe[['pvid','impswmedia','cafe','geometry']].reset_index(drop=True)
+sdwkwdimpcafe=sdwkwdimpcafe.to_crs('epsg:4326')
+sdwkwdimpcafe.to_file(path+'SIDEWALK CAFE/sdwkwdimpcafe.shp')
+print(datetime.datetime.now()-start)
+# 20 mins
 
 
 
