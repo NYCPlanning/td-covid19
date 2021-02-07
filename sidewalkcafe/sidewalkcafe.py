@@ -772,7 +772,7 @@ mapplutolfctd=mapplutolf[['lfid','geometry']].reset_index(drop=True)
 mapplutolfctd['geometry']=mapplutolfctd.centroid
 mapplutolfctdbf=mapplutolfctd.copy()
 mapplutolfctdbf['geometry']=mapplutolfctdbf.buffer(50)
-sdwkwdimp=gpd.read_file(path+'STREET CLOSURE/sidewalk/output/sdwkwdimp.shp')
+sdwkwdimp=gpd.read_file(path+'sidewalk/output/sdwkwdimp.shp')
 sdwkwdimp.crs='epsg:4326'
 sdwkwdimp=sdwkwdimp.to_crs('epsg:6539')
 mapplutolfctdbf=gpd.sjoin(mapplutolfctdbf,sdwkwdimp,how='inner',op='intersects')
