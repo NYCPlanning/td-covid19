@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>Open Restaurant</title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+    <script src="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js"></script>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css" rel="stylesheet" />
+    <script
+        src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.5.1/mapbox-gl-geocoder.min.js"></script>
+    <link rel="stylesheet"
+        href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.5.1/mapbox-gl-geocoder.css"
+        type="text/css" />
+    <script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.min.js"></script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script src="https://files.codepedia.info/files/uploads/iScripts/html2canvas.js"></script>
+
+    <script src='https://unpkg.com/@turf/turf/turf.min.js'></script>
+
+
+
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        #mainmap {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+
+        #legend {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: auto;
+            height: auto;
+            max-height: 90%;
+            padding-top: 0rem;
+            padding-right: 1rem;
+            padding-left: 1rem;
+            padding-bottom: 1rem;
+            color: #000000;
+            background-color: rgba(255, 255, 255, 0.8);
+            font-family: sans-serif;
+            font-size: 1rem;
+            overflow: auto;
+        }
+
+        #legend label {
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        #legend>input {
+            width: 1rem;
+            height: 1rem;
+            margin-right: 1rem;
+            margin-top: 1rem;
+            vertical-align: -0.1rem;
+        }
+
+        #legend>div>input {
+            width: 0.8rem;
+            height: 0.8rem;
+            margin-left: 2.3rem;
+            margin-right: 1rem;
+            margin-top: 0.5rem;
+            vertical-align: -0.05rem;
+        }
+
+        .legend-key-circle {
+            width: 0.8rem;
+            height: 0.8rem;
+            margin-left: 0.25rem;
+            margin-right: 1rem;
+            border-radius: 100%;
+            display: inline-block;
+            vertical-align: -0.05rem;
+        }
+
+        .legend-key-line {
+            width: 1rem;
+            height: 0.2rem;
+            margin-left: 0.25rem;
+            margin-right: 1rem;
+            border-radius: 0%;
+            display: inline-block;
+            vertical-align: 0.25rem;
+        }
+
+        .legend-key-fill {
+            width: 0.8rem;
+            height: 0.8rem;
+            margin-left: 0.25rem;
+            margin-right: 1rem;
+            border-radius: 0%;
+            display: inline-block;
+            vertical-align: -0.05rem;
+        }
+
+        .legend-key-fill-extrusion {
+            width: 1rem;
+            height: 1rem;
+            margin-left: 0.25rem;
+            margin-right: 1rem;
+            border-radius: 0%;
+            display: inline-block;
+            vertical-align: -0.15rem;
+        }
+    </style>
+</head>
+
+
+
+<body>
+    <div id="mainmap"></div> <!-- placeholder for main map -->
+
+    <nav id="legend">
+        <!-- <div> <a id="downloadLink" href="" download="map.png">Export to image</a></div> -->
+    </nav> <!-- placeholder for layer selector and legend -->
+
+
+
+    <script>
+        'use strict';
+        // Set MapBox token
+        mapboxgl.accessToken = 'pk.eyJ1IjoibWF5aWp1biIsImEiOiJjaXg4ZmlyY20wMDBjMm9tcjI0bjQ0Z21zIn0.Io0XJ4JelN903V9HGo4TfQ'; // still need to find a way to store the token
+
+
+
+        // Initialize the map
+        var map = new mapboxgl.Map({ // creating a new map
+            container: 'mainmap', // same as the div id to place the map
+            style: 'mapbox://styles/mapbox/light-v10', // light base map
+            hash: true, // make sure it's on to get the url with map view
+            attributionControl: false, // show the credit bar
+            preserveDrawingBuffer: true, // make sure it's on to allow printing
+            center: [-74.0197, 40.721], // testing to get the centroid of bounds
+            zoom: 10, // set the initial zoom of the map view
+        });
+
+
+
+        // Add layers
+        map.on('load', function () {
+
+            var layerContentList = []; // store all the layer contents
+
+            // Add geocoder control
+            map.addControl(new MapboxGeocoder({
+                accessToken: mapboxgl.accessToken,
+                mapboxgl: mapboxgl
+            }),
+                'top-left', // control position
+            );
+
+            // Add navigation control
+            map.addControl(new mapboxgl.NavigationControl({
+                showCompass: true, // show compass
+                showZoom: true, // show zoom
+                visualizePitch: true, // show pitch
+            }),
+                'top-left', // control position
+            );
+
+            // Add user location control
+            map.addControl(new mapboxgl.GeolocateControl({
+                positionOptions: {
+                    enableHighAccuracy: true
+                },
+                trackUserLocation: true
+            }),
+                'top-left', // control position
+            );
+
+            // Add full screen control
+            map.addControl(new mapboxgl.FullscreenControl({
+                container: document.querySelector('body'),
+            }),
+                'top-left', // control position
+            );
+
+
+
+
+
+
+
+            // Add Sidewalk Width Full
+            // Set layer contents
+            var q = "https://dcptransportation.carto.com/api/v2/sql?q=";
+            q += "SELECT cartodb_id, the_geom, bkfaceid AS BKFACE, orgswmedia AS ORGSWMDN, impswmedia AS IMPSWMDN, CASE WHEN impswmedia >14 THEN '>14 ft' WHEN impswmedia <=14 AND impswmedia >=11 THEN '11 ft ~ 14 ft' ELSE '<11 ft' END AS CAT FROM dcptransportation.sidewalkwidth";
+            q += "&format=GeoJSON&api_key=4HYVy-SiySv8thsJdoUqKw"; // Carto API
+            console.log(q);
+            var layerContent = {
+                'sourceid': 'sdwkwdimp', // source id
+                'sourcetype': 'geojson', // source type
+                'sourcedata': q, // data source
+                'layerid': 'sdwkwdimp', // layer id
+                'layertype': 'line', // symbology type
+                'layername': 'Median Sidewalk Width', // layer name for the legend
+                'layerlinecap': 'round', // line endings; butt/round/square
+                'layerlinejoin': 'round', // line joining; bevel/round/miter
+                'layervisibility': 'none', // visibility of the layer
+                'layercolname': 'cat', // category column name
+                'layercat': ['<11 ft', '11 ft ~ 14 ft', '>14 ft'], // categories
+                'layercolor': ['rgba(161,218,180,1)', 'rgba(65,182,196,1)', 'rgba(44,127,184,1)'], // color for each category; use rgba
+                'layeropacity': 1, // line opacity
+                'layerwidth': 2, // line width
+                'layeroutlinecolor': 'rgba(0,0,0,0)', // outline color; for legend purpose only
+            };
+
+            // Generate layer colors
+            var layerColor = ['match', ['get', layerContent['layercolname']]];
+            for (var i = 0; i < layerContent.layercat.length; i++) {
+                layerColor.push(layerContent.layercat[i]);
+                layerColor.push(layerContent.layercolor[i]);
+            };
+            layerColor.push('#000000');
+
+            // Add layer content to the overall layer content list
+            layerContentList.push(layerContent);
+
+            // Add data source
+            map.addSource(layerContent['sourceid'], {
+                'type': layerContent['sourcetype'],
+                'data': layerContent['sourcedata'],
+            });
+
+            // Add line layer
+            map.addLayer({
+                'id': layerContent['layerid'],
+                'type': layerContent['layertype'],
+                'source': layerContent['sourceid'],
+                'layout': {
+                    'line-cap': layerContent['layerlinecap'],
+                    'line-join': layerContent['layerlinejoin'],
+                    'visibility': layerContent['layervisibility'],
+                },
+                'paint': {
+                    'line-color': layerColor,
+                    'line-opacity': layerContent['layeropacity'],
+                    'line-width': layerContent['layerwidth'],
+                },
+            });
+
+
+
+
+
+
+            // Add Sidewalk Width Full
+            // Set layer contents
+            var q = "https://dcptransportation.carto.com/api/v2/sql?q=";
+            q += "SELECT cartodb_id, the_geom, impswmdn AS IMPSWMDN, CASE WHEN impswmdn >14 THEN '>14 ft' WHEN impswmdn <=14 AND impswmdn >=11 THEN '11 ft ~ 14 ft' ELSE '<11 ft' END AS CAT FROM dcptransportation.mapplutolftmswsp";
+            q += "&format=GeoJSON&api_key=zk90sz4Al6MbpmrE2FvNHQ"; // Carto API
+            console.log(q);
+            var layerContent = {
+                'sourceid': 'sdwkwdimp2', // source id
+                'sourcetype': 'geojson', // source type
+                'sourcedata': q, // data source
+                'layerid': 'sdwkwdimp2', // layer id
+                'layertype': 'line', // symbology type
+                'layername': 'Median Sidewalk Width', // layer name for the legend
+                'layerlinecap': 'round', // line endings; butt/round/square
+                'layerlinejoin': 'round', // line joining; bevel/round/miter
+                'layervisibility': 'none', // visibility of the layer
+                'layercolname': 'cat', // category column name
+                'layercat': ['<11 ft', '11 ft ~ 14 ft', '>14 ft'], // categories
+                'layercolor': ['rgba(161,218,180,1)', 'rgba(65,182,196,1)', 'rgba(44,127,184,1)'], // color for each category; use rgba
+                'layeropacity': 1, // line opacity
+                'layerwidth': 2, // line width
+                'layeroutlinecolor': 'rgba(0,0,0,0)', // outline color; for legend purpose only
+            };
+
+            // Generate layer colors
+            var layerColor = ['match', ['get', layerContent['layercolname']]];
+            for (var i = 0; i < layerContent.layercat.length; i++) {
+                layerColor.push(layerContent.layercat[i]);
+                layerColor.push(layerContent.layercolor[i]);
+            };
+            layerColor.push('#000000');
+
+            // Add layer content to the overall layer content list
+            layerContentList.push(layerContent);
+
+            // Add data source
+            map.addSource(layerContent['sourceid'], {
+                'type': layerContent['sourcetype'],
+                'data': layerContent['sourcedata'],
+            });
+
+            // Add line layer
+            map.addLayer({
+                'id': layerContent['layerid'],
+                'type': layerContent['layertype'],
+                'source': layerContent['sourceid'],
+                'layout': {
+                    'line-cap': layerContent['layerlinecap'],
+                    'line-join': layerContent['layerlinejoin'],
+                    'visibility': layerContent['layervisibility'],
+                },
+                'paint': {
+                    'line-color': layerColor,
+                    'line-opacity': layerContent['layeropacity'],
+                    'line-width': layerContent['layerwidth'],
+                },
+            });
+
+
+            // Add layer selector and legend
+            var layerOrder = [ 'sdwkwdimp','sdwkwdimp2']; // set layer order in the legend
+            var layerContentListOrder = []; // create ordered layer content list
+            for (var i = 0; i < layerOrder.length; i++) {
+                layerContentListOrder.push(layerContentList.filter(e => e.layerid == layerOrder[i])[0]);
+            };
+
+            var filterLegend = document.getElementById('legend');
+
+            for (var i = 0; i < layerContentListOrder.length; i++) {
+                // Create layer selector
+                var input = document.createElement('input'); // create input checkbox
+                input.type = 'checkbox';
+                input.id = layerContentListOrder[i]['layerid'];
+                if (layerContentListOrder[i]['layervisibility'] === 'visible') {
+                    input.checked = true;
+                } else {
+                    input.checked = false;
+                };
+                filterLegend.appendChild(input);
+                var label = document.createElement('label'); // create checkbox label
+                label.setAttribute('for', layerContentListOrder[i]['layerid']);
+                label.textContent = layerContentListOrder[i]['layername'];
+                filterLegend.appendChild(label);
+                var linebreak = document.createElement("br"); // add break line
+                filterLegend.appendChild(linebreak);
+
+                // Create legend
+                for (var j = 0; j < layerContentListOrder[i]['layercat'].length; j++) {
+                    var item = document.createElement('div'); // create item
+                    item.className = layerContentListOrder[i]['layerid'] + '-item';
+                    if (layerContentListOrder[i]['layervisibility'] === 'visible') {
+                        item.style.display = 'block';
+                    } else {
+                        item.style.display = 'none';
+                    };
+                    var layerInput = document.createElement('input'); // create input checkbox
+                    layerInput.type = 'checkbox';
+                    layerInput.className = layerContentListOrder[i]['layerid'] + '-item-input';
+                    layerInput.id = layerContentListOrder[i]['layercat'][j] + '|' + layerContentListOrder[i]['layercolname'];
+                    layerInput.checked = true;
+                    var key = document.createElement('span'); // create key
+                    key.className = 'legend-key-' + layerContentListOrder[i]['layertype'];
+                    key.style.backgroundColor = layerContentListOrder[i]['layercolor'][j]
+                        .replace(',1)', ',' + layerContentListOrder[i]['layeropacity'] + ')'); // set color with opacity
+                    key.style.borderColor = layerContentListOrder[i]['layeroutlinecolor'];
+                    key.style.borderStyle = 'solid';
+                    key.style.borderWidth = 'thin';
+                    var value = document.createElement('span'); // create label
+                    value.innerHTML = layerContentListOrder[i]['layercat'][j];
+                    item.appendChild(layerInput);
+                    item.appendChild(key);
+                    item.appendChild(value);
+                    filterLegend.appendChild(item);
+
+                    // Create click event
+                    layerInput.addEventListener('click', function (e) {
+                        var clickedLayer = this.className;
+                        var clickedLayerCat = this.id;
+                        var clickedLayerSimple = clickedLayer.replace('-item-input', '');
+                        var clickedLayerColname = clickedLayerCat.split('|')[1];
+                        var legendGroup = document.getElementsByClassName(clickedLayer);
+                        var checkedFilter = ['any'];
+                        for (var l = 0; l < legendGroup.length; l++) {
+                            if (legendGroup[l]['checked'] === true) {
+                                checkedFilter.push(['==', clickedLayerColname, legendGroup[l]['id'].split('|')[0]]);
+                            };
+                        };
+                        map.setFilter(clickedLayerSimple, checkedFilter);
+                        console.log(checkedFilter)
+                    });
+                };
+
+                // Create click event
+                input.addEventListener('click', function (e) {
+                    var clickedLayer = this.id;
+                    var clickedLayerLabel = this.id + '-label';
+                    var visibility = map.getLayoutProperty(clickedLayer, 'visibility');
+                    var legendGroup = document.getElementsByClassName(clickedLayer + '-item');
+                    if (visibility === 'visible') {
+                        map.setLayoutProperty(clickedLayer, 'visibility', 'none'); // set layer visibility
+                        map.setLayoutProperty(clickedLayerLabel, 'visibility', 'none'); // set layer visibility
+                        for (var j = 0; j < legendGroup.length; j++) {
+                            legendGroup[j].style.display = 'none';
+                        } // set legend visibility
+                    } else {
+                        map.setLayoutProperty(clickedLayer, 'visibility', 'visible');
+                        map.setLayoutProperty(clickedLayerLabel, 'visibility', 'visible');
+                        for (var j = 0; j < legendGroup.length; j++) {
+                            legendGroup[j].style.display = 'block';
+                        }
+                    };
+                });
+            };
+        });
+    </script>
+
+</body>
+
+</html>
