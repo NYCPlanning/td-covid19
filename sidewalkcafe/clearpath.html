@@ -604,7 +604,7 @@
                 'layervisibility': 'none', // visibility of the layer
                 'layercolname': 'CP', // category column name
                 'layercat': ['<5 ft', '5 ft ~ 6 ft', '6 ft ~ 7 ft', '7 ft ~ 8 ft', '>=8 ft'], // categories
-                'layercolor': ['rgba(227,26,28,1)', 'rgba(251,154,153,1)', 'rgba(253,204,184,1)','rgba(255,223,154,1)', 'rgba(113,190,40,1)'], // color for each category; use rgba
+                'layercolor': ['rgba(227,26,28,1)', 'rgba(251,154,153,1)', 'rgba(253,204,184,1)', 'rgba(255,223,154,1)', 'rgba(113,190,40,1)'], // color for each category; use rgba
                 'layeropacity': 1, // circle opacity
                 'layerradius': { 'base': 2, 'stops': [[12, 3], [22, 180]] }, // circle radius; change size based on zoom level
                 'layerstrokecolor': 'rgba(255,255,255,1)', // circle stroke color
@@ -650,7 +650,7 @@
 
 
 
-           // Add Open Restaurants in Commercial Overlays
+            // Add Open Restaurants in Commercial Overlays
             // Set layer contents
             var layerContent = {
                 'sourceid': 'orco', // source id
@@ -659,7 +659,7 @@
                 'layerid': 'orco', // layer id
                 'layertype': 'circle', // symbology type
                 'layername': 'Open Restaurants with Overlays by Clear Path', // layer name for the legend
-                'layervisibility': 'visible', // visibility of the layer
+                'layervisibility': 'none', // visibility of the layer
                 'layercolname': 'CP', // category column name
                 'layercat': ['<8 ft', '8 ft ~ 12 ft', '>=12 ft'], // categories
                 'layercolor': ['rgba(227,26,28,1)', 'rgba(251,154,153,1)', 'rgba(113,190,40,1)'], // color for each category; use rgba
@@ -705,12 +705,130 @@
                     'circle-stroke-width': layerContent['layerstrokewidth'],
                 },
             });
-            
-            
-            
-            
-            
-            
+
+
+
+
+
+            // Add Permitted Lot Front by Clear Path
+            // Set layer contents
+            var q = "https://dcptransportation.carto.com/api/v2/sql?q=";
+            q += "SELECT cartodb_id, the_geom, cafe, impswmdn, impswmdn-3 AS impcp, CASE WHEN impswmdn >=15 THEN '>=12 ft' WHEN impswmdn <15 AND impswmdn >=11 THEN '8 ft ~ 12 ft' WHEN impswmdn <11 AND impswmdn >=8 THEN '5 ft ~ 8 ft' ELSE '<5 ft' END AS CAT FROM dcptransportation.mapplutolftmswsp WHERE cafe IN ('UNENCLOSED ONLY','ALL CAFES','SMALL ONLY')";
+            q += "&format=GeoJSON&api_key=zk90sz4Al6MbpmrE2FvNHQ"; // Carto API
+            console.log(q);
+            var layerContent = {
+                'sourceid': 'pmlfcp', // source id
+                'sourcetype': 'geojson', // source type
+                'sourcedata': q, // data source
+                'layerid': 'pmlfcp', // layer id
+                'layertype': 'line', // symbology type
+                'layername': 'Permitted Lot Front by Clear Path', // layer name for the legend
+                'layerlinecap': 'round', // line endings; butt/round/square
+                'layerlinejoin': 'round', // line joining; bevel/round/miter
+                'layervisibility': 'visible', // visibility of the layer
+                'layercolname': 'cat', // category column name
+                'layercat': ['<5 ft', '5 ft ~ 8 ft', '8 ft ~ 12 ft', '>=12 ft'], // categories
+                'layercolor': ['rgba(227,26,28,1)', 'rgba(251,154,153,1)', 'rgba(113,190,40,1)', 'rgba(44,127,0,1)'], // color for each category; use rgba
+                'layeropacity': 1, // line opacity
+                'layerwidth': 2, // line width
+                'layeroutlinecolor': 'rgba(0,0,0,0)', // outline color; for legend purpose only
+            };
+
+            // Generate layer colors
+            var layerColor = ['match', ['get', layerContent['layercolname']]];
+            for (var i = 0; i < layerContent.layercat.length; i++) {
+                layerColor.push(layerContent.layercat[i]);
+                layerColor.push(layerContent.layercolor[i]);
+            };
+            layerColor.push('#000000');
+
+            // Add layer content to the overall layer content list
+            layerContentList.push(layerContent);
+
+            // Add data source
+            map.addSource(layerContent['sourceid'], {
+                'type': layerContent['sourcetype'],
+                'data': layerContent['sourcedata'],
+            });
+
+            // Add line layer
+            map.addLayer({
+                'id': layerContent['layerid'],
+                'type': layerContent['layertype'],
+                'source': layerContent['sourceid'],
+                'layout': {
+                    'line-cap': layerContent['layerlinecap'],
+                    'line-join': layerContent['layerlinejoin'],
+                    'visibility': layerContent['layervisibility'],
+                },
+                'paint': {
+                    'line-color': layerColor,
+                    'line-opacity': layerContent['layeropacity'],
+                    'line-width': layerContent['layerwidth'],
+                },
+            });
+
+
+
+            // Add Non-Permitted Lot Front by Clear Path
+            // Set layer contents
+            var q = "https://dcptransportation.carto.com/api/v2/sql?q=";
+            q += "SELECT cartodb_id, the_geom, cafe, impswmdn, impswmdn-3 AS impcp, CASE WHEN impswmdn >=15 THEN '>=12 ft' WHEN impswmdn <15 AND impswmdn >=11 THEN '8 ft ~ 12 ft' WHEN impswmdn <11 AND impswmdn >=8 THEN '5 ft ~ 8 ft' ELSE '<5 ft' END AS CAT FROM dcptransportation.mapplutolftmswsp WHERE cafe NOT IN ('UNENCLOSED ONLY','ALL CAFES','SMALL ONLY')";
+            q += "&format=GeoJSON&api_key=zk90sz4Al6MbpmrE2FvNHQ"; // Carto API
+            console.log(q);
+            var layerContent = {
+                'sourceid': 'nplfcp', // source id
+                'sourcetype': 'geojson', // source type
+                'sourcedata': q, // data source
+                'layerid': 'nplfcp', // layer id
+                'layertype': 'line', // symbology type
+                'layername': 'Non-Permitted Lot Front by Clear Path', // layer name for the legend
+                'layerlinecap': 'round', // line endings; butt/round/square
+                'layerlinejoin': 'round', // line joining; bevel/round/miter
+                'layervisibility': 'none', // visibility of the layer
+                'layercolname': 'cat', // category column name
+                'layercat': ['<5 ft', '5 ft ~ 8 ft', '8 ft ~ 12 ft', '>=12 ft'], // categories
+                'layercolor': ['rgba(227,26,28,1)', 'rgba(251,154,153,1)', 'rgba(113,190,40,1)', 'rgba(44,127,0,1)'], // color for each category; use rgba
+                'layeropacity': 1, // line opacity
+                'layerwidth': 2, // line width
+                'layeroutlinecolor': 'rgba(0,0,0,0)', // outline color; for legend purpose only
+            };
+
+            // Generate layer colors
+            var layerColor = ['match', ['get', layerContent['layercolname']]];
+            for (var i = 0; i < layerContent.layercat.length; i++) {
+                layerColor.push(layerContent.layercat[i]);
+                layerColor.push(layerContent.layercolor[i]);
+            };
+            layerColor.push('#000000');
+
+            // Add layer content to the overall layer content list
+            layerContentList.push(layerContent);
+
+            // Add data source
+            map.addSource(layerContent['sourceid'], {
+                'type': layerContent['sourcetype'],
+                'data': layerContent['sourcedata'],
+            });
+
+            // Add line layer
+            map.addLayer({
+                'id': layerContent['layerid'],
+                'type': layerContent['layertype'],
+                'source': layerContent['sourceid'],
+                'layout': {
+                    'line-cap': layerContent['layerlinecap'],
+                    'line-join': layerContent['layerlinejoin'],
+                    'visibility': layerContent['layervisibility'],
+                },
+                'paint': {
+                    'line-color': layerColor,
+                    'line-opacity': layerContent['layeropacity'],
+                    'line-width': layerContent['layerwidth'],
+                },
+            });
+
+
             // Add popup
             var popup = new mapboxgl.Popup({
                 closeButton: true, // close button
@@ -721,9 +839,44 @@
                 maxWidth: 'none', // max width of the popoup; 'none' to fit to the content                
             });
 
-            
+            // Add Non-Permitted Lot Front by Clear Path popup
+            // Add click event
+            map.on('click', 'nplfcp', function (e) {
+                var coordinates = e.lngLat; // get pointer coordinates
+                var description = "<b>Sidewalk Cafe Regulation Type: </b><span>" + e.features[0].properties.cafe + "</span><br>"; // description in the popup
+                description += "<b>Median Sidewalk Width Excluding Impediments (ft): </b><span>" + e.features[0].properties.impswmdn.toFixed(2) + "</span><br>";
+                description += "<b>Median Clear Path (ft): </b><span>" + e.features[0].properties.impcp.toFixed(2) + "</span><br>";
+                popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
+            });
+            // Add hover events
+            map.on('mouseenter', 'nplfcp', function () {
+                map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
+            });
+            map.on('mouseleave', 'nplfcp', function () {
+                map.getCanvas().style.cursor = '';
+            });
 
-             // Add open restaurant in co by clear path popup
+
+            // Add Permitted Lot Front by Clear Path popup
+            // Add click event
+            map.on('click', 'pmlfcp', function (e) {
+                var coordinates = e.lngLat; // get pointer coordinates
+                var description = "<b>Sidewalk Cafe Regulation Type: </b><span>" + e.features[0].properties.cafe + "</span><br>"; // description in the popup
+                description += "<b>Median Sidewalk Width Excluding Impediments (ft): </b><span>" + e.features[0].properties.impswmdn.toFixed(2) + "</span><br>";
+                description += "<b>Median Clear Path (ft): </b><span>" + e.features[0].properties.impcp.toFixed(2) + "</span><br>";
+                popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
+            });
+            // Add hover events
+            map.on('mouseenter', 'pmlfcp', function () {
+                map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
+            });
+            map.on('mouseleave', 'pmlfcp', function () {
+                map.getCanvas().style.cursor = '';
+            });
+
+
+
+            // Add open restaurant in co by clear path popup
             // Add click event
             map.on('click', 'orco', function (e) {
                 var coordinates = e.features[0].geometry.coordinates.slice(); // get point coordinates
@@ -758,9 +911,9 @@
             map.on('mouseleave', 'orco', function () {
                 map.getCanvas().style.cursor = '';
             });
-            
-            
-            
+
+
+
             // Add open restaurant without co by clear path popup
             // Add click event
             map.on('click', 'orrm', function (e) {
@@ -885,7 +1038,7 @@
 
 
             // Add layer selector and legend
-            var layerOrder = ['orco','orrm', 'dcaco', 'orsw', 'sdwkcafe', 'sdwkwdimp', 'zd', 'co']; // set layer order in the legend
+            var layerOrder = ['pmlfcp', 'nplfcp', 'orco', 'orrm', 'dcaco', 'orsw', 'sdwkcafe', 'sdwkwdimp', 'zd', 'co']; // set layer order in the legend
             var layerContentListOrder = []; // create ordered layer content list
             for (var i = 0; i < layerOrder.length; i++) {
                 layerContentListOrder.push(layerContentList.filter(e => e.layerid == layerOrder[i])[0]);

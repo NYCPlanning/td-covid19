@@ -272,43 +272,43 @@ path='C:/Users/mayij/Desktop/DOC/DCP2020/COVID19/'
 
 
 
-# Join Open Restaurant to Lot Front Sidewalk Width
-dfcafeznelwd=gpd.read_file(path+'SIDEWALK CAFE/or_cafe_zn_el_wd.shp')
-dfcafeznelwd.crs='epsg:4326'
-dfcafeznelwdbf=dfcafeznelwd.copy()
-dfcafeznelwdbf=dfcafeznelwdbf.to_crs('epsg:6539')
-dfcafeznelwdbf['geometry']=dfcafeznelwdbf.buffer(5)
-dfcafeznelwdbf=dfcafeznelwdbf.to_crs('epsg:4326')
-mapplutolftmswsp=gpd.read_file(path+'SIDEWALK CAFE/mapplutolftmswsp.geojson')
-mapplutolftmswsp.crs='epsg:4326'
-mapplutolftmswsp['LFIMPSWMDN']=mapplutolftmswsp['impswmdn'].copy()
-mapplutolftmswsp=mapplutolftmswsp[['LFIMPSWMDN','geometry']].reset_index(drop=True)
-dfcafeznelwdbf=gpd.sjoin(dfcafeznelwdbf,mapplutolftmswsp,how='left',op='intersects')
-dfcafeznelwdbf=dfcafeznelwdbf[['ID','LFIMPSWMDN']].drop_duplicates(['ID'],keep='first').reset_index(drop=True)
-dfcafeznelwdlf=pd.merge(dfcafeznelwd,dfcafeznelwdbf,how='left',on='ID')
-dfcafeznelwdlf.to_file(path+'SIDEWALK CAFE/or_cafe_zn_el_wd_lf.shp')
-dfcafeznelwdlf=dfcafeznelwdlf[np.isin(dfcafeznelwdlf['TYPE'],['BOTH','SIDEWALK'])].reset_index(drop=True)
-dfcafeznelwdlf['SWCAT']=np.where(dfcafeznelwdlf['IMPSWMDN']>14,'>14 ft',np.where(dfcafeznelwdlf['IMPSWMDN']>=11,'11 ft ~ 14 ft','<11 ft'))
-dfcafeznelwdlf['CP']=np.where(dfcafeznelwdlf['IMPSWMDN']>=15,'>=12 ft',
-                     np.where(dfcafeznelwdlf['IMPSWMDN']>=14,'11 ft ~ 12 ft',
-                     np.where(dfcafeznelwdlf['IMPSWMDN']>=13,'10 ft ~ 11 ft',
-                     np.where(dfcafeznelwdlf['IMPSWMDN']>=12,'9 ft ~ 10 ft',
-                     np.where(dfcafeznelwdlf['IMPSWMDN']>=11,'8 ft ~ 9 ft',
-                     np.where(dfcafeznelwdlf['IMPSWMDN']>=10,'7 ft ~ 8 ft',
-                     np.where(dfcafeznelwdlf['IMPSWMDN']>=9,'6 ft ~ 7 ft',
-                     np.where(dfcafeznelwdlf['IMPSWMDN']>=8,'5 ft ~ 6 ft',
-                              '<5 ft'))))))))
-dfcafeznelwdlf['LFSWCAT']=np.where(dfcafeznelwdlf['LFIMPSWMDN']>14,'>14 ft',np.where(dfcafeznelwdlf['LFIMPSWMDN']>=11,'11 ft ~ 14 ft','<11 ft'))
-dfcafeznelwdlf['LFCP']=np.where(dfcafeznelwdlf['LFIMPSWMDN']>=15,'>=12 ft',
-                       np.where(dfcafeznelwdlf['LFIMPSWMDN']>=14,'11 ft ~ 12 ft',
-                       np.where(dfcafeznelwdlf['LFIMPSWMDN']>=13,'10 ft ~ 11 ft',
-                       np.where(dfcafeznelwdlf['LFIMPSWMDN']>=12,'9 ft ~ 10 ft',
-                       np.where(dfcafeznelwdlf['LFIMPSWMDN']>=11,'8 ft ~ 9 ft',
-                       np.where(dfcafeznelwdlf['LFIMPSWMDN']>=10,'7 ft ~ 8 ft',
-                       np.where(dfcafeznelwdlf['LFIMPSWMDN']>=9,'6 ft ~ 7 ft',
-                       np.where(dfcafeznelwdlf['LFIMPSWMDN']>=8,'5 ft ~ 6 ft',
-                                '<5 ft'))))))))
-dfcafeznelwdlf.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/sidewalkcafe/or_cafe_zn_el_wd_lf.geojson',driver='GeoJSON')
+# # Join Open Restaurant to Lot Front Sidewalk Width
+# dfcafeznelwd=gpd.read_file(path+'SIDEWALK CAFE/or_cafe_zn_el_wd.shp')
+# dfcafeznelwd.crs='epsg:4326'
+# dfcafeznelwdbf=dfcafeznelwd.copy()
+# dfcafeznelwdbf=dfcafeznelwdbf.to_crs('epsg:6539')
+# dfcafeznelwdbf['geometry']=dfcafeznelwdbf.buffer(5)
+# dfcafeznelwdbf=dfcafeznelwdbf.to_crs('epsg:4326')
+# mapplutolftmswsp=gpd.read_file(path+'SIDEWALK CAFE/mapplutolftmswsp.geojson')
+# mapplutolftmswsp.crs='epsg:4326'
+# mapplutolftmswsp['LFIMPSWMDN']=mapplutolftmswsp['impswmdn'].copy()
+# mapplutolftmswsp=mapplutolftmswsp[['LFIMPSWMDN','geometry']].reset_index(drop=True)
+# dfcafeznelwdbf=gpd.sjoin(dfcafeznelwdbf,mapplutolftmswsp,how='left',op='intersects')
+# dfcafeznelwdbf=dfcafeznelwdbf[['ID','LFIMPSWMDN']].drop_duplicates(['ID'],keep='first').reset_index(drop=True)
+# dfcafeznelwdlf=pd.merge(dfcafeznelwd,dfcafeznelwdbf,how='left',on='ID')
+# dfcafeznelwdlf.to_file(path+'SIDEWALK CAFE/or_cafe_zn_el_wd_lf.shp')
+# dfcafeznelwdlf=dfcafeznelwdlf[np.isin(dfcafeznelwdlf['TYPE'],['BOTH','SIDEWALK'])].reset_index(drop=True)
+# dfcafeznelwdlf['SWCAT']=np.where(dfcafeznelwdlf['IMPSWMDN']>14,'>14 ft',np.where(dfcafeznelwdlf['IMPSWMDN']>=11,'11 ft ~ 14 ft','<11 ft'))
+# dfcafeznelwdlf['CP']=np.where(dfcafeznelwdlf['IMPSWMDN']>=15,'>=12 ft',
+#                      np.where(dfcafeznelwdlf['IMPSWMDN']>=14,'11 ft ~ 12 ft',
+#                      np.where(dfcafeznelwdlf['IMPSWMDN']>=13,'10 ft ~ 11 ft',
+#                      np.where(dfcafeznelwdlf['IMPSWMDN']>=12,'9 ft ~ 10 ft',
+#                      np.where(dfcafeznelwdlf['IMPSWMDN']>=11,'8 ft ~ 9 ft',
+#                      np.where(dfcafeznelwdlf['IMPSWMDN']>=10,'7 ft ~ 8 ft',
+#                      np.where(dfcafeznelwdlf['IMPSWMDN']>=9,'6 ft ~ 7 ft',
+#                      np.where(dfcafeznelwdlf['IMPSWMDN']>=8,'5 ft ~ 6 ft',
+#                               '<5 ft'))))))))
+# dfcafeznelwdlf['LFSWCAT']=np.where(dfcafeznelwdlf['LFIMPSWMDN']>14,'>14 ft',np.where(dfcafeznelwdlf['LFIMPSWMDN']>=11,'11 ft ~ 14 ft','<11 ft'))
+# dfcafeznelwdlf['LFCP']=np.where(dfcafeznelwdlf['LFIMPSWMDN']>=15,'>=12 ft',
+#                        np.where(dfcafeznelwdlf['LFIMPSWMDN']>=14,'11 ft ~ 12 ft',
+#                        np.where(dfcafeznelwdlf['LFIMPSWMDN']>=13,'10 ft ~ 11 ft',
+#                        np.where(dfcafeznelwdlf['LFIMPSWMDN']>=12,'9 ft ~ 10 ft',
+#                        np.where(dfcafeznelwdlf['LFIMPSWMDN']>=11,'8 ft ~ 9 ft',
+#                        np.where(dfcafeznelwdlf['LFIMPSWMDN']>=10,'7 ft ~ 8 ft',
+#                        np.where(dfcafeznelwdlf['LFIMPSWMDN']>=9,'6 ft ~ 7 ft',
+#                        np.where(dfcafeznelwdlf['LFIMPSWMDN']>=8,'5 ft ~ 6 ft',
+#                                 '<5 ft'))))))))
+# dfcafeznelwdlf.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/sidewalkcafe/or_cafe_zn_el_wd_lf.geojson',driver='GeoJSON')
 
 
 
@@ -698,43 +698,43 @@ dfcafeznelwdlf.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/sidewalkcaf
 
 
 
-# Join DCA License to  Lot Front Sidewalk Width
-dfcafeznelwd=gpd.read_file(path+'SIDEWALK CAFE/dca_cafe_zn_el_wd.shp')
-dfcafeznelwd.crs='epsg:4326'
-dfcafeznelwdbf=dfcafeznelwd.copy()
-dfcafeznelwdbf=dfcafeznelwdbf.to_crs('epsg:6539')
-dfcafeznelwdbf['geometry']=dfcafeznelwdbf.buffer(5)
-dfcafeznelwdbf=dfcafeznelwdbf.to_crs('epsg:4326')
-mapplutolftmswsp=gpd.read_file(path+'SIDEWALK CAFE/mapplutolftmswsp.geojson')
-mapplutolftmswsp.crs='epsg:4326'
-mapplutolftmswsp['LFIMPSWMDN']=mapplutolftmswsp['impswmdn'].copy()
-mapplutolftmswsp=mapplutolftmswsp[['LFIMPSWMDN','geometry']].reset_index(drop=True)
-dfcafeznelwdbf=gpd.sjoin(dfcafeznelwdbf,mapplutolftmswsp,how='left',op='intersects')
-dfcafeznelwdbf=dfcafeznelwdbf[['ID','LFIMPSWMDN']].drop_duplicates(['ID'],keep='first').reset_index(drop=True)
-dfcafeznelwdlf=pd.merge(dfcafeznelwd,dfcafeznelwdbf,how='left',on='ID')
-dfcafeznelwdlf.to_file(path+'SIDEWALK CAFE/dca_cafe_zn_el_wd_lf.shp')
-dfcafeznelwdlf=dfcafeznelwdlf[dfcafeznelwdlf['TYPE']!='ENCLOSED'].reset_index(drop=True)
-dfcafeznelwdlf['SWCAT']=np.where(dfcafeznelwdlf['IMPSWMDN']>14,'>14 ft',np.where(dfcafeznelwdlf['IMPSWMDN']>=11,'11 ft ~ 14 ft','<11 ft'))
-dfcafeznelwdlf['CP']=np.where(dfcafeznelwdlf['IMPSWMDN']>=15,'>=12 ft',
-                     np.where(dfcafeznelwdlf['IMPSWMDN']>=14,'11 ft ~ 12 ft',
-                     np.where(dfcafeznelwdlf['IMPSWMDN']>=13,'10 ft ~ 11 ft',
-                     np.where(dfcafeznelwdlf['IMPSWMDN']>=12,'9 ft ~ 10 ft',
-                     np.where(dfcafeznelwdlf['IMPSWMDN']>=11,'8 ft ~ 9 ft',
-                     np.where(dfcafeznelwdlf['IMPSWMDN']>=10,'7 ft ~ 8 ft',
-                     np.where(dfcafeznelwdlf['IMPSWMDN']>=9,'6 ft ~ 7 ft',
-                     np.where(dfcafeznelwdlf['IMPSWMDN']>=8,'5 ft ~ 6 ft',
-                              '<5 ft'))))))))
-dfcafeznelwdlf['LFSWCAT']=np.where(dfcafeznelwdlf['LFIMPSWMDN']>14,'>14 ft',np.where(dfcafeznelwdlf['LFIMPSWMDN']>=11,'11 ft ~ 14 ft','<11 ft'))
-dfcafeznelwdlf['LFCP']=np.where(dfcafeznelwdlf['LFIMPSWMDN']>=15,'>=12 ft',
-                       np.where(dfcafeznelwdlf['LFIMPSWMDN']>=14,'11 ft ~ 12 ft',
-                       np.where(dfcafeznelwdlf['LFIMPSWMDN']>=13,'10 ft ~ 11 ft',
-                       np.where(dfcafeznelwdlf['LFIMPSWMDN']>=12,'9 ft ~ 10 ft',
-                       np.where(dfcafeznelwdlf['LFIMPSWMDN']>=11,'8 ft ~ 9 ft',
-                       np.where(dfcafeznelwdlf['LFIMPSWMDN']>=10,'7 ft ~ 8 ft',
-                       np.where(dfcafeznelwdlf['LFIMPSWMDN']>=9,'6 ft ~ 7 ft',
-                       np.where(dfcafeznelwdlf['LFIMPSWMDN']>=8,'5 ft ~ 6 ft',
-                                '<5 ft'))))))))
-dfcafeznelwdlf.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/sidewalkcafe/dca_cafe_zn_el_wd_lf.geojson',driver='GeoJSON')
+# # Join DCA License to  Lot Front Sidewalk Width
+# dfcafeznelwd=gpd.read_file(path+'SIDEWALK CAFE/dca_cafe_zn_el_wd.shp')
+# dfcafeznelwd.crs='epsg:4326'
+# dfcafeznelwdbf=dfcafeznelwd.copy()
+# dfcafeznelwdbf=dfcafeznelwdbf.to_crs('epsg:6539')
+# dfcafeznelwdbf['geometry']=dfcafeznelwdbf.buffer(5)
+# dfcafeznelwdbf=dfcafeznelwdbf.to_crs('epsg:4326')
+# mapplutolftmswsp=gpd.read_file(path+'SIDEWALK CAFE/mapplutolftmswsp.geojson')
+# mapplutolftmswsp.crs='epsg:4326'
+# mapplutolftmswsp['LFIMPSWMDN']=mapplutolftmswsp['impswmdn'].copy()
+# mapplutolftmswsp=mapplutolftmswsp[['LFIMPSWMDN','geometry']].reset_index(drop=True)
+# dfcafeznelwdbf=gpd.sjoin(dfcafeznelwdbf,mapplutolftmswsp,how='left',op='intersects')
+# dfcafeznelwdbf=dfcafeznelwdbf[['ID','LFIMPSWMDN']].drop_duplicates(['ID'],keep='first').reset_index(drop=True)
+# dfcafeznelwdlf=pd.merge(dfcafeznelwd,dfcafeznelwdbf,how='left',on='ID')
+# dfcafeznelwdlf.to_file(path+'SIDEWALK CAFE/dca_cafe_zn_el_wd_lf.shp')
+# dfcafeznelwdlf=dfcafeznelwdlf[dfcafeznelwdlf['TYPE']!='ENCLOSED'].reset_index(drop=True)
+# dfcafeznelwdlf['SWCAT']=np.where(dfcafeznelwdlf['IMPSWMDN']>14,'>14 ft',np.where(dfcafeznelwdlf['IMPSWMDN']>=11,'11 ft ~ 14 ft','<11 ft'))
+# dfcafeznelwdlf['CP']=np.where(dfcafeznelwdlf['IMPSWMDN']>=15,'>=12 ft',
+#                      np.where(dfcafeznelwdlf['IMPSWMDN']>=14,'11 ft ~ 12 ft',
+#                      np.where(dfcafeznelwdlf['IMPSWMDN']>=13,'10 ft ~ 11 ft',
+#                      np.where(dfcafeznelwdlf['IMPSWMDN']>=12,'9 ft ~ 10 ft',
+#                      np.where(dfcafeznelwdlf['IMPSWMDN']>=11,'8 ft ~ 9 ft',
+#                      np.where(dfcafeznelwdlf['IMPSWMDN']>=10,'7 ft ~ 8 ft',
+#                      np.where(dfcafeznelwdlf['IMPSWMDN']>=9,'6 ft ~ 7 ft',
+#                      np.where(dfcafeznelwdlf['IMPSWMDN']>=8,'5 ft ~ 6 ft',
+#                               '<5 ft'))))))))
+# dfcafeznelwdlf['LFSWCAT']=np.where(dfcafeznelwdlf['LFIMPSWMDN']>14,'>14 ft',np.where(dfcafeznelwdlf['LFIMPSWMDN']>=11,'11 ft ~ 14 ft','<11 ft'))
+# dfcafeznelwdlf['LFCP']=np.where(dfcafeznelwdlf['LFIMPSWMDN']>=15,'>=12 ft',
+#                        np.where(dfcafeznelwdlf['LFIMPSWMDN']>=14,'11 ft ~ 12 ft',
+#                        np.where(dfcafeznelwdlf['LFIMPSWMDN']>=13,'10 ft ~ 11 ft',
+#                        np.where(dfcafeznelwdlf['LFIMPSWMDN']>=12,'9 ft ~ 10 ft',
+#                        np.where(dfcafeznelwdlf['LFIMPSWMDN']>=11,'8 ft ~ 9 ft',
+#                        np.where(dfcafeznelwdlf['LFIMPSWMDN']>=10,'7 ft ~ 8 ft',
+#                        np.where(dfcafeznelwdlf['LFIMPSWMDN']>=9,'6 ft ~ 7 ft',
+#                        np.where(dfcafeznelwdlf['LFIMPSWMDN']>=8,'5 ft ~ 6 ft',
+#                                 '<5 ft'))))))))
+# dfcafeznelwdlf.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/sidewalkcafe/dca_cafe_zn_el_wd_lf.geojson',driver='GeoJSON')
 
 
 
@@ -932,12 +932,12 @@ dfcafeznelwdlf.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/sidewalkcaf
 # print(datetime.datetime.now()-start)
 # # 120 mins
 
-# # Clean lot front sidewalk tickmarks for upload
-# mapplutolftmsw=gpd.read_file(path+'SIDEWALK CAFE/mapplutolftmsw.shp')
-# mapplutolftmsw.crs='epsg:4326'
-# mapplutolftmswsp=mapplutolftmsw[['cafe','impswmdn','geometry']].reset_index(drop=True)
-# mapplutolftmswsp['impswmdn']=[round(x,2) for x in mapplutolftmswsp['impswmdn']]
-# mapplutolftmswsp.to_file(path+'SIDEWALK CAFE/mapplutolftmswsp.geojson',driver='GeoJSON')
+# Clean lot front sidewalk tickmarks for upload
+mapplutolftmsw=gpd.read_file(path+'SIDEWALK CAFE/mapplutolftmsw.shp')
+mapplutolftmsw.crs='epsg:4326'
+mapplutolftmswsp=mapplutolftmsw[['cafe','impswmdn','geometry']].reset_index(drop=True)
+mapplutolftmswsp['impswmdn']=[round(x,2) for x in mapplutolftmswsp['impswmdn']]
+mapplutolftmswsp.to_file(path+'SIDEWALK CAFE/mapplutolftmswsp.geojson',driver='GeoJSON')
 
 
 
