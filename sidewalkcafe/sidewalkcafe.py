@@ -798,7 +798,7 @@ path='/home/mayijun/'
 # Lot front based analyses
 # Create lot front
 start=datetime.datetime.now()
-mappluto=gpd.read_file(path+'SIDEWALK CAFE/mappluto.shp')
+mappluto=gpd.read_file(path+'SIDEWALK CAFE/mapplutoclipped.shp')
 mappluto.crs='epsg:4326'
 mappluto=mappluto.to_crs('epsg:6539')
 mappluto['block']=[str(x)[0:6] for x in mappluto['BBL']]
