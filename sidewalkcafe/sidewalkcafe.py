@@ -853,91 +853,91 @@ print(datetime.datetime.now()-start)
 
 
 
-# Join sidewalk width to centroid
-start=datetime.datetime.now()
-mapplutolf=gpd.read_file(path+'SIDEWALK CAFE/mapplutolf.shp')
-mapplutolf.crs='epsg:4326'
-mapplutolf=mapplutolf.to_crs('epsg:6539')
-mapplutolfctd=mapplutolf[['lfid','geometry']].reset_index(drop=True)
-mapplutolfctd['geometry']=mapplutolfctd.centroid
-mapplutolfctdbf=mapplutolfctd.copy()
-mapplutolfctdbf['geometry']=mapplutolfctdbf.buffer(50)
-sdwkwdimp=gpd.read_file(path+'sidewalk/output/sdwkwdimp.shp')
-sdwkwdimp.crs='epsg:4326'
-sdwkwdimp=sdwkwdimp.to_crs('epsg:6539')
-mapplutolfctdbf=gpd.sjoin(mapplutolfctdbf,sdwkwdimp,how='inner',op='intersects')
+# # Join sidewalk width to centroid
+# start=datetime.datetime.now()
+# mapplutolf=gpd.read_file(path+'SIDEWALK CAFE/mapplutolf.shp')
+# mapplutolf.crs='epsg:4326'
+# mapplutolf=mapplutolf.to_crs('epsg:6539')
+# mapplutolfctd=mapplutolf[['lfid','geometry']].reset_index(drop=True)
+# mapplutolfctd['geometry']=mapplutolfctd.centroid
+# mapplutolfctdbf=mapplutolfctd.copy()
+# mapplutolfctdbf['geometry']=mapplutolfctdbf.buffer(50)
+# sdwkwdimp=gpd.read_file(path+'sidewalk/output/sdwkwdimp.shp')
+# sdwkwdimp.crs='epsg:4326'
+# sdwkwdimp=sdwkwdimp.to_crs('epsg:6539')
+# mapplutolfctdbf=gpd.sjoin(mapplutolfctdbf,sdwkwdimp,how='inner',op='intersects')
 
-def ctdsw(ctd):
-    global mapplutolfctdbf
-    global sdwkwdimp
-    ctd=ctd[['lfid','geometry']].reset_index(drop=True)
-    lfctdbfpv=sdwkwdimp[np.isin(sdwkwdimp['pvid'],mapplutolfctdbf.loc[mapplutolfctdbf['lfid']==ctd.loc[0,'lfid'],'pvid'])].reset_index(drop=True)
-    if len(lfctdbfpv)>0:
-        try:
-            lfctdbfpv=lfctdbfpv.loc[[np.argmin([ctd.loc[0,'geometry'].distance(x) for x in lfctdbfpv['geometry']])]].reset_index(drop=True)
-            lfctdbfpv=lfctdbfpv.drop(['length','geometry'],axis=1).reset_index(drop=True)
-            ctd=ctd.drop('geometry',axis=1).reset_index(drop=True)
-            ctdswtp=pd.concat([ctd,lfctdbfpv],axis=1,ignore_index=False)
-            return ctdswtp
-        except:
-            print(str(ctd.loc[0,'lfid'])+' error!')
-    else:
-        print(str(ctd.loc[0,'lfid'])+' no pvid joined!')
+# def ctdsw(ctd):
+#     global mapplutolfctdbf
+#     global sdwkwdimp
+#     ctd=ctd[['lfid','geometry']].reset_index(drop=True)
+#     lfctdbfpv=sdwkwdimp[np.isin(sdwkwdimp['pvid'],mapplutolfctdbf.loc[mapplutolfctdbf['lfid']==ctd.loc[0,'lfid'],'pvid'])].reset_index(drop=True)
+#     if len(lfctdbfpv)>0:
+#         try:
+#             lfctdbfpv=lfctdbfpv.loc[[np.argmin([ctd.loc[0,'geometry'].distance(x) for x in lfctdbfpv['geometry']])]].reset_index(drop=True)
+#             lfctdbfpv=lfctdbfpv.drop(['length','geometry'],axis=1).reset_index(drop=True)
+#             ctd=ctd.drop('geometry',axis=1).reset_index(drop=True)
+#             ctdswtp=pd.concat([ctd,lfctdbfpv],axis=1,ignore_index=False)
+#             return ctdswtp
+#         except:
+#             print(str(ctd.loc[0,'lfid'])+' error!')
+#     else:
+#         print(str(ctd.loc[0,'lfid'])+' no pvid joined!')
     
-def ctdswcompile(ctdcp):
-    ctdswtp=ctdcp.groupby('lfid',as_index=False).apply(ctdsw)
-    return ctdswtp
+# def ctdswcompile(ctdcp):
+#     ctdswtp=ctdcp.groupby('lfid',as_index=False).apply(ctdsw)
+#     return ctdswtp
 
-def parallelize(data,func):
-    data_split=np.array_split(data,mp.cpu_count()-1)
-    pool=mp.Pool(mp.cpu_count()-1)
-    dt=pool.map(func,data_split)
-    dt=pd.concat(dt,axis=0,ignore_index=True)
-    pool.close()
-    pool.join()
-    return dt
+# def parallelize(data,func):
+#     data_split=np.array_split(data,mp.cpu_count()-1)
+#     pool=mp.Pool(mp.cpu_count()-1)
+#     dt=pool.map(func,data_split)
+#     dt=pd.concat(dt,axis=0,ignore_index=True)
+#     pool.close()
+#     pool.join()
+#     return dt
 
-if __name__=='__main__':
-    mapplutolfctdsw=parallelize(mapplutolfctd,ctdswcompile)
-    mapplutolfctdsw=mapplutolfctdsw.drop_duplicates('lfid',keep='first').reset_index(drop=True)
-    mapplutolfsw=pd.merge(mapplutolf,mapplutolfctdsw,how='left',on='lfid')
-    mapplutolfsw=mapplutolfsw[['lfid','block','bbl','cafe','pvid','impswmedia','geometry']].reset_index(drop=True)
-    mapplutolfsw=mapplutolfsw.to_crs('epsg:4326')
-    mapplutolfsw.to_file(path+'SIDEWALK CAFE/mapplutolfsw.shp')
-    print(datetime.datetime.now()-start)
-    # 120 mins
-
-
+# if __name__=='__main__':
+#     mapplutolfctdsw=parallelize(mapplutolfctd,ctdswcompile)
+#     mapplutolfctdsw=mapplutolfctdsw.drop_duplicates('lfid',keep='first').reset_index(drop=True)
+#     mapplutolfsw=pd.merge(mapplutolf,mapplutolfctdsw,how='left',on='lfid')
+#     mapplutolfsw=mapplutolfsw[['lfid','block','bbl','cafe','pvid','impswmedia','geometry']].reset_index(drop=True)
+#     mapplutolfsw=mapplutolfsw.to_crs('epsg:4326')
+#     mapplutolfsw.to_file(path+'SIDEWALK CAFE/mapplutolfsw.shp')
+#     print(datetime.datetime.now()-start)
+#     # 120 mins
 
 
-# Join sidewalk tickmarks to lot front
-start=datetime.datetime.now()
-mapplutolf=gpd.read_file(path+'SIDEWALK CAFE/mapplutolf.shp')
-mapplutolf.crs='epsg:4326'
-mapplutolf=mapplutolf.to_crs('epsg:6539')
-mapplutolfbf=mapplutolf[['lfid','geometry']].reset_index(drop=True)
-mapplutolfbf['geometry']=mapplutolfbf.buffer(10)
-sdwktmimp=gpd.read_file(path+'sidewalk/output/sdwktmimp.shp')
-sdwktmimp.crs='epsg:4326'
-sdwktmimp=sdwktmimp.to_crs('epsg:6539')
-sdwktmimp=sdwktmimp[['impsw','geometry']].reset_index(drop=True)
-mapplutolftm=gpd.sjoin(mapplutolfbf,sdwktmimp,how='inner',op='intersects')
-mapplutolftm=mapplutolftm.groupby(['lfid'],as_index=False).agg({'impsw':'median'}).reset_index(drop=True)
-mapplutolftm=mapplutolftm.drop_duplicates('lfid',keep='first').reset_index(drop=True)
-mapplutolftmsw=pd.merge(mapplutolf,mapplutolftm,how='left',on='lfid')
-mapplutolftmsw=mapplutolftmsw[['lfid','block','bbl','cafe','impsw','geometry']].reset_index(drop=True)
-mapplutolftmsw.columns=['lfid','block','bbl','cafe','impswmdn','geometry']
-mapplutolftmsw=mapplutolftmsw.to_crs('epsg:4326')
-mapplutolftmsw.to_file(path+'SIDEWALK CAFE/mapplutolftmsw.shp')
-print(datetime.datetime.now()-start)
-# 120 mins
 
-# Clean lot front sidewalk tickmarks for upload
-mapplutolftmsw=gpd.read_file(path+'SIDEWALK CAFE/mapplutolftmsw.shp')
-mapplutolftmsw.crs='epsg:4326'
-mapplutolftmswsp=mapplutolftmsw[['cafe','impswmdn','geometry']].reset_index(drop=True)
-mapplutolftmswsp['impswmdn']=[round(x,2) for x in mapplutolftmswsp['impswmdn']]
-mapplutolftmswsp.to_file(path+'SIDEWALK CAFE/mapplutolftmswsp.geojson',driver='GeoJSON')
+
+# # Join sidewalk tickmarks to lot front
+# start=datetime.datetime.now()
+# mapplutolf=gpd.read_file(path+'SIDEWALK CAFE/mapplutolf.shp')
+# mapplutolf.crs='epsg:4326'
+# mapplutolf=mapplutolf.to_crs('epsg:6539')
+# mapplutolfbf=mapplutolf[['lfid','geometry']].reset_index(drop=True)
+# mapplutolfbf['geometry']=mapplutolfbf.buffer(10)
+# sdwktmimp=gpd.read_file(path+'sidewalk/output/sdwktmimp.shp')
+# sdwktmimp.crs='epsg:4326'
+# sdwktmimp=sdwktmimp.to_crs('epsg:6539')
+# sdwktmimp=sdwktmimp[['impsw','geometry']].reset_index(drop=True)
+# mapplutolftm=gpd.sjoin(mapplutolfbf,sdwktmimp,how='inner',op='intersects')
+# mapplutolftm=mapplutolftm.groupby(['lfid'],as_index=False).agg({'impsw':'median'}).reset_index(drop=True)
+# mapplutolftm=mapplutolftm.drop_duplicates('lfid',keep='first').reset_index(drop=True)
+# mapplutolftmsw=pd.merge(mapplutolf,mapplutolftm,how='left',on='lfid')
+# mapplutolftmsw=mapplutolftmsw[['lfid','block','bbl','cafe','impsw','geometry']].reset_index(drop=True)
+# mapplutolftmsw.columns=['lfid','block','bbl','cafe','impswmdn','geometry']
+# mapplutolftmsw=mapplutolftmsw.to_crs('epsg:4326')
+# mapplutolftmsw.to_file(path+'SIDEWALK CAFE/mapplutolftmsw.shp')
+# print(datetime.datetime.now()-start)
+# # 120 mins
+
+# # Clean lot front sidewalk tickmarks for upload
+# mapplutolftmsw=gpd.read_file(path+'SIDEWALK CAFE/mapplutolftmsw.shp')
+# mapplutolftmsw.crs='epsg:4326'
+# mapplutolftmswsp=mapplutolftmsw[['cafe','impswmdn','geometry']].reset_index(drop=True)
+# mapplutolftmswsp['impswmdn']=[round(x,2) for x in mapplutolftmswsp['impswmdn']]
+# mapplutolftmswsp.to_file(path+'SIDEWALK CAFE/mapplutolftmswsp.geojson',driver='GeoJSON')
 
 
 
