@@ -910,34 +910,34 @@ path='/home/mayijun/'
 
 
 
-# Join sidewalk tickmarks to lot front
-start=datetime.datetime.now()
-mapplutolf=gpd.read_file(path+'SIDEWALK CAFE/mapplutolf.shp')
-mapplutolf.crs='epsg:4326'
-mapplutolf=mapplutolf.to_crs('epsg:6539')
-mapplutolfbf=mapplutolf[['lfid','geometry']].reset_index(drop=True)
-mapplutolfbf['geometry']=mapplutolfbf.buffer(10)
-sdwktmimp=gpd.read_file(path+'sidewalk/output/sdwktmimp.shp')
-sdwktmimp.crs='epsg:4326'
-sdwktmimp=sdwktmimp.to_crs('epsg:6539')
-sdwktmimp=sdwktmimp[['impsw','geometry']].reset_index(drop=True)
-mapplutolftm=gpd.sjoin(mapplutolfbf,sdwktmimp,how='inner',op='intersects')
-mapplutolftm=mapplutolftm.groupby(['lfid'],as_index=False).agg({'impsw':'median'}).reset_index(drop=True)
-mapplutolftm=mapplutolftm.drop_duplicates('lfid',keep='first').reset_index(drop=True)
-mapplutolftmsw=pd.merge(mapplutolf,mapplutolftm,how='left',on='lfid')
-mapplutolftmsw=mapplutolftmsw[['lfid','block','bbl','cafe','impsw','geometry']].reset_index(drop=True)
-mapplutolftmsw.columns=['lfid','block','bbl','cafe','impswmdn','geometry']
-mapplutolftmsw=mapplutolftmsw.to_crs('epsg:4326')
-mapplutolftmsw.to_file(path+'SIDEWALK CAFE/mapplutolftmsw.shp')
-print(datetime.datetime.now()-start)
-# 120 mins
+# # Join sidewalk tickmarks to lot front
+# start=datetime.datetime.now()
+# mapplutolf=gpd.read_file(path+'SIDEWALK CAFE/mapplutolf.shp')
+# mapplutolf.crs='epsg:4326'
+# mapplutolf=mapplutolf.to_crs('epsg:6539')
+# mapplutolfbf=mapplutolf[['lfid','geometry']].reset_index(drop=True)
+# mapplutolfbf['geometry']=mapplutolfbf.buffer(10)
+# sdwktmimp=gpd.read_file(path+'sidewalk/output/sdwktmimp.shp')
+# sdwktmimp.crs='epsg:4326'
+# sdwktmimp=sdwktmimp.to_crs('epsg:6539')
+# sdwktmimp=sdwktmimp[['impsw','geometry']].reset_index(drop=True)
+# mapplutolftm=gpd.sjoin(mapplutolfbf,sdwktmimp,how='inner',op='intersects')
+# mapplutolftm=mapplutolftm.groupby(['lfid'],as_index=False).agg({'impsw':'median'}).reset_index(drop=True)
+# mapplutolftm=mapplutolftm.drop_duplicates('lfid',keep='first').reset_index(drop=True)
+# mapplutolftmsw=pd.merge(mapplutolf,mapplutolftm,how='left',on='lfid')
+# mapplutolftmsw=mapplutolftmsw[['lfid','block','bbl','cafe','impsw','geometry']].reset_index(drop=True)
+# mapplutolftmsw.columns=['lfid','block','bbl','cafe','impswmdn','geometry']
+# mapplutolftmsw=mapplutolftmsw.to_crs('epsg:4326')
+# mapplutolftmsw.to_file(path+'SIDEWALK CAFE/mapplutolftmsw.shp')
+# print(datetime.datetime.now()-start)
+# # 60 mins
 
-# # Clean lot front sidewalk tickmarks for upload
-# mapplutolftmsw=gpd.read_file(path+'SIDEWALK CAFE/mapplutolftmsw.shp')
-# mapplutolftmsw.crs='epsg:4326'
-# mapplutolftmswsp=mapplutolftmsw[['cafe','impswmdn','geometry']].reset_index(drop=True)
-# mapplutolftmswsp['impswmdn']=[round(x,2) for x in mapplutolftmswsp['impswmdn']]
-# mapplutolftmswsp.to_file(path+'SIDEWALK CAFE/mapplutolftmswsp.geojson',driver='GeoJSON')
+# Clean lot front sidewalk tickmarks for upload
+mapplutolftmsw=gpd.read_file(path+'SIDEWALK CAFE/mapplutolftmsw.shp')
+mapplutolftmsw.crs='epsg:4326'
+mapplutolftmswsp=mapplutolftmsw[['cafe','impswmdn','geometry']].reset_index(drop=True)
+mapplutolftmswsp['impswmdn']=[round(x,2) for x in mapplutolftmswsp['impswmdn']]
+mapplutolftmswsp.to_file(path+'SIDEWALK CAFE/mapplutolftmswsp.geojson',driver='GeoJSON')
 
 
 
