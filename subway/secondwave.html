@@ -301,7 +301,7 @@
                 'layervisibility': 'visible', // visibility of the layer
                 'layercolname': 'PctCat', // category column name
                 'layercat': ['8%~20%', '21%~40%', '>40%'], // categories
-                'layercolor': ['rgba(127,39,4,1)','rgba(253,146,67,1)','rgba(255,245,235,1)'], // color for each category; use rgba
+                'layercolor': ['rgba(153,52,4,1)','rgba(223,103,17,1)','rgba(254,171,70,1)'], // color for each category; use rgba
                 'layeropacity': 1, // circle opacity
                 'layerradius': 2.5, // circle radius; change size based on zoom level
             };
@@ -356,7 +356,7 @@
             map.on('click', 'telam', function (e) {
                 var coordinates = e.lngLat; // get pointer coordinates
                 var description = "<b>NTA Code: </b><span>" + e.features[0].properties.ntacode + "</span><br>"; // description in the popup
-                description += "<b>Non-Telework Capability by Place of Residence​: </b><span>" + (Number(e.features[0].properties.nontelework) * 100).toFixed(2) + "%</span><br>";
+                description += "<b>Telework Capability by Place of Residence​: </b><span>" + (Number(e.features[0].properties.telework) * 100).toFixed(2) + "%</span><br>";
                 popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
             });
             // Add hover events
@@ -552,7 +552,7 @@
                 'layervisibility': 'visible', // visibility of the layer
                 'layercolname': 'PctCat', // category column name
                 'layercat': ['8%~20%', '21%~40%', '>40%'], // categories
-                'layercolor': ['rgba(127,39,4,1)','rgba(253,146,67,1)','rgba(255,245,235,1)'], // color for each category; use rgba
+                'layercolor': ['rgba(153,52,4,1)','rgba(223,103,17,1)','rgba(254,171,70,1)'], // color for each category; use rgba
                 'layeropacity': 1, // circle opacity
                 'layerradius': 2.5, // circle radius; change size based on zoom level
             };
@@ -608,7 +608,7 @@
             map2.on('click', 'telpm', function (e) {
                 var coordinates = e.lngLat; // get pointer coordinates
                 var description = "<b>NTA Code: </b><span>" + e.features[0].properties.ntacode + "</span><br>"; // description in the popup
-                description += "<b>Non-Telework Capability by Workplace </b><span>" + (Number(e.features[0].properties.nontelework) * 100).toFixed(2) + "%</span><br>";
+                description += "<b>Telework Capability by Workplace </b><span>" + (Number(e.features[0].properties.telework) * 100).toFixed(2) + "%</span><br>";
                 popup.setLngLat(coordinates).setHTML(description).addTo(map2); //add popup
             });
             // Add hover events
