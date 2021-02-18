@@ -241,15 +241,15 @@
             // Add polygons
             // Set layer contents
             var layerContent = {
-                'sourceid': 'nontelam', // source id
+                'sourceid': 'telam', // source id
                 'sourcetype': 'geojson', // source type
-                'sourcedata': 'nonteleworkam.geojson', // data source
-                'layerid': 'nontelam', // layer id
+                'sourcedata': 'teleworkam.geojson', // data source
+                'layerid': 'telam', // layer id
                 'layertype': 'fill', // symbology type
-                'layername1': 'Non-Telework Capability by Place of Residence (Left) and Workplace (Right)​', // layer name for the legend
+                'layername1': 'Telework Capability by Place of Residence (Left) and Workplace (Right)​', // layer name for the legend
                 'layervisibility': 'visible', // visibility of the layer
                 'layercolname': 'cat', // category column name
-                'layercat': ['42%~64%', '65%~69%','70%~85%'], // categories
+                'layercat': ['15%~25%', '26%~30%','31%~58%'], // categories
                 'layercolor': ['rgba(209,227,243,1)', 'rgba(154,200,225,1)', 'rgba(82,157,204,1)'], // color for each category; use rgba
                 'layeropacity': 1, // fill opacity
             };
@@ -301,7 +301,7 @@
                 'layervisibility': 'visible', // visibility of the layer
                 'layercolname': 'PctCat', // category column name
                 'layercat': ['8%~20%', '21%~40%', '>40%'], // categories
-                'layercolor': ['rgba(255,245,235,1)', 'rgba(253,146,67,1)', 'rgba(127,39,4,1)'], // color for each category; use rgba
+                'layercolor': ['rgba(127,39,4,1)','rgba(253,146,67,1)','rgba(255,245,235,1)'], // color for each category; use rgba
                 'layeropacity': 1, // circle opacity
                 'layerradius': 3, // circle radius; change size based on zoom level
             };
@@ -351,19 +351,19 @@
                 maxWidth: 'none', // max width of the popoup; 'none' to fit to the content                
             });
 
-            // Add nontelam popup
+            // Add telam popup
             // Add click event
-            map.on('click', 'nontelam', function (e) {
+            map.on('click', 'telam', function (e) {
                 var coordinates = e.lngLat; // get pointer coordinates
                 var description = "<b>NTA Code: </b><span>" + e.features[0].properties.ntacode + "</span><br>"; // description in the popup
                 description += "<b>Non-Telework Capability by Place of Residence​: </b><span>" + (Number(e.features[0].properties.nontelework) * 100).toFixed(2) + "%</span><br>";
                 popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
             });
             // Add hover events
-            map.on('mouseenter', 'nontelam', function () {
+            map.on('mouseenter', 'telam', function () {
                 map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
             });
-            map.on('mouseleave', 'nontelam', function () {
+            map.on('mouseleave', 'telam', function () {
                 map.getCanvas().style.cursor = '';
             });
 
@@ -430,7 +430,7 @@
 
 
             // Add layer selector and legend
-            var layerOrder = ['nontelam']; // set layer order in the legend
+            var layerOrder = ['telam']; // set layer order in the legend
             var layerContentListOrder = []; // create ordered layer content list
             for (var i = 0; i < layerOrder.length; i++) {
                 layerContentListOrder.push(layerContentList.filter(e => e.layerid == layerOrder[i])[0]);
@@ -492,15 +492,15 @@
             // Add polygons
             // Set layer contents
             var layerContent = {
-                'sourceid': 'nontelpm', // source id
+                'sourceid': 'telpm', // source id
                 'sourcetype': 'geojson', // source type
-                'sourcedata': 'nonteleworkpm.geojson', // data source
-                'layerid': 'nontelpm', // layer id
+                'sourcedata': 'teleworkpm.geojson', // data source
+                'layerid': 'telpm', // layer id
                 'layertype': 'fill', // symbology type
-                'layername1': 'Non-Telework Capability by Place of Residence (Left) and Workplace (Right)​', // layer name for the legend
+                'layername1': 'Telework Capability by Place of Residence (Left) and Workplace (Right)​', // layer name for the legend
                 'layervisibility': 'visible', // visibility of the layer
                 'layercolname': 'cat', // category column name
-                'layercat': ['42%~64%', '65%~69%','70%~85%'], // categories
+                'layercat': ['15%~25%', '26%~30%','31%~58%'], // categories
                 'layercolor': ['rgba(209,227,243,1)', 'rgba(154,200,225,1)', 'rgba(82,157,204,1)'], // color for each category; use rgba
                 'layeropacity': 1, // fill opacity
             };
@@ -552,7 +552,7 @@
                 'layervisibility': 'visible', // visibility of the layer
                 'layercolname': 'PctCat', // category column name
                 'layercat': ['8%~20%', '21%~40%', '>40%'], // categories
-                'layercolor': ['rgba(255,245,235,1)', 'rgba(253,146,67,1)', 'rgba(127,39,4,1)'], // color for each category; use rgba
+                'layercolor': ['rgba(127,39,4,1)','rgba(253,146,67,1)','rgba(255,245,235,1)'], // color for each category; use rgba
                 'layeropacity': 1, // circle opacity
                 'layerradius': 3, // circle radius; change size based on zoom level
             };
@@ -605,17 +605,17 @@
 
             // Add nontelam popup
             // Add click event
-            map2.on('click', 'nontelpm', function (e) {
+            map2.on('click', 'telpm', function (e) {
                 var coordinates = e.lngLat; // get pointer coordinates
                 var description = "<b>NTA Code: </b><span>" + e.features[0].properties.ntacode + "</span><br>"; // description in the popup
                 description += "<b>Non-Telework Capability by Workplace </b><span>" + (Number(e.features[0].properties.nontelework) * 100).toFixed(2) + "%</span><br>";
                 popup.setLngLat(coordinates).setHTML(description).addTo(map2); //add popup
             });
             // Add hover events
-            map2.on('mouseenter', 'nontelpm', function () {
+            map2.on('mouseenter', 'telpm', function () {
                 map2.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
             });
-            map2.on('mouseleave', 'nontelpm', function () {
+            map2.on('mouseleave', 'telpm', function () {
                 map2.getCanvas().style.cursor = '';
             });
 

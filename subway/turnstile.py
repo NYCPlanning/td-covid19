@@ -1584,24 +1584,27 @@ cplxamcp.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/cplxpmcp.g
 
 # Telework capability
 # tel=gpd.read_file(path+'OUTPUT/telework0.geojson')
-# tel['ntacode']=tel['NTACode'].copy()
-# tel['telework']=pd.to_numeric(tel['NYC Employed by Workplace and Residence_Industry_Race-Ethn_TELE Sheet1_Telework'])
-# tel['cat']=np.where(tel['telework']<=0.3,'28%~30%',
-#             np.where(tel['telework']<=0.35,'31%~35%',
-#                         '36%~50%'))
-# tel=tel[['ntacode','telework','cat','geometry']].reset_index(drop=True)
+tel=gpd.read_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/teleworkam.geojson')
+tel['ntacode']=tel['NTACode'].copy()
+tel['telework']=pd.to_numeric(tel['NYC Employed by Workplace and Residence_Industry_Race-Ethn_TELE Sheet1_Telework'])
+tel['telework'].describe(percentiles=np.arange(0.2,1,0.2))
+tel['cat']=np.where(tel['telework']<=0.25,'15%~25%',
+            np.where(tel['telework']<=0.3,'26%~30%',
+                        '31%~58%'))
+tel=tel[['ntacode','telework','cat','geometry']].reset_index(drop=True)
 # tel.to_file(path+'OUTPUT/teleworkam.geojson',driver='GeoJSON')
-
+tel.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/teleworkam.geojson',driver='GeoJSON')
 
 # tel=gpd.read_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/teleworkpm0.geojson')
-# tel=tel[[x not in ['MN99','BX98','BX99','BK99','QN98','QN99','SI99'] for x in tel['ntacode']]]
-# tel['telework']=pd.to_numeric(tel['teleworkable_rate'])
-# tel['telework'].describe(percentiles=np.arange(0.2,1,0.2))
-# tel['cat']=np.where(tel['telework']<=0.2,'15%~20%',
-#             np.where(tel['telework']<=0.3,'21%~30%',
-#                         '31%~58%'))
-# tel=tel[['ntacode','telework','cat','geometry']].reset_index(drop=True)
-# tel.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/teleworkpm.geojson',driver='GeoJSON')
+tel=gpd.read_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/teleworkpm.geojson')
+tel=tel[[x not in ['MN99','BX98','BX99','BK99','QN98','QN99','SI99'] for x in tel['ntacode']]]
+tel['telework']=pd.to_numeric(tel['teleworkable_rate'])
+tel['telework'].describe(percentiles=np.arange(0.2,1,0.2))
+tel['cat']=np.where(tel['telework']<=0.25,'15%~25%',
+            np.where(tel['telework']<=0.3,'26%~30%',
+                        '31%~58%'))
+tel=tel[['ntacode','telework','cat','geometry']].reset_index(drop=True)
+tel.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/teleworkpm.geojson',driver='GeoJSON')
 
 # Telework Subway Commuters
 telsub=pd.read_csv(path+'notel subway.csv')
