@@ -698,7 +698,7 @@ path='/home/mayijun/'
 
 
 
-# # Join DCA License to  Lot Front Sidewalk Width
+# # Join DCA License to Lot Front Sidewalk Width
 # dfcafeznelwd=gpd.read_file(path+'SIDEWALK CAFE/dca_cafe_zn_el_wd.shp')
 # dfcafeznelwd.crs='epsg:4326'
 # dfcafeznelwdbf=dfcafeznelwd.copy()
