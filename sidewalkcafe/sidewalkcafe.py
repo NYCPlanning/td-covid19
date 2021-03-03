@@ -1035,6 +1035,76 @@ mapplutolftmswsp.to_file(path+'SIDEWALK CAFE/mapplutolftmswsp.geojson',driver='G
 
 
 
+# Geocode corridors
+g=Geosupport()
+df=pd.read_excel(path+'SIDEWALK CAFE/CORRIDOR/CORRIDOR.xlsx',
+                 sheet_name=0,
+                 dtype=str)
+df=df.fillna('')
+
+dfgeocode=[]
+for i in df.index[0:120]:
+    borocode=str(df.loc[i,'BORO'])
+    onstreet=str(df.loc[i,'ON'])
+    fromstreet=str(df.loc[i,'FROM'])
+    tostreet=str(df.loc[i,'TO'])
+    stretch=g['3S']({'borough_code':borocode,
+                     'on':onstreet,
+                     'from':fromstreet,
+                     'to':tostreet,
+                     'compass_direction':'w',
+                     'compass_direction_1':'w',
+                     'compass_direction_2':'s'})
+    stretch=pd.DataFrame(stretch['LIST OF INTERSECTIONS'])
+    stretch['segfromnode']=pd.to_numeric(stretch['Node Number'])
+    stretch['segtonode']=pd.to_numeric(np.roll(stretch['Node Number'],-1))
+    stretch=stretch.loc[0:len(stretch)-2,['segfromnode','segtonode']].reset_index(drop=True)
+    segment=pd.concat([df.loc[[i]]]*len(stretch),axis=0,ignore_index=True)
+    segment=pd.concat([segment,stretch],axis=1,ignore_index=False)
+    dfgeocode+=[segment]
+dfgeocode=pd.concat(dfgeocode,axis=0,ignore_index=True)
+dfgeocode=dfgeocode.drop_duplicates(keep='first').reset_index(drop=True)
+dfgeocoderev=dfgeocode.copy()
+dfgeocoderev['temp']=dfgeocoderev['segfromnode'].copy()
+dfgeocoderev['segfromnode']=dfgeocoderev['segtonode'].copy()
+dfgeocoderev['segtonode']=dfgeocoderev['temp'].copy()
+dfgeocoderev=dfgeocoderev.drop('temp',axis=1).reset_index(drop=True)
+dfgeocode=pd.concat([dfgeocode,dfgeocoderev],axis=0,ignore_index=True)
+
+
+
+lion=gpd.read_file(path+'STREET CLOSURE/sidewalk/input/lion/lion.shp')
+lion.crs=4326
+lion['SEGMENTID']=pd.to_numeric(lion['SegmentID'],errors='coerce')
+lion['segfromnode']=pd.to_numeric(lion['NodeIDFrom'],errors='coerce')
+lion['segtonode']=pd.to_numeric(lion['NodeIDTo'],errors='coerce')
+lion=lion[['SEGMENTID','segfromnode','segtonode','geometry']].reset_index(drop=True)
+lion=lion.drop_duplicates(['SEGMENTID','segfromnode','segtonode'],keep='first').reset_index(drop=True)
+
+
+
+crdgeocode=pd.merge(lion,dfgeocode,how='inner',on=['segfromnode','segtonode'])
+crdgeocode=crdgeocode.sort_values('SEGMENTID').reset_index(drop=True)
+crdgeocode=crdgeocode.drop_duplicates(['CORRIDOR','segfromnode','segtonode'],keep='first').reset_index(drop=True)
+crdgeocode=crdgeocode[['CORRIDOR','ON','FROM','TO','FT','BORO','FLAG','geometry']].reset_index(drop=True)
+crdgeocode.to_file(path+'SIDEWALK CAFE/CORRIDOR/crdgeocode.shp')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1091,6 +1161,26 @@ mapplutolftmswsp.to_file(path+'SIDEWALK CAFE/mapplutolftmswsp.geojson',driver='G
 
 # mapplutocafe=gpd.sjoin(mapplutocafe,dfcafeznelwd,how='inner',op='intersects')
 # mapplutocafe.to_file(path+'SIDEWALK CAFE/mappluto_cafe.shp')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
