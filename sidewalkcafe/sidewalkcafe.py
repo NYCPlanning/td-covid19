@@ -1071,8 +1071,6 @@ dfgeocoderev['segtonode']=dfgeocoderev['temp'].copy()
 dfgeocoderev=dfgeocoderev.drop('temp',axis=1).reset_index(drop=True)
 dfgeocode=pd.concat([dfgeocode,dfgeocoderev],axis=0,ignore_index=True)
 
-
-
 lion=gpd.read_file(path+'STREET CLOSURE/sidewalk/input/lion/lion.shp')
 lion.crs=4326
 lion['SEGMENTID']=pd.to_numeric(lion['SegmentID'],errors='coerce')
@@ -1080,8 +1078,6 @@ lion['segfromnode']=pd.to_numeric(lion['NodeIDFrom'],errors='coerce')
 lion['segtonode']=pd.to_numeric(lion['NodeIDTo'],errors='coerce')
 lion=lion[['SEGMENTID','segfromnode','segtonode','geometry']].reset_index(drop=True)
 lion=lion.drop_duplicates(['SEGMENTID','segfromnode','segtonode'],keep='first').reset_index(drop=True)
-
-
 
 crdgeocode=pd.merge(lion,dfgeocode,how='inner',on=['segfromnode','segtonode'])
 crdgeocode=crdgeocode.sort_values('SEGMENTID').reset_index(drop=True)
