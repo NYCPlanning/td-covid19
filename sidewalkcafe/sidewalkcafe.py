@@ -19,7 +19,8 @@ path='/home/mayijun/'
 
 # # Open Restaurant
 # g = Geosupport()
-# df=pd.read_csv(path+'SIDEWALK CAFE/Open_Restaurant_Applications_20201014.csv',dtype=str)
+# # df=pd.read_csv(path+'SIDEWALK CAFE/Open_Restaurant_Applications_20201014.csv',dtype=str)
+# df=pd.read_csv(path+'SIDEWALK CAFE/Open_Restaurant_Applications_20210316.csv',dtype=str)
 # df['TIME']=[datetime.datetime.strptime(x,'%m/%d/%Y %H:%M:%S %p') for x in df['Time of Submission']]
 # df=df.sort_values('TIME',ascending=True).reset_index(drop=True)
 # df['TIME']=[datetime.datetime.strftime(x,'%m/%d/%Y %H:%M:%S %p') for x in df['TIME']]
@@ -53,14 +54,17 @@ path='/home/mayijun/'
 # df['LONG']=np.nan
 # df['X']=np.nan
 # df['Y']=np.nan
+# df['XAP']=np.nan
+# df['YAP']=np.nan
 # df['BKFACE']=np.nan
 # df=df[['ID','TIME','TYPE','NAME','LEGAL','DBA','ADDRESS','BLDGNUM','STNAME','BORO','ZIP','PMTNUM',
-#        'SDWKLEN','SDWKWDTH','SDWKAREA','RDWYLEN','RDWYWDTH','RDWYAREA','APPSDWK','APPRDWY',
-#        'ALCOHOL','SLANUM','SLATYPE','LANDMARK','TERMLDMK','TERMHEALTH','BBL','LAT','LONG','X','Y','BKFACE']].reset_index(drop=True)
+#         'SDWKLEN','SDWKWDTH','SDWKAREA','RDWYLEN','RDWYWDTH','RDWYAREA','APPSDWK','APPRDWY',
+#         'ALCOHOL','SLANUM','SLATYPE','LANDMARK','TERMLDMK','TERMHEALTH','BBL','LAT','LONG','X','Y',
+#         'XAP','YAP','BKFACE']].reset_index(drop=True)
 # df=df.drop_duplicates(['TYPE','NAME','LEGAL','DBA','ADDRESS','BLDGNUM','STNAME','BORO','ZIP','PMTNUM',
-#                        'SDWKLEN','SDWKWDTH','SDWKAREA','RDWYLEN','RDWYWDTH','RDWYAREA','APPSDWK','APPRDWY',
-#                        'ALCOHOL','SLANUM','SLATYPE','LANDMARK','TERMLDMK','TERMHEALTH','BBL','LAT','LONG',
-#                        'X','Y','BKFACE'],keep='first').reset_index(drop=True)
+#                         'SDWKLEN','SDWKWDTH','SDWKAREA','RDWYLEN','RDWYWDTH','RDWYAREA','APPSDWK','APPRDWY',
+#                         'ALCOHOL','SLANUM','SLATYPE','LANDMARK','TERMLDMK','TERMHEALTH','BBL','LAT','LONG',
+#                         'X','Y','XAP','YAP','BKFACE'],keep='first').reset_index(drop=True)
 # for i in df.index:
 #     if pd.isna(df.loc[i,'BBL']):
 #         try:
@@ -76,11 +80,17 @@ path='/home/mayijun/'
 #                 df.loc[i,'Y']=pd.to_numeric(addr['Spatial X-Y Coordinates of Address'][7:14])
 #                 df.loc[i,'BKFACE']=pd.to_numeric(addr['Blockface ID'])
 #             else:
-#                 print(str(df.loc[i,'ID'])+' not geocoded with zipcode!')
+#                 print(str(df.loc[i,'ID'])+' not geocoded with 1B zipcode!')
+#             addr=g['AP']({'house_number':housenumber,'street_name':streetname,'zip_code':zipcode})
+#             if addr['BOROUGH BLOCK LOT (BBL)']['BOROUGH BLOCK LOT (BBL)']!='':
+#                 df.loc[i,'XAP']=pd.to_numeric(addr['X-Y Coordinates of Address Point'][0:7])
+#                 df.loc[i,'YAP']=pd.to_numeric(addr['X-Y Coordinates of Address Point'][7:14])
+#             else:
+#                 print(str(df.loc[i,'ID'])+' not geocoded with AP zipcode!')
 #         except:
 #             print(str(df.loc[i,'ID'])+' not geocoded with zipcode!')
 # len(df[pd.notna(df['BBL'])])
-# # 9888/11183
+# # 10534/11838
 # for i in df.index:
 #     if pd.isna(df.loc[i,'BBL']):
 #         try:
@@ -98,11 +108,17 @@ path='/home/mayijun/'
 #                 df.loc[i,'Y']=pd.to_numeric(addr['Spatial X-Y Coordinates of Address'][7:14])
 #                 df.loc[i,'BKFACE']=pd.to_numeric(addr['Blockface ID'])
 #             else:
-#                 print(str(df.loc[i,'ID'])+' not geocoded with borough!')
+#                 print(str(df.loc[i,'ID'])+' not geocoded with 1B borough!')
+#             addr=g['AP']({'house_number':housenumber,'street_name':streetname,'borough_code':boroughcode})
+#             if addr['BOROUGH BLOCK LOT (BBL)']['BOROUGH BLOCK LOT (BBL)']!='':
+#                 df.loc[i,'XAP']=pd.to_numeric(addr['X-Y Coordinates of Address Point'][0:7])
+#                 df.loc[i,'YAP']=pd.to_numeric(addr['X-Y Coordinates of Address Point'][7:14])
+#             else:
+#                 print(str(df.loc[i,'ID'])+' not geocoded with AP borough!')
 #         except:
 #             print(str(df.loc[i,'ID'])+' not geocoded with borough!')
 # len(df[pd.notna(df['BBL'])])
-# # 9937/11183
+# # 10584/11838
 # for i in df.index:
 #     if pd.isna(df.loc[i,'BBL']):
 #         try:
@@ -118,11 +134,17 @@ path='/home/mayijun/'
 #                 df.loc[i,'Y']=pd.to_numeric(addr['Spatial X-Y Coordinates of Address'][7:14])
 #                 df.loc[i,'BKFACE']=pd.to_numeric(addr['Blockface ID'])
 #             else:
-#                 print(str(df.loc[i,'ID'])+' not geocoded with zipcode!')
+#                print(str(df.loc[i,'ID'])+' not geocoded with 1B zipcode!')
+#             addr=g['AP']({'house_number':housenumber,'street_name':streetname,'zip_code':zipcode})
+#             if addr['BOROUGH BLOCK LOT (BBL)']['BOROUGH BLOCK LOT (BBL)']!='':
+#                 df.loc[i,'XAP']=pd.to_numeric(addr['X-Y Coordinates of Address Point'][0:7])
+#                 df.loc[i,'YAP']=pd.to_numeric(addr['X-Y Coordinates of Address Point'][7:14])
+#             else:
+#                 print(str(df.loc[i,'ID'])+' not geocoded with AP zipcode!')
 #         except:
 #             print(str(df.loc[i,'ID'])+' not geocoded with zipcode!')
 # len(df[pd.notna(df['BBL'])])
-# # 9993/11183
+# # 10640/11838
 # for i in df.index:
 #     if pd.isna(df.loc[i,'BBL']):
 #         try:
@@ -140,13 +162,19 @@ path='/home/mayijun/'
 #                 df.loc[i,'Y']=pd.to_numeric(addr['Spatial X-Y Coordinates of Address'][7:14])
 #                 df.loc[i,'BKFACE']=pd.to_numeric(addr['Blockface ID'])
 #             else:
-#                 print(str(df.loc[i,'ID'])+' not geocoded with borough!')
+#                 print(str(df.loc[i,'ID'])+' not geocoded with 1B borough!')
+#             addr=g['AP']({'house_number':housenumber,'street_name':streetname,'borough_code':boroughcode})
+#             if addr['BOROUGH BLOCK LOT (BBL)']['BOROUGH BLOCK LOT (BBL)']!='':
+#                 df.loc[i,'XAP']=pd.to_numeric(addr['X-Y Coordinates of Address Point'][0:7])
+#                 df.loc[i,'YAP']=pd.to_numeric(addr['X-Y Coordinates of Address Point'][7:14])
+#             else:
+#                 print(str(df.loc[i,'ID'])+' not geocoded with AP borough!')
 #         except:
 #             print(str(df.loc[i,'ID'])+' not geocoded with borough!')
 # len(df[pd.notna(df['BBL'])])
-# # 9995/11183
+# # 10642/11838
 # df=df[(pd.notna(df['BBL']))&(df['BBL']!=0)&(pd.notna(df['LAT']))&(pd.notna(df['LONG']))&(pd.notna(df['BKFACE']))].reset_index(drop=True)
-# # 9959/11183
+# # 10603/11838
 # df=gpd.GeoDataFrame(df,geometry=[shapely.geometry.Point(x,y) for x,y in zip(df['LONG'],df['LAT'])],crs='epsg:4326')
 # df.to_file(path+'SIDEWALK CAFE/or.shp')
 # df=gpd.GeoDataFrame(df,geometry=[shapely.geometry.Point(x,y) for x,y in zip(df['X'],df['Y'])],crs='epsg:6539')
@@ -173,7 +201,7 @@ path='/home/mayijun/'
 #     except:
 #         print(str(i)+' error')
 # df=df[pd.notna(df['XADJ'])].reset_index(drop=True)
-# # 9950/11183
+# # 10594/11838
 # df=gpd.GeoDataFrame(df,geometry=[shapely.geometry.Point(x,y) for x,y in zip(df['XADJ'],df['YADJ'])],crs='epsg:6539')
 # df=df.to_crs('epsg:4326')
 # df.to_file(path+'SIDEWALK CAFE/or_xyadj.shp')
@@ -205,7 +233,7 @@ path='/home/mayijun/'
 # dfcafe.crs='epsg:4326'
 # dfcafezn=pd.merge(dfcafe,mappluto,how='left',on='BBL')
 # dfcafezn=dfcafezn.loc[pd.notna(dfcafezn['ZoneDist1']),['ID','ZoneDist1','ZoneDist2','ZoneDist3','ZoneDist4',
-#                                                        'Overlay1','Overlay2','SPDist1','SPDist2','SPDist3']].reset_index(drop=True)
+#                                                         'Overlay1','Overlay2','SPDist1','SPDist2','SPDist3']].reset_index(drop=True)
 # dfcafezn['ZD']=''
 # dfcafezn['RM']=np.nan
 # dfcafezn['OL']=''
@@ -259,13 +287,13 @@ path='/home/mayijun/'
 # dfcafeznelwd=dfcafeznelwd[np.isin(dfcafeznelwd['TYPE'],['BOTH','SIDEWALK'])].reset_index(drop=True)
 # dfcafeznelwd['SWCAT']=np.where(dfcafeznelwd['IMPSWMDN']>14,'>14 ft',np.where(dfcafeznelwd['IMPSWMDN']>=11,'11 ft ~ 14 ft','<11 ft'))
 # dfcafeznelwd['CP']=np.where(dfcafeznelwd['IMPSWMDN']>=15,'>=12 ft',
-#                    np.where(dfcafeznelwd['IMPSWMDN']>=14,'11 ft ~ 12 ft',
-#                    np.where(dfcafeznelwd['IMPSWMDN']>=13,'10 ft ~ 11 ft',
-#                    np.where(dfcafeznelwd['IMPSWMDN']>=12,'9 ft ~ 10 ft',
-#                    np.where(dfcafeznelwd['IMPSWMDN']>=11,'8 ft ~ 9 ft',
-#                    np.where(dfcafeznelwd['IMPSWMDN']>=10,'7 ft ~ 8 ft',
-#                    np.where(dfcafeznelwd['IMPSWMDN']>=9,'6 ft ~ 7 ft',
-#                    np.where(dfcafeznelwd['IMPSWMDN']>=8,'5 ft ~ 6 ft',
+#                     np.where(dfcafeznelwd['IMPSWMDN']>=14,'11 ft ~ 12 ft',
+#                     np.where(dfcafeznelwd['IMPSWMDN']>=13,'10 ft ~ 11 ft',
+#                     np.where(dfcafeznelwd['IMPSWMDN']>=12,'9 ft ~ 10 ft',
+#                     np.where(dfcafeznelwd['IMPSWMDN']>=11,'8 ft ~ 9 ft',
+#                     np.where(dfcafeznelwd['IMPSWMDN']>=10,'7 ft ~ 8 ft',
+#                     np.where(dfcafeznelwd['IMPSWMDN']>=9,'6 ft ~ 7 ft',
+#                     np.where(dfcafeznelwd['IMPSWMDN']>=8,'5 ft ~ 6 ft',
 #                             '<5 ft'))))))))
 # dfcafeznelwd.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/sidewalkcafe/or_cafe_zn_el_wd.geojson',driver='GeoJSON')
 
@@ -290,23 +318,23 @@ path='/home/mayijun/'
 # dfcafeznelwdlf=dfcafeznelwdlf[np.isin(dfcafeznelwdlf['TYPE'],['BOTH','SIDEWALK'])].reset_index(drop=True)
 # dfcafeznelwdlf['SWCAT']=np.where(dfcafeznelwdlf['IMPSWMDN']>14,'>14 ft',np.where(dfcafeznelwdlf['IMPSWMDN']>=11,'11 ft ~ 14 ft','<11 ft'))
 # dfcafeznelwdlf['CP']=np.where(dfcafeznelwdlf['IMPSWMDN']>=15,'>=12 ft',
-#                      np.where(dfcafeznelwdlf['IMPSWMDN']>=14,'11 ft ~ 12 ft',
-#                      np.where(dfcafeznelwdlf['IMPSWMDN']>=13,'10 ft ~ 11 ft',
-#                      np.where(dfcafeznelwdlf['IMPSWMDN']>=12,'9 ft ~ 10 ft',
-#                      np.where(dfcafeznelwdlf['IMPSWMDN']>=11,'8 ft ~ 9 ft',
-#                      np.where(dfcafeznelwdlf['IMPSWMDN']>=10,'7 ft ~ 8 ft',
-#                      np.where(dfcafeznelwdlf['IMPSWMDN']>=9,'6 ft ~ 7 ft',
-#                      np.where(dfcafeznelwdlf['IMPSWMDN']>=8,'5 ft ~ 6 ft',
+#                       np.where(dfcafeznelwdlf['IMPSWMDN']>=14,'11 ft ~ 12 ft',
+#                       np.where(dfcafeznelwdlf['IMPSWMDN']>=13,'10 ft ~ 11 ft',
+#                       np.where(dfcafeznelwdlf['IMPSWMDN']>=12,'9 ft ~ 10 ft',
+#                       np.where(dfcafeznelwdlf['IMPSWMDN']>=11,'8 ft ~ 9 ft',
+#                       np.where(dfcafeznelwdlf['IMPSWMDN']>=10,'7 ft ~ 8 ft',
+#                       np.where(dfcafeznelwdlf['IMPSWMDN']>=9,'6 ft ~ 7 ft',
+#                       np.where(dfcafeznelwdlf['IMPSWMDN']>=8,'5 ft ~ 6 ft',
 #                               '<5 ft'))))))))
 # dfcafeznelwdlf['LFSWCAT']=np.where(dfcafeznelwdlf['LFIMPSWMDN']>14,'>14 ft',np.where(dfcafeznelwdlf['LFIMPSWMDN']>=11,'11 ft ~ 14 ft','<11 ft'))
 # dfcafeznelwdlf['LFCP']=np.where(dfcafeznelwdlf['LFIMPSWMDN']>=15,'>=12 ft',
-#                        np.where(dfcafeznelwdlf['LFIMPSWMDN']>=14,'11 ft ~ 12 ft',
-#                        np.where(dfcafeznelwdlf['LFIMPSWMDN']>=13,'10 ft ~ 11 ft',
-#                        np.where(dfcafeznelwdlf['LFIMPSWMDN']>=12,'9 ft ~ 10 ft',
-#                        np.where(dfcafeznelwdlf['LFIMPSWMDN']>=11,'8 ft ~ 9 ft',
-#                        np.where(dfcafeznelwdlf['LFIMPSWMDN']>=10,'7 ft ~ 8 ft',
-#                        np.where(dfcafeznelwdlf['LFIMPSWMDN']>=9,'6 ft ~ 7 ft',
-#                        np.where(dfcafeznelwdlf['LFIMPSWMDN']>=8,'5 ft ~ 6 ft',
+#                         np.where(dfcafeznelwdlf['LFIMPSWMDN']>=14,'11 ft ~ 12 ft',
+#                         np.where(dfcafeznelwdlf['LFIMPSWMDN']>=13,'10 ft ~ 11 ft',
+#                         np.where(dfcafeznelwdlf['LFIMPSWMDN']>=12,'9 ft ~ 10 ft',
+#                         np.where(dfcafeznelwdlf['LFIMPSWMDN']>=11,'8 ft ~ 9 ft',
+#                         np.where(dfcafeznelwdlf['LFIMPSWMDN']>=10,'7 ft ~ 8 ft',
+#                         np.where(dfcafeznelwdlf['LFIMPSWMDN']>=9,'6 ft ~ 7 ft',
+#                         np.where(dfcafeznelwdlf['LFIMPSWMDN']>=8,'5 ft ~ 6 ft',
 #                                 '<5 ft'))))))))
 # dfcafeznelwdlf.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/sidewalkcafe/or_cafe_zn_el_wd_lf.geojson',driver='GeoJSON')
 
@@ -518,16 +546,19 @@ path='/home/mayijun/'
 # df['STNAME']=[str(x).strip().upper() for x in df['Street 1']]
 # df['CITY']=[str(x).strip().upper() for x in df['City']]
 # df['BORO']=np.where(df['CITY']=='NEW YORK','MANHATTAN',
-#            np.where(df['CITY']=='BRONX','BRONX',
-#            np.where(df['CITY']=='BROOKLYN','BROOKLYN','QUEENS')))
+#             np.where(df['CITY']=='BRONX','BRONX',
+#             np.where(df['CITY']=='BROOKLYN','BROOKLYN','QUEENS')))
 # df['ZIP']=[str(x).strip().upper() for x in df['ZIP']]
 # df['BBL']=np.nan
 # df['LAT']=np.nan
 # df['LONG']=np.nan
 # df['X']=np.nan
 # df['Y']=np.nan
+# df['XAP']=np.nan
+# df['YAP']=np.nan
 # df['BKFACE']=np.nan
-# df=df[['ID','TYPE','STATUS','EXPDATE','NAME','DBA','BLDGNUM','STNAME','CITY','BORO','ZIP','BBL','LAT','LONG','X','Y','BKFACE']].reset_index(drop=True)
+# df=df[['ID','TYPE','STATUS','EXPDATE','NAME','DBA','BLDGNUM','STNAME','CITY','BORO','ZIP','BBL',
+#        'LAT','LONG','X','Y','XAP','YAP','BKFACE']].reset_index(drop=True)
 # for i in df.index:
 #     if pd.isna(df.loc[i,'BBL']):
 #         try:
@@ -543,7 +574,13 @@ path='/home/mayijun/'
 #                 df.loc[i,'Y']=pd.to_numeric(addr['Spatial X-Y Coordinates of Address'][7:14])
 #                 df.loc[i,'BKFACE']=pd.to_numeric(addr['Blockface ID'])
 #             else:
-#                 print(str(df.loc[i,'ID'])+' not geocoded with zipcode!')
+#                 print(str(df.loc[i,'ID'])+' not geocoded with 1B zipcode!')
+#             addr=g['AP']({'house_number':housenumber,'street_name':streetname,'zip_code':zipcode})
+#             if addr['BOROUGH BLOCK LOT (BBL)']['BOROUGH BLOCK LOT (BBL)']!='':
+#                 df.loc[i,'XAP']=pd.to_numeric(addr['X-Y Coordinates of Address Point'][0:7])
+#                 df.loc[i,'YAP']=pd.to_numeric(addr['X-Y Coordinates of Address Point'][7:14])
+#             else:
+#                 print(str(df.loc[i,'ID'])+' not geocoded with AP zipcode!')
 #         except:
 #             print(str(df.loc[i,'ID'])+' not geocoded with zipcode!')
 # len(df[pd.notna(df['BBL'])])
@@ -565,7 +602,13 @@ path='/home/mayijun/'
 #                 df.loc[i,'Y']=pd.to_numeric(addr['Spatial X-Y Coordinates of Address'][7:14])
 #                 df.loc[i,'BKFACE']=pd.to_numeric(addr['Blockface ID'])
 #             else:
-#                 print(str(df.loc[i,'ID'])+' not geocoded with borough!')
+#                 print(str(df.loc[i,'ID'])+' not geocoded with 1B borough!')
+#             addr=g['AP']({'house_number':housenumber,'street_name':streetname,'borough_code':boroughcode})
+#             if addr['BOROUGH BLOCK LOT (BBL)']['BOROUGH BLOCK LOT (BBL)']!='':
+#                 df.loc[i,'XAP']=pd.to_numeric(addr['X-Y Coordinates of Address Point'][0:7])
+#                 df.loc[i,'YAP']=pd.to_numeric(addr['X-Y Coordinates of Address Point'][7:14])
+#             else:
+#                 print(str(df.loc[i,'ID'])+' not geocoded with AP borough!')           
 #         except:
 #             print(str(df.loc[i,'ID'])+' not geocoded with borough!')
 # len(df[pd.notna(df['BBL'])])
@@ -630,7 +673,7 @@ path='/home/mayijun/'
 # dfcafe.crs='epsg:4326'
 # dfcafezn=pd.merge(dfcafe,mappluto,how='left',on='BBL')
 # dfcafezn=dfcafezn.loc[pd.notna(dfcafezn['ZoneDist1']),['ID','ZoneDist1','ZoneDist2','ZoneDist3','ZoneDist4',
-#                                                        'Overlay1','Overlay2','SPDist1','SPDist2','SPDist3']].reset_index(drop=True)
+#                                                         'Overlay1','Overlay2','SPDist1','SPDist2','SPDist3']].reset_index(drop=True)
 # dfcafezn['ZD']=''
 # dfcafezn['RM']=np.nan
 # dfcafezn['OL']=''
@@ -684,13 +727,13 @@ path='/home/mayijun/'
 # dfcafeznelwd=dfcafeznelwd[dfcafeznelwd['TYPE']!='ENCLOSED'].reset_index(drop=True)
 # dfcafeznelwd['SWCAT']=np.where(dfcafeznelwd['IMPSWMDN']>14,'>14 ft',np.where(dfcafeznelwd['IMPSWMDN']>=11,'11 ft ~ 14 ft','<11 ft'))
 # dfcafeznelwd['CP']=np.where(dfcafeznelwd['IMPSWMDN']>=15,'>=12 ft',
-#                    np.where(dfcafeznelwd['IMPSWMDN']>=14,'11 ft ~ 12 ft',
-#                    np.where(dfcafeznelwd['IMPSWMDN']>=13,'10 ft ~ 11 ft',
-#                    np.where(dfcafeznelwd['IMPSWMDN']>=12,'9 ft ~ 10 ft',
-#                    np.where(dfcafeznelwd['IMPSWMDN']>=11,'8 ft ~ 9 ft',
-#                    np.where(dfcafeznelwd['IMPSWMDN']>=10,'7 ft ~ 8 ft',
-#                    np.where(dfcafeznelwd['IMPSWMDN']>=9,'6 ft ~ 7 ft',
-#                    np.where(dfcafeznelwd['IMPSWMDN']>=8,'5 ft ~ 6 ft',
+#                     np.where(dfcafeznelwd['IMPSWMDN']>=14,'11 ft ~ 12 ft',
+#                     np.where(dfcafeznelwd['IMPSWMDN']>=13,'10 ft ~ 11 ft',
+#                     np.where(dfcafeznelwd['IMPSWMDN']>=12,'9 ft ~ 10 ft',
+#                     np.where(dfcafeznelwd['IMPSWMDN']>=11,'8 ft ~ 9 ft',
+#                     np.where(dfcafeznelwd['IMPSWMDN']>=10,'7 ft ~ 8 ft',
+#                     np.where(dfcafeznelwd['IMPSWMDN']>=9,'6 ft ~ 7 ft',
+#                     np.where(dfcafeznelwd['IMPSWMDN']>=8,'5 ft ~ 6 ft',
 #                             '<5 ft'))))))))
 # dfcafeznelwd.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/sidewalkcafe/dca_cafe_zn_el_wd.geojson',driver='GeoJSON')
 
@@ -716,23 +759,23 @@ path='/home/mayijun/'
 # dfcafeznelwdlf=dfcafeznelwdlf[dfcafeznelwdlf['TYPE']!='ENCLOSED'].reset_index(drop=True)
 # dfcafeznelwdlf['SWCAT']=np.where(dfcafeznelwdlf['IMPSWMDN']>14,'>14 ft',np.where(dfcafeznelwdlf['IMPSWMDN']>=11,'11 ft ~ 14 ft','<11 ft'))
 # dfcafeznelwdlf['CP']=np.where(dfcafeznelwdlf['IMPSWMDN']>=15,'>=12 ft',
-#                      np.where(dfcafeznelwdlf['IMPSWMDN']>=14,'11 ft ~ 12 ft',
-#                      np.where(dfcafeznelwdlf['IMPSWMDN']>=13,'10 ft ~ 11 ft',
-#                      np.where(dfcafeznelwdlf['IMPSWMDN']>=12,'9 ft ~ 10 ft',
-#                      np.where(dfcafeznelwdlf['IMPSWMDN']>=11,'8 ft ~ 9 ft',
-#                      np.where(dfcafeznelwdlf['IMPSWMDN']>=10,'7 ft ~ 8 ft',
-#                      np.where(dfcafeznelwdlf['IMPSWMDN']>=9,'6 ft ~ 7 ft',
-#                      np.where(dfcafeznelwdlf['IMPSWMDN']>=8,'5 ft ~ 6 ft',
+#                       np.where(dfcafeznelwdlf['IMPSWMDN']>=14,'11 ft ~ 12 ft',
+#                       np.where(dfcafeznelwdlf['IMPSWMDN']>=13,'10 ft ~ 11 ft',
+#                       np.where(dfcafeznelwdlf['IMPSWMDN']>=12,'9 ft ~ 10 ft',
+#                       np.where(dfcafeznelwdlf['IMPSWMDN']>=11,'8 ft ~ 9 ft',
+#                       np.where(dfcafeznelwdlf['IMPSWMDN']>=10,'7 ft ~ 8 ft',
+#                       np.where(dfcafeznelwdlf['IMPSWMDN']>=9,'6 ft ~ 7 ft',
+#                       np.where(dfcafeznelwdlf['IMPSWMDN']>=8,'5 ft ~ 6 ft',
 #                               '<5 ft'))))))))
 # dfcafeznelwdlf['LFSWCAT']=np.where(dfcafeznelwdlf['LFIMPSWMDN']>14,'>14 ft',np.where(dfcafeznelwdlf['LFIMPSWMDN']>=11,'11 ft ~ 14 ft','<11 ft'))
 # dfcafeznelwdlf['LFCP']=np.where(dfcafeznelwdlf['LFIMPSWMDN']>=15,'>=12 ft',
-#                        np.where(dfcafeznelwdlf['LFIMPSWMDN']>=14,'11 ft ~ 12 ft',
-#                        np.where(dfcafeznelwdlf['LFIMPSWMDN']>=13,'10 ft ~ 11 ft',
-#                        np.where(dfcafeznelwdlf['LFIMPSWMDN']>=12,'9 ft ~ 10 ft',
-#                        np.where(dfcafeznelwdlf['LFIMPSWMDN']>=11,'8 ft ~ 9 ft',
-#                        np.where(dfcafeznelwdlf['LFIMPSWMDN']>=10,'7 ft ~ 8 ft',
-#                        np.where(dfcafeznelwdlf['LFIMPSWMDN']>=9,'6 ft ~ 7 ft',
-#                        np.where(dfcafeznelwdlf['LFIMPSWMDN']>=8,'5 ft ~ 6 ft',
+#                         np.where(dfcafeznelwdlf['LFIMPSWMDN']>=14,'11 ft ~ 12 ft',
+#                         np.where(dfcafeznelwdlf['LFIMPSWMDN']>=13,'10 ft ~ 11 ft',
+#                         np.where(dfcafeznelwdlf['LFIMPSWMDN']>=12,'9 ft ~ 10 ft',
+#                         np.where(dfcafeznelwdlf['LFIMPSWMDN']>=11,'8 ft ~ 9 ft',
+#                         np.where(dfcafeznelwdlf['LFIMPSWMDN']>=10,'7 ft ~ 8 ft',
+#                         np.where(dfcafeznelwdlf['LFIMPSWMDN']>=9,'6 ft ~ 7 ft',
+#                         np.where(dfcafeznelwdlf['LFIMPSWMDN']>=8,'5 ft ~ 6 ft',
 #                                 '<5 ft'))))))))
 # dfcafeznelwdlf.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/sidewalkcafe/dca_cafe_zn_el_wd_lf.geojson',driver='GeoJSON')
 
@@ -745,7 +788,7 @@ path='/home/mayijun/'
 # dfcafeznelwd.crs='epsg:4326'
 # dfcafeznelwdco=dfcafeznelwd.reset_index(drop=True)
 # dfcafeznelwdco['CP']=np.where(dfcafeznelwdco['IMPSWMDN']>=15,'>=12 ft',
-#                      np.where(dfcafeznelwdco['IMPSWMDN']>=11,'8 ft ~ 12 ft',
+#                       np.where(dfcafeznelwdco['IMPSWMDN']>=11,'8 ft ~ 12 ft',
 #                               '<8 ft'))
 # dfcafeznelwdco.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/sidewalkcafe/dca_co.geojson',driver='GeoJSON')
 
@@ -932,12 +975,12 @@ path='/home/mayijun/'
 # print(datetime.datetime.now()-start)
 # # 60 mins
 
-# Clean lot front sidewalk tickmarks for upload
-mapplutolftmsw=gpd.read_file(path+'SIDEWALK CAFE/mapplutolftmsw.shp')
-mapplutolftmsw.crs='epsg:4326'
-mapplutolftmswsp=mapplutolftmsw[['cafe','impswmdn','geometry']].reset_index(drop=True)
-mapplutolftmswsp['impswmdn']=[round(x,2) for x in mapplutolftmswsp['impswmdn']]
-mapplutolftmswsp.to_file(path+'SIDEWALK CAFE/mapplutolftmswsp.geojson',driver='GeoJSON')
+# # Clean lot front sidewalk tickmarks for upload
+# mapplutolftmsw=gpd.read_file(path+'SIDEWALK CAFE/mapplutolftmsw.shp')
+# mapplutolftmsw.crs='epsg:4326'
+# mapplutolftmswsp=mapplutolftmsw[['cafe','impswmdn','geometry']].reset_index(drop=True)
+# mapplutolftmswsp['impswmdn']=[round(x,2) for x in mapplutolftmswsp['impswmdn']]
+# mapplutolftmswsp.to_file(path+'SIDEWALK CAFE/mapplutolftmswsp.geojson',driver='GeoJSON')
 
 
 
@@ -1035,110 +1078,107 @@ mapplutolftmswsp.to_file(path+'SIDEWALK CAFE/mapplutolftmswsp.geojson',driver='G
 
 
 
-# Geocode corridors
-g=Geosupport()
-df=pd.read_excel(path+'SIDEWALK CAFE/CORRIDOR/CORRIDOR.xlsx',
-                 sheet_name=0,
-                 dtype=str)
-df=df.fillna('')
+# # Geocode corridors
+# g=Geosupport()
+# df=pd.read_excel(path+'SIDEWALK CAFE/CORRIDOR/CORRIDOR.xlsx',
+#                  sheet_name=0,
+#                  dtype=str)
+# df=df.fillna('')
 
-dfgeocode=[]
-for i in df.index[0:120]:
-    borocode=str(df.loc[i,'BORO'])
-    onstreet=str(df.loc[i,'ON'])
-    fromstreet=str(df.loc[i,'FROM'])
-    tostreet=str(df.loc[i,'TO'])
-    stretch=g['3S']({'borough_code':borocode,
-                     'on':onstreet,
-                     'from':fromstreet,
-                     'to':tostreet,
-                     'compass_direction':'w',
-                     'compass_direction_1':'w',
-                     'compass_direction_2':'s'})
-    stretch=pd.DataFrame(stretch['LIST OF INTERSECTIONS'])
-    stretch['segfromnode']=pd.to_numeric(stretch['Node Number'])
-    stretch['segtonode']=pd.to_numeric(np.roll(stretch['Node Number'],-1))
-    stretch=stretch.loc[0:len(stretch)-2,['segfromnode','segtonode']].reset_index(drop=True)
-    segment=pd.concat([df.loc[[i]]]*len(stretch),axis=0,ignore_index=True)
-    segment=pd.concat([segment,stretch],axis=1,ignore_index=False)
-    dfgeocode+=[segment]
-dfgeocode=pd.concat(dfgeocode,axis=0,ignore_index=True)
-dfgeocode=dfgeocode.drop_duplicates(keep='first').reset_index(drop=True)
-dfgeocoderev=dfgeocode.copy()
-dfgeocoderev['temp']=dfgeocoderev['segfromnode'].copy()
-dfgeocoderev['segfromnode']=dfgeocoderev['segtonode'].copy()
-dfgeocoderev['segtonode']=dfgeocoderev['temp'].copy()
-dfgeocoderev=dfgeocoderev.drop('temp',axis=1).reset_index(drop=True)
-dfgeocode=pd.concat([dfgeocode,dfgeocoderev],axis=0,ignore_index=True)
+# dfgeocode=[]
+# for i in df.index[0:120]:
+#     borocode=str(df.loc[i,'BORO'])
+#     onstreet=str(df.loc[i,'ON'])
+#     fromstreet=str(df.loc[i,'FROM'])
+#     tostreet=str(df.loc[i,'TO'])
+#     stretch=g['3S']({'borough_code':borocode,
+#                      'on':onstreet,
+#                      'from':fromstreet,
+#                      'to':tostreet,
+#                      'compass_direction':'w',
+#                      'compass_direction_1':'w',
+#                      'compass_direction_2':'s'})
+#     stretch=pd.DataFrame(stretch['LIST OF INTERSECTIONS'])
+#     stretch['segfromnode']=pd.to_numeric(stretch['Node Number'])
+#     stretch['segtonode']=pd.to_numeric(np.roll(stretch['Node Number'],-1))
+#     stretch=stretch.loc[0:len(stretch)-2,['segfromnode','segtonode']].reset_index(drop=True)
+#     segment=pd.concat([df.loc[[i]]]*len(stretch),axis=0,ignore_index=True)
+#     segment=pd.concat([segment,stretch],axis=1,ignore_index=False)
+#     dfgeocode+=[segment]
+# dfgeocode=pd.concat(dfgeocode,axis=0,ignore_index=True)
+# dfgeocode=dfgeocode.drop_duplicates(keep='first').reset_index(drop=True)
+# dfgeocoderev=dfgeocode.copy()
+# dfgeocoderev['temp']=dfgeocoderev['segfromnode'].copy()
+# dfgeocoderev['segfromnode']=dfgeocoderev['segtonode'].copy()
+# dfgeocoderev['segtonode']=dfgeocoderev['temp'].copy()
+# dfgeocoderev=dfgeocoderev.drop('temp',axis=1).reset_index(drop=True)
+# dfgeocode=pd.concat([dfgeocode,dfgeocoderev],axis=0,ignore_index=True)
 
-lion=gpd.read_file(path+'STREET CLOSURE/sidewalk/input/lion/lion.shp')
-lion.crs=4326
-lion['SEGMENTID']=pd.to_numeric(lion['SegmentID'],errors='coerce')
-lion['segfromnode']=pd.to_numeric(lion['NodeIDFrom'],errors='coerce')
-lion['segtonode']=pd.to_numeric(lion['NodeIDTo'],errors='coerce')
-lion=lion[['SEGMENTID','segfromnode','segtonode','geometry']].reset_index(drop=True)
-lion=lion.drop_duplicates(['SEGMENTID','segfromnode','segtonode'],keep='first').reset_index(drop=True)
+# lion=gpd.read_file(path+'STREET CLOSURE/sidewalk/input/lion/lion.shp')
+# lion.crs=4326
+# lion['SEGMENTID']=pd.to_numeric(lion['SegmentID'],errors='coerce')
+# lion['segfromnode']=pd.to_numeric(lion['NodeIDFrom'],errors='coerce')
+# lion['segtonode']=pd.to_numeric(lion['NodeIDTo'],errors='coerce')
+# lion=lion[['SEGMENTID','segfromnode','segtonode','geometry']].reset_index(drop=True)
+# lion=lion.drop_duplicates(['SEGMENTID','segfromnode','segtonode'],keep='first').reset_index(drop=True)
 
-crdgeocode=pd.merge(lion,dfgeocode,how='inner',on=['segfromnode','segtonode'])
-crdgeocode=crdgeocode.sort_values('SEGMENTID').reset_index(drop=True)
-crdgeocode=crdgeocode.drop_duplicates(['CORRIDOR','segfromnode','segtonode'],keep='first').reset_index(drop=True)
-crdgeocode=crdgeocode[['CORRIDOR','ON','FROM','TO','FT','BORO','FLAG','geometry']].reset_index(drop=True)
-crdgeocode.to_file(path+'SIDEWALK CAFE/CORRIDOR/crdgeocode.shp')
-
-
+# crdgeocode=pd.merge(lion,dfgeocode,how='inner',on=['segfromnode','segtonode'])
+# crdgeocode=crdgeocode.sort_values('SEGMENTID').reset_index(drop=True)
+# crdgeocode=crdgeocode.drop_duplicates(['CORRIDOR','segfromnode','segtonode'],keep='first').reset_index(drop=True)
+# crdgeocode=crdgeocode[['CORRIDOR','ON','FROM','TO','FT','BORO','FLAG','geometry']].reset_index(drop=True)
+# crdgeocode.to_file(path+'SIDEWALK CAFE/CORRIDOR/crdgeocode.shp')
 
 
 
+# # Geocode corridors add-ons
+# g=Geosupport()
+# df=pd.read_excel(path+'SIDEWALK CAFE/CORRIDOR/CORRIDOR.xlsx',
+#                  sheet_name=1,
+#                  dtype=str)
+# df=df.fillna('')
 
-# Geocode corridors add-ons
-g=Geosupport()
-df=pd.read_excel(path+'SIDEWALK CAFE/CORRIDOR/CORRIDOR.xlsx',
-                 sheet_name=1,
-                 dtype=str)
-df=df.fillna('')
+# dfgeocode=[]
+# for i in df.index[0:55]:
+#     borocode=str(df.loc[i,'BORO'])
+#     onstreet=str(df.loc[i,'ON'])
+#     fromstreet=str(df.loc[i,'FROM'])
+#     tostreet=str(df.loc[i,'TO'])
+#     stretch=g['3S']({'borough_code':borocode,
+#                      'on':onstreet,
+#                      'from':fromstreet,
+#                      'to':tostreet,
+#                      'compass_direction':'w',
+#                      'compass_direction_1':'w',
+#                      'compass_direction_2':'s'})
+#     stretch=pd.DataFrame(stretch['LIST OF INTERSECTIONS'])
+#     stretch['segfromnode']=pd.to_numeric(stretch['Node Number'])
+#     stretch['segtonode']=pd.to_numeric(np.roll(stretch['Node Number'],-1))
+#     stretch=stretch.loc[0:len(stretch)-2,['segfromnode','segtonode']].reset_index(drop=True)
+#     segment=pd.concat([df.loc[[i]]]*len(stretch),axis=0,ignore_index=True)
+#     segment=pd.concat([segment,stretch],axis=1,ignore_index=False)
+#     dfgeocode+=[segment]
+# dfgeocode=pd.concat(dfgeocode,axis=0,ignore_index=True)
+# dfgeocode=dfgeocode.drop_duplicates(keep='first').reset_index(drop=True)
+# dfgeocoderev=dfgeocode.copy()
+# dfgeocoderev['temp']=dfgeocoderev['segfromnode'].copy()
+# dfgeocoderev['segfromnode']=dfgeocoderev['segtonode'].copy()
+# dfgeocoderev['segtonode']=dfgeocoderev['temp'].copy()
+# dfgeocoderev=dfgeocoderev.drop('temp',axis=1).reset_index(drop=True)
+# dfgeocode=pd.concat([dfgeocode,dfgeocoderev],axis=0,ignore_index=True)
 
-dfgeocode=[]
-for i in df.index[0:55]:
-    borocode=str(df.loc[i,'BORO'])
-    onstreet=str(df.loc[i,'ON'])
-    fromstreet=str(df.loc[i,'FROM'])
-    tostreet=str(df.loc[i,'TO'])
-    stretch=g['3S']({'borough_code':borocode,
-                     'on':onstreet,
-                     'from':fromstreet,
-                     'to':tostreet,
-                     'compass_direction':'w',
-                     'compass_direction_1':'w',
-                     'compass_direction_2':'s'})
-    stretch=pd.DataFrame(stretch['LIST OF INTERSECTIONS'])
-    stretch['segfromnode']=pd.to_numeric(stretch['Node Number'])
-    stretch['segtonode']=pd.to_numeric(np.roll(stretch['Node Number'],-1))
-    stretch=stretch.loc[0:len(stretch)-2,['segfromnode','segtonode']].reset_index(drop=True)
-    segment=pd.concat([df.loc[[i]]]*len(stretch),axis=0,ignore_index=True)
-    segment=pd.concat([segment,stretch],axis=1,ignore_index=False)
-    dfgeocode+=[segment]
-dfgeocode=pd.concat(dfgeocode,axis=0,ignore_index=True)
-dfgeocode=dfgeocode.drop_duplicates(keep='first').reset_index(drop=True)
-dfgeocoderev=dfgeocode.copy()
-dfgeocoderev['temp']=dfgeocoderev['segfromnode'].copy()
-dfgeocoderev['segfromnode']=dfgeocoderev['segtonode'].copy()
-dfgeocoderev['segtonode']=dfgeocoderev['temp'].copy()
-dfgeocoderev=dfgeocoderev.drop('temp',axis=1).reset_index(drop=True)
-dfgeocode=pd.concat([dfgeocode,dfgeocoderev],axis=0,ignore_index=True)
+# lion=gpd.read_file(path+'STREET CLOSURE/sidewalk/input/lion/lion.shp')
+# lion.crs=4326
+# lion['SEGMENTID']=pd.to_numeric(lion['SegmentID'],errors='coerce')
+# lion['segfromnode']=pd.to_numeric(lion['NodeIDFrom'],errors='coerce')
+# lion['segtonode']=pd.to_numeric(lion['NodeIDTo'],errors='coerce')
+# lion=lion[['SEGMENTID','segfromnode','segtonode','geometry']].reset_index(drop=True)
+# lion=lion.drop_duplicates(['SEGMENTID','segfromnode','segtonode'],keep='first').reset_index(drop=True)
 
-lion=gpd.read_file(path+'STREET CLOSURE/sidewalk/input/lion/lion.shp')
-lion.crs=4326
-lion['SEGMENTID']=pd.to_numeric(lion['SegmentID'],errors='coerce')
-lion['segfromnode']=pd.to_numeric(lion['NodeIDFrom'],errors='coerce')
-lion['segtonode']=pd.to_numeric(lion['NodeIDTo'],errors='coerce')
-lion=lion[['SEGMENTID','segfromnode','segtonode','geometry']].reset_index(drop=True)
-lion=lion.drop_duplicates(['SEGMENTID','segfromnode','segtonode'],keep='first').reset_index(drop=True)
-
-crdgeocode=pd.merge(lion,dfgeocode,how='inner',on=['segfromnode','segtonode'])
-crdgeocode=crdgeocode.sort_values('SEGMENTID').reset_index(drop=True)
-crdgeocode=crdgeocode.drop_duplicates(['CORRIDOR','segfromnode','segtonode'],keep='first').reset_index(drop=True)
-crdgeocode=crdgeocode[['CORRIDOR','ON','FROM','TO','FT','BORO','FLAG','geometry']].reset_index(drop=True)
-crdgeocode.to_file(path+'SIDEWALK CAFE/CORRIDOR/crdgeocodeadd.shp')
+# crdgeocode=pd.merge(lion,dfgeocode,how='inner',on=['segfromnode','segtonode'])
+# crdgeocode=crdgeocode.sort_values('SEGMENTID').reset_index(drop=True)
+# crdgeocode=crdgeocode.drop_duplicates(['CORRIDOR','segfromnode','segtonode'],keep='first').reset_index(drop=True)
+# crdgeocode=crdgeocode[['CORRIDOR','ON','FROM','TO','FT','BORO','FLAG','geometry']].reset_index(drop=True)
+# crdgeocode.to_file(path+'SIDEWALK CAFE/CORRIDOR/crdgeocodeadd.shp')
 
 
 
@@ -1147,14 +1187,45 @@ crdgeocode.to_file(path+'SIDEWALK CAFE/CORRIDOR/crdgeocodeadd.shp')
 
 
 
+# DCA vs DCP corridor
+dca=gpd.read_file(path+'SIDEWALK CAFE/dca_cafe_zn_el_wd_lf.shp')
+dca.crs=4326
+dca=dca.to_crs(6539)
+dca['geometry']=[shapely.geometry.Point(x,y) for x,y in zip(dca['X'],dca['Y'])]
+dca['geometry']=dca.buffer(10)
+dcpcrd=gpd.read_file(path+'SIDEWALK CAFE/CORRIDOR/DCP_Greater_than_8__Corridors_merged.shp')
+dcpcrd.crs=4326
+dcpcrd=dcpcrd.to_crs(6539)
+dca=gpd.sjoin(dca,dcpcrd,how='left',op='intersects')
+dca=dca.drop_duplicates(['ID'],keep='first').reset_index(drop=True)
+dca['geometry']=[shapely.geometry.Point(x,y) for x,y in zip(dca['XADJ'],dca['YADJ'])]
+dca=dca.to_crs(4326)
+dca=dca.drop(['index_right','boro','flag','on','from','to'],axis=1).reset_index(drop=True)
+dca['ALLOWED']=np.where(pd.isna(dca['ft']),'YES',
+               np.where((dca['ft']=='15')&(dca['LFIMPSWMDN']>=18),'YES',
+               np.where((dca['ft']=='12')&(dca['LFIMPSWMDN']>=15),'YES','NO')))
+dca.to_file(path+'SIDEWALK CAFE/dca_dcp.shp')
 
 
 
-
-
-
-
-
+# Open Restaurant vs DCP corridor
+dfcafeznelwdlf=gpd.read_file(path+'SIDEWALK CAFE/or_cafe_zn_el_wd_lf.shp')
+dfcafeznelwdlf.crs=4326
+dfcafeznelwdlf=dfcafeznelwdlf.to_crs(6539)
+dfcafeznelwdlf['geometry']=[shapely.geometry.Point(x,y) for x,y in zip(dfcafeznelwdlf['X'],dfcafeznelwdlf['Y'])]
+dfcafeznelwdlf['geometry']=dfcafeznelwdlf.buffer(10)
+dcpcrd=gpd.read_file(path+'SIDEWALK CAFE/CORRIDOR/DCP_Greater_than_8__Corridors_merged.shp')
+dcpcrd.crs=4326
+dcpcrd=dcpcrd.to_crs(6539)
+dfcafeznelwdlf=gpd.sjoin(dfcafeznelwdlf,dcpcrd,how='left',op='intersects')
+dfcafeznelwdlf=dfcafeznelwdlf.drop_duplicates(['ID'],keep='first').reset_index(drop=True)
+dfcafeznelwdlf['geometry']=[shapely.geometry.Point(x,y) for x,y in zip(dfcafeznelwdlf['XADJ'],dfcafeznelwdlf['YADJ'])]
+dfcafeznelwdlf=dfcafeznelwdlf.to_crs(4326)
+dfcafeznelwdlf=dfcafeznelwdlf.drop(['index_right','boro','flag','on','from','to'],axis=1).reset_index(drop=True)
+dfcafeznelwdlf['ALLOWED']=np.where(pd.isna(dfcafeznelwdlf['ft']),'YES',
+                          np.where((dfcafeznelwdlf['ft']=='15')&(dfcafeznelwdlf['LFIMPSWMDN']>=18),'YES',
+                          np.where((dfcafeznelwdlf['ft']=='12')&(dfcafeznelwdlf['LFIMPSWMDN']>=15),'YES','NO')))
+dfcafeznelwdlf.to_file(path+'SIDEWALK CAFE/or_dcp.shp')
 
 
 
@@ -1227,28 +1298,6 @@ crdgeocode.to_file(path+'SIDEWALK CAFE/CORRIDOR/crdgeocodeadd.shp')
 
 
 
-
-
-
-
-# Viz backup
-# import plotly.io as pio
-# import plotly.express as px
-# pio.renderers.default = "browser"
-# px.box(k,x='SDWKWDTH',y='ORGSWMDN')
-
-# import numpy as np
-# a=list(range(1,11))
-# b=[1-0.7**x for x in a]
-# c=np.roll(b,-1)
-# c-b
-# import plotly.express as px
-# import plotly.io as pio
-# import plotly.graph_objects as go
-# pio.renderers.default = "browser"
-# px.scatter(x=a,y=b)
-# fig=go.Figure()
-# fig.add_trace(go.Scatter(x=a,y=b,mode='lines+markers'))
 
 
 
