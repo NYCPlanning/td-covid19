@@ -223,34 +223,34 @@ k=json.loads(df.loc[0,'device_type']).get('ios')
 
 
 # Social Distancing Table
-with fs.open('sg-c19-response/social-distancing/v2/2020/08/09/2020-08-09-social-distancing.csv.gz','rb') as f:
+with fs.open('sg-c19-response/social-distancing/v2/2019/08/09/2019-08-09-social-distancing.csv.gz','rb') as f:
     tp=pd.read_csv(f,escapechar='\\',compression='gzip',dtype=str)
 df=[]
 for i in tp.index:
     k=pd.DataFrame.from_dict(data=json.loads(tp.loc[i,'destination_cbgs']),orient='index').reset_index(drop=False)
     k['origin']=tp.loc[i,'origin_census_block_group']
-    k.columns=['destination','D20200809','origin']
-    k=k[['origin','destination','D20200809']].reset_index(drop=True)
+    k.columns=['destination','D20190809','origin']
+    k=k[['origin','destination','D20190809']].reset_index(drop=True)
     df+=[k]
 df=pd.concat(df,axis=0,ignore_index=True)
-df.to_csv(path+'20200809.csv',index=False)
+df.to_csv(path+'20190809.csv',index=False)
 
-df=pd.read_csv(path+'20200809.csv',dtype=str,converters={'D20200809':float})
+df=pd.read_csv(path+'20190809.csv',dtype=str,converters={'D20190809':float})
 df=df[np.logical_or([x[0:5] in ['36005','36047','36061','36081','36085'] for x in df['origin']],
                     [x[0:5] in ['36005','36047','36061','36081','36085'] for x in df['destination']])].reset_index(drop=True)
-df=df.sort_values('D20200809',ascending=False).reset_index(drop=True)
+df=df.sort_values('D20190809',ascending=False).reset_index(drop=True)
 
-k=df.groupby('origin',as_index=False).agg({'D20200809':'sum'}).sort_values('D20200809',ascending=False).reset_index(drop=True)
+k=df.groupby('origin',as_index=False).agg({'D20190809':'sum'}).sort_values('D20190809',ascending=False).reset_index(drop=True)
 k=k[k['origin']!='360610031001'].reset_index(drop=True)
-k.D20200809.hist(bins=100)
+k.D20190809.hist(bins=100)
 bkgp=gpd.read_file(path+'quadstatebkgpclipped.shp')
 bkgp.crs={'init':'epsg:4326'}
 k=pd.merge(bkgp,k,how='inner',left_on='blockgroup',right_on='origin')
 k.to_file(path+'ko.shp')
 
-k=df.groupby('destination',as_index=False).agg({'D20200809':'sum'}).sort_values('D20200809',ascending=False).reset_index(drop=True)
+k=df.groupby('destination',as_index=False).agg({'D20190809':'sum'}).sort_values('D20190809',ascending=False).reset_index(drop=True)
 k=k[k['destination']!='360610031001'].reset_index(drop=True)
-k.D20200809.hist(bins=100)
+k.D20190809.hist(bins=100)
 bkgp=gpd.read_file(path+'quadstatebkgpclipped.shp')
 bkgp.crs={'init':'epsg:4326'}
 k=pd.merge(bkgp,k,how='inner',left_on='blockgroup',right_on='destination')
