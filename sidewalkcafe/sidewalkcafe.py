@@ -1230,6 +1230,50 @@ dfcafeznelwdlf.to_file(path+'SIDEWALK CAFE/or_dcp.shp')
 
 
 
+# DCA vs DOT corridor
+dca=gpd.read_file(path+'SIDEWALK CAFE/dca_cafe_zn_el_wd_lf.shp')
+dca.crs=4326
+dca=dca.to_crs(6539)
+dca['geometry']=[shapely.geometry.Point(x,y) for x,y in zip(dca['X'],dca['Y'])]
+dca['geometry']=dca.buffer(10)
+dotcrd=gpd.read_file(path+'SIDEWALK CAFE/CORRIDOR/DOT/DOT CORRIDORS.shp')
+dotcrd.crs=4326
+dotcrd=dotcrd.to_crs(6539)
+dca=gpd.sjoin(dca,dotcrd,how='left',op='intersects')
+dca=dca.drop_duplicates(['ID'],keep='first').reset_index(drop=True)
+dca['geometry']=[shapely.geometry.Point(x,y) for x,y in zip(dca['XADJ'],dca['YADJ'])]
+dca=dca.to_crs(4326)
+dca=dca.drop(['index_right','cartodb_id'],axis=1).reset_index(drop=True)
+dca['ALLOWED']=np.where(pd.isna(dca['walklane']),'YES',
+               np.where(dca['walklane']==8,'YES',
+               np.where((dca['walklane']==15)&(dca['LFIMPSWMDN']>=18),'YES',
+               np.where((dca['walklane']==12)&(dca['LFIMPSWMDN']>=15),'YES','NO'))))
+dca.to_file(path+'SIDEWALK CAFE/dca_dot.shp')
+
+
+
+# Open Restaurant vs DOT corridor
+dfcafeznelwdlf=gpd.read_file(path+'SIDEWALK CAFE/or_cafe_zn_el_wd_lf.shp')
+dfcafeznelwdlf.crs=4326
+dfcafeznelwdlf=dfcafeznelwdlf.to_crs(6539)
+dfcafeznelwdlf['geometry']=[shapely.geometry.Point(x,y) for x,y in zip(dfcafeznelwdlf['X'],dfcafeznelwdlf['Y'])]
+dfcafeznelwdlf['geometry']=dfcafeznelwdlf.buffer(10)
+dotcrd=gpd.read_file(path+'SIDEWALK CAFE/CORRIDOR/DOT/DOT CORRIDORS.shp')
+dotcrd.crs=4326
+dotcrd=dotcrd.to_crs(6539)
+dfcafeznelwdlf=gpd.sjoin(dfcafeznelwdlf,dotcrd,how='left',op='intersects')
+dfcafeznelwdlf=dfcafeznelwdlf.drop_duplicates(['ID'],keep='first').reset_index(drop=True)
+dfcafeznelwdlf['geometry']=[shapely.geometry.Point(x,y) for x,y in zip(dfcafeznelwdlf['XADJ'],dfcafeznelwdlf['YADJ'])]
+dfcafeznelwdlf=dfcafeznelwdlf.to_crs(4326)
+dfcafeznelwdlf=dfcafeznelwdlf.drop(['index_right','cartodb_id'],axis=1).reset_index(drop=True)
+dfcafeznelwdlf['ALLOWED']=np.where(pd.isna(dfcafeznelwdlf['walklane']),'YES',
+                          np.where(dfcafeznelwdlf['walklane']==8,'YES',
+                          np.where((dfcafeznelwdlf['walklane']==15)&(dfcafeznelwdlf['LFIMPSWMDN']>=18),'YES',
+                          np.where((dfcafeznelwdlf['walklane']==12)&(dfcafeznelwdlf['LFIMPSWMDN']>=15),'YES','NO'))))
+dfcafeznelwdlf.to_file(path+'SIDEWALK CAFE/or_dot.shp')
+
+
+
 
 
 
