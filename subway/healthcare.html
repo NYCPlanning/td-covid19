@@ -302,7 +302,7 @@
                 var description = "<b>NTA Code: </b><span>" + e.features[0].properties.ntacode + "</span><br>"; // description in the popup
                 description += "<b>NTA Name: </b><span>" + e.features[0].properties.ntaname + "</span><br>";
                 description += "<b>Civilian Employees: </b><span>" + e.features[0].properties.civilian_e.toFixed(0) + "</span><br>";
-                description += "<b>Healtcare Employees: </b><span>" + e.features[0].properties.healthcare.toFixed(0) + "</span><br>";
+                description += "<b>Healthcare Employees: </b><span>" + e.features[0].properties.healthcare.toFixed(0) + "</span><br>";
                 description += "<b>Percent of Healthcare Workers: </b><span>" + (Number(e.features[0].properties.percentage) * 100).toFixed(2) + "%</span><br>";
                 popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
             });
