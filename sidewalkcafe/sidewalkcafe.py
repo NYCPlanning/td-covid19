@@ -1236,15 +1236,29 @@ lion=lion.drop_duplicates(['SEGMENTID','segfromnode','segtonode'],keep='first').
 crdgeocode=pd.merge(lion,dfgeocode,how='inner',on=['segfromnode','segtonode'])
 crdgeocode=crdgeocode.sort_values('SEGMENTID').reset_index(drop=True)
 crdgeocode=crdgeocode.drop_duplicates(['CORRIDOR','segfromnode','segtonode'],keep='first').reset_index(drop=True)
-crdgeocode=crdgeocode[['CORRIDOR','Previous Limitations','Previous Clear Path','Est. Sidewalk Width','ON','FROM','TO','FT','BORO','FLAG','geometry']].reset_index(drop=True)
+crdgeocode=crdgeocode[['SEGMENTID','CORRIDOR','Previous Limitations','Previous Clear Path','Est. Sidewalk Width','ON','FROM','TO','FT','BORO','FLAG','geometry']].reset_index(drop=True)
 crdgeocode.to_file(path+'SIDEWALK CAFE/CORRIDOR2/crdgeocode.shp')
 
 
-
-
-
-
-
+# Rest corridors
+restcr=gpd.read_file(path+'STREET CLOSURE/sidewalk/input/lion/lion.shp')
+restcr.crs=4326
+restcr=restcr[np.isin(restcr['SegmentTyp'],['B','R','T','C','U','S'])].reset_index(drop=True)
+restcr=restcr[np.isin(restcr['FeatureTyp'],['0','6','C','W','A'])].reset_index(drop=True)
+restcr=restcr[np.isin(restcr['RB_Layer'],['R','B'])].reset_index(drop=True)
+restcr=restcr[restcr['NonPed']!='V'].reset_index(drop=True)
+restcr['SEGMENTID']=pd.to_numeric(restcr['SegmentID'])
+crd=list(crdgeocode.SEGMENTID.unique())
+union=[32786,32790,32797,32799,32806,32808,32809,32812,32941,32945,32956,32957,110559,133903,138570,139521,139522,139523,139524,139525,139526,139527,145393,145394,164328,164381,164382,164383,164384,250870,250951,251073,283287]
+queens=[67235,67247,67248,67252,172580,172581,172582,172585,172586,189355,189356,9009910,9009911]
+broadway=[299595,257485,257484,254134,254133,216991,114275,110862,23370,23364,23232,23230,23228,23204,23199,23197,23195,23094,23065,23060]
+restcr=restcr[~np.isin(restcr['SEGMENTID'],crd)].reset_index(drop=True)
+restcr=restcr[~np.isin(restcr['SEGMENTID'],union)].reset_index(drop=True)
+restcr=restcr[~np.isin(restcr['SEGMENTID'],queens)].reset_index(drop=True)
+restcr=restcr[~np.isin(restcr['SEGMENTID'],broadway)].reset_index(drop=True)
+restcr=restcr[['geometry']].reset_index(drop=True)
+restcr['FT']='8'
+restcr.to_file(path+'SIDEWALK CAFE/CORRIDOR2/restcr.shp')
 
 
 
@@ -1273,6 +1287,25 @@ dca['ALLOWED']=np.where(pd.isna(dca['ft']),'YES',
                np.where((dca['ft']=='12')&(dca['LFIMPSWMDN']>=15),'YES','NO')))
 dca.to_file(path+'SIDEWALK CAFE/dca_dcp.shp')
 
+# DCA vs DCP corridor v2
+dca=gpd.read_file(path+'SIDEWALK CAFE/dca_cafe_zn_el_wd_lf.shp')
+dca.crs=4326
+dca=dca.to_crs(6539)
+dca['geometry']=[shapely.geometry.Point(x,y) for x,y in zip(dca['X'],dca['Y'])]
+dca['geometry']=dca.buffer(10)
+dcpcrd=gpd.read_file(path+'SIDEWALK CAFE/CORRIDOR2/CORRIDOR2.shp')
+dcpcrd.crs=4326
+dcpcrd=dcpcrd.drop(['BORO'],axis=1).reset_index(drop=True)
+dcpcrd=dcpcrd.to_crs(6539)
+dca=gpd.sjoin(dca,dcpcrd,how='left',op='intersects')
+dca=dca.drop_duplicates(['ID'],keep='first').reset_index(drop=True)
+dca['geometry']=[shapely.geometry.Point(x,y) for x,y in zip(dca['XADJ'],dca['YADJ'])]
+dca=dca.to_crs(4326)
+dca=dca.drop(['index_right','FLAG','ON','FROM','TO'],axis=1).reset_index(drop=True)
+dca['ALLOWED']=np.where(pd.isna(dca['FT']),'YES',
+               np.where((dca['FT']=='11')&(dca['LFIMPSWMDN']>=14),'YES','NO'))
+dca.to_file(path+'SIDEWALK CAFE/dca_dcp2.shp')
+
 
 
 # Open Restaurant vs DCP corridor
@@ -1294,6 +1327,24 @@ dfcafeznelwdlf['ALLOWED']=np.where(pd.isna(dfcafeznelwdlf['ft']),'YES',
                           np.where((dfcafeznelwdlf['ft']=='12')&(dfcafeznelwdlf['LFIMPSWMDN']>=15),'YES','NO')))
 dfcafeznelwdlf.to_file(path+'SIDEWALK CAFE/or_dcp.shp')
 
+# Open Restaurant vs DCP corridor v2
+dfcafeznelwdlf=gpd.read_file(path+'SIDEWALK CAFE/or_cafe_zn_el_wd_lf.shp')
+dfcafeznelwdlf.crs=4326
+dfcafeznelwdlf=dfcafeznelwdlf.to_crs(6539)
+dfcafeznelwdlf['geometry']=[shapely.geometry.Point(x,y) for x,y in zip(dfcafeznelwdlf['X'],dfcafeznelwdlf['Y'])]
+dfcafeznelwdlf['geometry']=dfcafeznelwdlf.buffer(10)
+dcpcrd=gpd.read_file(path+'SIDEWALK CAFE/CORRIDOR2/CORRIDOR2.shp')
+dcpcrd.crs=4326
+dcpcrd=dcpcrd.drop(['BORO'],axis=1).reset_index(drop=True)
+dcpcrd=dcpcrd.to_crs(6539)
+dfcafeznelwdlf=gpd.sjoin(dfcafeznelwdlf,dcpcrd,how='left',op='intersects')
+dfcafeznelwdlf=dfcafeznelwdlf.drop_duplicates(['ID'],keep='first').reset_index(drop=True)
+dfcafeznelwdlf['geometry']=[shapely.geometry.Point(x,y) for x,y in zip(dfcafeznelwdlf['XADJ'],dfcafeznelwdlf['YADJ'])]
+dfcafeznelwdlf=dfcafeznelwdlf.to_crs(4326)
+dfcafeznelwdlf=dfcafeznelwdlf.drop(['index_right','FLAG','ON','FROM','TO'],axis=1).reset_index(drop=True)
+dfcafeznelwdlf['ALLOWED']=np.where(pd.isna(dfcafeznelwdlf['FT']),'YES',
+                          np.where((dfcafeznelwdlf['FT']=='11')&(dfcafeznelwdlf['LFIMPSWMDN']>=14),'YES','NO'))
+dfcafeznelwdlf.to_file(path+'SIDEWALK CAFE/or_dcp2.shp')
 
 
 
@@ -1341,6 +1392,64 @@ dfcafeznelwdlf.to_file(path+'SIDEWALK CAFE/or_dot.shp')
 
 
 
+
+
+
+# DOHMH
+dohmh=pd.read_csv(path+'SIDEWALK CAFE/lettergraderestaurants.csv',dtype=str)
+dohmh=dohmh.drop(['cartodb_id','the_geom','the_geom_str'],axis=1).reset_index(drop=True)
+dohmh['BBL']=pd.to_numeric(dohmh['bbl'])
+mappluto=gpd.read_file(path+'SIDEWALK CAFE/mappluto.shp')
+mappluto.crs='epsg:4326'
+dohmh=pd.merge(dohmh,mappluto,how='inner',on='BBL')
+dohmh=dohmh.drop(['geometry'],axis=1).reset_index(drop=True)
+#26491/26826
+for i in dohmh.index:
+    dohmh.loc[i,'ZD']='; '.join(sorted([x for x in list(dohmh.loc[i,['ZoneDist1','ZoneDist2','ZoneDist3','ZoneDist4']]) if pd.notna(x)]))
+    dohmh.loc[i,'OL']='; '.join(sorted([x for x in list(dohmh.loc[i,['Overlay1','Overlay2']]) if pd.notna(x)]))
+    dohmh.loc[i,'SP']='; '.join(sorted([x for x in list(dohmh.loc[i,['SPDist1','SPDist2','SPDist3']]) if pd.notna(x)]))
+dohmh.to_csv(path+'SIDEWALK CAFE/dohmh.csv',index=False)
+
+
+
+
+
+
+# Blockface
+crd=gpd.read_file(path+'SIDEWALK CAFE/CORRIDOR2/crdgeocode.shp')
+crd.crs=4326
+crd=list(crd.SEGMENTID.unique())
+union=[32786,32790,32797,32799,32806,32808,32809,32812,32941,32945,32956,32957,110559,133903,138570,139521,139522,139523,139524,139525,139526,139527,145393,145394,164328,164381,164382,164383,164384,250870,250951,251073,283287]
+queens=[67235,67247,67248,67252,172580,172581,172582,172585,172586,189355,189356,9009910,9009911]
+broadway=[299595,257485,257484,254134,254133,216991,114275,110862,23370,23364,23232,23230,23228,23204,23199,23197,23195,23094,23065,23060]
+lion=gpd.read_file(path+'STREET CLOSURE/sidewalk/input/lion/lion.shp')
+lion.crs=4326
+lion=lion[np.isin(lion['SegmentTyp'],['B','R','T','C','U','S'])].reset_index(drop=True)
+lion=lion[np.isin(lion['FeatureTyp'],['0','6','C','W','A'])].reset_index(drop=True)
+lion=lion[np.isin(lion['RB_Layer'],['R','B'])].reset_index(drop=True)
+lion=lion[lion['NonPed']!='V'].reset_index(drop=True)
+lion['SEGMENTID']=pd.to_numeric(lion['SegmentID'],errors='coerce')
+lion['LBKFACE']=pd.to_numeric(lion['LBlockFace'],errors='coerce')
+lion['RBKFACE']=pd.to_numeric(lion['RBlockFace'],errors='coerce')
+lion['FT']=np.where(np.isin(lion['SEGMENTID'],crd),11,
+           np.where(np.isin(lion['SEGMENTID'],union),11,
+           np.where(np.isin(lion['SEGMENTID'],queens),11,
+           np.where(np.isin(lion['SEGMENTID'],broadway),11,8))))
+lion=lion[['SEGMENTID','LBKFACE','RBKFACE','FT','geometry']].reset_index(drop=True)
+lionl=lion[['LBKFACE','FT']].reset_index(drop=True)
+lionl.columns=['BKFACE','FT']
+lionr=lion[['RBKFACE','FT']].reset_index(drop=True)
+lionr.columns=['BKFACE','FT']
+lion=pd.concat([lionl,lionr],axis=0,ignore_index=True)
+lion=lion.sort_values(['BKFACE','FT'],ascending=False).reset_index(drop=True)
+lion=lion.drop_duplicates(['BKFACE'],keep='first').reset_index(drop=True)
+lion.columns=['bkfaceid','ft']
+sdwkwdimp=gpd.read_file(path+'STREET CLOSURE/sidewalk/output/sdwkwdimp.shp')
+sdwkwdimp.crs='epsg:4326'
+bkface=pd.merge(sdwkwdimp,lion,how='inner',on='bkfaceid')
+bkface['allowed']=np.where(bkface['impswmedia']>bkface['ft']+3,1,0)
+bkface=bkface[['impswmedia','ft','allowed','geometry']].reset_index(drop=True)
+bkface.to_file(path+'SIDEWALK CAFE/bkface.shp')
 
 
 
