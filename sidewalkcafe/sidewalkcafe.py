@@ -1342,7 +1342,7 @@ dfcafeznelwdlf=dfcafeznelwdlf.drop_duplicates(['ID'],keep='first').reset_index(d
 dfcafeznelwdlf['geometry']=[shapely.geometry.Point(x,y) for x,y in zip(dfcafeznelwdlf['XADJ'],dfcafeznelwdlf['YADJ'])]
 dfcafeznelwdlf=dfcafeznelwdlf.to_crs(4326)
 dfcafeznelwdlf=dfcafeznelwdlf.drop(['index_right','FLAG','ON','FROM','TO'],axis=1).reset_index(drop=True)
-dfcafeznelwdlf['ALLOWED']=np.where(pd.isna(dfcafeznelwdlf['FT']),'YES',
+dfcafeznelwdlf['ALLOWED']=np.where(pd.isna(dfcafeznelwdlf['FT'])&(dfcafeznelwdlf['LFIMPSWMDN']>=11),'YES',
                           np.where((dfcafeznelwdlf['FT']=='11')&(dfcafeznelwdlf['LFIMPSWMDN']>=14),'YES','NO'))
 dfcafeznelwdlf.to_file(path+'SIDEWALK CAFE/or_dcp2.shp')
 
@@ -1447,9 +1447,62 @@ lion.columns=['bkfaceid','ft']
 sdwkwdimp=gpd.read_file(path+'STREET CLOSURE/sidewalk/output/sdwkwdimp.shp')
 sdwkwdimp.crs='epsg:4326'
 bkface=pd.merge(sdwkwdimp,lion,how='inner',on='bkfaceid')
-bkface['allowed']=np.where(bkface['impswmedia']>bkface['ft']+3,1,0)
+bkface['allowed']=np.where(bkface['impswmedia']>bkface['ft']+3,'YES','NO')
 bkface=bkface[['impswmedia','ft','allowed','geometry']].reset_index(drop=True)
 bkface.to_file(path+'SIDEWALK CAFE/bkface.shp')
+
+
+
+
+
+# Small cafe
+sdwkcafe=gpd.read_file(path+'SIDEWALK CAFE/sidewalk_cafe.shp')
+sdwkcafe.crs=4326
+sdwkcafe=sdwkcafe.to_crs(6539)
+sdwkcafe=sdwkcafe[sdwkcafe['CafeType']=='Small Only'].reset_index(drop=True)
+smallcafe=[]
+for i in sdwkcafe.index:
+    tps=sdwkcafe.loc[i,'geometry']
+    splitter=shapely.geometry.MultiPoint(tps.coords)
+    splitseg=gpd.GeoDataFrame(shapely.ops.split(tps,splitter))
+    smallcafe+=[splitseg]
+smallcafe=pd.concat(smallcafe,axis=0,ignore_index=True)
+smallcafe['scid']=range(0,len(smallcafe))
+smallcafe['cafetype']='Small Only'
+smallcafe.columns=['geometry','scid','cafetype']
+smallcafe=gpd.GeoDataFrame(smallcafe,geometry=smallcafe['geometry'],crs=6539)
+smallcafectd=smallcafe.copy()
+smallcafectd['geometry']=smallcafectd.centroid
+smallcafectdbf=smallcafectd.copy()
+smallcafectdbf['geometry']=smallcafectdbf.buffer(100)
+bkface=gpd.read_file(path+'SIDEWALK CAFE/bkface.shp')
+bkface.crs=4326
+bkface=bkface.to_crs(6539)
+bkface['bkid']=range(0,len(bkface))
+smallcafectdbf=gpd.sjoin(smallcafectdbf,bkface,how='inner',op='intersects')
+smallcafebk=[]
+for i in smallcafe['scid']:
+    smallcafetp=smallcafectd.loc[smallcafectd['scid']==i,['scid','geometry']].reset_index(drop=True)
+    bkfacesmallcafe=bkface[np.isin(bkface['bkid'],smallcafectdbf.loc[smallcafectdbf['scid']==i,'bkid'])].reset_index(drop=True)
+    if len(bkfacesmallcafe)>0:
+        try:
+            bkfacesmallcafe=bkfacesmallcafe.loc[[np.argmin([smallcafetp.loc[0,'geometry'].distance(x) for x in bkfacesmallcafe['geometry']])]].reset_index(drop=True)
+            bkfacesmallcafe=bkfacesmallcafe.drop(['bkid','geometry'],axis=1).reset_index(drop=True)
+            smallcafetp=smallcafetp.drop(['geometry'],axis=1).reset_index(drop=True)
+            smallcafetp=pd.concat([smallcafetp,bkfacesmallcafe],axis=1,ignore_index=False)
+            smallcafebk+=[smallcafetp]
+        except:
+            print(str(i)+' error!')
+    else:
+        print(str(i)+' no bkface joined!')
+    print(str(i))
+smallcafebk=pd.concat(smallcafebk,ignore_index=True)
+smallcafebk=smallcafebk.drop_duplicates('scid',keep='first').reset_index(drop=True)
+smallcafebk=pd.merge(smallcafe,smallcafebk,how='inner',on='scid')
+smallcafebk=smallcafebk.to_crs(4326)
+smallcafebk.to_file(path+'SIDEWALK CAFE/smallcafebk.shp')
+
+
 
 
 
