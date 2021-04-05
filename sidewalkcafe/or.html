@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8" />
-    <title>Open Restaurant Clear Path</title>
+    <title> Open Restaurants </title>
     <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
     <script src="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js"></script>
     <link href="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css" rel="stylesheet" />
@@ -123,7 +123,7 @@
     <nav id="legend">
         <div class="container g-0">
             <div class="row g-0 justify-content-between" id="header">
-                <div class="col-auto"> Header </div>
+                <div class="col-auto"> Open Restaurants </div>
                 <div class="col-auto">
                     <i class="bi bi-chevron-down" id='chevron'></i>
                 </div>
@@ -194,7 +194,7 @@
                 'sourcedata': q, // data source
                 'layerid': 'sdwkwdimp', // layer id
                 'layertype': 'line', // symbology type
-                'layername': 'Median Sidewalk Width', // layer name for the legend
+                'layername': 'Blockface Median Sidewalk Width', // layer name for the legend
                 'layerlinecap': 'round', // line endings; butt/round/square
                 'layerlinejoin': 'round', // line joining; bevel/round/miter
                 'layervisibility': 'none', // visibility of the layer
@@ -221,7 +221,7 @@
             map.addSource(layerContent['sourceid'], {
                 'type': layerContent['sourcetype'],
                 'data': layerContent['sourcedata'],
-                'tolerance':0.2,
+                'tolerance': 0.2,
             });
 
             // Add line layer
@@ -241,29 +241,28 @@
                 },
             });
 
-            
 
 
-            // Add points
+
+            // Add open restaurants
             // Set layer contents
             var layerContent = {
-                'sourceid': 'or', // source id
+                'sourceid': 'orcp', // source id
                 'sourcetype': 'geojson', // source type
-                'sourcedata': 'https://raw.githubusercontent.com/mayijun1203/MLGH/master/mapbox/pointtestcat.geojson', // data source
-                'layerid': 'or', // layer id
+                'sourcedata': 'https://raw.githubusercontent.com/NYCPlanning/td-covid19/master/sidewalkcafe/or_cafe_zn_el_wd_lf.geojson', // data source
+                'layerid': 'orcp', // layer id
                 'layertype': 'circle', // symbology type
-                'layername': 'Point', // layer name for the legend
+                'layername': 'Open Restaurants by Clear Path', // layer name for the legend
                 'layervisibility': 'visible', // visibility of the layer
                 'layerblur': 0, // blur circle
-                'layercolname': 'cat', // category column name
-                'layercat': ['<=200', '201~400', '401~600', '601~800', '>800'], // categories
-                'layercolor': ['rgba(255,245,235,1)', 'rgba(254,210,166,1)', 'rgba(253,146,67,1)', 'rgba(223,79,5,1)', 'rgba(127,39,4,1)'], // color for each category; use rgba
+                'layercolname': 'LFCPCAT', // category column name
+                'layercat': ['>=8 ft', '<8 ft'], // categories
+                'layercolor': ['rgba(51,160,44,1)', 'rgba(255,85,85,1)'], // color for each category; use rgba
                 'layeropacity': 1, // circle opacity
-                'layerradius': { 'base': 2, 'stops': [[12, 4], [22, 180]] }, // circle radius; change size based on zoom level
+                'layerradius': { 'base': 2, 'stops': [[12, 3], [22, 180]] }, // circle radius; change size based on zoom level
                 'layerstrokecolor': 'rgb(255,255,255)', // circle stroke color
                 'layerstrokeopacity': 1, // circle stroke opacity
                 'layerstrokewidth': 0.5, // circle stroke width
-                'layerminzoom': 10, // only show if zoom in the certain level
                 'layeroutlinecolor': 'rgba(255,255,255,0)',  // outline color; for legend purpose only
             };
 
@@ -302,7 +301,6 @@
                     'circle-stroke-opacity': layerContent['layerstrokeopacity'],
                     'circle-stroke-width': layerContent['layerstrokewidth'],
                 },
-                // 'minzoom': layerContent['layerminzoom'],
             });
 
 
@@ -317,58 +315,64 @@
                 maxWidth: 'none', // max width of the popoup; 'none' to fit to the content                
             });
 
-            // Add point popup
+            // Add open restaurant by clear path popup
             // Add click event
-            map.on('click', 'ptlayer', function (e) {
+            map.on('click', 'orcp', function (e) {
                 var coordinates = e.features[0].geometry.coordinates.slice(); // get point coordinates
-                var description = "<b>Station: </b><span>" + e.features[0].properties.CplxName + "</span><br>"; // description in the popup
-                description += "<b>Entry: </b><span>" + e.features[0].properties.LatestEntries + "</span><br>";
-                popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
+                var description = "<b>ID: </b><span>" + e.features[0].properties.ID + "</span><br>"; // description in the popup
+                description += "<b>Submission Time: </b><span>" + e.features[0].properties.TIME + "</span><br>";
+                description += "<b>Sidewalk Cafe Regulation Type: </b><span>" + e.features[0].properties.TYPE + "</span><br>";
+                description += "<b>Restaurant Name: </b><span>" + e.features[0].properties.NAME + "</span><br>";
+                description += "<b>Legal Business Name: </b><span>" + e.features[0].properties.LEGAL + "</span><br>";
+                description += "<b>Doing Business As: </b><span>" + e.features[0].properties.DBA + "</span><br>";
+                description += "<b>Business Address: </b><span>" + e.features[0].properties.ADDRESS + "</span><br>";
+                description += "<b>Postcode: </b><span>" + e.features[0].properties.ZIP + "</span><br>";
+                description += "<b>Food Service Establishment Permit #: </b><span>" + e.features[0].properties.PMTNUM + "</span><br>";
+                description += "<b>Qualify Alcohol: </b><span>" + e.features[0].properties.ALCOHOL + "</span><br>";
+                description += "<b>SLA Serial Number: </b><span>" + e.features[0].properties.SLA + "</span><br>";
+                description += "<b>SLA License Type: </b><span>" + e.features[0].properties.SLATYPE + "</span><br>";
+                description += "<b>Landmark District or Building: </b><span>" + e.features[0].properties.LANDMARK + "</span><br>";
+                description += "<b>Landmark District Terms: </b><span>" + e.features[0].properties.TERMLDMK + "</span><br>";
+                description += "<b>Health Compliance Terms: </b><span>" + e.features[0].properties.TERMHEALTH + "</span><br>";
+                description += "<b>Borough-Block-Lot: </b><span>" + e.features[0].properties.BBL + "</span><br>";
+                description += "<b>Zoning District: </b><span>" + e.features[0].properties.ZD + "</span><br>";
+                description += "<b>Comemrcial Overlay: </b><span>" + e.features[0].properties.OL + "</span><br>";
+                description += "<b>Special District: </b><span>" + e.features[0].properties.SP + "</span><br>";
+                description += "<b>Elevated Rail: </b><span>" + e.features[0].properties.EL + "</span><br>";
+                description += "<b>Blockface Original Median Sidewalk Width (ft): </b><span>" + e.features[0].properties.ORGSWMDN.toFixed(2) + "</span><br>"; // description in the popup
+                description += "<b>Blockface Median Sidewalk Width Excluding Impediments (ft): </b><span>" + e.features[0].properties.IMPSWMDN.toFixed(2) + "</span><br>";
+                description += "<b>Lot Front Median Sidewalk Width Excluding Impediments (ft): </b><span>" + e.features[0].properties.LFIMPSWMDN.toFixed(2) + "</span><br>";
+                description += "<b>Lot Front Clear Path (ft): </b><span>" + (e.features[0].properties.LFIMPSWMDN-3).toFixed(2) + "</span><br>";
+               popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
             });
             // Add hover events
-            map.on('mouseenter', 'ptlayer', function () {
+            map.on('mouseenter', 'orcp', function () {
                 map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
             });
-            map.on('mouseleave', 'ptlayer', function () {
+            map.on('mouseleave', 'orcp', function () {
                 map.getCanvas().style.cursor = '';
             });
 
-            // Add line popup
+            // Add sidewalk width full popup
             // Add click event
-            map.on('click', 'lnlayer', function (e) {
+            map.on('click', 'sdwkwdimp', function (e) {
                 var coordinates = e.lngLat; // get pointer coordinates
-                var description = "<b>Division: </b><span>" + e.features[0].properties.div + "</span><br>"; // description in the popup
-                description += "<b>Routes: </b><span>" + e.features[0].properties.oem_route + "</span><br>";
+                var description = "<b>Blockface Original Median Sidewalk Width (ft): </b><span>" + e.features[0].properties.orgswmdn.toFixed(2) + "</span><br>"; // description in the popup
+                description += "<b>Blockface Median Sidewalk Width Excluding Impediments (ft): </b><span>" + e.features[0].properties.impswmdn.toFixed(2) + "</span><br>";
                 popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
             });
             // Add hover events
-            map.on('mouseenter', 'lnlayer', function () {
+            map.on('mouseenter', 'sdwkwdimp', function () {
                 map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
             });
-            map.on('mouseleave', 'lnlayer', function () {
-                map.getCanvas().style.cursor = '';
-            });
-
-            // Add polygon popup
-            // Add click event
-            map.on('click', 'pglayer', function (e) {
-                var coordinates = e.lngLat; // get pointer coordinates
-                var description = "<b>NTA: </b><span>" + e.features[0].properties.NTAName + "</span><br>"; // description in the popup
-                description += "<b>Percent Change: </b><span>" + e.features[0].properties.PKDiffPct3 + "</span><br>";
-                popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
-            });
-            // Add hover events
-            map.on('mouseenter', 'pglayer', function () {
-                map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
-            });
-            map.on('mouseleave', 'pglayer', function () {
+            map.on('mouseleave', 'sdwkwdimp', function () {
                 map.getCanvas().style.cursor = '';
             });
 
 
 
             // Add layer selector and legend
-            var layerOrder = ['sdwkwdimp', 'lnlayer', 'pglayer']; // set layer order in the legend
+            var layerOrder = ['orcp', 'sdwkwdimp']; // set layer order in the legend
             var layerContentListOrder = []; // create ordered layer content list
             for (var i = 0; i < layerOrder.length; i++) {
                 layerContentListOrder.push(layerContentList.filter(e => e.layerid == layerOrder[i])[0]);
