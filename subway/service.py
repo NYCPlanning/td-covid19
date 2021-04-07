@@ -522,11 +522,11 @@ tp.to_csv(path+'SERVICE/ds.csv',index=False)
 
 
 df=pd.read_csv(path+'SERVICE/service.csv')
-dfcolors={'3/12/2020':'#D9E1F2',
-          '4/9/2020':'#B4C6E7',
-          '5/14/2020':'#8EA9DB',
-          '6/11/2020':'#305496',
-          '3/25/2021':'#203764'}
+dfcolors={'3/12/2020':'#fde725',
+          '4/9/2020':'#5dc962',
+          '5/14/2020':'#20908d',
+          '6/11/2020':'#3a528b',
+          '3/25/2021':'#440154'}
 fig=go.Figure()
 fig=fig.add_trace(go.Scattergl(name='',
                                x=df['time'],
@@ -540,8 +540,8 @@ for i in df.columns[1:]:
                                    mode='lines',
                                    x=df['time'],
                                    y=df[i],
-                                   line={'color':dfcolors[i],
-                                         'width':3},
+                                    line={'color':dfcolors[i],
+                                          'width':3},
                                    hovertext=[i+': '+'{0:,}'.format(x) for x in df[i]],
                                    hoverinfo='text'))
 fig.update_layout(
@@ -564,6 +564,7 @@ fig.update_layout(
     yaxis={'title':{'text':'<b>Stops per Hour</b>',
                     'font_size':16},
            'tickfont_size':14,
+           'rangemode':'nonnegative',
            'fixedrange':True,
            'showgrid':False},
     hoverlabel={'font_size':14},
