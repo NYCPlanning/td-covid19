@@ -2,8 +2,11 @@ import pandas as pd
 import numpy as np
 import datetime
 import pytz
+import plotly.io as pio
+import plotly.graph_objects as go
 
 
+pio.renderers.default="browser"
 pd.set_option('display.max_columns', None)
 path='C:/Users/mayij/Desktop/DOC/DCP2020/COVID19/SUBWAY/'
 
@@ -517,10 +520,6 @@ tp.to_csv(path+'SERVICE/ds.csv',index=False)
 
 
 
-import plotly.io as pio
-import plotly.graph_objects as go
-pio.renderers.default="browser"
-
 
 df=pd.read_csv(path+'SERVICE/service.csv')
 dfcolors={'3/12/2020':'#D9E1F2',
@@ -547,7 +546,7 @@ for i in df.columns[1:]:
                                    hoverinfo='text'))
 fig.update_layout(
     template='plotly_white',
-    title={'text':'<b>System-wide Weekday Service Change by Hour</b>',
+    title={'text':'<b>MTA Subway System-wide Weekday Service Change by Hour</b>',
            'font_size':24,
            'x':0.5,
            'xanchor':'center'},
