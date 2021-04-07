@@ -265,9 +265,21 @@ k['hour']=[x.strftime('%H') for x in k['time']]
 k=k.groupby('hour',as_index=False).agg({'tripid':'count'}).reset_index(drop=True)
 k.to_csv(path+'k.csv',index=False)
 
+k=pd.read_csv(path+'SERVICE/gtfsrt/tp_20210311.csv',dtype=float,converters={'routeid':str,'tripdate':str,'tripid':str,'startstopid':str,'endstopid':str})
+k=k[k['starttime']!=0].reset_index(drop=True)
+k=k[k['endtime']!=0].reset_index(drop=True)
+k['time']=[datetime.datetime.fromtimestamp(x,tz=pytz.timezone('America/New_York')) for x in k['starttime']]
+k['hour']=[x.strftime('%H') for x in k['time']]
+k=k.groupby('hour',as_index=False).agg({'tripid':'count'}).reset_index(drop=True)
+k.to_csv(path+'SERVICE/k.csv',index=False)
 
-
-
+k=pd.read_csv(path+'SERVICE/gtfsrt/tp_20210325.csv',dtype=float,converters={'routeid':str,'tripdate':str,'tripid':str,'startstopid':str,'endstopid':str})
+k=k[k['starttime']!=0].reset_index(drop=True)
+k=k[k['endtime']!=0].reset_index(drop=True)
+k['time']=[datetime.datetime.fromtimestamp(x,tz=pytz.timezone('America/New_York')) for x in k['starttime']]
+k['hour']=[x.strftime('%H') for x in k['time']]
+k=k.groupby('hour',as_index=False).agg({'tripid':'count'}).reset_index(drop=True)
+k.to_csv(path+'SERVICE/k.csv',index=False)
 
 
 
@@ -494,6 +506,80 @@ for i in t:
     tp.loc[tp['Date']==i,'Ridership']=sum(k['E'+i[6:10]+i[0:2]+i[3:5]])
     tp.loc[tp['Date']==i,'Trips']=sum(k['T'+i[6:10]+i[0:2]+i[3:5]])
 tp.to_csv(path+'SERVICE/ds.csv',index=False)
+
+
+
+
+
+
+
+
+
+
+
+import plotly.io as pio
+import plotly.graph_objects as go
+pio.renderers.default="browser"
+
+
+df=pd.read_csv(path+'SERVICE/service.csv')
+dfcolors={'3/12/2020':'#D9E1F2',
+          '4/9/2020':'#B4C6E7',
+          '5/14/2020':'#8EA9DB',
+          '6/11/2020':'#305496',
+          '3/25/2021':'#203764'}
+fig=go.Figure()
+fig=fig.add_trace(go.Scattergl(name='',
+                               x=df['time'],
+                               y=df['3/12/2020'],
+                               opacity=0,
+                               showlegend=False,
+                               hovertext='<b>'+df['time']+'</b>',
+                               hoverinfo='text'))
+for i in df.columns[1:]:
+    fig=fig.add_trace(go.Scattergl(name=i+'   ',
+                                   mode='lines',
+                                   x=df['time'],
+                                   y=df[i],
+                                   line={'color':dfcolors[i],
+                                         'width':3},
+                                   hovertext=[i+': '+'{0:,}'.format(x) for x in df[i]],
+                                   hoverinfo='text'))
+fig.update_layout(
+    template='plotly_white',
+    title={'text':'<b>System-wide Weekday Service Change by Hour</b>',
+           'font_size':24,
+           'x':0.5,
+           'xanchor':'center'},
+    legend={'orientation':'h',
+            'title_text':'',
+            'font_size':16,
+            'x':0.5,
+            'xanchor':'center',
+            'y':1,
+            'yanchor':'bottom'},
+    xaxis={'tickangle':-90,
+           'tickfont_size':14,
+           'fixedrange':True,
+           'showgrid':False},
+    yaxis={'title':{'text':'<b>Stops per Hour</b>',
+                    'font_size':16},
+           'tickfont_size':14,
+           'fixedrange':True,
+           'showgrid':False},
+    hoverlabel={'font_size':14},
+    font={'family':'Arial',
+          'color':'black'},
+    dragmode=False,
+    hovermode='x unified',
+    )
+fig.write_html('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/service.html',
+               include_plotlyjs='cdn',
+               config={'displaylogo':False,'modeBarButtonsToRemove':['select2d','lasso2d']})
+
+
+
+
 
 
 
