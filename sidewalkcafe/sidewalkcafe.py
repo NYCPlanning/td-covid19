@@ -336,7 +336,7 @@ dfcafeznelwdlf['LFCP']=np.where(dfcafeznelwdlf['LFIMPSWMDN']>=15,'>=12 ft',
                         np.where(dfcafeznelwdlf['LFIMPSWMDN']>=9,'6 ft ~ 7 ft',
                         np.where(dfcafeznelwdlf['LFIMPSWMDN']>=8,'5 ft ~ 6 ft',
                                 '<5 ft'))))))))
-dfcafeznelwdlf['LFCPCAT']=np.where(dfcafeznelwdlf['LFIMPSWMDN']>=11,'>=8 ft','<8 ft')
+dfcafeznelwdlf['LFCPCAT']=np.where(dfcafeznelwdlf['LFIMPSWMDN']>=11,'Likely Eligible','Likely Ineligible')
 dfcafeznelwdlf.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/sidewalkcafe/or_cafe_zn_el_wd_lf.geojson',driver='GeoJSON')
 
 
@@ -1510,6 +1510,38 @@ smallcafebk=smallcafebk.drop_duplicates('scid',keep='first').reset_index(drop=Tr
 smallcafebk=pd.merge(smallcafe,smallcafebk,how='inner',on='scid')
 smallcafebk=smallcafebk.to_crs(4326)
 smallcafebk.to_file(path+'SIDEWALK CAFE/smallcafebk.shp')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
