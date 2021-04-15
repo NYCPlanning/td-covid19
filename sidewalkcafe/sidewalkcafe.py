@@ -1785,6 +1785,9 @@ df['LAT']=np.nan
 df['LONG']=np.nan
 df['X']=np.nan
 df['Y']=np.nan
+df['XAP']=np.nan
+df['YAP']=np.nan
+df['BKFACE']=np.nan
 
 g=Geosupport()
 for i in df.index:
@@ -1800,6 +1803,7 @@ for i in df.index:
                 df.loc[i,'LONG']=pd.to_numeric(addr['Longitude'])
                 df.loc[i,'X']=pd.to_numeric(addr['Spatial X-Y Coordinates of Address'][0:7])
                 df.loc[i,'Y']=pd.to_numeric(addr['Spatial X-Y Coordinates of Address'][7:14])
+                df.loc[i,'BKFACE']=pd.to_numeric(addr['Blockface ID'])
             elif addr['SPATIAL COORDINATES OF ACTUAL SEGMENT']!='':
                 df.loc[i,'BBL']=0
                 df.loc[i,'LAT']=0
@@ -1808,8 +1812,15 @@ for i in df.index:
                               pd.to_numeric(addr['SPATIAL COORDINATES OF ACTUAL SEGMENT']['X Coordinate, High Address End']))/2
                 df.loc[i,'Y']=(pd.to_numeric(addr['SPATIAL COORDINATES OF ACTUAL SEGMENT']['Y Coordinate, Low Address End'])+
                               pd.to_numeric(addr['SPATIAL COORDINATES OF ACTUAL SEGMENT']['Y Coordinate, High Address End']))/2
+                df.loc[i,'BKFACE']=0
             else:
                 print(str(df.loc[i,'SR Number'])+' not geocoded with 1B zipcode!')
+            addr=g['AP']({'house_number':housenumber,'street_name':streetname,'zip_code':zipcode})
+            if addr['BOROUGH BLOCK LOT (BBL)']['BOROUGH BLOCK LOT (BBL)']!='':
+                df.loc[i,'XAP']=pd.to_numeric(addr['X-Y Coordinates of Address Point'][0:7])
+                df.loc[i,'YAP']=pd.to_numeric(addr['X-Y Coordinates of Address Point'][7:14])
+            else:
+                print(str(df.loc[i,'ID'])+' not geocoded with AP zipcode!')
         except:
             print(str(df.loc[i,'SR Number'])+' error!')
 len(df[pd.notna(df['BBL'])])
@@ -1832,6 +1843,9 @@ for i in df.index:
                 df.loc[i,'LONG']=0
                 df.loc[i,'X']=pd.to_numeric(addr['SPATIAL COORDINATES']['X Coordinate'])
                 df.loc[i,'Y']=pd.to_numeric(addr['SPATIAL COORDINATES']['Y Coordinate'])
+                df.loc[i,'XAP']=0
+                df.loc[i,'YAP']=0
+                df.loc[i,'BKFACE']=0
             else:
                 print(str(df.loc[i,'SR Number'])+' not geocoded with 2 borough!')
         except:
@@ -1860,6 +1874,9 @@ for i in df.index:
                 df.loc[i,'LONG']=0
                 df.loc[i,'X']=seg.centroid.x[0]
                 df.loc[i,'Y']=seg.centroid.y[0]
+                df.loc[i,'XAP']=0
+                df.loc[i,'YAP']=0
+                df.loc[i,'BKFACE']=0
             else:
                 print(str(df.loc[i,'SR Number'])+' not geocoded with 3 borough!')
         except:
@@ -1870,13 +1887,48 @@ df=gpd.GeoDataFrame(df,geometry=[shapely.geometry.Point(x,y) for x,y in zip(df['
 df=df.to_crs(4326)
 df.to_file(path+'SIDEWALK CAFE/COMPLAINTS/COMPLAINTS_xy.shp')
 
-
-df.read_file(path+'SIDEWALK CAFE/COMPLAINTS/COMPLAINTS_xy.shp')
+# Adjust Open Restaurant to MapPluto Lot Line
+df=gpd.read_file(path+'SIDEWALK CAFE/COMPLAINTS/COMPLAINTS_xy.shp')
+df.crs=4326
+df=df.to_crs(6539)
 df=df[(pd.notna(df['BBL']))&(df['BBL']!=0)].reset_index(drop=True)
-df=gpd.GeoDataFrame(df,geometry=[shapely.geometry.Point(x,y) for x,y in zip(df['LONG'],df['LAT'])],crs=4326)
-df.to_file(path+'SIDEWALK CAFE/COMPLAINTS/COMPLAINTS.shp')
+# 886/941
+mappluto=gpd.read_file(path+'SIDEWALK CAFE/mappluto.shp')
+mappluto.crs='epsg:4326'
+mappluto=mappluto.to_crs('epsg:6539')
+mappluto['geometry']=[x.boundary for x in mappluto['geometry']]
+df['XADJ']=np.nan
+df['YADJ']=np.nan
+for i in df.index:
+    try:
+        tp=shapely.ops.nearest_points(df.loc[i,'geometry'],list(mappluto.loc[mappluto['BBL']==df.loc[i,'BBL'],'geometry'])[0])[1]
+        df.loc[i,'XADJ']=tp.x
+        df.loc[i,'YADJ']=tp.y
+    except:
+        print(str(i)+' error')
+df=df[pd.notna(df['XADJ'])].reset_index(drop=True)
+# 881/941
+df=gpd.GeoDataFrame(df,geometry=[shapely.geometry.Point(x,y) for x,y in zip(df['XADJ'],df['YADJ'])],crs='epsg:6539')
+df=df.to_crs('epsg:4326')
+df.to_file(path+'SIDEWALK CAFE/COMPLAINTS/COMPLAINTS_xyadj.shp')
 
 
+
+# # Join Open Restaurant to Sidewalk Cafe Reg
+# sdwkcafe=gpd.read_file(path+'SIDEWALK CAFE/sidewalk_cafe.shp')
+# sdwkcafe.crs='epsg:4326'
+# sdwkcafe=sdwkcafe.to_crs('epsg:6539')
+# sdwkcafe['geometry']=[x.buffer(5) for x in sdwkcafe['geometry']]
+# sdwkcafe=sdwkcafe.to_crs('epsg:4326')
+# sdwkcafe['CAFETYPE']=[str(x).strip().upper() for x in sdwkcafe['CafeType']]
+# sdwkcafe=sdwkcafe[['CAFETYPE','geometry']].reset_index(drop=True)
+# df=gpd.read_file(path+'SIDEWALK CAFE/or_xyadj.shp')
+# df.crs='epsg:4326'
+# dfcafe=gpd.sjoin(df,sdwkcafe,how='left',op='intersects')
+# dfcafe=dfcafe[['ID','CAFETYPE']].drop_duplicates(['ID'],keep='first').reset_index(drop=True)
+# dfcafe['CAFETYPE']=np.where(pd.notna(dfcafe['CAFETYPE']),dfcafe['CAFETYPE'],'NONE')
+# dfcafe=pd.merge(df,dfcafe,how='inner',on='ID')
+# dfcafe.to_file(path+'SIDEWALK CAFE/or_cafe.shp')
 
 
 
