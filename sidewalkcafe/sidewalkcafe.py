@@ -1785,9 +1785,10 @@ df['LAT']=np.nan
 df['LONG']=np.nan
 df['X']=np.nan
 df['Y']=np.nan
+
 g=Geosupport()
 for i in df.index:
-    if pd.isna(df.loc[i,'X']):
+    if pd.isna(df.loc[i,'BBL']):
         try:
             housenumber=' '.join([x[0].replace(',','').upper() for x in usaddress.parse(df.loc[i,'SR Address']) if re.search('AddressNumber',x[1])])
             streetname=' '.join([x[0].replace(',','').upper() for x in usaddress.parse(df.loc[i,'SR Address']) if re.search('StreetName',x[1])])
@@ -1813,8 +1814,9 @@ for i in df.index:
             print(str(df.loc[i,'SR Number'])+' error!')
 len(df[pd.notna(df['BBL'])])
 # 907/941
+
 for i in df.index:
-    if pd.isna(df.loc[i,'X']):
+    if pd.isna(df.loc[i,'BBL']):
         try:
             streetname1=df.loc[i,'SR Address'].split(' AND ')[0].strip().upper()
             streetname2=df.loc[i,'SR Address'].split(' AND ')[1].split(',')[0].strip().upper()
@@ -1836,6 +1838,40 @@ for i in df.index:
             print(str(df.loc[i,'SR Number'])+' not geocoded with 2!')
 len(df[pd.notna(df['BBL'])])
 # 937/941
+
+lion=gpd.read_file(path+'STREET CLOSURE/sidewalk/input/lion/lion.shp')
+lion.crs=4326
+lion=lion.to_crs(6539)
+for i in df.index:
+    if pd.isna(df.loc[i,'BBL']):
+        try:
+            onstreet=df.loc[i,'SR Address'].split(' BETWEEN ')[0].strip().upper()
+            fromstreet=df.loc[i,'SR Address'].split(' BETWEEN ')[1].split(' AND ')[0].strip().upper()
+            tostreet=df.loc[i,'SR Address'].split(' BETWEEN ')[1].split(' AND ')[1].split(',')[0].strip().upper()
+            boroughcode=np.where(df.loc[i,'City (SR Address) (NYC Address)']=='NEW YORK',1,
+                        np.where(df.loc[i,'City (SR Address) (NYC Address)']=='BRONX',2,
+                        np.where(df.loc[i,'City (SR Address) (NYC Address)']=='BROOKLYN',3,
+                        np.where(df.loc[i,'City (SR Address) (NYC Address)']=='STATEN ISLAND',5,4)))).tolist()
+            addr=g['3']({'borough_code':boroughcode,'on':onstreet,'from':fromstreet,'to':tostreet})
+            if addr['Segment Identifier']!='':
+                seg=lion.loc[lion['SegmentID']==addr['Segment Identifier'],'geometry'].reset_index(drop=True)
+                df.loc[i,'BBL']=0
+                df.loc[i,'LAT']=0
+                df.loc[i,'LONG']=0
+                df.loc[i,'X']=seg.centroid.x[0]
+                df.loc[i,'Y']=seg.centroid.y[0]
+            else:
+                print(str(df.loc[i,'SR Number'])+' not geocoded with 3 borough!')
+        except:
+            print(str(df.loc[i,'SR Number'])+' not geocoded with 3!')
+len(df[pd.notna(df['BBL'])])
+# 941/941
+df=gpd.GeoDataFrame(df,geometry=[shapely.geometry.Point(x,y) for x,y in zip(df['X'],df['Y'])],crs=6539)
+df=df.to_crs(4326)
+df.to_file(path+'SIDEWALK CAFE/COMPLAINTS/COMPLAINTS_xy.shp')
+
+
+df.read_file(path+'SIDEWALK CAFE/COMPLAINTS/COMPLAINTS_xy.shp')
 df=df[(pd.notna(df['BBL']))&(df['BBL']!=0)].reset_index(drop=True)
 df=gpd.GeoDataFrame(df,geometry=[shapely.geometry.Point(x,y) for x,y in zip(df['LONG'],df['LAT'])],crs=4326)
 df.to_file(path+'SIDEWALK CAFE/COMPLAINTS/COMPLAINTS.shp')
