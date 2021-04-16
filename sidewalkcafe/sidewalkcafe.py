@@ -1778,7 +1778,7 @@ smallcafebk.to_file(path+'SIDEWALK CAFE/smallcafebk.shp')
 
 
 
-# Complaints
+# DEP Complaints
 df=pd.read_excel(path+'SIDEWALK CAFE/COMPLAINTS/Copy of Outdoor Music 04-01-20 to 02-05-21.xlsx',sheet_name='Sheet1',dtype=str)
 df['BBL']=np.nan
 df['LAT']=np.nan
@@ -1788,6 +1788,7 @@ df['Y']=np.nan
 df['XAP']=np.nan
 df['YAP']=np.nan
 df['BKFACE']=np.nan
+df['SEGID']=np.nan
 
 g=Geosupport()
 for i in df.index:
@@ -1804,6 +1805,7 @@ for i in df.index:
                 df.loc[i,'X']=pd.to_numeric(addr['Spatial X-Y Coordinates of Address'][0:7])
                 df.loc[i,'Y']=pd.to_numeric(addr['Spatial X-Y Coordinates of Address'][7:14])
                 df.loc[i,'BKFACE']=pd.to_numeric(addr['Blockface ID'])
+                df.loc[i,'SEGID']=0
             elif addr['SPATIAL COORDINATES OF ACTUAL SEGMENT']!='':
                 df.loc[i,'BBL']=0
                 df.loc[i,'LAT']=0
@@ -1813,6 +1815,7 @@ for i in df.index:
                 df.loc[i,'Y']=(pd.to_numeric(addr['SPATIAL COORDINATES OF ACTUAL SEGMENT']['Y Coordinate, Low Address End'])+
                               pd.to_numeric(addr['SPATIAL COORDINATES OF ACTUAL SEGMENT']['Y Coordinate, High Address End']))/2
                 df.loc[i,'BKFACE']=0
+                df.loc[i,'SEGID']=0
             else:
                 print(str(df.loc[i,'SR Number'])+' not geocoded with 1B zipcode!')
             addr=g['AP']({'house_number':housenumber,'street_name':streetname,'zip_code':zipcode})
@@ -1825,7 +1828,10 @@ for i in df.index:
             print(str(df.loc[i,'SR Number'])+' error!')
 len(df[pd.notna(df['BBL'])])
 # 907/941
+df.to_csv(path+'SIDEWALK CAFE/COMPLAINTS/COMPLAINTS.csv',index=False)
 
+df=pd.read_csv(path+'SIDEWALK CAFE/COMPLAINTS/COMPLAINTS.csv')
+g=Geosupport()
 for i in df.index:
     if pd.isna(df.loc[i,'BBL']):
         try:
@@ -1846,16 +1852,17 @@ for i in df.index:
                 df.loc[i,'XAP']=0
                 df.loc[i,'YAP']=0
                 df.loc[i,'BKFACE']=0
+                df.loc[i,'SEGID']=0
             else:
                 print(str(df.loc[i,'SR Number'])+' not geocoded with 2 borough!')
         except:
             print(str(df.loc[i,'SR Number'])+' not geocoded with 2!')
 len(df[pd.notna(df['BBL'])])
 # 937/941
+df.to_csv(path+'SIDEWALK CAFE/COMPLAINTS/COMPLAINTS.csv',index=False)
 
-lion=gpd.read_file(path+'STREET CLOSURE/sidewalk/input/lion/lion.shp')
-lion.crs=4326
-lion=lion.to_crs(6539)
+df=pd.read_csv(path+'SIDEWALK CAFE/COMPLAINTS/COMPLAINTS.csv')
+g=Geosupport()
 for i in df.index:
     if pd.isna(df.loc[i,'BBL']):
         try:
@@ -1866,23 +1873,41 @@ for i in df.index:
                         np.where(df.loc[i,'City (SR Address) (NYC Address)']=='BRONX',2,
                         np.where(df.loc[i,'City (SR Address) (NYC Address)']=='BROOKLYN',3,
                         np.where(df.loc[i,'City (SR Address) (NYC Address)']=='STATEN ISLAND',5,4)))).tolist()
-            addr=g['3']({'borough_code':boroughcode,'on':onstreet,'from':fromstreet,'to':tostreet})
+            addr=g['3']({'borough_code':boroughcode,
+                         'on':onstreet,
+                         'from':fromstreet,
+                         'to':tostreet,
+                         'compass_direction':'w',
+                         'compass_direction_1':'w',
+                         'compass_direction_2':'s'})
             if addr['Segment Identifier']!='':
-                seg=lion.loc[lion['SegmentID']==addr['Segment Identifier'],'geometry'].reset_index(drop=True)
                 df.loc[i,'BBL']=0
                 df.loc[i,'LAT']=0
                 df.loc[i,'LONG']=0
-                df.loc[i,'X']=seg.centroid.x[0]
-                df.loc[i,'Y']=seg.centroid.y[0]
                 df.loc[i,'XAP']=0
                 df.loc[i,'YAP']=0
                 df.loc[i,'BKFACE']=0
+                df.loc[i,'SEGID']=pd.to_numeric(addr['Segment Identifier'])
             else:
                 print(str(df.loc[i,'SR Number'])+' not geocoded with 3 borough!')
         except:
             print(str(df.loc[i,'SR Number'])+' not geocoded with 3!')
 len(df[pd.notna(df['BBL'])])
 # 941/941
+df.to_csv(path+'SIDEWALK CAFE/COMPLAINTS/COMPLAINTS.csv',index=False)
+
+df=pd.read_csv(path+'SIDEWALK CAFE/COMPLAINTS/COMPLAINTS.csv')
+lion=gpd.read_file(path+'STREET CLOSURE/sidewalk/input/lion/lion.shp')
+lion.crs=4326
+lion=lion.to_crs(6539)
+lion['SEGID']=pd.to_numeric(lion['SegmentID'])
+for i in df.index:
+    if df.loc[i,'SEGID']!=0:
+        df.loc[i,'X']=lion.loc[lion['SEGID']==df.loc[i,'SEGID'],'geometry'].reset_index(drop=True).centroid.x[0]
+        df.loc[i,'Y']=lion.loc[lion['SEGID']==df.loc[i,'SEGID'],'geometry'].reset_index(drop=True).centroid.y[0]
+df.to_csv(path+'SIDEWALK CAFE/COMPLAINTS/COMPLAINTS.csv',index=False)
+
+df=pd.read_csv(path+'SIDEWALK CAFE/COMPLAINTS/COMPLAINTS.csv')
 df=gpd.GeoDataFrame(df,geometry=[shapely.geometry.Point(x,y) for x,y in zip(df['X'],df['Y'])],crs=6539)
 df=df.to_crs(4326)
 df.to_file(path+'SIDEWALK CAFE/COMPLAINTS/COMPLAINTS_xy.shp')
@@ -1908,27 +1933,88 @@ for i in df.index:
         print(str(i)+' error')
 df=df[pd.notna(df['XADJ'])].reset_index(drop=True)
 # 881/941
-df=gpd.GeoDataFrame(df,geometry=[shapely.geometry.Point(x,y) for x,y in zip(df['XADJ'],df['YADJ'])],crs='epsg:6539')
+df=gpd.GeoDataFrame(df,geometry=[shapely.geometry.Point(x,y) for x,y in zip(df['XADJ'],df['YADJ'])],crs=6539)
 df=df.to_crs('epsg:4326')
 df.to_file(path+'SIDEWALK CAFE/COMPLAINTS/COMPLAINTS_xyadj.shp')
 
+# Join DEP Complaints to Sidewalk Cafe Reg
+sdwkcafe=gpd.read_file(path+'SIDEWALK CAFE/sidewalk_cafe.shp')
+sdwkcafe.crs=4326
+sdwkcafe=sdwkcafe.to_crs(6539)
+sdwkcafe['geometry']=[x.buffer(5) for x in sdwkcafe['geometry']]
+sdwkcafe=sdwkcafe.to_crs(4326)
+sdwkcafe['CAFETYPE']=[str(x).strip().upper() for x in sdwkcafe['CafeType']]
+sdwkcafe=sdwkcafe[['CAFETYPE','geometry']].reset_index(drop=True)
+df=gpd.read_file(path+'SIDEWALK CAFE/COMPLAINTS/COMPLAINTS_xyadj.shp')
+df.crs=4326
+dfcafe=gpd.sjoin(df,sdwkcafe,how='left',op='intersects')
+dfcafe=dfcafe[['SR Number','CAFETYPE']].drop_duplicates(['SR Number'],keep='first').reset_index(drop=True)
+dfcafe['CAFETYPE']=np.where(pd.notna(dfcafe['CAFETYPE']),dfcafe['CAFETYPE'],'NONE')
+dfcafe=pd.merge(df,dfcafe,how='inner',on='SR Number')
+dfcafe.to_file(path+'SIDEWALK CAFE/COMPLAINTS/COMPLAINTS_cafe.shp')
+
+# Join DEP Complaints to Lot Front Sidewalk Width
+dfcafe=gpd.read_file(path+'SIDEWALK CAFE/COMPLAINTS/COMPLAINTS_cafe.shp')
+dfcafe.crs=4326
+dfcafebf=dfcafe.copy()
+dfcafebf=dfcafebf.to_crs(6539)
+dfcafebf['geometry']=dfcafebf.buffer(5)
+dfcafebf=dfcafebf.to_crs(4326)
+mapplutolftmswsp=gpd.read_file(path+'SIDEWALK CAFE/mapplutolftmswsp.geojson')
+mapplutolftmswsp.crs=4326
+mapplutolftmswsp['LFIMPSWMDN']=mapplutolftmswsp['impswmdn'].copy()
+mapplutolftmswsp=mapplutolftmswsp[['LFIMPSWMDN','geometry']].reset_index(drop=True)
+dfcafebf=gpd.sjoin(dfcafebf,mapplutolftmswsp,how='left',op='intersects')
+dfcafebf=dfcafebf[['SR Number','LFIMPSWMDN']].drop_duplicates(['SR Number'],keep='first').reset_index(drop=True)
+dfcafelf=pd.merge(dfcafe,dfcafebf,how='left',on='SR Number')
+dfcafelf.to_file(path+'SIDEWALK CAFE/COMPLAINTS/COMPLAINTS_cafe_lf.shp')
+
+# Join DEP Complaints to corridors
+dfcafelf=gpd.read_file(path+'SIDEWALK CAFE/COMPLAINTS/COMPLAINTS_cafe_lf.shp')
+dfcafelf.crs=4326
+dfcafelfbf=gpd.GeoDataFrame(dfcafelf,geometry=[shapely.geometry.Point(x,y) for x,y in zip(dfcafelf['X'],dfcafelf['Y'])],crs=6539)
+dfcafelfbf['geometry']=dfcafelfbf.buffer(10)
+dfcafelfbf=dfcafelfbf.to_crs(4326)
+crd=gpd.read_file(path+'SIDEWALK CAFE/CORRIDOR2/crdgeocode.shp')
+crd.crs=4326
+crd=list(crd.SEGMENTID.unique())
+union=[32786,32790,32797,32799,32806,32808,32809,32812,32941,32945,32956,32957,110559,133903,138570,139521,139522,139523,139524,139525,139526,139527,145393,145394,164328,164381,164382,164383,164384,250870,250951,251073,283287]
+queens=[67235,67247,67248,67252,172580,172581,172582,172585,172586,189355,189356,9009910,9009911]
+broadway=[299595,257485,257484,254134,254133,216991,114275,110862,23370,23364,23232,23230,23228,23204,23199,23197,23195,23094,23065,23060]
+add=[148189,148190,148191,148192,144897,144898,281709,281723,281708,281730,281731,281699,192209,192210,
+     192208,192212,262020,262483,262482,262019,261850,261860,261872,261876,261871,261875,148807,148700,
+     148660,257576,257575,257569,257588,257587,257585,158915,158827,158577,158629,159076,159091,262006,
+     262475,155013,155159,159036,158678,158641,159181,158642,158987,158715,159104,284713,284714,284712,
+     284723,284725,284726,158589,158933,159267,159103,159286,158730,158731,158761,159285,159063,138148,
+     158564,158900,158573,159216,139555,158858,158808,158905,158813,158942,158620,159032,158621,158895,
+     151913,158896,158893,158855,158669,158822,158596,159009,158597]
+lion=gpd.read_file(path+'STREET CLOSURE/sidewalk/input/lion/lion.shp')
+lion.crs=4326
+lion['SEGMENTID']=pd.to_numeric(lion['SegmentID'],errors='coerce')
+lion['FT']=np.where(np.isin(lion['SEGMENTID'],crd),11,
+           np.where(np.isin(lion['SEGMENTID'],union),11,
+           np.where(np.isin(lion['SEGMENTID'],queens),11,
+           np.where(np.isin(lion['SEGMENTID'],broadway),11,
+           np.where(np.isin(lion['SEGMENTID'],add),11,8)))))
+lion=lion[['SEGMENTID','FT','geometry']].reset_index(drop=True)
+lion=lion.sort_values(['SEGMENTID','FT'],ascending=False).reset_index(drop=True)
+lion=lion.drop_duplicates(['SEGMENTID'],keep='first').reset_index(drop=True)
+dfcafelfbf=gpd.sjoin(dfcafelfbf,lion,how='left',op='intersects')
+dfcafelfbf=dfcafelfbf.sort_values(['SR Number','FT'],ascending=False).reset_index(drop=True)
+dfcafelfbf=dfcafelfbf.drop_duplicates(['SR Number'],keep='first').reset_index(drop=True)
+dfcafelfbf=dfcafelfbf[['SR Number','FT']].reset_index(drop=True)
+
+dfcafelfcr=pd.merge(dfcafelf,dfcafelfbf,how='inner',on='SR Number')
+dfcafelfcr=gpd.GeoDataFrame(dfcafelfcr,geometry=[shapely.geometry.Point(x,y) for x,y in zip(dfcafelfcr['LONG'],dfcafelfcr['LAT'])],crs=4326)
+dfcafelfcr['ALLOWED']=np.where((dfcafelfcr['FT']==11)&(dfcafelfcr['LFIMPSWMDN']>=14),'YES',
+                      np.where((dfcafelfcr['FT']==8)&(dfcafelfcr['LFIMPSWMDN']>=11),'YES','NO'))
+dfcafelfcr.to_file(path+'SIDEWALK CAFE/COMPLAINTS/COMPLAINTS_cafe_lf_cr.shp')
+
+k=dfcafelfcr[(np.isin(dfcafelfcr['CAFETYPE'],['NONE','NOT PERMITTED']))&(dfcafelfcr['ALLOWED']=='YES')]
 
 
-# # Join Open Restaurant to Sidewalk Cafe Reg
-# sdwkcafe=gpd.read_file(path+'SIDEWALK CAFE/sidewalk_cafe.shp')
-# sdwkcafe.crs='epsg:4326'
-# sdwkcafe=sdwkcafe.to_crs('epsg:6539')
-# sdwkcafe['geometry']=[x.buffer(5) for x in sdwkcafe['geometry']]
-# sdwkcafe=sdwkcafe.to_crs('epsg:4326')
-# sdwkcafe['CAFETYPE']=[str(x).strip().upper() for x in sdwkcafe['CafeType']]
-# sdwkcafe=sdwkcafe[['CAFETYPE','geometry']].reset_index(drop=True)
-# df=gpd.read_file(path+'SIDEWALK CAFE/or_xyadj.shp')
-# df.crs='epsg:4326'
-# dfcafe=gpd.sjoin(df,sdwkcafe,how='left',op='intersects')
-# dfcafe=dfcafe[['ID','CAFETYPE']].drop_duplicates(['ID'],keep='first').reset_index(drop=True)
-# dfcafe['CAFETYPE']=np.where(pd.notna(dfcafe['CAFETYPE']),dfcafe['CAFETYPE'],'NONE')
-# dfcafe=pd.merge(df,dfcafe,how='inner',on='ID')
-# dfcafe.to_file(path+'SIDEWALK CAFE/or_cafe.shp')
+
+
 
 
 
