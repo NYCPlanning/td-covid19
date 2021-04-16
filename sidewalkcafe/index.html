@@ -536,7 +536,7 @@
                 'layerlinejoin': 'round', // line joining; bevel/round/miter
                 'layervisibility': 'none', // visibility of the layer
                 'layercolname': 'CAFETYPE', // category column name
-                'layercat': ['ALL CAFES', 'SMALL ONLY', 'UNENCLOSED ONLY', 'NOT PERMITTED'], // categories
+                'layercat': ['ALL CAFES', 'SMALL ONLY', 'UNENCLOSED ONLY', 'SPECIFICALLY PROHIBITED'], // categories
                 'layercolor': ['rgba(113,190,40,1)', 'rgba(246,189,0,1)', 'rgba(222,134,239,1)', 'rgba(255,109,109,1)'], // color for each category; use rgba
                 'layeropacity': 1, // line opacity
                 'layerwidth': 2, // line width
@@ -704,7 +704,7 @@
             var layerContent = {
                 'sourceid': 'orcafeznelwd', // source id
                 'sourcetype': 'geojson', // source type
-                'sourcedata': 'or_cafe_zn_el_wd.geojson', // data source
+                'sourcedata': 'or_cafe_zn_el_wd_lf.geojson', // data source
                 'layerid': 'orsw', // layer id
                 'layertype': 'circle', // symbology type
                 'layername': 'Open Restaurant by Sidewalk Width', // layer name for the legend
@@ -762,13 +762,13 @@
             var layerContent = {
                 'sourceid': 'orcafeznelwd', // source id
                 'sourcetype': 'geojson', // source type
-                'sourcedata': 'or_cafe_zn_el_wd.geojson', // data source
+                'sourcedata': 'or_cafe_zn_el_wd_lf.geojson', // data source
                 'layerid': 'orcafe', // layer id
                 'layertype': 'circle', // symbology type
                 'layername': 'Open Restaurant by Cafe Regulation', // layer name for the legend
                 'layervisibility': 'visible', // visibility of the layer
                 'layercolname': 'CAFETYPE', // category column name
-                'layercat': ['ALL CAFES', 'SMALL ONLY', 'UNENCLOSED ONLY', 'NOT PERMITTED', 'NONE'], // categories
+                'layercat': ['ALL CAFES', 'SMALL ONLY', 'UNENCLOSED ONLY', 'SPECIFICALLY PROHIBITED', 'RESIDENTIAL AREA'], // categories
                 'layercolor': ['rgba(113,190,40,1)', 'rgba(246,189,0,1)', 'rgba(222,134,239,1)', 'rgba(255,109,109,1)', 'rgba(100,100,255,1)'], // color for each category; use rgba
                 'layeropacity': 1, // circle opacity
                 'layerradius': { 'base': 2, 'stops': [[12, 3], [22, 180]] }, // circle radius; change size based on zoom level

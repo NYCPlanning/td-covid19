@@ -2026,18 +2026,22 @@ k=dfcafelfcr[(np.isin(dfcafelfcr['CAFETYPE'],['NONE','NOT PERMITTED']))&(dfcafel
 
 mapplutolf=gpd.read_file(path+'SIDEWALK CAFE/mapplutolf.shp')
 mapplutolf.crs=4326
-k=mapplutolf.dissolve(by='block')
-k.to_file(path+'SIDEWALK CAFE/mapplutolf_block.shp')
+mapplutolfbk=mapplutolf.dissolve(by='block')
+mapplutolfbk.to_file(path+'SIDEWALK CAFE/mapplutolf_block.shp')
+mapplutolfbk=gpd.read_file(path+'SIDEWALK CAFE/mapplutolf_block.shp')
+mapplutolfbk.crs=4326
+mapplutolfbk['CAFETYPE']='RESIDENTIAL AREA'
+mapplutolfdis=mapplutolfbk.dissolve(by='CAFETYPE')
+mapplutolfdis.to_file(path+'SIDEWALK CAFE/mapplutolf_dis.shp')
 
-k=gpd.read_file(path+'SIDEWALK CAFE/mapplutolf_block.shp')
-k.crs=4326
-k['id']=1
-k=k.dissolve(by='id')
-k.to_file(path+'SIDEWALK CAFE/mapplutolf_dis.shp')
+mapplutolfdis=gpd.read_file(path+'SIDEWALK CAFE/mapplutolf_dis.shp')
+mapplutolfdis.crs=4326
+mapplutolfdis.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/sidewalkcafe/mapplutolf_dis.geojson',driver='GeoJSON')
 
-
-
-
+sdwkcafe=gpd.read_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/sidewalkcafe/sdwkcafe.geojson')
+sdwkcafe.crs=4326
+sdwkcafe['CAFETYPE']=np.where(sdwkcafe['CAFETYPE']=='NOT PERMITTED','SPECIFICALLY PROHIBITED',sdwkcafe['CAFETYPE'])
+sdwkcafe.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/sidewalkcafe/sdwkcafe.geojson',driver='GeoJSON')
 
 
 

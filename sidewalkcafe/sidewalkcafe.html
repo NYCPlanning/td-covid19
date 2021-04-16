@@ -266,6 +266,62 @@
 
 
 
+            // Add Sidewalk Cafe Residential Area
+            // Set layer contents
+            var layerContent = {
+                'sourceid': 'sdwkcafera', // source id
+                'sourcetype': 'geojson', // source type
+                'sourcedata': 'mapplutolf_dis.geojson', // data source
+                'layerid': 'sdwkcafe-label', // layer id
+                'layertype': 'line', // symbology type
+                'layername': 'Sidewalk Cafe Regulation Residential Area', // layer name for the legend
+                'layerlinecap': 'round', // line endings; butt/round/square
+                'layerlinejoin': 'round', // line joining; bevel/round/miter
+                'layervisibility': 'none', // visibility of the layer
+                'layercolname': 'CAFETYPE', // category column name
+                'layercat': ['ALL CAFES', 'SMALL ONLY', 'UNENCLOSED ONLY', 'SPECIFICALLY PROHIBITED','RESIDENTIAL AREA'], // categories
+                'layercolor': ['rgba(113,190,40,1)', 'rgba(246,189,0,1)', 'rgba(222,134,239,1)', 'rgba(255,109,109,1)', 'rgba(100,100,255,1)'], // color for each category; use rgba
+                'layeropacity': 1, // line opacity
+                'layerwidth': 1, // line width
+                'layeroutlinecolor': 'rgba(0,0,0,0)', // outline color; for legend purpose only
+            };
+
+            // Generate layer colors
+            var layerColor = ['match', ['get', layerContent['layercolname']]];
+            for (var i = 0; i < layerContent.layercat.length; i++) {
+                layerColor.push(layerContent.layercat[i]);
+                layerColor.push(layerContent.layercolor[i]);
+            };
+            layerColor.push('#000000');
+
+            // Add layer content to the overall layer content list
+            layerContentList.push(layerContent);
+
+            // Add data source
+            map.addSource(layerContent['sourceid'], {
+                'type': layerContent['sourcetype'],
+                'data': layerContent['sourcedata'],
+            });
+
+            // Add line layer
+            map.addLayer({
+                'id': layerContent['layerid'],
+                'type': layerContent['layertype'],
+                'source': layerContent['sourceid'],
+                'layout': {
+                    'line-cap': layerContent['layerlinecap'],
+                    'line-join': layerContent['layerlinejoin'],
+                    'visibility': layerContent['layervisibility'],
+                },
+                'paint': {
+                    'line-color': layerColor,
+                    'line-opacity': layerContent['layeropacity'],
+                    'line-width': layerContent['layerwidth'],
+                },
+            });
+
+
+
             // Add Sidewalk Cafe
             // Set layer contents
             var layerContent = {
@@ -279,8 +335,8 @@
                 'layerlinejoin': 'round', // line joining; bevel/round/miter
                 'layervisibility': 'none', // visibility of the layer
                 'layercolname': 'CAFETYPE', // category column name
-                'layercat': ['ALL CAFES', 'SMALL ONLY', 'UNENCLOSED ONLY', 'NOT PERMITTED'], // categories
-                'layercolor': ['rgba(113,190,40,1)', 'rgba(246,189,0,1)', 'rgba(222,134,239,1)', 'rgba(255,109,109,1)'], // color for each category; use rgba
+                'layercat': ['ALL CAFES', 'SMALL ONLY', 'UNENCLOSED ONLY', 'SPECIFICALLY PROHIBITED','RESIDENTIAL AREA'], // categories
+                'layercolor': ['rgba(113,190,40,1)', 'rgba(246,189,0,1)', 'rgba(222,134,239,1)', 'rgba(255,109,109,1)', 'rgba(100,100,255,1)'], // color for each category; use rgba
                 'layeropacity': 1, // line opacity
                 'layerwidth': 2, // line width
                 'layeroutlinecolor': 'rgba(0,0,0,0)', // outline color; for legend purpose only
