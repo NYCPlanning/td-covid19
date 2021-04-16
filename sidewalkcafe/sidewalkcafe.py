@@ -315,6 +315,8 @@ dfcafeznelwdbf=gpd.sjoin(dfcafeznelwdbf,mapplutolftmswsp,how='left',op='intersec
 dfcafeznelwdbf=dfcafeznelwdbf[['ID','LFIMPSWMDN']].drop_duplicates(['ID'],keep='first').reset_index(drop=True)
 dfcafeznelwdlf=pd.merge(dfcafeznelwd,dfcafeznelwdbf,how='left',on='ID')
 dfcafeznelwdlf.to_file(path+'SIDEWALK CAFE/or_cafe_zn_el_wd_lf.shp')
+dfcafeznelwdlf=gpd.read_file(path+'SIDEWALK CAFE/or_cafe_zn_el_wd_lf.shp')
+dfcafeznelwdlf.crs=4326
 dfcafeznelwdlf=dfcafeznelwdlf[np.isin(dfcafeznelwdlf['TYPE'],['BOTH','SIDEWALK'])].reset_index(drop=True)
 dfcafeznelwdlf['SWCAT']=np.where(dfcafeznelwdlf['IMPSWMDN']>14,'>14 ft',np.where(dfcafeznelwdlf['IMPSWMDN']>=11,'11 ft ~ 14 ft','<11 ft'))
 dfcafeznelwdlf['CP']=np.where(dfcafeznelwdlf['IMPSWMDN']>=15,'>=12 ft',
@@ -337,6 +339,8 @@ dfcafeznelwdlf['LFCP']=np.where(dfcafeznelwdlf['LFIMPSWMDN']>=15,'>=12 ft',
                         np.where(dfcafeznelwdlf['LFIMPSWMDN']>=8,'5 ft ~ 6 ft',
                                 '<5 ft'))))))))
 dfcafeznelwdlf['LFCPCAT']=np.where(dfcafeznelwdlf['LFIMPSWMDN']>=11,'Likely Eligible','Likely Ineligible')
+dfcafeznelwdlf['CAFETYPE']=np.where(dfcafeznelwdlf['CAFETYPE']=='NOT PERMITTED','SPECIFICALLY PROHIBITED',
+                           np.where(dfcafeznelwdlf['CAFETYPE']=='NONE','RESIDENTIAL AREA',dfcafeznelwdlf['CAFETYPE']))
 dfcafeznelwdlf.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/sidewalkcafe/or_cafe_zn_el_wd_lf.geojson',driver='GeoJSON')
 
 
@@ -2010,7 +2014,47 @@ dfcafelfcr['ALLOWED']=np.where((dfcafelfcr['FT']==11)&(dfcafelfcr['LFIMPSWMDN']>
                       np.where((dfcafelfcr['FT']==8)&(dfcafelfcr['LFIMPSWMDN']>=11),'YES','NO'))
 dfcafelfcr.to_file(path+'SIDEWALK CAFE/COMPLAINTS/COMPLAINTS_cafe_lf_cr.shp')
 
+dfcafelfcr=gpd.read_file(path+'SIDEWALK CAFE/COMPLAINTS/COMPLAINTS_cafe_lf_cr.shp')
 k=dfcafelfcr[(np.isin(dfcafelfcr['CAFETYPE'],['NONE','NOT PERMITTED']))&(dfcafelfcr['ALLOWED']=='YES')]
+
+
+
+
+
+
+
+
+mapplutolf=gpd.read_file(path+'SIDEWALK CAFE/mapplutolf.shp')
+mapplutolf.crs=4326
+k=mapplutolf.dissolve(by='block')
+k.to_file(path+'SIDEWALK CAFE/mapplutolf_block.shp')
+
+k=gpd.read_file(path+'SIDEWALK CAFE/mapplutolf_block.shp')
+k.crs=4326
+k['id']=1
+k=k.dissolve(by='id')
+k.to_file(path+'SIDEWALK CAFE/mapplutolf_dis.shp')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
