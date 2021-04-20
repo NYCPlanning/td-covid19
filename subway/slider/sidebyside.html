@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title> Subway Ridership and Telework Capability </title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+    <script src="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js"></script>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.0/font/bootstrap-icons.css">
+
+
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: sans-serif;
+        }
+
+        #map1 {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 50%;
+            border-right-style: solid;
+            border-right-width: 0.1rem;
+            border-right-color: rgba(0, 0, 0, 0.5);
+        }
+
+        #map2 {
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 50%;
+            border-left-style: solid;
+            border-left-width: 0.1rem;
+            border-left-color: rgba(0, 0, 0, 0.5);
+        }
+
+        #legend {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            width: auto;
+            height: auto;
+            max-height: 90%;
+            padding-top: 1rem;
+            padding-right: 1rem;
+            padding-left: 1rem;
+            padding-bottom: 1rem;
+            color: rgba(0, 0, 0, 0.9);
+            background-color: rgba(255, 255, 255, 0.9);
+            font-size: 1rem;
+            overflow: auto;
+            box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+        }
+
+        #header {
+            font-weight: bold;
+        }
+
+        #chevron {
+            margin-left: 0.5rem;
+        }
+
+        .itemgroup1 {
+            margin-top: 0.5rem;
+        }
+
+        .item1-input {
+            width: 0.9rem;
+            height: 0.9rem;
+            margin-right: 0.5rem;
+            vertical-align: 1.2rem;
+        }
+
+        .item1-label {
+            font-size: 0.9rem;
+            font-weight: bold;
+            width: 12rem;
+        }
+
+        .itemgroup2 {
+            margin-left: 0rem;
+        }
+
+        .item2-input {
+            width: 0.8rem;
+            height: 0.8rem;
+            margin-right: 0.5rem;
+            vertical-align: -0.1rem;
+        }
+
+        .item2-label {
+            font-size: 0.8rem;
+        }
+
+        .key-circle {
+            width: 0.8rem;
+            height: 0.8rem;
+            margin-right: 0.5rem;
+            border-radius: 100%;
+            display: inline-block;
+            vertical-align: -0.1rem;
+        }
+
+        .key-line {
+            width: 0.8rem;
+            height: 0.3rem;
+            margin-right: 0.5rem;
+            border-radius: 0%;
+            display: inline-block;
+            vertical-align: 0.15rem;
+        }
+
+        .key-fill {
+            width: 0.8rem;
+            height: 0.8rem;
+            margin-right: 0.5rem;
+            border-radius: 0%;
+            display: inline-block;
+            vertical-align: -0.1rem;
+        }
+
+        #title1-nav {
+            position: absolute;
+            top: 1rem;
+            right: 50%;
+        }
+
+        #title1 {
+            position: relative;
+            right: 1rem;
+            width: auto;
+            height: auto;
+            padding-top: 0.5rem;
+            padding-right: 0.5rem;
+            padding-left: 0.5rem;
+            padding-bottom: 0.5rem;
+            color: rgba(0, 0, 0, 0.9);
+            background-color: rgba(255, 255, 255, 0.9);
+            font-size: 0.9rem;
+            font-weight: bold;
+            box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+        }
+
+        #title2-nav {
+            position: absolute;
+            top: 1rem;
+            left: 50%;
+        }
+
+        #title2 {
+            position: relative;
+            left: 1rem;
+            width: auto;
+            height: auto;
+            padding-top: 0.5rem;
+            padding-right: 0.5rem;
+            padding-left: 0.5rem;
+            padding-bottom: 0.5rem;
+            color: rgba(0, 0, 0, 0.9);
+            background-color: rgba(255, 255, 255, 0.9);
+            font-size: 0.9rem;
+            font-weight: bold;
+            box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+        }
+
+        #slider-nav {
+            position: absolute;
+            top: 1rem;
+            right: 0;
+        }
+
+        #slider {
+            position: relative;
+            right: 1rem;
+            width: auto;
+            height: auto;
+            padding-top: 0.5rem;
+            padding-right: 0.5rem;
+            padding-left: 0.5rem;
+            padding-bottom: 0.5rem;
+            color: rgba(0, 0, 0, 0.9);
+            background-color: rgba(255, 255, 255, 0.9);
+            font-size: 0.9rem;
+            font-weight: bold;
+            box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+        }
+    </style>
+</head>
+
+
+
+<body>
+    <div id="map1"></div>
+    <div id="map2"></div>
+    <nav id="legend">
+        <div class="container g-0">
+            <div class="row g-0 justify-content-between" id="header">
+                <div class="col-auto"> Subway Ridership </div>
+                <div class="col-auto">
+                    <i class="bi bi-chevron-down" id='chevron'></i>
+                </div>
+            </div>
+            <div class="row g-0 justify-content-start">
+                <div class="col-auto" id="legends"> </div>
+                <!-- placeholder for layer selector and legend -->
+            </div>
+        </div>
+    </nav>
+    <nav id="title1-nav">
+        <div class="container g-0">
+            <div class="row g-0 justify-content-center">
+                <div class="col-auto" id="title1"> Weekday AM Peak </div>
+            </div>
+        </div>
+    </nav>
+    <nav id="title2-nav">
+        <div class="container g-0">
+            <div class="row g-0 justify-content-center">
+                <div class="col-auto" id="title2"> Weekday PM Peak </div>
+            </div>
+        </div>
+    </nav>
+    <nav id="slider-nav">
+        <div class="container g-0">
+            <div class="row g-0 justify-content-center">
+                <div class="col-auto" id="slider">
+                    <input type="range" min="0" max="60" step="1" value="60" id="slide-input">
+                    <output id="slider-output">03/08/2021-03/13/2021 vs 03/04/2019-03/09/2019</output>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+
+
+    <script>
+        'use strict';
+
+        // Set MapBox token
+        mapboxgl.accessToken = 'pk.eyJ1IjoibWF5aWp1biIsImEiOiJjaXg4ZmlyY20wMDBjMm9tcjI0bjQ0Z21zIn0.Io0XJ4JelN903V9HGo4TfQ'; // still need to find a way to store the token
+
+
+
+        // Initialize the map
+        var map1 = new mapboxgl.Map({ // creating a new map
+            container: 'map1', // same as the div id to place the map
+            style: 'mapbox://styles/mapbox/light-v10', // light base map
+            hash: true, // make sure it's on to get the url with map view
+            attributionControl: false, // show the credit bar
+            logoPosition: 'bottom-left', // no need to change 
+            preserveDrawingBuffer: true, // make sure it's on to allow printing
+            center: [-74.0197, 40.721], // testing to get the centroid of bounds
+            zoom: 10, // set the initial zoom of the map view
+        });
+
+
+
+
+        // Add layers
+        map1.on('load', function () {
+
+            var layerContentList = []; // store all the layer contents
+
+            // Add full screen control
+            map1.addControl(new mapboxgl.FullscreenControl({
+                container: document.querySelector('body'),
+            }),
+                'bottom-left', // control position
+            );
+
+            // Add navigation control
+            map1.addControl(new mapboxgl.NavigationControl({
+                showCompass: true, // show compass
+                showZoom: true, // show zoom
+                visualizePitch: true, // show pitch
+            }),
+                'bottom-left', // control position
+            );
+
+
+
+            // Add cplxamcp
+            // Set layer contents
+            var layerContent = {
+                'sourceid': 'cplxamcp', // source id
+                'sourcetype': 'geojson', // source type
+                'sourcedata': 'am/03082021-03132021vs03042019-03092019.geojson', // data source
+                'layerid': 'cplxamcp', // layer id
+                'layertype': 'fill', // symbology type
+                'layername': 'Ridership as % of Pre-Pandemic Equivalent Week​', // layer name for the legend
+                'layervisibility': 'visible', // visibility of the layer
+                'layercolname': 'PctCat', // category column name
+                'layercat': ['> 50%', '41% ~ 50%', '31% ~ 40%', '21% ~ 30%', '11% ~ 20%', '<= 10%'], // categories
+                'layercolor': ['rgba(127, 39, 4, 1)', 'rgba(209, 69, 1, 1)', 'rgba(246, 119, 34, 1)', 'rgba(253, 172, 103, 1)', 'rgba(254, 219, 183, 1)', 'rgba(255, 245, 235, 1)'], // color for each category; use rgba
+                'layeroutlinecolor': 'rgba(255, 255, 255, 0)', // outline color; for legend only
+            };
+
+            // Generate layer colors
+            var layerColor = ['match', ['get', layerContent['layercolname']]];
+            for (var i = 0; i < layerContent.layercat.length; i++) {
+                layerColor.push(layerContent.layercat[i]);
+                layerColor.push(layerContent.layercolor[i]);
+            };
+            layerColor.push('#000000');
+
+            // Add layer content to the overall layer content list
+            layerContentList.push(layerContent);
+
+            // Add data source
+            map1.addSource(layerContent['sourceid'], {
+                'type': layerContent['sourcetype'],
+                'data': layerContent['sourcedata'],
+            });
+
+            // Add fill layer
+            map1.addLayer({
+                'id': layerContent['layerid'],
+                'type': layerContent['layertype'],
+                'source': layerContent['sourceid'],
+                'layout': {
+                    'visibility': layerContent['layervisibility'],
+                },
+                'paint': {
+                    'fill-color': layerColor,
+                    // 'fill-outline-color': layerContent['layeroutlinecolor'],
+                },
+            });
+
+
+
+            // Add subway lines
+            // Set layer contents
+            var layerContent = {
+                'sourceid': 'subwayline', // source id
+                'sourcetype': 'geojson', // source type
+                'sourcedata': 'https://raw.githubusercontent.com/NYCPlanning/td-covid19/master/subway/subwayline.geojson', // data source
+                'layerid': 'subwayline', // layer id
+                'layertype': 'line', // symbology type
+                'layername': 'Subway Line', // layer name for the legend
+                'layerlinecap': 'round', // line endings; butt/round/square
+                'layerlinejoin': 'round', // line joining; bevel/round/miter
+                'layervisibility': 'visible', // visibility of the layer
+                'layercat': [''], // categories
+                'layercolor': ['rgba(0,162,255,1)'], // color for each category; use rgba
+                'layerwidth': 1, // line width
+                'layeroutlinecolor': 'rgba(255, 255, 255, 0)', // outline color; for legend only
+            };
+
+            // Add layer content to the overall layer content list
+            layerContentList.push(layerContent);
+
+            // Add data source
+            map1.addSource(layerContent['sourceid'], {
+                'type': layerContent['sourcetype'],
+                'data': layerContent['sourcedata'],
+            });
+
+            // Add line layer
+            map1.addLayer({
+                'id': layerContent['layerid'],
+                'type': layerContent['layertype'],
+                'source': layerContent['sourceid'],
+                'layout': {
+                    'line-cap': layerContent['layerlinecap'],
+                    'line-join': layerContent['layerlinejoin'],
+                    'visibility': layerContent['layervisibility'],
+                },
+                'paint': {
+                    'line-color': layerContent['layercolor'][0],
+                    'line-width': layerContent['layerwidth'],
+                },
+            });
+
+
+
+            // Add popup
+            var popup1 = new mapboxgl.Popup({
+                closeButton: true, // close button
+                closeOnClick: false, // close if click on map
+                closeOnMove: false, // close if move the map
+                anchor: 'bottom', // anchor of the popup
+                offset: 0, // offset from the feature
+                maxWidth: 'none', // max width of the popoup; 'none' to fit to the content                
+            });
+
+            // Add cplxamcp popup
+            // Add click event
+            map1.on('click', 'cplxamcp', function (e) {
+                var coordinates = e.lngLat; // get pointer coordinates
+                var description = "<b>Borough: </b><span>" + e.features[0].properties.BoroName + "</span><br>"; // description in the popup
+                description += "<b>NTA Code: </b><span>" + e.features[0].properties.NTACode + "</span><br>";
+                description += "<b>NTA Name: </b><span>" + e.features[0].properties.NTAName + "</span><br>";
+                description += "<b>" + ": </b><span>" + e.features[0].properties.PreEntries.toFixed(2) + "</span><br>";
+                description += "<b>" + ": </b><span>" + e.features[0].properties.PostEntries.toFixed(2) + "</span><br>";
+                description += "<b>Ridership as % of Pre-Pandemic Equivalent Week​: </b><span>" + (Number(e.features[0].properties.Pct) * 100).toFixed(2) + "%</span><br>";
+                popup1.setLngLat(coordinates).setHTML(description).addTo(map1); //add popup
+            });
+            // Add hover events
+            map1.on('mouseenter', 'cplxamcp', function () {
+                map1.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
+            });
+            map1.on('mouseleave', 'cplxamcp', function () {
+                map1.getCanvas().style.cursor = '';
+            });
+
+
+
+            // Add layer selector and legend
+            var layerOrder = ['cplxamcp', 'subwayline']; // set layer order in the legend
+            var layerContentListOrder = []; // create ordered layer content list
+            for (var i = 0; i < layerOrder.length; i++) {
+                layerContentListOrder.push(layerContentList.filter(e => e.layerid == layerOrder[i])[0]);
+            };
+
+            var filterLegend = document.getElementById('legends');
+            for (var i = 0; i < layerContentListOrder.length; i++) {
+                // Create layer selector
+                var itemgroup1 = document.createElement('div'); // create level-1 item group
+                itemgroup1.className = 'itemgroup1';
+                var item1 = document.createElement('div'); // create level-1 item
+                item1.className = 'item1';
+                var label1 = document.createElement('label'); // create level-1 checkbox label
+                label1.className = 'item1-label';
+                label1.setAttribute('for', layerContentListOrder[i]['layerid']);
+                label1.textContent = layerContentListOrder[i]['layername'];
+                item1.appendChild(label1);
+                itemgroup1.appendChild(item1);
+
+                // Create legend selector
+                var itemgroup2 = document.createElement('div'); // create level-2 item group
+                itemgroup2.className = 'itemgroup2';
+                itemgroup2.id = layerContentListOrder[i]['layerid'] + '-cat';
+                for (var j = 0; j < layerContentListOrder[i]['layercat'].length; j++) {
+                    var item2 = document.createElement('div'); // create level-2 item
+                    item2.className = 'item2';
+                    var key2 = document.createElement('span'); // create level-2 key
+                    key2.className = 'key-' + layerContentListOrder[i]['layertype'];
+                    key2.style.backgroundColor = layerContentListOrder[i]['layercolor'][j];
+                    key2.style.borderColor = layerContentListOrder[i]['layeroutlinecolor'];
+                    key2.style.borderStyle = 'solid';
+                    key2.style.borderWidth = 'thin';
+                    var label2 = document.createElement('label'); // create level-2 label
+                    label2.className = 'item2-label';
+                    label2.setAttribute('for', layerContentListOrder[i]['layerid'] + '|' + layerContentListOrder[i]['layercolname'] + '|' + layerContentListOrder[i]['layercat'][j]);
+                    label2.textContent = layerContentListOrder[i]['layercat'][j];
+                    item2.appendChild(key2);
+                    item2.appendChild(label2);
+                    itemgroup2.appendChild(item2);
+                };
+                itemgroup1.appendChild(itemgroup2);
+                filterLegend.appendChild(itemgroup1);
+            };
+        });
+
+
+
+
+
+        // Initialize the map
+        var map2 = new mapboxgl.Map({ // creating a new map
+            container: 'map2', // same as the div id to place the map
+            style: 'mapbox://styles/mapbox/light-v10', // light base map
+            hash: true, // make sure it's on to get the url with map view
+            attributionControl: true, // show the credit bar
+            customAttribution: '<b> Data Sources: <a href="http://web.mta.info/developers/fare.html" target="blank">MTA Fare Data</a>; <a href="https://lehd.ces.census.gov/" target="blank">Census Bureau LEHD 2017</a></b>', // add overall credit to the beggining
+            logoPosition: 'bottom-left', // no need to change 
+            preserveDrawingBuffer: true, // make sure it's on to allow printing
+            center: [-74.0197, 40.721], // testing to get the centroid of bounds
+            zoom: 10, // set the initial zoom of the map view
+        });
+
+
+
+        // Add layers
+        map2.on('load', function () {
+
+            var layerContentList = []; // store all the layer contents
+
+            // Add telework pm
+            // Set layer contents
+            var layerContent = {
+                'sourceid': 'cplxpmcp', // source id
+                'sourcetype': 'geojson', // source type
+                'sourcedata': 'pm/03082021-03132021vs03042019-03092019.geojson', // data source
+                'layerid': 'cplxpmcp', // layer id
+                'layertype': 'fill', // symbology type
+                'layername': 'Ridership as % of Pre-Pandemic Equivalent Week​', // layer name for the legend
+                'layervisibility': 'visible', // visibility of the layer
+                'layercolname': 'PctCat', // category column name
+                'layercat': ['> 50%', '41% ~ 50%', '31% ~ 40%', '21% ~ 30%', '11% ~ 20%', '<= 10%'], // categories
+                'layercolor': ['rgba(127, 39, 4, 1)', 'rgba(209, 69, 1, 1)', 'rgba(246, 119, 34, 1)', 'rgba(253, 172, 103, 1)', 'rgba(254, 219, 183, 1)', 'rgba(255, 245, 235, 1)'], // color for each category; use rgba
+                'layeroutlinecolor': 'rgba(255, 255, 255, 0)', // outline color; for legend only
+            };
+
+            // Generate layer colors
+            var layerColor = ['match', ['get', layerContent['layercolname']]];
+            for (var i = 0; i < layerContent.layercat.length; i++) {
+                layerColor.push(layerContent.layercat[i]);
+                layerColor.push(layerContent.layercolor[i]);
+            };
+            layerColor.push('#000000');
+
+            // Add layer content to the overall layer content list
+            layerContentList.push(layerContent);
+
+            // Add data source
+            map2.addSource(layerContent['sourceid'], {
+                'type': layerContent['sourcetype'],
+                'data': layerContent['sourcedata'],
+            });
+
+            // Add fill layer
+            map2.addLayer({
+                'id': layerContent['layerid'],
+                'type': layerContent['layertype'],
+                'source': layerContent['sourceid'],
+                'layout': {
+                    'visibility': layerContent['layervisibility'],
+                },
+                'paint': {
+                    'fill-color': layerColor,
+                },
+            });
+
+
+
+            // Add subway lines
+            // Set layer contents
+            var layerContent = {
+                'sourceid': 'subwayline', // source id
+                'sourcetype': 'geojson', // source type
+                'sourcedata': 'https://raw.githubusercontent.com/NYCPlanning/td-covid19/master/subway/subwayline.geojson', // data source
+                'layerid': 'subwayline', // layer id
+                'layertype': 'line', // symbology type
+                'layername': 'Subway Line', // layer name for the legend
+                'layerlinecap': 'round', // line endings; butt/round/square
+                'layerlinejoin': 'round', // line joining; bevel/round/miter
+                'layervisibility': 'visible', // visibility of the layer
+                'layercat': [''], // categories
+                'layercolor': ['rgba(0,162,255,1)'], // color for each category; use rgba
+                'layerwidth': 1, // line width
+                'layeroutlinecolor': 'rgba(255, 255, 255, 0)', // outline color; for legend only
+            };
+
+            // Add layer content to the overall layer content list
+            layerContentList.push(layerContent);
+
+            // Add data source
+            map2.addSource(layerContent['sourceid'], {
+                'type': layerContent['sourcetype'],
+                'data': layerContent['sourcedata'],
+            });
+
+            // Add line layer
+            map2.addLayer({
+                'id': layerContent['layerid'],
+                'type': layerContent['layertype'],
+                'source': layerContent['sourceid'],
+                'layout': {
+                    'line-cap': layerContent['layerlinecap'],
+                    'line-join': layerContent['layerlinejoin'],
+                    'visibility': layerContent['layervisibility'],
+                },
+                'paint': {
+                    'line-color': layerContent['layercolor'][0],
+                    'line-width': layerContent['layerwidth'],
+                },
+            });
+
+
+
+            // Add popup
+            var popup2 = new mapboxgl.Popup({
+                closeButton: true, // close button
+                closeOnClick: false, // close if click on map
+                closeOnMove: false, // close if move the map
+                anchor: 'bottom', // anchor of the popup
+                offset: 0, // offset from the feature
+                maxWidth: 'none', // max width of the popoup; 'none' to fit to the content                
+            });
+
+            // Add cplxpmcp popup
+            // Add click event
+            map2.on('click', 'cplxpmcp', function (e) {
+                var coordinates = e.lngLat; // get pointer coordinates
+                var description = "<b>Borough: </b><span>" + e.features[0].properties.BoroName + "</span><br>"; // description in the popup
+                description += "<b>NTA Code: </b><span>" + e.features[0].properties.NTACode + "</span><br>";
+                description += "<b>NTA Name: </b><span>" + e.features[0].properties.NTAName + "</span><br>";
+                description += "<b>" + ": </b><span>" + e.features[0].properties.PreEntries.toFixed(2) + "</span><br>";
+                description += "<b>" + ": </b><span>" + e.features[0].properties.PostEntries.toFixed(2) + "</span><br>";
+                description += "<b>Ridership as % of Pre-Pandemic Equivalent Week​: </b><span>" + (Number(e.features[0].properties.Pct) * 100).toFixed(2) + "%</span><br>";
+                popup2.setLngLat(coordinates).setHTML(description).addTo(map2); //add popup
+            });
+            // Add hover events
+            map2.on('mouseenter', 'cplxpmcp', function () {
+                map2.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
+            });
+            map2.on('mouseleave', 'cplxpmcp', function () {
+                map2.getCanvas().style.cursor = '';
+            });
+        });
+
+
+
+
+        // Synchronize the two maps
+        var disable = false;
+        map1.on("move", function () {
+            if (!disable) {
+                var center = map1.getCenter();
+                var zoom = map1.getZoom();
+                var pitch = map1.getPitch();
+                var bearing = map1.getBearing();
+
+                disable = true;
+                map2.setCenter(center);
+                map2.setZoom(zoom);
+                map2.setPitch(pitch);
+                map2.setBearing(bearing);
+                disable = false;
+            }
+        });
+
+        map2.on("move", function () {
+            if (!disable) {
+                var center = map2.getCenter();
+                var zoom = map2.getZoom();
+                var pitch = map2.getPitch();
+                var bearing = map2.getBearing();
+
+                disable = true;
+                map1.setCenter(center);
+                map1.setZoom(zoom);
+                map1.setPitch(pitch);
+                map1.setBearing(bearing);
+                disable = false;
+            }
+        });
+
+
+
+        // Set collapse event
+        var collapsevalue = 0;
+        header.addEventListener('click', function () {
+            if (collapsevalue === 0) {
+                document.getElementById('legends').style.display = "none";
+                document.getElementById('chevron').className = "bi bi-chevron-up";
+                collapsevalue = 1;
+            } else {
+                document.getElementById('legends').style.display = "block";
+                document.getElementById('chevron').className = "bi bi-chevron-down";
+                collapsevalue = 0;
+            };
+        });
+    </script>
+
+</body>
+
+</html>
