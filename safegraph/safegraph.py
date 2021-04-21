@@ -278,3 +278,8 @@ k=gpd.read_postgis(sql,engine,geom_col='geometry')
 
 
 
+
+df=pd.read_csv(path+'20190809.csv',dtype=str,converters={'D20190809':float})
+df=df[np.logical_or([x[0:5] in ['36005','36047','36061','36081','36085'] for x in df['origin']],
+                    [x[0:5] in ['36005','36047','36061','36081','36085'] for x in df['destination']])].reset_index(drop=True)
+df=df.sort_values('D20190809',ascending=False).reset_index(drop=True)
