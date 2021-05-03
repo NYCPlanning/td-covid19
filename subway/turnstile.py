@@ -2420,16 +2420,21 @@ amlist=['05:00:00-09:00:00','05:30:00-09:30:00','06:00:00-10:00:00','06:30:00-10
         '07:22:00-11:22:00','07:30:00-11:30:00','08:00:00-12:00:00','08:22:00-12:22:00','08:30:00-12:30:00']
 pmlist=['13:00:00-17:00:00','13:30:00-17:30:00','14:00:00-18:00:00','14:30:00-18:30:00','15:00:00-19:00:00',
         '15:22:00-19:22:00','15:30:00-19:30:00','16:00:00-20:00:00','16:22:00-20:22:00','16:30:00-20:30:00']
-td=datetime.datetime.strptime('3/14/2021','%m/%d/%Y')
+ntaam=gpd.read_file(path+'ntaclippedadj.shp')
+ntaam.crs=4326
+ntapm=gpd.read_file(path+'ntaclippedadj.shp')
+ntapm.crs=4326
+# Pre March 2021
+td=datetime.datetime.strptime('03/02/2020','%m/%d/%Y')
 td=td-datetime.timedelta(td.weekday())
-pr=td-datetime.timedelta(731)
+pr=td-datetime.timedelta(364)
 pr=pr-datetime.timedelta(pr.weekday())
-for i in range(0,9):
+for i in range(0,52):
     predates=[]
     postdates=[]
-    for j in range(0,6):
-        predates+=[(pr-datetime.timedelta(i*7-j)).strftime('%m/%d/%Y')]
-        postdates+=[(td-datetime.timedelta(i*7-j)).strftime('%m/%d/%Y')]
+    for j in range(0,5):
+        predates+=[(pr+datetime.timedelta(i*7+j)).strftime('%m/%d/%Y')]
+        postdates+=[(td+datetime.timedelta(i*7+j)).strftime('%m/%d/%Y')]
     # AM Peak
     cplxampre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
     cplxampre=cplxampre[np.isin(cplxampre['time'],amlist)].reset_index(drop=True)
@@ -2457,14 +2462,14 @@ for i in range(0,9):
     cplxamdiffnta=cplxamdiffnta[cplxamdiffnta['PreEntries']!=0].reset_index(drop=True)
     cplxamdiffnta.columns=['NTACode','PreEntries','PostEntries']
     cplxamdiffnta['Pct']=cplxamdiffnta['PostEntries']/cplxamdiffnta['PreEntries']
-    cplxamdiffnta=pd.merge(nta,cplxamdiffnta,how='inner',on='NTACode')
-    cplxamdiffnta['Pct'].describe(percentiles=np.arange(0.2,1,0.2))
     cplxamdiffnta['PctCat']=np.where(cplxamdiffnta['Pct']>0.5,'> 50%',
                             np.where(cplxamdiffnta['Pct']>0.4,'41% ~ 50%',
                             np.where(cplxamdiffnta['Pct']>0.3,'31% ~ 40%',
                             np.where(cplxamdiffnta['Pct']>0.2,'21% ~ 30%',
                             np.where(cplxamdiffnta['Pct']>0.1,'11% ~ 20%','<= 10%')))))
-    cplxamdiffnta.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/slider/am/'+postdates[0].replace('/','')+'-'+postdates[-1].replace('/','')+'vs'+predates[0].replace('/','')+'-'+predates[-1].replace('/','')+'.geojson',driver='GeoJSON')
+    cplxamdiffnta.columns=['NTACode','Week'+str(i)+'Pre','Week'+str(i)+'Post',
+                           'Week'+str(i)+'Pct','Week'+str(i)+'PctCat']    
+    ntaam=pd.merge(ntaam,cplxamdiffnta,how='inner',on='NTACode')
     # PM Peak
     cplxpmpre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
     cplxpmpre=cplxpmpre[np.isin(cplxpmpre['time'],pmlist)].reset_index(drop=True)
@@ -2492,32 +2497,130 @@ for i in range(0,9):
     cplxpmdiffnta=cplxpmdiffnta[cplxpmdiffnta['PreEntries']!=0].reset_index(drop=True)
     cplxpmdiffnta.columns=['NTACode','PreEntries','PostEntries']
     cplxpmdiffnta['Pct']=cplxpmdiffnta['PostEntries']/cplxpmdiffnta['PreEntries']
-    cplxpmdiffnta=pd.merge(nta,cplxpmdiffnta,how='inner',on='NTACode')
-    cplxpmdiffnta['Pct'].describe(percentiles=np.arange(0.2,1,0.2))
     cplxpmdiffnta['PctCat']=np.where(cplxpmdiffnta['Pct']>0.5,'> 50%',
                             np.where(cplxpmdiffnta['Pct']>0.4,'41% ~ 50%',
                             np.where(cplxpmdiffnta['Pct']>0.3,'31% ~ 40%',
                             np.where(cplxpmdiffnta['Pct']>0.2,'21% ~ 30%',
                             np.where(cplxpmdiffnta['Pct']>0.1,'11% ~ 20%','<= 10%')))))
-    cplxpmdiffnta.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/slider/pm/'+postdates[0].replace('/','')+'-'+postdates[-1].replace('/','')+'vs'+predates[0].replace('/','')+'-'+predates[-1].replace('/','')+'.geojson',driver='GeoJSON')
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-pr=td-datetime.timedelta(365)
+    cplxpmdiffnta.columns=['NTACode','Week'+str(i)+'Pre','Week'+str(i)+'Post',
+                           'Week'+str(i)+'Pct','Week'+str(i)+'PctCat']    
+    ntapm=pd.merge(ntapm,cplxpmdiffnta,how='inner',on='NTACode')
+# Post March 2021
+td=datetime.datetime.strptime('03/01/2021','%m/%d/%Y')
+td=td-datetime.timedelta(td.weekday())
+pr=td-datetime.timedelta(731)
 pr=pr-datetime.timedelta(pr.weekday())
+for i in range(0,9):
+    predates=[]
+    postdates=[]
+    for j in range(0,5):
+        predates+=[(pr+datetime.timedelta(i*7+j)).strftime('%m/%d/%Y')]
+        postdates+=[(td+datetime.timedelta(i*7+j)).strftime('%m/%d/%Y')]
+    # AM Peak
+    cplxampre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
+    cplxampre=cplxampre[np.isin(cplxampre['time'],amlist)].reset_index(drop=True)
+    cplxampre=cplxampre.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
+    cplxampre=pd.merge(cplxampre,rc,how='left',left_on='unit',right_on='Remote')
+    cplxampre=cplxampre.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
+    cplxampre.columns=['CplxID','PreTime','PreEntries']
+    cplxampost=dfunitentry[np.isin(dfunitentry['firstdate'],postdates)].reset_index(drop=True)
+    cplxampost=cplxampost[np.isin(cplxampost['time'],amlist)].reset_index(drop=True)
+    cplxampost=cplxampost.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
+    cplxampost=pd.merge(cplxampost,rc,how='left',left_on='unit',right_on='Remote')
+    cplxampost=cplxampost.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
+    cplxampost.columns=['CplxID','PostTime','PostEntries']
+    cplxamdiff=pd.merge(cplxampre,cplxampost,how='inner',on='CplxID')
+    cplxamdiff=pd.merge(rc.drop('Remote',axis=1).drop_duplicates(keep='first').reset_index(drop=True),cplxamdiff,how='left',on='CplxID')
+    cplxamdiff=cplxamdiff[['CplxID','CplxLat','CplxLong','PreEntries','PostEntries']].reset_index(drop=True)
+    cplxamdiff=gpd.GeoDataFrame(cplxamdiff,geometry=[shapely.geometry.Point(x,y) for x,y in zip(cplxamdiff['CplxLong'],cplxamdiff['CplxLat'])],crs='epsg:4326')
+    cplxamdiff=cplxamdiff.to_crs('epsg:6539')
+    cplxamdiff['geometry']=cplxamdiff.buffer(2640)
+    cplxamdiff=cplxamdiff.to_crs('epsg:4326')
+    nta=gpd.read_file(path+'ntaclippedadj.shp')
+    nta.crs='epsg:4326'
+    cplxamdiffnta=gpd.sjoin(nta,cplxamdiff,how='left',op='intersects')
+    cplxamdiffnta=cplxamdiffnta.groupby(['NTACode'],as_index=False).agg({'PreEntries':'sum','PostEntries':'sum'}).reset_index(drop=True)
+    cplxamdiffnta=cplxamdiffnta[cplxamdiffnta['PreEntries']!=0].reset_index(drop=True)
+    cplxamdiffnta.columns=['NTACode','PreEntries','PostEntries']
+    cplxamdiffnta['Pct']=cplxamdiffnta['PostEntries']/cplxamdiffnta['PreEntries']
+    cplxamdiffnta['PctCat']=np.where(cplxamdiffnta['Pct']>0.5,'> 50%',
+                            np.where(cplxamdiffnta['Pct']>0.4,'41% ~ 50%',
+                            np.where(cplxamdiffnta['Pct']>0.3,'31% ~ 40%',
+                            np.where(cplxamdiffnta['Pct']>0.2,'21% ~ 30%',
+                            np.where(cplxamdiffnta['Pct']>0.1,'11% ~ 20%','<= 10%')))))
+    cplxamdiffnta.columns=['NTACode','Week'+str(i+52)+'Pre','Week'+str(i+52)+'Post',
+                           'Week'+str(i+52)+'Pct','Week'+str(i+52)+'PctCat']    
+    ntaam=pd.merge(ntaam,cplxamdiffnta,how='inner',on='NTACode')
+    # PM Peak
+    cplxpmpre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
+    cplxpmpre=cplxpmpre[np.isin(cplxpmpre['time'],pmlist)].reset_index(drop=True)
+    cplxpmpre=cplxpmpre.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
+    cplxpmpre=pd.merge(cplxpmpre,rc,how='left',left_on='unit',right_on='Remote')
+    cplxpmpre=cplxpmpre.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
+    cplxpmpre.columns=['CplxID','PreTime','PreEntries']
+    cplxpmpost=dfunitentry[np.isin(dfunitentry['firstdate'],postdates)].reset_index(drop=True)
+    cplxpmpost=cplxpmpost[np.isin(cplxpmpost['time'],pmlist)].reset_index(drop=True)
+    cplxpmpost=cplxpmpost.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
+    cplxpmpost=pd.merge(cplxpmpost,rc,how='left',left_on='unit',right_on='Remote')
+    cplxpmpost=cplxpmpost.groupby(['CplxID'],as_index=False).agg({'time':lambda x:'|'.join(sorted(x.unique())),'entries':'sum'}).reset_index(drop=True)
+    cplxpmpost.columns=['CplxID','PostTime','PostEntries']
+    cplxpmdiff=pd.merge(cplxpmpre,cplxpmpost,how='inner',on='CplxID')
+    cplxpmdiff=pd.merge(rc.drop('Remote',axis=1).drop_duplicates(keep='first').reset_index(drop=True),cplxpmdiff,how='left',on='CplxID')
+    cplxpmdiff=cplxpmdiff[['CplxID','CplxLat','CplxLong','PreEntries','PostEntries']].reset_index(drop=True)
+    cplxpmdiff=gpd.GeoDataFrame(cplxpmdiff,geometry=[shapely.geometry.Point(x,y) for x,y in zip(cplxpmdiff['CplxLong'],cplxpmdiff['CplxLat'])],crs='epsg:4326')
+    cplxpmdiff=cplxpmdiff.to_crs('epsg:6539')
+    cplxpmdiff['geometry']=cplxpmdiff.buffer(2640)
+    cplxpmdiff=cplxpmdiff.to_crs('epsg:4326')
+    nta=gpd.read_file(path+'ntaclippedadj.shp')
+    nta.crs='epsg:4326'
+    cplxpmdiffnta=gpd.sjoin(nta,cplxpmdiff,how='left',op='intersects')
+    cplxpmdiffnta=cplxpmdiffnta.groupby(['NTACode'],as_index=False).agg({'PreEntries':'sum','PostEntries':'sum'}).reset_index(drop=True)
+    cplxpmdiffnta=cplxpmdiffnta[cplxpmdiffnta['PreEntries']!=0].reset_index(drop=True)
+    cplxpmdiffnta.columns=['NTACode','PreEntries','PostEntries']
+    cplxpmdiffnta['Pct']=cplxpmdiffnta['PostEntries']/cplxpmdiffnta['PreEntries']
+    cplxpmdiffnta['PctCat']=np.where(cplxpmdiffnta['Pct']>0.5,'> 50%',
+                            np.where(cplxpmdiffnta['Pct']>0.4,'41% ~ 50%',
+                            np.where(cplxpmdiffnta['Pct']>0.3,'31% ~ 40%',
+                            np.where(cplxpmdiffnta['Pct']>0.2,'21% ~ 30%',
+                            np.where(cplxpmdiffnta['Pct']>0.1,'11% ~ 20%','<= 10%')))))
+    cplxpmdiffnta.columns=['NTACode','Week'+str(i+52)+'Pre','Week'+str(i+52)+'Post',
+                           'Week'+str(i+52)+'Pct','Week'+str(i+52)+'PctCat']    
+    ntapm=pd.merge(ntapm,cplxpmdiffnta,how='inner',on='NTACode')
+ntaam.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/slider/ntaam.geojson',driver='GeoJSON')
+ntapm.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/slider/ntapm.geojson',driver='GeoJSON')
+
+
+# Print Weeklist
+td=datetime.datetime.strptime('03/02/2020','%m/%d/%Y')
+td=td-datetime.timedelta(td.weekday())
+pr=td-datetime.timedelta(364)
+pr=pr-datetime.timedelta(pr.weekday())
+for i in range(0,52):
+    predates=[]
+    postdates=[]
+    for j in range(0,5):
+        predates+=[(pr+datetime.timedelta(i*7+j)).strftime('%m/%d/%Y')]
+        postdates+=[(td+datetime.timedelta(i*7+j)).strftime('%m/%d/%Y')]
+    print("'"+postdates[0]+'-'+postdates[-1]+' vs '+predates[0]+'-'+predates[-1]+"',")
+
+td=datetime.datetime.strptime('03/01/2021','%m/%d/%Y')
+td=td-datetime.timedelta(td.weekday())
+pr=td-datetime.timedelta(731)
+pr=pr-datetime.timedelta(pr.weekday())
+for i in range(0,9):
+    predates=[]
+    postdates=[]
+    for j in range(0,5):
+        predates+=[(pr+datetime.timedelta(i*7+j)).strftime('%m/%d/%Y')]
+        postdates+=[(td+datetime.timedelta(i*7+j)).strftime('%m/%d/%Y')]
+    print("'"+postdates[0]+'-'+postdates[-1]+' vs '+predates[0]+'-'+predates[-1]+"',")
+
+
+
+
+
+
+
 
 
 
