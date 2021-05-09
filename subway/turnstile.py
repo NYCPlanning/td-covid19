@@ -2623,6 +2623,20 @@ for i in range(0,9):
 
 
 
+df=dfunitentry[np.isin(dfunitentry['firstdate'],['04/26/2021','04/27/2021','04/28/2021','04/29/2021'])]
+df=df.groupby(['unit','time'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
+df=pd.merge(df,rc,how='left',left_on='unit',right_on='Remote')
+df=df.sort_values('entries',ascending=False).reset_index(drop=True)
+df=df.groupby(['CplxID','time'],as_index=False).agg({'entries':'sum'}).reset_index(drop=True)
+df=pd.merge(rc.drop('Remote',axis=1).drop_duplicates(keep='first').reset_index(drop=True),df,how='inner',on='CplxID')
+df=df[['CplxID','CplxName','Routes','CplxLat','CplxLong','Borough','time','entries']].reset_index(drop=True)
+df.columns=['CplxID','CplxName','Routes','CplxLat','CplxLong','Borough','TimePeriod','Entries']
+df.to_csv('C:/Users/mayij/Desktop/Turnstile.csv',index=False)
+
+
+
+
+
 
 
 
