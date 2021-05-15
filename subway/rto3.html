@@ -249,7 +249,7 @@
                 'layername1': 'Telework Capability by Place of Residence (Left) and Workplace (Right)​', // layer name for the legend
                 'layervisibility': 'visible', // visibility of the layer
                 'layercolname': 'cat', // category column name
-                'layercat': ['15%~25%', '26%~30%','31%~58%'], // categories
+                'layercat': ['15%~25%', '26%~30%', '31%~58%'], // categories
                 'layercolor': ['rgba(209,227,243,1)', 'rgba(154,200,225,1)', 'rgba(82,157,204,1)'], // color for each category; use rgba
                 'layeropacity': 1, // fill opacity
             };
@@ -291,17 +291,17 @@
             // Add points
             // Set layer contents
             var layerContent = {
-                'sourceid': 'cplxrtoam', // source id
+                'sourceid': 'cplxrtoam21', // source id
                 'sourcetype': 'geojson', // source type
-                'sourcedata': 'cplxrtoam.geojson', // data source
-                'layerid': 'cplxrtoam', // layer id
+                'sourcedata': 'cplxrtoam21.geojson', // data source
+                'layerid': 'cplxrtoam21', // layer id
                 'layertype': 'circle', // symbology type
-                'layername1': 'Early May 2021 as Percentage of Early May 2019 Subway Ridership', // layer name for the legend
+                'layername1': 'Early May vs Early April 2021 Subway Ridership Percent Change', // layer name for the legend
                 'layername2': 'Weekday AM Peak Average', // layer name for the legend
                 'layervisibility': 'visible', // visibility of the layer
-                'layercolname': 'PctCat', // category column name
-                'layercat': ['10%~30%', '31%~40%', '>40%'], // categories
-                'layercolor': ['rgba(153,52,4,1)','rgba(223,103,17,1)','rgba(254,171,70,1)'], // color for each category; use rgba
+                'layercolname': 'DiffPctCat', // category column name
+                'layercat': ['<=5%', '6%~10%', '>10%'], // categories
+                'layercolor': ['rgba(153,52,4,1)', 'rgba(223,103,17,1)', 'rgba(254,171,70,1)'], // color for each category; use rgba
                 'layeropacity': 1, // circle opacity
                 'layerradius': 3, // circle radius; change size based on zoom level
             };
@@ -368,31 +368,31 @@
             });
 
 
-            // Add cplxrtoam popup
+            // Add cplxrtoam21 popup
             // Add click event
-            map.on('click', 'cplxrtoam', function (e) {
+            map.on('click', 'cplxrtoam21', function (e) {
                 var coordinates = e.features[0].geometry.coordinates.slice(); // get point coordinates
                 var description = "<b>Complex ID: </b><span>" + e.features[0].properties.CplxID + "</span><br>"; // description in the popup
                 description += "<b>Borough: </b><span>" + e.features[0].properties.Borough + "</span><br>";
                 description += "<b>Complex Name: </b><span>" + e.features[0].properties.CplxName + "</span><br>";
                 description += "<b>Routes: </b><span>" + e.features[0].properties.Routes + "</span><br>";
-                description += "<b>Early May 2019 Subway Ridership: </b><span>" + e.features[0].properties.E201905.toFixed(2) + "</span><br>";
+                description += "<b>Early April 2021 Subway Ridership: </b><span>" + e.features[0].properties.E202104.toFixed(2) + "</span><br>";
                 description += "<b>Early May 2021 Subway Ridership: </b><span>" + e.features[0].properties.E202105.toFixed(2) + "</span><br>";
-                description += "<b>Early May 2021 as Percentage of Early May 2019: </b><span>" + (Number(e.features[0].properties.Pct) * 100).toFixed(2) + "%</span><br>";
+                description += "<b>Early May vs Early April 2021 Percent Change: </b><span>" + (Number(e.features[0].properties.DiffPct) * 100).toFixed(2) + "%</span><br>";
                 popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
             });
             // Add hover events
-            map.on('mouseenter', 'cplxrtoam', function () {
+            map.on('mouseenter', 'cplxrtoam21', function () {
                 map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
             });
-            map.on('mouseleave', 'cplxrtoam', function () {
+            map.on('mouseleave', 'cplxrtoam21', function () {
                 map.getCanvas().style.cursor = '';
             });
-            
+
 
 
             // Add layer selector and legend
-            var layerOrder = ['cplxrtoam']; // set layer order in the legend
+            var layerOrder = ['cplxrtoam21']; // set layer order in the legend
             var layerContentListOrder = []; // create ordered layer content list
             for (var i = 0; i < layerOrder.length; i++) {
                 layerContentListOrder.push(layerContentList.filter(e => e.layerid == layerOrder[i])[0]);
@@ -499,7 +499,7 @@
                 'layername1': 'Telework Capability by Place of Residence (Left) and Workplace (Right)​', // layer name for the legend
                 'layervisibility': 'visible', // visibility of the layer
                 'layercolname': 'cat', // category column name
-                'layercat': ['15%~25%', '26%~30%','31%~58%'], // categories
+                'layercat': ['15%~25%', '26%~30%', '31%~58%'], // categories
                 'layercolor': ['rgba(209,227,243,1)', 'rgba(154,200,225,1)', 'rgba(82,157,204,1)'], // color for each category; use rgba
                 'layeropacity': 1, // fill opacity
             };
@@ -541,17 +541,17 @@
             // Add points
             // Set layer contents
             var layerContent = {
-                'sourceid': 'cplxrtopm', // source id
+                'sourceid': 'cplxrtopm21', // source id
                 'sourcetype': 'geojson', // source type
-                'sourcedata': 'cplxrtopm.geojson', // data source
-                'layerid': 'cplxrtopm', // layer id
+                'sourcedata': 'cplxrtopm21.geojson', // data source
+                'layerid': 'cplxrtopm21', // layer id
                 'layertype': 'circle', // symbology type
-                'layername1': 'Early May 2021 as Percentage of Early May 2019 Subway Ridership', // layer name for the legend
+                'layername1': 'Early May vs Early April 2021 Subway Ridership Percent Change', // layer name for the legend
                 'layername2': 'Weekday PM Peak Average', // layer name for the legend
                 'layervisibility': 'visible', // visibility of the layer
-                'layercolname': 'PctCat', // category column name
-                'layercat': ['10%~30%', '31%~40%', '>40%'], // categories
-                'layercolor': ['rgba(153,52,4,1)','rgba(223,103,17,1)','rgba(254,171,70,1)'], // color for each category; use rgba
+                'layercolname': 'DiffPctCat', // category column name
+                'layercat': ['<=5%', '6%~10%', '>10%'], // categories
+                'layercolor': ['rgba(153,52,4,1)', 'rgba(223,103,17,1)', 'rgba(254,171,70,1)'], // color for each category; use rgba
                 'layeropacity': 1, // circle opacity
                 'layerradius': 3, // circle radius; change size based on zoom level
             };
@@ -621,22 +621,22 @@
 
             // Add cplxpmcp popup
             // Add click event
-            map2.on('click', 'cplxrtopm', function (e) {
+            map2.on('click', 'cplxrtopm21', function (e) {
                 var coordinates = e.features[0].geometry.coordinates.slice(); // get point coordinates
                 var description = "<b>Complex ID: </b><span>" + e.features[0].properties.CplxID + "</span><br>"; // description in the popup
                 description += "<b>Borough: </b><span>" + e.features[0].properties.Borough + "</span><br>";
                 description += "<b>Complex Name: </b><span>" + e.features[0].properties.CplxName + "</span><br>";
                 description += "<b>Routes: </b><span>" + e.features[0].properties.Routes + "</span><br>";
-                description += "<b>Early May 2019 Subway Ridership: </b><span>" + e.features[0].properties.E201905.toFixed(2) + "</span><br>";
+                description += "<b>Early April 2021 Subway Ridership: </b><span>" + e.features[0].properties.E202104.toFixed(2) + "</span><br>";
                 description += "<b>Early May 2021 Subway Ridership: </b><span>" + e.features[0].properties.E202105.toFixed(2) + "</span><br>";
-                description += "<b>Early May 2021 as Percentage of Early May 2019: </b><span>" + (Number(e.features[0].properties.Pct) * 100).toFixed(2) + "%</span><br>";
+                description += "<b>Early May vs Early April 2021 Percent Change: </b><span>" + (Number(e.features[0].properties.DiffPct) * 100).toFixed(2) + "%</span><br>";
                 popup.setLngLat(coordinates).setHTML(description).addTo(map2); //add popup
             });
             // Add hover events
-            map2.on('mouseenter', 'cplxrtopm', function () {
+            map2.on('mouseenter', 'cplxrtopm21', function () {
                 map2.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
             });
-            map2.on('mouseleave', 'cplxrtopm', function () {
+            map2.on('mouseleave', 'cplxrtopm21', function () {
                 map2.getCanvas().style.cursor = '';
             });
 
@@ -644,7 +644,7 @@
 
 
             // Add layer selector and legend
-            var layerOrder = ['cplxrtopm']; // set layer order in the legend
+            var layerOrder = ['cplxrtopm21']; // set layer order in the legend
             var layerContentListOrder = []; // create ordered layer content list
             for (var i = 0; i < layerOrder.length; i++) {
                 layerContentListOrder.push(layerContentList.filter(e => e.layerid == layerOrder[i])[0]);
