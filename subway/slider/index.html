@@ -232,7 +232,7 @@
             </div>
             <div class="row g-0 justify-content-center">
                 <div class="col-auto">
-                    <input type="range" min="0" max="60" step="1" value="60" list="steplist" id="sliderbar">
+                    <input type="range" min="0" max="61" step="1" value="61" list="steplist" id="sliderbar">
                     <datalist id="steplist">
                         <option>0</option>
                         <option>1</option>
@@ -295,6 +295,7 @@
                         <option>58</option>
                         <option>59</option>
                         <option>60</option>
+                        <option>61</option>
                     </datalist>
                 </div>
             </div>
@@ -367,7 +368,8 @@
             '04/05/2021-04/09/2021 vs 04/01/2019-04/05/2019',
             '04/12/2021-04/16/2021 vs 04/08/2019-04/12/2019',
             '04/19/2021-04/23/2021 vs 04/15/2019-04/19/2019',
-            '04/26/2021-04/30/2021 vs 04/22/2019-04/26/2019'];
+            '04/26/2021-04/30/2021 vs 04/22/2019-04/26/2019',
+            '05/03/2021-05/07/2021 vs 04/29/2019-05/03/2019'];
         document.getElementById('slideroutput').textContent = weekList[weekNum];
 
         // Set MapBox token
@@ -384,7 +386,7 @@
             logoPosition: 'bottom-left', // no need to change 
             preserveDrawingBuffer: true, // make sure it's on to allow printing
             center: [-74.0197, 40.721], // testing to get the centroid of bounds
-            zoom: 10, // set the initial zoom of the map view
+            zoom: 9.5, // set the initial zoom of the map view
         });
 
 
