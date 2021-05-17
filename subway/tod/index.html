@@ -13,6 +13,7 @@
 
 
 
+
     <style>
         body {
             margin: 0;
@@ -20,26 +21,11 @@
             font-family: sans-serif;
         }
 
-        #map1 {
+        #mainmap {
             position: absolute;
-            left: 0;
             top: 0;
             bottom: 0;
-            width: 50%;
-            border-right-style: solid;
-            border-right-width: 0.1rem;
-            border-right-color: rgba(0, 0, 0, 0.5);
-        }
-
-        #map2 {
-            position: absolute;
-            right: 0;
-            top: 0;
-            bottom: 0;
-            width: 50%;
-            border-left-style: solid;
-            border-left-width: 0.1rem;
-            border-left-color: rgba(0, 0, 0, 0.5);
+            width: 100%;
         }
 
         #legend {
@@ -49,7 +35,10 @@
             width: auto;
             height: auto;
             max-height: 90%;
-            padding: 1rem;
+            padding-top: 1rem;
+            padding-right: 1rem;
+            padding-left: 1rem;
+            padding-bottom: 1rem;
             color: rgba(0, 0, 0, 0.9);
             background-color: rgba(255, 255, 255, 0.9);
             font-size: 1rem;
@@ -74,13 +63,13 @@
             width: 0.9rem;
             height: 0.9rem;
             margin-right: 0.5rem;
-            vertical-align: 1.2rem;
+            vertical-align: -0.1rem;
         }
 
         .item1-label {
             font-size: 0.9rem;
             font-weight: bold;
-            width: 12rem;
+            width: 15rem;
         }
 
         .itemgroup2 {
@@ -125,46 +114,6 @@
             vertical-align: -0.1rem;
         }
 
-        #title1-nav {
-            position: absolute;
-            top: 1rem;
-            right: 50%;
-        }
-
-        #title1 {
-            position: relative;
-            right: 1rem;
-            width: auto;
-            height: auto;
-            padding: 0.5rem;
-            color: rgba(0, 0, 0, 0.9);
-            background-color: rgba(255, 255, 255, 0.9);
-            font-size: 0.9rem;
-            font-weight: bold;
-            box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
-            border-radius: 4px;
-        }
-
-        #title2-nav {
-            position: absolute;
-            top: 1rem;
-            left: 50%;
-        }
-
-        #title2 {
-            position: relative;
-            left: 1rem;
-            width: auto;
-            height: auto;
-            padding: 0.5rem;
-            color: rgba(0, 0, 0, 0.9);
-            background-color: rgba(255, 255, 255, 0.9);
-            font-size: 0.9rem;
-            font-weight: bold;
-            box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
-            border-radius: 4px;
-        }
-
         #slider-nav {
             position: absolute;
             bottom: 2rem;
@@ -173,7 +122,7 @@
 
         #slider {
             position: relative;
-            width: 22rem;
+            width: 17rem;
             height: auto;
             padding: 0.5rem;
             color: rgba(0, 0, 0, 0.9);
@@ -185,7 +134,7 @@
         }
 
         #sliderbar {
-            width: 20rem;
+            width: 15rem;
         }
     </style>
 </head>
@@ -193,8 +142,8 @@
 
 
 <body>
-    <div id="map1"></div>
-    <div id="map2"></div>
+    <div id="mainmap"></div> <!-- placeholder for main map -->
+
     <nav id="legend">
         <div class="container g-0">
             <div class="row g-0 justify-content-between" id="header">
@@ -204,25 +153,11 @@
                 </div>
             </div>
             <div class="row g-0 justify-content-start">
-                <div class="col-auto" id="legends"> </div>
-                <!-- placeholder for layer selector and legend -->
+                <div class="col-auto" id="legends"> </div> <!-- placeholder for layer selector and legend -->
             </div>
         </div>
     </nav>
-    <nav id="title1-nav">
-        <div class="container g-0">
-            <div class="row g-0 justify-content-center">
-                <div class="col-auto" id="title1"> Weekday AM Peak </div>
-            </div>
-        </div>
-    </nav>
-    <nav id="title2-nav">
-        <div class="container g-0">
-            <div class="row g-0 justify-content-center">
-                <div class="col-auto" id="title2"> Weekday PM Peak </div>
-            </div>
-        </div>
-    </nav>
+
     <nav id="slider-nav">
         <div class="container g-0" id="slider">
             <div class="row g-0 justify-content-center">
@@ -232,7 +167,7 @@
             </div>
             <div class="row g-0 justify-content-center">
                 <div class="col-auto">
-                    <input type="range" min="0" max="61" step="1" value="61" list="steplist" id="sliderbar">
+                    <input type="range" min="0" max="5" step="1" value="1" list="steplist" id="sliderbar">
                     <datalist id="steplist">
                         <option>0</option>
                         <option>1</option>
@@ -240,62 +175,6 @@
                         <option>3</option>
                         <option>4</option>
                         <option>5</option>
-                        <option>6</option>
-                        <option>7</option>
-                        <option>8</option>
-                        <option>9</option>
-                        <option>10</option>
-                        <option>11</option>
-                        <option>12</option>
-                        <option>13</option>
-                        <option>14</option>
-                        <option>15</option>
-                        <option>16</option>
-                        <option>17</option>
-                        <option>18</option>
-                        <option>19</option>
-                        <option>20</option>
-                        <option>21</option>
-                        <option>22</option>
-                        <option>23</option>
-                        <option>24</option>
-                        <option>25</option>
-                        <option>26</option>
-                        <option>27</option>
-                        <option>28</option>
-                        <option>29</option>
-                        <option>30</option>
-                        <option>31</option>
-                        <option>32</option>
-                        <option>33</option>
-                        <option>34</option>
-                        <option>35</option>
-                        <option>36</option>
-                        <option>37</option>
-                        <option>38</option>
-                        <option>39</option>
-                        <option>40</option>
-                        <option>41</option>
-                        <option>42</option>
-                        <option>43</option>
-                        <option>44</option>
-                        <option>45</option>
-                        <option>46</option>
-                        <option>47</option>
-                        <option>48</option>
-                        <option>49</option>
-                        <option>50</option>
-                        <option>51</option>
-                        <option>52</option>
-                        <option>53</option>
-                        <option>54</option>
-                        <option>55</option>
-                        <option>56</option>
-                        <option>57</option>
-                        <option>58</option>
-                        <option>59</option>
-                        <option>60</option>
-                        <option>61</option>
                     </datalist>
                 </div>
             </div>
@@ -303,74 +182,15 @@
     </nav>
 
 
-
     <script>
         'use strict';
 
-        var weekNum = document.getElementById('sliderbar').value;
-        var weekList = ['03/02/2020-03/06/2020 vs 03/04/2019-03/08/2019',
-            '03/09/2020-03/13/2020 vs 03/11/2019-03/15/2019',
-            '03/16/2020-03/20/2020 vs 03/18/2019-03/22/2019',
-            '03/23/2020-03/27/2020 vs 03/25/2019-03/29/2019',
-            '03/30/2020-04/03/2020 vs 04/01/2019-04/05/2019',
-            '04/06/2020-04/10/2020 vs 04/08/2019-04/12/2019',
-            '04/13/2020-04/17/2020 vs 04/15/2019-04/19/2019',
-            '04/20/2020-04/24/2020 vs 04/22/2019-04/26/2019',
-            '04/27/2020-05/01/2020 vs 04/29/2019-05/03/2019',
-            '05/04/2020-05/08/2020 vs 05/06/2019-05/10/2019',
-            '05/11/2020-05/15/2020 vs 05/13/2019-05/17/2019',
-            '05/18/2020-05/22/2020 vs 05/20/2019-05/24/2019',
-            '05/25/2020-05/29/2020 vs 05/27/2019-05/31/2019',
-            '06/01/2020-06/05/2020 vs 06/03/2019-06/07/2019',
-            '06/08/2020-06/12/2020 vs 06/10/2019-06/14/2019',
-            '06/15/2020-06/19/2020 vs 06/17/2019-06/21/2019',
-            '06/22/2020-06/26/2020 vs 06/24/2019-06/28/2019',
-            '06/29/2020-07/03/2020 vs 07/01/2019-07/05/2019',
-            '07/06/2020-07/10/2020 vs 07/08/2019-07/12/2019',
-            '07/13/2020-07/17/2020 vs 07/15/2019-07/19/2019',
-            '07/20/2020-07/24/2020 vs 07/22/2019-07/26/2019',
-            '07/27/2020-07/31/2020 vs 07/29/2019-08/02/2019',
-            '08/03/2020-08/07/2020 vs 08/05/2019-08/09/2019',
-            '08/10/2020-08/14/2020 vs 08/12/2019-08/16/2019',
-            '08/17/2020-08/21/2020 vs 08/19/2019-08/23/2019',
-            '08/24/2020-08/28/2020 vs 08/26/2019-08/30/2019',
-            '08/31/2020-09/04/2020 vs 09/02/2019-09/06/2019',
-            '09/07/2020-09/11/2020 vs 09/09/2019-09/13/2019',
-            '09/14/2020-09/18/2020 vs 09/16/2019-09/20/2019',
-            '09/21/2020-09/25/2020 vs 09/23/2019-09/27/2019',
-            '09/28/2020-10/02/2020 vs 09/30/2019-10/04/2019',
-            '10/05/2020-10/09/2020 vs 10/07/2019-10/11/2019',
-            '10/12/2020-10/16/2020 vs 10/14/2019-10/18/2019',
-            '10/19/2020-10/23/2020 vs 10/21/2019-10/25/2019',
-            '10/26/2020-10/30/2020 vs 10/28/2019-11/01/2019',
-            '11/02/2020-11/06/2020 vs 11/04/2019-11/08/2019',
-            '11/09/2020-11/13/2020 vs 11/11/2019-11/15/2019',
-            '11/16/2020-11/20/2020 vs 11/18/2019-11/22/2019',
-            '11/23/2020-11/27/2020 vs 11/25/2019-11/29/2019',
-            '11/30/2020-12/04/2020 vs 12/02/2019-12/06/2019',
-            '12/07/2020-12/11/2020 vs 12/09/2019-12/13/2019',
-            '12/14/2020-12/18/2020 vs 12/16/2019-12/20/2019',
-            '12/21/2020-12/25/2020 vs 12/23/2019-12/27/2019',
-            '12/28/2020-01/01/2021 vs 12/30/2019-01/03/2020',
-            '01/04/2021-01/08/2021 vs 01/06/2020-01/10/2020',
-            '01/11/2021-01/15/2021 vs 01/13/2020-01/17/2020',
-            '01/18/2021-01/22/2021 vs 01/20/2020-01/24/2020',
-            '01/25/2021-01/29/2021 vs 01/27/2020-01/31/2020',
-            '02/01/2021-02/05/2021 vs 02/03/2020-02/07/2020',
-            '02/08/2021-02/12/2021 vs 02/10/2020-02/14/2020',
-            '02/15/2021-02/19/2021 vs 02/17/2020-02/21/2020',
-            '02/22/2021-02/26/2021 vs 02/24/2020-02/28/2020',
-            '03/01/2021-03/05/2021 vs 02/25/2019-03/01/2019',
-            '03/08/2021-03/12/2021 vs 03/04/2019-03/08/2019',
-            '03/15/2021-03/19/2021 vs 03/11/2019-03/15/2019',
-            '03/22/2021-03/26/2021 vs 03/18/2019-03/22/2019',
-            '03/29/2021-04/02/2021 vs 03/25/2019-03/29/2019',
-            '04/05/2021-04/09/2021 vs 04/01/2019-04/05/2019',
-            '04/12/2021-04/16/2021 vs 04/08/2019-04/12/2019',
-            '04/19/2021-04/23/2021 vs 04/15/2019-04/19/2019',
-            '04/26/2021-04/30/2021 vs 04/22/2019-04/26/2019',
-            '05/03/2021-05/07/2021 vs 04/29/2019-05/03/2019'];
-        document.getElementById('slideroutput').textContent = weekList[weekNum];
+        var todNum = document.getElementById('sliderbar').value;
+        var todList = ['em','am','md','pm','en','ln'];
+        var todLabel = ['Early Morning','AM Peak', 'Midday', 'PM Peak', 'Early Night','Late Night'];
+        document.getElementById('slideroutput').textContent = todLabel[todNum];
+
+
 
         // Set MapBox token
         mapboxgl.accessToken = 'pk.eyJ1IjoibWF5aWp1biIsImEiOiJjaXg4ZmlyY20wMDBjMm9tcjI0bjQ0Z21zIn0.Io0XJ4JelN903V9HGo4TfQ'; // still need to find a way to store the token
@@ -378,34 +198,33 @@
 
 
         // Initialize the map
-        var map1 = new mapboxgl.Map({ // creating a new map
-            container: 'map1', // same as the div id to place the map
+        var map = new mapboxgl.Map({ // creating a new map
+            container: 'mainmap', // same as the div id to place the map
             style: 'mapbox://styles/mapbox/light-v10', // light base map
             hash: true, // make sure it's on to get the url with map view
             attributionControl: false, // show the credit bar
             logoPosition: 'bottom-left', // no need to change 
             preserveDrawingBuffer: true, // make sure it's on to allow printing
             center: [-74.0197, 40.721], // testing to get the centroid of bounds
-            zoom: 9.5, // set the initial zoom of the map view
+            zoom: 10, // set the initial zoom of the map view
         });
 
 
 
-
         // Add layers
-        map1.on('load', function () {
+        map.on('load', function () {
 
             var layerContentList = []; // store all the layer contents
 
             // Add full screen control
-            map1.addControl(new mapboxgl.FullscreenControl({
+            map.addControl(new mapboxgl.FullscreenControl({
                 container: document.querySelector('body'),
             }),
                 'bottom-left', // control position
             );
 
             // Add navigation control
-            map1.addControl(new mapboxgl.NavigationControl({
+            map.addControl(new mapboxgl.NavigationControl({
                 showCompass: true, // show compass
                 showZoom: true, // show zoom
                 visualizePitch: true, // show pitch
@@ -415,18 +234,19 @@
 
 
 
-            // Add ntaam
+
+            // Add nta turnstile
             // Set layer contents
             var layerContent = {
-                'sourceid': 'ntaam', // source id
+                'sourceid': 'ntaturnstile', // source id
                 'sourcetype': 'geojson', // source type
-                'sourcedata': 'ntaam.geojson', // data source
-                'layerid': 'ntaam', // layer id
+                'sourcedata': 'am.geojson', // data source
+                'layerid': 'ntaturnstile', // layer id
                 'layertype': 'fill', // symbology type
-                'layername': 'Ridership as % of Pre-Pandemic Equivalent Week​', // layer name for the legend
+                'layername': 'Early May 2021 as Percentage of Early May 2019 Subway Ridership', // layer name for the legend
                 'layervisibility': 'visible', // visibility of the layer
-                'layercolname': 'Week' + weekNum + 'PctCat', // category column name
-                'layercat': ['> 50%', '41% ~ 50%', '31% ~ 40%', '21% ~ 30%', '11% ~ 20%', '<= 10%'], // categories
+                'layercolname': 'PctCat', // category column name
+                'layercat': ['<=20%', '21%~30%', '31%~40%', '41%~50%', '>50%'], // categories
                 'layercolor': ['rgba(127, 39, 4, 1)', 'rgba(209, 69, 1, 1)', 'rgba(246, 119, 34, 1)', 'rgba(253, 172, 103, 1)', 'rgba(254, 219, 183, 1)', 'rgba(255, 245, 235, 1)'], // color for each category; use rgba
                 'layeroutlinecolor': 'rgba(255, 255, 255, 0)', // outline color; for legend only
             };
@@ -443,13 +263,13 @@
             layerContentList.push(layerContent);
 
             // Add data source
-            map1.addSource(layerContent['sourceid'], {
+            map.addSource(layerContent['sourceid'], {
                 'type': layerContent['sourcetype'],
                 'data': layerContent['sourcedata'],
             });
 
             // Add fill layer
-            map1.addLayer({
+            map.addLayer({
                 'id': layerContent['layerid'],
                 'type': layerContent['layertype'],
                 'source': layerContent['sourceid'],
@@ -486,13 +306,13 @@
             layerContentList.push(layerContent);
 
             // Add data source
-            map1.addSource(layerContent['sourceid'], {
+            map.addSource(layerContent['sourceid'], {
                 'type': layerContent['sourcetype'],
                 'data': layerContent['sourcedata'],
             });
 
             // Add line layer
-            map1.addLayer({
+            map.addLayer({
                 'id': layerContent['layerid'],
                 'type': layerContent['layertype'],
                 'source': layerContent['sourceid'],
@@ -509,8 +329,39 @@
 
 
 
+            // Add popup
+            var popup = new mapboxgl.Popup({
+                closeButton: true, // close button
+                closeOnClick: false, // close if click on map
+                closeOnMove: false, // close if move the map
+                anchor: 'bottom', // anchor of the popup
+                offset: 0, // offset from the feature
+                maxWidth: 'none', // max width of the popoup; 'none' to fit to the content                
+            });
+
+            // Add polygon popup
+            // Add click event
+            map.on('click', 'ntaturnstile', function (e) {
+                var coordinates = e.lngLat; // get pointer coordinates
+                var description = "<b>NTA Code: </b><span>" + e.features[0].properties.NTACode + "</span><br>"; // description in the popup
+                description += "<b>NTA Name: </b><span>" + e.features[0].properties.NTAName + "</span><br>";
+                description += "<b>Early May 2019 Subway Ridership: </b><span>" + e.features[0].properties.PreEntries.toFixed(2) + "</span><br>";
+                description += "<b>Early May 2021 Subway Ridership: </b><span>" + e.features[0].properties.PostEntries.toFixed(2) + "</span><br>";
+                description += "<b>Early May 2021 as Percentage of Early May 2019: </b><span>" + (Number(e.features[0].properties.Pct) * 100).toFixed(2) + "%</span><br>";
+                popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
+            });
+            // Add hover events
+            map.on('mouseenter', 'ntaturnstile', function () {
+                map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
+            });
+            map.on('mouseleave', 'ntaturnstile', function () {
+                map.getCanvas().style.cursor = '';
+            });
+
+
+
             // Add layer selector and legend
-            var layerOrder = ['ntaam', 'subwayline']; // set layer order in the legend
+            var layerOrder = ['ntaturnstile']; // set layer order in the legend
             var layerContentListOrder = []; // create ordered layer content list
             for (var i = 0; i < layerOrder.length; i++) {
                 layerContentListOrder.push(layerContentList.filter(e => e.layerid == layerOrder[i])[0]);
@@ -534,6 +385,11 @@
                 var itemgroup2 = document.createElement('div'); // create level-2 item group
                 itemgroup2.className = 'itemgroup2';
                 itemgroup2.id = layerContentListOrder[i]['layerid'] + '-cat';
+                if (layerContentListOrder[i]['layervisibility'] === 'visible') {
+                    itemgroup2.style.display = 'block';
+                } else {
+                    itemgroup2.style.display = 'none';
+                };
                 for (var j = 0; j < layerContentListOrder[i]['layercat'].length; j++) {
                     var item2 = document.createElement('div'); // create level-2 item
                     item2.className = 'item2';
@@ -553,164 +409,8 @@
                 };
                 itemgroup1.appendChild(itemgroup2);
                 filterLegend.appendChild(itemgroup1);
-            };
-        });
-
-
-
-
-
-        // Initialize the map
-        var map2 = new mapboxgl.Map({ // creating a new map
-            container: 'map2', // same as the div id to place the map
-            style: 'mapbox://styles/mapbox/light-v10', // light base map
-            hash: true, // make sure it's on to get the url with map view
-            attributionControl: true, // show the credit bar
-            customAttribution: '<b> Data Sources: <a href="http://web.mta.info/developers/fare.html" target="blank">MTA Fare Data</a>; <a href="https://lehd.ces.census.gov/" target="blank">Census Bureau LEHD 2017</a></b>', // add overall credit to the beggining
-            logoPosition: 'bottom-left', // no need to change 
-            preserveDrawingBuffer: true, // make sure it's on to allow printing
-            center: [-74.0197, 40.721], // testing to get the centroid of bounds
-            zoom: 10, // set the initial zoom of the map view
-        });
-
-
-
-        // Add layers
-        map2.on('load', function () {
-
-            var layerContentList = []; // store all the layer contents
-
-            // Add ntapm
-            // Set layer contents
-            var layerContent = {
-                'sourceid': 'ntapm', // source id
-                'sourcetype': 'geojson', // source type
-                'sourcedata': 'ntapm.geojson', // data source
-                'layerid': 'ntapm', // layer id
-                'layertype': 'fill', // symbology type
-                'layername': 'Ridership as % of Pre-Pandemic Equivalent Week​', // layer name for the legend
-                'layervisibility': 'visible', // visibility of the layer
-                'layercolname': 'Week' + weekNum + 'PctCat', // category column name
-                'layercat': ['> 50%', '41% ~ 50%', '31% ~ 40%', '21% ~ 30%', '11% ~ 20%', '<= 10%'], // categories
-                'layercolor': ['rgba(127, 39, 4, 1)', 'rgba(209, 69, 1, 1)', 'rgba(246, 119, 34, 1)', 'rgba(253, 172, 103, 1)', 'rgba(254, 219, 183, 1)', 'rgba(255, 245, 235, 1)'], // color for each category; use rgba
-                'layeroutlinecolor': 'rgba(255, 255, 255, 0)', // outline color; for legend only
-            };
-
-            // Generate layer colors
-            var layerColor = ['match', ['get', layerContent['layercolname']]];
-            for (var i = 0; i < layerContent.layercat.length; i++) {
-                layerColor.push(layerContent.layercat[i]);
-                layerColor.push(layerContent.layercolor[i]);
-            };
-            layerColor.push('#000000');
-
-            // Add layer content to the overall layer content list
-            layerContentList.push(layerContent);
-
-            // Add data source
-            map2.addSource(layerContent['sourceid'], {
-                'type': layerContent['sourcetype'],
-                'data': layerContent['sourcedata'],
-            });
-
-            // Add fill layer
-            map2.addLayer({
-                'id': layerContent['layerid'],
-                'type': layerContent['layertype'],
-                'source': layerContent['sourceid'],
-                'layout': {
-                    'visibility': layerContent['layervisibility'],
-                },
-                'paint': {
-                    'fill-color': layerColor,
-                },
-            });
-
-
-
-            // Add subway lines
-            // Set layer contents
-            var layerContent = {
-                'sourceid': 'subwayline', // source id
-                'sourcetype': 'geojson', // source type
-                'sourcedata': 'https://raw.githubusercontent.com/NYCPlanning/td-covid19/master/subway/subwayline.geojson', // data source
-                'layerid': 'subwayline', // layer id
-                'layertype': 'line', // symbology type
-                'layername': 'Subway Line', // layer name for the legend
-                'layerlinecap': 'round', // line endings; butt/round/square
-                'layerlinejoin': 'round', // line joining; bevel/round/miter
-                'layervisibility': 'visible', // visibility of the layer
-                'layercat': [''], // categories
-                'layercolor': ['rgba(0,162,255,1)'], // color for each category; use rgba
-                'layerwidth': 1, // line width
-                'layeroutlinecolor': 'rgba(255, 255, 255, 0)', // outline color; for legend only
-            };
-
-            // Add layer content to the overall layer content list
-            layerContentList.push(layerContent);
-
-            // Add data source
-            map2.addSource(layerContent['sourceid'], {
-                'type': layerContent['sourcetype'],
-                'data': layerContent['sourcedata'],
-            });
-
-            // Add line layer
-            map2.addLayer({
-                'id': layerContent['layerid'],
-                'type': layerContent['layertype'],
-                'source': layerContent['sourceid'],
-                'layout': {
-                    'line-cap': layerContent['layerlinecap'],
-                    'line-join': layerContent['layerlinejoin'],
-                    'visibility': layerContent['layervisibility'],
-                },
-                'paint': {
-                    'line-color': layerContent['layercolor'][0],
-                    'line-width': layerContent['layerwidth'],
-                },
-            });
-        });
-
-
-
-
-
-        // Synchronize the two maps
-        var disable = false;
-        map1.on("move", function () {
-            if (!disable) {
-                var center = map1.getCenter();
-                var zoom = map1.getZoom();
-                var pitch = map1.getPitch();
-                var bearing = map1.getBearing();
-
-                disable = true;
-                map2.setCenter(center);
-                map2.setZoom(zoom);
-                map2.setPitch(pitch);
-                map2.setBearing(bearing);
-                disable = false;
             }
         });
-
-        map2.on("move", function () {
-            if (!disable) {
-                var center = map2.getCenter();
-                var zoom = map2.getZoom();
-                var pitch = map2.getPitch();
-                var bearing = map2.getBearing();
-
-                disable = true;
-                map1.setCenter(center);
-                map1.setZoom(zoom);
-                map1.setPitch(pitch);
-                map1.setBearing(bearing);
-                disable = false;
-            }
-        });
-
-
 
 
 
@@ -729,24 +429,11 @@
         });
 
 
-
-
-
         // Set slider event
         sliderbar.addEventListener('input', function () {
-            var weekNum = document.getElementById('sliderbar').value;
-            document.getElementById('slideroutput').textContent = weekList[weekNum];
-            var layercolname = 'Week' + weekNum + 'PctCat';
-            var layercat = ['> 50%', '41% ~ 50%', '31% ~ 40%', '21% ~ 30%', '11% ~ 20%', '<= 10%'];
-            var layercolor = ['rgba(127, 39, 4, 1)', 'rgba(209, 69, 1, 1)', 'rgba(246, 119, 34, 1)', 'rgba(253, 172, 103, 1)', 'rgba(254, 219, 183, 1)', 'rgba(255, 245, 235, 1)'];
-            var layerColor = ['match', ['get', layercolname]];
-            for (var i = 0; i < layercat.length; i++) {
-                layerColor.push(layercat[i]);
-                layerColor.push(layercolor[i]);
-            };
-            layerColor.push('#000000');
-            map1.setPaintProperty('ntaam', 'fill-color', layerColor);
-            map2.setPaintProperty('ntapm', 'fill-color', layerColor);
+            var todNum = document.getElementById('sliderbar').value;
+            document.getElementById('slideroutput').textContent = todLabel[todNum];
+            map.getSource('ntaturnstile').setData(todList[todNum] + '.geojson');
         });
     </script>
 
