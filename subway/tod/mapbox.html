@@ -31,7 +31,7 @@
         #legend {
             position: absolute;
             top: 1rem;
-            right: 1rem;
+            left: 1rem;
             width: auto;
             height: auto;
             max-height: 90%;
@@ -69,10 +69,11 @@
         .item1-label {
             font-size: 0.9rem;
             font-weight: bold;
+            width: 15rem;
         }
 
         .itemgroup2 {
-            margin-left: 1.4rem;
+            margin-left: 0rem;
         }
 
         .item2-input {
@@ -112,6 +113,29 @@
             display: inline-block;
             vertical-align: -0.1rem;
         }
+
+        #slider-nav {
+            position: absolute;
+            bottom: 2rem;
+            width: 100%;
+        }
+
+        #slider {
+            position: relative;
+            width: 22rem;
+            height: auto;
+            padding: 0.5rem;
+            color: rgba(0, 0, 0, 0.9);
+            background-color: rgba(255, 255, 255, 0.9);
+            font-size: 0.9rem;
+            font-weight: bold;
+            box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+        }
+
+        #sliderbar {
+            width: 20rem;
+        }
     </style>
 </head>
 
@@ -134,12 +158,39 @@
         </div>
     </nav>
 
+    <nav id="slider-nav">
+        <div class="container g-0" id="slider">
+            <div class="row g-0 justify-content-center">
+                <div class="col-auto">
+                    <span id="slideroutput"></span>
+                </div>
+            </div>
+            <div class="row g-0 justify-content-center">
+                <div class="col-auto">
+                    <input type="range" min="0" max="3" step="1" value="0" list="steplist" id="sliderbar">
+                    <datalist id="steplist">
+                        <option>0</option>
+                        <option>1</option>
+                        <option>2</option>
+                        <option>3</option>
+                    </datalist>
+                </div>
+            </div>
+        </div>
+    </nav>
 
 
     <script>
         'use strict';
-        // Set MapBox token
 
+        var todNum = document.getElementById('sliderbar').value;
+        var todList = ['ampeak', 'dtop', 'pmpeak', 'ntop'];
+        var todLabel = ['AM Peak', 'Daytime Off-Peak', 'PM Peak', 'Nighttime Off-Peak'];
+        document.getElementById('slideroutput').textContent = todLabel[todNum];
+
+
+
+        // Set MapBox token
         mapboxgl.accessToken = 'pk.eyJ1IjoibWF5aWp1biIsImEiOiJjaXg4ZmlyY20wMDBjMm9tcjI0bjQ0Z21zIn0.Io0XJ4JelN903V9HGo4TfQ'; // still need to find a way to store the token
 
 
@@ -170,7 +221,7 @@
                 'bottom-left', // control position
             );
 
-             // Add navigation control
+            // Add navigation control
             map.addControl(new mapboxgl.NavigationControl({
                 showCompass: true, // show compass
                 showZoom: true, // show zoom
@@ -187,13 +238,13 @@
             var layerContent = {
                 'sourceid': 'ntaturnstile', // source id
                 'sourcetype': 'geojson', // source type
-                'sourcedata': 'ntaam.geojson', // data source
+                'sourcedata': 'ampeak.geojson', // data source
                 'layerid': 'ntaturnstile', // layer id
                 'layertype': 'fill', // symbology type
-                'layername': 'Ridership as % of Pre-Pandemic Equivalent Week​', // layer name for the legend
+                'layername': 'Early May 2021 as Percentage of Early May 2019 Subway Ridership', // layer name for the legend
                 'layervisibility': 'visible', // visibility of the layer
-                'layercolname': 'Week' + weekNum + 'PctCat', // category column name
-                'layercat': ['> 50%', '41% ~ 50%', '31% ~ 40%', '21% ~ 30%', '11% ~ 20%', '<= 10%'], // categories
+                'layercolname': 'PctCat', // category column name
+                'layercat': ['<=20%', '21%~30%', '31%~40%', '41%~50%', '>50%'], // categories
                 'layercolor': ['rgba(127, 39, 4, 1)', 'rgba(209, 69, 1, 1)', 'rgba(246, 119, 34, 1)', 'rgba(253, 172, 103, 1)', 'rgba(254, 219, 183, 1)', 'rgba(255, 245, 235, 1)'], // color for each category; use rgba
                 'layeroutlinecolor': 'rgba(255, 255, 255, 0)', // outline color; for legend only
             };
@@ -210,13 +261,13 @@
             layerContentList.push(layerContent);
 
             // Add data source
-            map1.addSource(layerContent['sourceid'], {
+            map.addSource(layerContent['sourceid'], {
                 'type': layerContent['sourcetype'],
                 'data': layerContent['sourcedata'],
             });
 
             // Add fill layer
-            map1.addLayer({
+            map.addLayer({
                 'id': layerContent['layerid'],
                 'type': layerContent['layertype'],
                 'source': layerContent['sourceid'],
@@ -253,13 +304,13 @@
             layerContentList.push(layerContent);
 
             // Add data source
-            map1.addSource(layerContent['sourceid'], {
+            map.addSource(layerContent['sourceid'], {
                 'type': layerContent['sourcetype'],
                 'data': layerContent['sourcedata'],
             });
 
             // Add line layer
-            map1.addLayer({
+            map.addLayer({
                 'id': layerContent['layerid'],
                 'type': layerContent['layertype'],
                 'source': layerContent['sourceid'],
@@ -286,58 +337,29 @@
                 maxWidth: 'none', // max width of the popoup; 'none' to fit to the content                
             });
 
-            // Add point popup
-            // Add click event
-            map.on('click', 'ptlayer', function (e) {
-                var coordinates = e.features[0].geometry.coordinates.slice(); // get point coordinates
-                var description = "<b>Station: </b><span>" + e.features[0].properties.CplxName + "</span><br>"; // description in the popup
-                description += "<b>Entry: </b><span>" + e.features[0].properties.LatestEntries + "</span><br>";
-                popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
-            });
-            // Add hover events
-            map.on('mouseenter', 'ptlayer', function () {
-                map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
-            });
-            map.on('mouseleave', 'ptlayer', function () {
-                map.getCanvas().style.cursor = '';
-            });
-
-            // Add line popup
-            // Add click event
-            map.on('click', 'lnlayer', function (e) {
-                var coordinates = e.lngLat; // get pointer coordinates
-                var description = "<b>Division: </b><span>" + e.features[0].properties.div + "</span><br>"; // description in the popup
-                description += "<b>Routes: </b><span>" + e.features[0].properties.oem_route + "</span><br>";
-                popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
-            });
-            // Add hover events
-            map.on('mouseenter', 'lnlayer', function () {
-                map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
-            });
-            map.on('mouseleave', 'lnlayer', function () {
-                map.getCanvas().style.cursor = '';
-            });
-
             // Add polygon popup
             // Add click event
-            map.on('click', 'pglayer', function (e) {
+            map.on('click', 'ntaturnstile', function (e) {
                 var coordinates = e.lngLat; // get pointer coordinates
-                var description = "<b>NTA: </b><span>" + e.features[0].properties.NTAName + "</span><br>"; // description in the popup
-                description += "<b>Percent Change: </b><span>" + e.features[0].properties.PKDiffPct3 + "</span><br>";
+                var description = "<b>NTA Code: </b><span>" + e.features[0].properties.NTACode + "</span><br>"; // description in the popup
+                description += "<b>NTA Name: </b><span>" + e.features[0].properties.NTAName + "</span><br>";
+                description += "<b>Early May 2019 Subway Ridership: </b><span>" + e.features[0].properties.PreEntries.toFixed(2) + "</span><br>";
+                description += "<b>Early May 2021 Subway Ridership: </b><span>" + e.features[0].properties.PostEntries.toFixed(2) + "</span><br>";
+                description += "<b>Early May 2021 as Percentage of Early May 2019: </b><span>" + (Number(e.features[0].properties.Pct) * 100).toFixed(2) + "%</span><br>";
                 popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
             });
             // Add hover events
-            map.on('mouseenter', 'pglayer', function () {
+            map.on('mouseenter', 'ntaturnstile', function () {
                 map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
             });
-            map.on('mouseleave', 'pglayer', function () {
+            map.on('mouseleave', 'ntaturnstile', function () {
                 map.getCanvas().style.cursor = '';
             });
 
 
 
             // Add layer selector and legend
-            var layerOrder = ['ptlayer', 'lnlayer', 'pglayer']; // set layer order in the legend
+            var layerOrder = ['ntaturnstile']; // set layer order in the legend
             var layerContentListOrder = []; // create ordered layer content list
             for (var i = 0; i < layerOrder.length; i++) {
                 layerContentListOrder.push(layerContentList.filter(e => e.layerid == layerOrder[i])[0]);
@@ -350,20 +372,10 @@
                 itemgroup1.className = 'itemgroup1';
                 var item1 = document.createElement('div'); // create level-1 item
                 item1.className = 'item1';
-                var input1 = document.createElement('input'); // create level-1 checkbox
-                input1.type = 'checkbox';
-                input1.className = 'item1-input';
-                input1.id = layerContentListOrder[i]['layerid'];
-                if (layerContentListOrder[i]['layervisibility'] === 'visible') {
-                    input1.checked = true;
-                } else {
-                    input1.checked = false;
-                };
                 var label1 = document.createElement('label'); // create level-1 checkbox label
                 label1.className = 'item1-label';
                 label1.setAttribute('for', layerContentListOrder[i]['layerid']);
                 label1.textContent = layerContentListOrder[i]['layername'];
-                item1.appendChild(input1);
                 item1.appendChild(label1);
                 itemgroup1.appendChild(item1);
 
@@ -379,11 +391,6 @@
                 for (var j = 0; j < layerContentListOrder[i]['layercat'].length; j++) {
                     var item2 = document.createElement('div'); // create level-2 item
                     item2.className = 'item2';
-                    var input2 = document.createElement('input'); // create level-2 checkbox
-                    input2.type = 'checkbox';
-                    input2.className = 'item2-input';
-                    input2.id = layerContentListOrder[i]['layerid'] + '|' + layerContentListOrder[i]['layercolname'] + '|' + layerContentListOrder[i]['layercat'][j];
-                    input2.checked = true;
                     var key2 = document.createElement('span'); // create level-2 key
                     key2.className = 'key-' + layerContentListOrder[i]['layertype'];
                     key2.style.backgroundColor = layerContentListOrder[i]['layercolor'][j];
@@ -394,57 +401,37 @@
                     label2.className = 'item2-label';
                     label2.setAttribute('for', layerContentListOrder[i]['layerid'] + '|' + layerContentListOrder[i]['layercolname'] + '|' + layerContentListOrder[i]['layercat'][j]);
                     label2.textContent = layerContentListOrder[i]['layercat'][j];
-                    item2.appendChild(input2);
                     item2.appendChild(key2);
                     item2.appendChild(label2);
                     itemgroup2.appendChild(item2);
-
-                    // Create legend selector click event
-                    input2.addEventListener('click', function (e) {
-                        var clickedLayer = this.id.split('|')[0];
-                        var clickedLayerColname = this.id.split('|')[1];
-                        var catGroup = document.getElementById(clickedLayer + '-cat').getElementsByClassName('item2-input');
-                        var checkedFilter = ['any'];
-                        for (var k = 0; k < catGroup.length; k++) {
-                            if (catGroup[k]['checked'] === true) {
-                                checkedFilter.push(['==', clickedLayerColname, catGroup[k].id.split('|')[2]]);
-                            };
-                        };
-                        map.setFilter(clickedLayer, checkedFilter);
-                    });
                 };
                 itemgroup1.appendChild(itemgroup2);
                 filterLegend.appendChild(itemgroup1);
+            }
+        });
 
-                // Create layer selector click event
-                input1.addEventListener('click', function (e) {
-                    var clickedLayer = this.id;
-                    var vis = map.getLayoutProperty(clickedLayer, 'visibility');
-                    if (vis === 'visible') {
-                        map.setLayoutProperty(clickedLayer, 'visibility', 'none'); // set layer visibility
-                        document.getElementById(clickedLayer + '-cat').style.display = 'none'; // set legend visibility
-                    } else {
-                        map.setLayoutProperty(clickedLayer, 'visibility', 'visible');
-                        document.getElementById(clickedLayer + '-cat').style.display = 'block';
-                    };
-                });
+
+
+        // Set collapse event
+        var collapsevalue = 0;
+        header.addEventListener('click', function () {
+            if (collapsevalue === 0) {
+                document.getElementById('legends').style.display = "none";
+                document.getElementById('chevron').className = "bi bi-chevron-up";
+                collapsevalue = 1;
+            } else {
+                document.getElementById('legends').style.display = "block";
+                document.getElementById('chevron').className = "bi bi-chevron-down";
+                collapsevalue = 0;
             };
+        });
 
 
-
-            // Set collapse event
-            var collapsevalue = 0;
-            header.addEventListener('click', function () {
-                if (collapsevalue === 0) {
-                    document.getElementById('legends').style.display = "none";
-                    document.getElementById('chevron').className = "bi bi-chevron-up";
-                    collapsevalue = 1;
-                } else {
-                    document.getElementById('legends').style.display = "block";
-                    document.getElementById('chevron').className = "bi bi-chevron-down";
-                    collapsevalue = 0;
-                };
-            });
+        // Set slider event
+        sliderbar.addEventListener('input', function () {
+            var todNum = document.getElementById('sliderbar').value;
+            document.getElementById('slideroutput').textContent = todLabel[todNum];
+            map.getSource('ntaturnstile').setData(todList[todNum] + '.geojson');
         });
     </script>
 

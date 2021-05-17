@@ -2668,6 +2668,8 @@ cplxrto=cplxrto[['CplxID','Borough','CplxName','Routes','CplxLat','CplxLong','E2
 cplxrto=gpd.GeoDataFrame(cplxrto,geometry=[shapely.geometry.Point(x,y) for x,y in zip(cplxrto['CplxLong'],cplxrto['CplxLat'])],crs='epsg:4326')
 cplxrto.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/cplxrto.geojson',driver='GeoJSON')
 
+k=cplxrto[cplxrto['Borough']!='M']
+sum(k['E202105'])/sum(k['E201905'])
 
 
 # RTO2
@@ -2973,11 +2975,11 @@ cplxamhed=cplxamdiffnta.copy()
 cplxamhed=pd.merge(nta,cplxamhed,how='inner',on='NTACode')
 cplxamhed['Pct']=cplxamhed['PostEntries']/cplxamhed['PreEntries']
 cplxamhed['Pct'].describe(percentiles=np.arange(0.2,1,0.2))
-cplxamhed['PctCat']=np.where(cplxamhed['Pct']<=0.25,'18%~25%',
-                    np.where(cplxamhed['Pct']<=0.3,'26%~30%',
-                    np.where(cplxamhed['Pct']<=0.35,'31%~35%',
-                    np.where(cplxamhed['Pct']<=0.4,'36%~40%',
-                             '41%~53%'))))
+cplxamhed['PctCat']=np.where(cplxamhed['Pct']<=0.2,'<=20%',
+                    np.where(cplxamhed['Pct']<=0.3,'21%~30%',
+                    np.where(cplxamhed['Pct']<=0.4,'31%~40%',
+                    np.where(cplxamhed['Pct']<=0.5,'41%~50%',
+                             '>50%'))))
 cplxamhed.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/tod/ntop.geojson',driver='GeoJSON')
 
 
