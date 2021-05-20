@@ -179,6 +179,53 @@
             );
 
 
+            // Add Community District
+            // Set layer contents
+            var layerContent = {
+                'sourceid': 'cd', // source id
+                'sourcetype': 'geojson', // source type
+                'sourcedata': 'cd.geojson', // data source
+                'layerid': 'cd', // layer id
+                'layertype': 'line', // symbology type
+                'layername': 'Community District', // layer name for the legend
+                'layerlinecap': 'round', // line endings; butt/round/square
+                'layerlinejoin': 'round', // line joining; bevel/round/miter
+                'layervisibility': 'none', // visibility of the layer
+                'layercolname': 'cat', // category column name
+                'layercat': [''], // categories
+                'layercolor': ['rgba(0,0,0,0.5)'], // extrusion color; use rgba
+                'layeropacity': 1, // line opacity
+                'layerwidth': 1, // line width
+                'layeroutlinecolor': 'rgba(255,255,255,0)',  // outline color; for legend purpose only
+            };
+
+            // Add layer content to the overall layer content list
+            layerContentList.push(layerContent);
+
+            // Add data source
+            map.addSource(layerContent['sourceid'], {
+                'type': layerContent['sourcetype'],
+                'data': layerContent['sourcedata'],
+            });
+
+            // Add fill layer
+            map.addLayer({
+                'id': layerContent['layerid'],
+                'type': layerContent['layertype'],
+                'source': layerContent['sourceid'],
+                'layout': {
+                    'line-cap': layerContent['layerlinecap'],
+                    'line-join': layerContent['layerlinejoin'],
+                    'visibility': layerContent['layervisibility'],
+                },
+                'paint': {
+                    'line-color': layerContent['layercolor'][0],
+                    'line-opacity': layerContent['layeropacity'],
+                    'line-width': layerContent['layerwidth'],
+                },
+            });
+
+
 
             // Add Special District
             // Set layer contents
@@ -279,7 +326,7 @@
                 'layerlinejoin': 'round', // line joining; bevel/round/miter
                 'layervisibility': 'none', // visibility of the layer
                 'layercolname': 'CAFETYPE', // category column name
-                'layercat': ['ALL CAFES', 'SMALL ONLY', 'UNENCLOSED ONLY', 'SPECIFICALLY PROHIBITED','RESIDENTIAL AREA'], // categories
+                'layercat': ['ALL CAFES', 'SMALL ONLY', 'UNENCLOSED ONLY', 'SPECIFICALLY PROHIBITED', 'RESIDENTIAL AREA'], // categories
                 'layercolor': ['rgba(113,190,40,1)', 'rgba(246,189,0,1)', 'rgba(222,134,239,1)', 'rgba(255,109,109,1)', 'rgba(100,100,255,1)'], // color for each category; use rgba
                 'layeropacity': 1, // line opacity
                 'layerwidth': 1, // line width
@@ -335,7 +382,7 @@
                 'layerlinejoin': 'round', // line joining; bevel/round/miter
                 'layervisibility': 'none', // visibility of the layer
                 'layercolname': 'CAFETYPE', // category column name
-                'layercat': ['ALL CAFES', 'SMALL ONLY', 'UNENCLOSED ONLY', 'SPECIFICALLY PROHIBITED','RESIDENTIAL AREA'], // categories
+                'layercat': ['ALL CAFES', 'SMALL ONLY', 'UNENCLOSED ONLY', 'SPECIFICALLY PROHIBITED', 'RESIDENTIAL AREA'], // categories
                 'layercolor': ['rgba(113,190,40,1)', 'rgba(246,189,0,1)', 'rgba(222,134,239,1)', 'rgba(255,109,109,1)', 'rgba(100,100,255,1)'], // color for each category; use rgba
                 'layeropacity': 1, // line opacity
                 'layerwidth': 2, // line width
@@ -435,6 +482,46 @@
                 'layeranchor': 'center',
                 'layersize': 12,
                 'layercolor': ['rgba(0,0,0,1)'], // color for each category; use rgba
+                'layeropacity': 1, // circle opacity
+            };
+
+            // Add label layer
+            map.addLayer({
+                'id': layerContent['layerid'],
+                'type': layerContent['layertype'],
+                'source': layerContent['sourceid'],
+                'layout': {
+                    'visibility': layerContent['layervisibility'],
+                    'text-field': layerContent['layerfield'],
+                    'text-size': layerContent['layersize'],
+                    'text-allow-overlap': layerContent['layeroverlap'],
+                    'text-anchor': layerContent['layeranchor'],
+                },
+                'paint': {
+                    'text-color': layerContent['layercolor'][0],
+                    'text-opacity': layerContent['layeropacity'],
+                },
+            });
+
+
+
+            // Add Community District Label
+            // Set layer contents
+            var layerContent = {
+                'sourceid': 'cd', // source id
+                'sourcetype': 'geojson', // source type
+                'sourcedata': 'cd.geojson', // data source
+                'layerid': 'cd-label', // layer id
+                'layertype': 'symbol', // symbology type
+                'layername': 'Community District Label', // layer name for the legend
+                'layervisibility': 'none', // visibility of the layer
+                'layercolname': 'BoroCD', // category column name
+                'layercat': [''], // categories
+                'layerfield': ['get', 'BoroCD'], // categories
+                'layeroverlap': false,
+                'layeranchor': 'center',
+                'layersize': 12,
+                'layercolor': ['rgba(0,0,0,0.8)'], // color for each category; use rgba
                 'layeropacity': 1, // circle opacity
             };
 
@@ -582,7 +669,7 @@
 
 
             // Add layer selector and legend
-            var layerOrder = ['orcafe', 'sdwkcafe', 'zd', 'sp']; // set layer order in the legend
+            var layerOrder = ['orcafe', 'sdwkcafe', 'zd', 'sp', 'cd']; // set layer order in the legend
             var layerContentListOrder = []; // create ordered layer content list
             for (var i = 0; i < layerOrder.length; i++) {
                 layerContentListOrder.push(layerContentList.filter(e => e.layerid == layerOrder[i])[0]);
