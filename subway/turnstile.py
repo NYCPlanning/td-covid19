@@ -2510,7 +2510,7 @@ td=datetime.datetime.strptime('03/01/2021','%m/%d/%Y')
 td=td-datetime.timedelta(td.weekday())
 pr=td-datetime.timedelta(731)
 pr=pr-datetime.timedelta(pr.weekday())
-for i in range(0,10):
+for i in range(0,11):
     predates=[]
     postdates=[]
     for j in range(0,5):
@@ -2607,7 +2607,7 @@ td=datetime.datetime.strptime('03/01/2021','%m/%d/%Y')
 td=td-datetime.timedelta(td.weekday())
 pr=td-datetime.timedelta(731)
 pr=pr-datetime.timedelta(pr.weekday())
-for i in range(0,10):
+for i in range(0,11):
     predates=[]
     postdates=[]
     for j in range(0,5):
@@ -2631,7 +2631,7 @@ ntapm.crs=4326
 # Post March 2021
 td=datetime.datetime.strptime('03/15/2021','%m/%d/%Y')
 td=td-datetime.timedelta(td.weekday())
-for i in range(0,7):
+for i in range(0,8):
     predates=[]
     postdates=[]
     for j in range(0,5):
@@ -2719,7 +2719,7 @@ ntapm.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/slider/ntawow
 # Print Weeklist
 td=datetime.datetime.strptime('03/15/2021','%m/%d/%Y')
 td=td-datetime.timedelta(td.weekday())
-for i in range(0,7):
+for i in range(0,8):
     predates=[]
     postdates=[]
     for j in range(0,5):
