@@ -33,7 +33,7 @@
             position: absolute;
             top: 1rem;
             right: 1rem;
-            width: 21rem;
+            width: 26rem;
             height: auto;
             max-height: 90%;
             padding-top: 1rem;
@@ -70,9 +70,9 @@
             position: absolute;
             top: 1rem;
             left: 1rem;
-            width: auto;
+            width: 27rem;
             height: auto;
-            max-height: 80%;
+            max-height: 65%;
             padding-top: 1rem;
             padding-right: 1rem;
             padding-left: 1rem;
@@ -231,6 +231,7 @@
                     <hr>
                 </div>
                 <div class="col-12" id='preCovid'>
+
                 </div>
                 <div class="col-12">
                     <hr>
@@ -240,7 +241,12 @@
                 <div class="col-12">
                     <hr>
                 </div>
-                <div class="col-12" id='beforeAfter'>
+                <div class="col-12" id='existReg'>
+                </div>
+                <div class="col-12">
+                    <hr>
+                </div>
+                <div class="col-12" id='propReg'>
                 </div>
             </div>
         </div>
@@ -295,13 +301,28 @@
         Plotly.d3.csv('sdwkorcafecd.csv', function (data) {
             for (var i = 0; i < data.length; i++) {
                 if (data[i]['CD'] == 999) {
-                    var q = '<b> Likely Eligible Sidewalk Open Restaurants </b><br>'
-                    q += 'Existing Regulation: ' + Number(data[i]['EXISTING']).toLocaleString() + '<br>';
-                    q += 'Proposed Regulation: ' + Number(data[i]['PROPOSAL']).toLocaleString() + '<br>';
-                    document.getElementById('beforeAfter').innerHTML = q;
+                    var q = '<b> Sidewalk Open Restaurants by Existing Regulation </b><br>'
+                    q += 'All Cafes: ' + Number(data[i]['ALL CAFES']).toLocaleString() + '<br>';
+                    q += 'Small Only: ' + Number(data[i]['SMALL ONLY']).toLocaleString() + '<br>';
+                    q += 'Unenclosed Only: ' + Number(data[i]['UNENCLOSED ONLY']).toLocaleString() + '<br>';
+                    q += 'Specifically Prohibited: ' + Number(data[i]['SPECIFICALLY PROHIBITED']).toLocaleString() + '<br>';
+                    q += 'Residential Area: ' + Number(data[i]['RESIDENTIAL AREA']).toLocaleString() + '<br>';
+                    document.getElementById('existReg').innerHTML = q;
                 };
             };
         });
+        Plotly.d3.csv('sdwkorcafecd.csv', function (data) {
+            for (var i = 0; i < data.length; i++) {
+                if (data[i]['CD'] == 999) {
+                    var q = '<b> Sidewalk Open Restaurants by Proposed Regulation </b><br>'
+                    q += '8 Feet: ' + Number(data[i]['8 FT']).toLocaleString() + '<br>';
+                    q += '11 Feet: ' + Number(data[i]['11 FT']).toLocaleString() + '<br>';
+                    document.getElementById('propReg').innerHTML = q;
+                };
+            };
+        });
+
+
 
         // Initialize the map
         var map = new mapboxgl.Map({ // creating a new map
@@ -379,6 +400,62 @@
                 },
                 'paint': {
                     'line-color': layerContent['layercolor'][0],
+                    'line-opacity': layerContent['layeropacity'],
+                    'line-width': layerContent['layerwidth'],
+                },
+            });
+
+
+
+            // Add Proposed Sidewalk Cafe Regulation
+            // Set layer contents
+            var layerContent = {
+                'sourceid': 'dcp', // source id
+                'sourcetype': 'geojson', // source type
+                'sourcedata': 'dcp2.geojson', // data source
+                'layerid': 'dcp', // layer id
+                'layertype': 'line', // symbology type
+                'layername': 'Proposed Sidewalk Cafe Regulation', // layer name for the legend
+                'layerlinecap': 'round', // line endings; butt/round/square
+                'layerlinejoin': 'round', // line joining; bevel/round/miter
+                'layervisibility': 'none', // visibility of the layer
+                'layercolname': 'FT', // category column name
+                'layercat': ['8 FT', '11 FT'], // categories
+                'layercolor': ['rgba(100,100,255,1)', 'rgba(255,109,109,1)'], // color for each category; use rgba
+                'layeropacity': 1, // line opacity
+                'layerwidth': 2, // line width
+                'layeroutlinecolor': 'rgba(0,0,0,0)', // outline color; for legend purpose only
+            };
+
+            // Generate layer colors
+            var layerColor = ['match', ['get', layerContent['layercolname']]];
+            for (var i = 0; i < layerContent.layercat.length; i++) {
+                layerColor.push(layerContent.layercat[i]);
+                layerColor.push(layerContent.layercolor[i]);
+            };
+            layerColor.push('#000000');
+
+            // Add layer content to the overall layer content list
+            layerContentList.push(layerContent);
+
+            // Add data source
+            map.addSource(layerContent['sourceid'], {
+                'type': layerContent['sourcetype'],
+                'data': layerContent['sourcedata'],
+            });
+
+            // Add line layer
+            map.addLayer({
+                'id': layerContent['layerid'],
+                'type': layerContent['layertype'],
+                'source': layerContent['sourceid'],
+                'layout': {
+                    'line-cap': layerContent['layerlinecap'],
+                    'line-join': layerContent['layerlinejoin'],
+                    'visibility': layerContent['layervisibility'],
+                },
+                'paint': {
+                    'line-color': layerColor,
                     'line-opacity': layerContent['layeropacity'],
                     'line-width': layerContent['layerwidth'],
                 },
@@ -498,23 +575,24 @@
 
 
 
-            // Add Proposed Sidewalk Cafe Regulation
+            // Add Sidewalk Open Restaurant by Proposed Regulation
             // Set layer contents
             var layerContent = {
-                'sourceid': 'dcp', // source id
+                'sourceid': 'orcafepost', // source id
                 'sourcetype': 'geojson', // source type
-                'sourcedata': 'dcp2.geojson', // data source
-                'layerid': 'dcp', // layer id
-                'layertype': 'line', // symbology type
-                'layername': 'Proposed Sidewalk Cafe Regulation', // layer name for the legend
-                'layerlinecap': 'round', // line endings; butt/round/square
-                'layerlinejoin': 'round', // line joining; bevel/round/miter
+                'sourcedata': 'or_dcp2.geojson', // data source
+                'layerid': 'orcafepost', // layer id
+                'layertype': 'circle', // symbology type
+                'layername': 'Sidewalk Open Restaurant by Poposed Regulation', // layer name for the legend
                 'layervisibility': 'none', // visibility of the layer
                 'layercolname': 'FT', // category column name
                 'layercat': ['8 FT', '11 FT'], // categories
                 'layercolor': ['rgba(100,100,255,1)', 'rgba(255,109,109,1)'], // color for each category; use rgba
-                'layeropacity': 1, // line opacity
-                'layerwidth': 2, // line width
+                'layeropacity': 1, // circle opacity
+                'layerradius': 3.5, // circle radius; change size based on zoom level
+                'layerstrokecolor': 'rgba(255,255,255,1)', // circle stroke color
+                'layerstrokeopacity': 1, // circle stroke opacity
+                'layerstrokewidth': 0.5, // circle stroke width
                 'layeroutlinecolor': 'rgba(0,0,0,0)', // outline color; for legend purpose only
             };
 
@@ -535,72 +613,33 @@
                 'data': layerContent['sourcedata'],
             });
 
-            // Add line layer
-            map.addLayer({
-                'id': layerContent['layerid'],
-                'type': layerContent['layertype'],
-                'source': layerContent['sourceid'],
-                'layout': {
-                    'line-cap': layerContent['layerlinecap'],
-                    'line-join': layerContent['layerlinejoin'],
-                    'visibility': layerContent['layervisibility'],
-                },
-                'paint': {
-                    'line-color': layerColor,
-                    'line-opacity': layerContent['layeropacity'],
-                    'line-width': layerContent['layerwidth'],
-                },
-            });
-
-
-
-            // Add Community District Label
-            // Set layer contents
-            var layerContent = {
-                'sourceid': 'cd', // source id
-                'sourcetype': 'geojson', // source type
-                'sourcedata': 'cd.geojson', // data source
-                'layerid': 'cd-label', // layer id
-                'layertype': 'symbol', // symbology type
-                'layername': 'Community District Label', // layer name for the legend
-                'layervisibility': 'visible', // visibility of the layer
-                'layercolname': 'CD', // category column name
-                'layercat': [''], // categories
-                'layerfield': ['get', 'CD'], // categories
-                'layeroverlap': false,
-                'layeranchor': 'center',
-                'layersize': 12,
-                'layercolor': ['rgba(0,0,0,1)'], // color for each category; use rgba
-                'layeropacity': 1, // circle opacity
-            };
-
-            // Add label layer
+            // Add circle layer
             map.addLayer({
                 'id': layerContent['layerid'],
                 'type': layerContent['layertype'],
                 'source': layerContent['sourceid'],
                 'layout': {
                     'visibility': layerContent['layervisibility'],
-                    'text-field': layerContent['layerfield'],
-                    'text-size': layerContent['layersize'],
-                    'text-allow-overlap': layerContent['layeroverlap'],
-                    'text-anchor': layerContent['layeranchor'],
                 },
                 'paint': {
-                    'text-color': layerContent['layercolor'][0],
-                    'text-opacity': layerContent['layeropacity'],
+                    'circle-color': layerColor,
+                    'circle-opacity': layerContent['layeropacity'],
+                    'circle-radius': layerContent['layerradius'],
+                    'circle-stroke-color': layerContent['layerstrokecolor'],
+                    'circle-stroke-opacity': layerContent['layerstrokeopacity'],
+                    'circle-stroke-width': layerContent['layerstrokewidth'],
                 },
             });
 
 
 
-            // Add Open Restaurant by Cafe Regulation
+            // Add Sidewalk Open Restaurant by Existing Regulation
             // Set layer contents
             var layerContent = {
-                'sourceid': 'orcafe', // source id
+                'sourceid': 'orcafepre', // source id
                 'sourcetype': 'geojson', // source type
                 'sourcedata': 'or_dcp2.geojson', // data source
-                'layerid': 'orcafe', // layer id
+                'layerid': 'orcafepre', // layer id
                 'layertype': 'circle', // symbology type
                 'layername': 'Sidewalk Open Restaurant by Existing Regulation', // layer name for the legend
                 'layervisibility': 'none', // visibility of the layer
@@ -710,13 +749,43 @@
 
 
 
+            // Add Community District Label
+            // Set layer contents
+            var layerContent = {
+                'sourceid': 'cd', // source id
+                'sourcetype': 'geojson', // source type
+                'sourcedata': 'cd.geojson', // data source
+                'layerid': 'cd-label', // layer id
+                'layertype': 'symbol', // symbology type
+                'layername': 'Community District Label', // layer name for the legend
+                'layervisibility': 'visible', // visibility of the layer
+                'layercolname': 'CD', // category column name
+                'layercat': [''], // categories
+                'layerfield': ['get', 'CD'], // categories
+                'layeroverlap': false,
+                'layeranchor': 'center',
+                'layersize': 12,
+                'layercolor': ['rgba(0,0,0,1)'], // color for each category; use rgba
+                'layeropacity': 1, // circle opacity
+            };
 
-
-
-
-
-
-
+            // Add label layer
+            map.addLayer({
+                'id': layerContent['layerid'],
+                'type': layerContent['layertype'],
+                'source': layerContent['sourceid'],
+                'layout': {
+                    'visibility': layerContent['layervisibility'],
+                    'text-field': layerContent['layerfield'],
+                    'text-size': layerContent['layersize'],
+                    'text-allow-overlap': layerContent['layeroverlap'],
+                    'text-anchor': layerContent['layeranchor'],
+                },
+                'paint': {
+                    'text-color': layerContent['layercolor'][0],
+                    'text-opacity': layerContent['layeropacity'],
+                },
+            });
 
 
 
@@ -757,9 +826,9 @@
                 map.getCanvas().style.cursor = '';
             });
 
-            // Add open restaurant by cafe regulation popup
+            // Add sidewalk open restaurant by existing regulation popup
             // Add click event
-            map.on('click', 'orcafe', function (e) {
+            map.on('click', 'orcafepre', function (e) {
                 var coordinates = e.features[0].geometry.coordinates.slice(); // get point coordinates
                 var description = "<b>ID: </b><span>" + e.features[0].properties.ID + "</span><br>"; // description in the popup
                 description += "<b>Submission Time: </b><span>" + e.features[0].properties.TIME + "</span><br>";
@@ -777,16 +846,47 @@
                 description += "<b>Landmark District Terms: </b><span>" + e.features[0].properties.TERMLDMK + "</span><br>";
                 description += "<b>Health Compliance Terms: </b><span>" + e.features[0].properties.TERMHEALTH + "</span><br>";
                 description += "<b>Community District: </b><span>" + e.features[0].properties.CD.toFixed(0) + "</span><br>";
-                description += "<b>Existing Sidewalk Cafe Regulation: </b><span>" + e.features[0].properties.CAFETYPE + "</span><br>";
-                description += "<b>Likely Eligible with Existing Regulation: </b><span>" + e.features[0].properties.EXISTING + "</span><br>";
-                description += "<b>Likely Eligible with Proposed Regulation: </b><span>" + e.features[0].properties.PROPOSAL + "</span><br>";
+                description += "<b>Existing Regulation: </b><span>" + e.features[0].properties.CAFETYPE + "</span><br>";
+                description += "<b>Proposed Regulation: </b><span>" + e.features[0].properties.FT + "</span><br>";
                 popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
             });
             // Add hover events
-            map.on('mouseenter', 'orcafe', function () {
+            map.on('mouseenter', 'orcafepre', function () {
                 map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
             });
-            map.on('mouseleave', 'orcafe', function () {
+            map.on('mouseleave', 'orcafepre', function () {
+                map.getCanvas().style.cursor = '';
+            });
+
+            // Add sidewalk open restaurant by proposed regulation popup
+            // Add click event
+            map.on('click', 'orcafepost', function (e) {
+                var coordinates = e.features[0].geometry.coordinates.slice(); // get point coordinates
+                var description = "<b>ID: </b><span>" + e.features[0].properties.ID + "</span><br>"; // description in the popup
+                description += "<b>Submission Time: </b><span>" + e.features[0].properties.TIME + "</span><br>";
+                description += "<b>Type: </b><span>" + e.features[0].properties.TYPE + "</span><br>";
+                description += "<b>Restaurant Name: </b><span>" + e.features[0].properties.NAME + "</span><br>";
+                description += "<b>Legal Business Name: </b><span>" + e.features[0].properties.LEGAL + "</span><br>";
+                description += "<b>Doing Business As: </b><span>" + e.features[0].properties.DBA + "</span><br>";
+                description += "<b>Business Address: </b><span>" + e.features[0].properties.ADDRESS + "</span><br>";
+                description += "<b>Zipcode: </b><span>" + e.features[0].properties.ZIP + "</span><br>";
+                description += "<b>Food Service Establishment Permit #: </b><span>" + e.features[0].properties.PMTNUM + "</span><br>";
+                description += "<b>Qualify Alcohol: </b><span>" + e.features[0].properties.ALCOHOL + "</span><br>";
+                description += "<b>SLA Serial Number: </b><span>" + e.features[0].properties.SLA + "</span><br>";
+                description += "<b>SLA License Type: </b><span>" + e.features[0].properties.SLATYPE + "</span><br>";
+                description += "<b>Landmark District or Building: </b><span>" + e.features[0].properties.LANDMARK + "</span><br>";
+                description += "<b>Landmark District Terms: </b><span>" + e.features[0].properties.TERMLDMK + "</span><br>";
+                description += "<b>Health Compliance Terms: </b><span>" + e.features[0].properties.TERMHEALTH + "</span><br>";
+                description += "<b>Community District: </b><span>" + e.features[0].properties.CD.toFixed(0) + "</span><br>";
+                description += "<b>Existing Regulation: </b><span>" + e.features[0].properties.CAFETYPE + "</span><br>";
+                description += "<b>Proposed Regulation: </b><span>" + e.features[0].properties.FT + "</span><br>";
+                popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
+            });
+            // Add hover events
+            map.on('mouseenter', 'orcafepost', function () {
+                map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
+            });
+            map.on('mouseleave', 'orcafepost', function () {
                 map.getCanvas().style.cursor = '';
             });
 
@@ -794,10 +894,8 @@
 
 
 
-
-
             // Add layer selector and legend
-            var layerOrder = ['dcacafe', 'orcafe', 'dcp', 'sdwkcafe', 'cd']; // set layer order in the legend
+            var layerOrder = ['dcacafe', 'orcafepre', 'orcafepost', 'sdwkcafe', 'dcp', 'cd']; // set layer order in the legend
             var layerContentListOrder = []; // create ordered layer content list
             for (var i = 0; i < layerOrder.length; i++) {
                 layerContentListOrder.push(layerContentList.filter(e => e.layerid == layerOrder[i])[0]);
@@ -913,12 +1011,14 @@
                 var chosenCD = Number(document.getElementById('selector').value);
                 if (chosenCD === 999) {
                     map.setFilter('dcacafe', null);
-                    map.setFilter('orcafe', null);
+                    map.setFilter('orcafepre', null);
+                    map.setFilter('orcafepost', null);
                     map.setFilter('cd', null);
                     map.setFilter('cd-label', null);
                 } else {
                     map.setFilter('dcacafe', ['==', 'CD', chosenCD]);
-                    map.setFilter('orcafe', ['==', 'CD', chosenCD]);
+                    map.setFilter('orcafepre', ['==', 'CD', chosenCD]);
+                    map.setFilter('orcafepost', ['==', 'CD', chosenCD]);
                     map.setFilter('cd', ['==', 'CD', chosenCD]);
                     map.setFilter('cd-label', ['==', 'CD', chosenCD]);
                 };
@@ -948,10 +1048,23 @@
                 Plotly.d3.csv('sdwkorcafecd.csv', function (data) {
                     for (var i = 0; i < data.length; i++) {
                         if (data[i]['CD'] == chosenCD) {
-                            var q = '<b> Likely Eligible Sidewalk Open Restaurants </b><br>'
-                            q += 'Existing Regulation: ' + Number(data[i]['EXISTING']).toLocaleString() + '<br>';
-                            q += 'Proposed Regulation: ' + Number(data[i]['PROPOSAL']).toLocaleString() + '<br>';
-                            document.getElementById('beforeAfter').innerHTML = q;
+                            var q = '<b> Sidewalk Open Restaurants by Existing Regulation </b><br>'
+                            q += 'All Cafes: ' + Number(data[i]['ALL CAFES']).toLocaleString() + '<br>';
+                            q += 'Small Only: ' + Number(data[i]['SMALL ONLY']).toLocaleString() + '<br>';
+                            q += 'Unenclosed Only: ' + Number(data[i]['UNENCLOSED ONLY']).toLocaleString() + '<br>';
+                            q += 'Specifically Prohibited: ' + Number(data[i]['SPECIFICALLY PROHIBITED']).toLocaleString() + '<br>';
+                            q += 'Residential Area: ' + Number(data[i]['RESIDENTIAL AREA']).toLocaleString() + '<br>';
+                            document.getElementById('existReg').innerHTML = q;
+                        };
+                    };
+                });
+                Plotly.d3.csv('sdwkorcafecd.csv', function (data) {
+                    for (var i = 0; i < data.length; i++) {
+                        if (data[i]['CD'] == chosenCD) {
+                            var q = '<b> Sidewalk Open Restaurants by Proposed Regulation </b><br>'
+                            q += '8 Feet: ' + Number(data[i]['8 FT']).toLocaleString() + '<br>';
+                            q += '11 Feet: ' + Number(data[i]['11 FT']).toLocaleString() + '<br>';
+                            document.getElementById('propReg').innerHTML = q;
                         };
                     };
                 });

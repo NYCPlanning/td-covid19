@@ -1226,7 +1226,6 @@ dfgeocoderev['segfromnode']=dfgeocoderev['segtonode'].copy()
 dfgeocoderev['segtonode']=dfgeocoderev['temp'].copy()
 dfgeocoderev=dfgeocoderev.drop('temp',axis=1).reset_index(drop=True)
 dfgeocode=pd.concat([dfgeocode,dfgeocoderev],axis=0,ignore_index=True)
-
 lion=gpd.read_file(path+'STREET CLOSURE/sidewalk/input/lion/lion.shp')
 lion.crs=4326
 lion['SEGMENTID']=pd.to_numeric(lion['SegmentID'],errors='coerce')
@@ -1234,11 +1233,24 @@ lion['segfromnode']=pd.to_numeric(lion['NodeIDFrom'],errors='coerce')
 lion['segtonode']=pd.to_numeric(lion['NodeIDTo'],errors='coerce')
 lion=lion[['SEGMENTID','segfromnode','segtonode','geometry']].reset_index(drop=True)
 lion=lion.drop_duplicates(['SEGMENTID','segfromnode','segtonode'],keep='first').reset_index(drop=True)
-
 crdgeocode=pd.merge(lion,dfgeocode,how='inner',on=['segfromnode','segtonode'])
 crdgeocode=crdgeocode.sort_values('SEGMENTID').reset_index(drop=True)
 crdgeocode=crdgeocode.drop_duplicates(['CORRIDOR','segfromnode','segtonode'],keep='first').reset_index(drop=True)
-crdgeocode=crdgeocode[['SEGMENTID','CORRIDOR','Previous Limitations','Previous Clear Path','Est. Sidewalk Width','ON','FROM','TO','FT','BORO','FLAG','geometry']].reset_index(drop=True)
+crdgeocode=crdgeocode[['SEGMENTID','CORRIDOR','FT','BORO','FLAG','geometry']].reset_index(drop=True)
+add=[148189,148190,148191,148192,144897,144898,281709,281723,281708,281730,281731,281699,192209,192210,
+     192208,192212,262020,262483,262482,262019,261850,261860,261872,261876,261871,261875,148807,148700,
+     148660,257576,257575,257569,257588,257587,257585,158915,158827,158577,158629,159076,159091,262006,
+     262475,155013,155159,159036,158678,158641,159181,158642,158987,158715,159104,284713,284714,284712,
+     284723,284725,284726,158589,158933,159267,159103,159286,158730,158731,158761,159285,159063,138148,
+     158564,158900,158573,159216,139555,158858,158808,158905,158813,158942,158620,159032,158621,158895,
+     151913,158896,158893,158855,158669,158822,158596,159009,158597]
+crdgeocodeadd=lion[lion['SEGMENTID'].isin(add)].reset_index(drop=True)
+crdgeocodeadd['CORRIDOR']='ADD'
+crdgeocodeadd['FT']='11'
+crdgeocodeadd['BORO']=''
+crdgeocodeadd['FLAG']='1'
+crdgeocodeadd=crdgeocodeadd[['SEGMENTID','CORRIDOR','FT','BORO','FLAG','geometry']].reset_index(drop=True)
+crdgeocode=pd.concat([crdgeocode,crdgeocodeadd],axis=0,ignore_index=True)
 crdgeocode.to_file(path+'SIDEWALK CAFE/CORRIDOR2/crdgeocode.shp')
 
 
@@ -1254,10 +1266,18 @@ crd=list(crdgeocode.SEGMENTID.unique())
 union=[32786,32790,32797,32799,32806,32808,32809,32812,32941,32945,32956,32957,110559,133903,138570,139521,139522,139523,139524,139525,139526,139527,145393,145394,164328,164381,164382,164383,164384,250870,250951,251073,283287]
 queens=[67235,67247,67248,67252,172580,172581,172582,172585,172586,189355,189356,9009910,9009911]
 broadway=[299595,257485,257484,254134,254133,216991,114275,110862,23370,23364,23232,23230,23228,23204,23199,23197,23195,23094,23065,23060]
+add=[148189,148190,148191,148192,144897,144898,281709,281723,281708,281730,281731,281699,192209,192210,
+     192208,192212,262020,262483,262482,262019,261850,261860,261872,261876,261871,261875,148807,148700,
+     148660,257576,257575,257569,257588,257587,257585,158915,158827,158577,158629,159076,159091,262006,
+     262475,155013,155159,159036,158678,158641,159181,158642,158987,158715,159104,284713,284714,284712,
+     284723,284725,284726,158589,158933,159267,159103,159286,158730,158731,158761,159285,159063,138148,
+     158564,158900,158573,159216,139555,158858,158808,158905,158813,158942,158620,159032,158621,158895,
+     151913,158896,158893,158855,158669,158822,158596,159009,158597]
 restcr=restcr[~np.isin(restcr['SEGMENTID'],crd)].reset_index(drop=True)
 restcr=restcr[~np.isin(restcr['SEGMENTID'],union)].reset_index(drop=True)
 restcr=restcr[~np.isin(restcr['SEGMENTID'],queens)].reset_index(drop=True)
 restcr=restcr[~np.isin(restcr['SEGMENTID'],broadway)].reset_index(drop=True)
+restcr=restcr[~np.isin(restcr['SEGMENTID'],add)].reset_index(drop=True)
 restcr=restcr[['geometry']].reset_index(drop=True)
 restcr['FT']='8'
 restcr.to_file(path+'SIDEWALK CAFE/CORRIDOR2/restcr.shp')
@@ -1343,10 +1363,11 @@ dfcafeznelwdlf=gpd.sjoin(dfcafeznelwdlf,dcpcrd,how='left',op='intersects')
 dfcafeznelwdlf=dfcafeznelwdlf.drop_duplicates(['ID'],keep='first').reset_index(drop=True)
 dfcafeznelwdlf['geometry']=[shapely.geometry.Point(x,y) for x,y in zip(dfcafeznelwdlf['XADJ'],dfcafeznelwdlf['YADJ'])]
 dfcafeznelwdlf=dfcafeznelwdlf.to_crs(4326)
-dfcafeznelwdlf=dfcafeznelwdlf.drop(['index_right','FLAG','ON','FROM','TO'],axis=1).reset_index(drop=True)
+dfcafeznelwdlf=dfcafeznelwdlf.drop(['index_right','FLAG'],axis=1).reset_index(drop=True)
+dfcafeznelwdlf['FT']=np.where(dfcafeznelwdlf['FT']=='11','11 FT','8 FT')
 dfcafeznelwdlf['EXISTING']=np.where((dfcafeznelwdlf['CAFETYPE'].isin(['ALL CAFES','UNENCLOSED ONLY','SMALL ONLY']))&(dfcafeznelwdlf['LFIMPSWMDN']>=11),'YES','NO')
-dfcafeznelwdlf['PROPOSAL']=np.where(pd.isna(dfcafeznelwdlf['FT'])&(dfcafeznelwdlf['LFIMPSWMDN']>=11),'YES',
-                           np.where((dfcafeznelwdlf['FT']=='11')&(dfcafeznelwdlf['LFIMPSWMDN']>=14),'YES','NO'))
+dfcafeznelwdlf['PROPOSAL']=np.where((dfcafeznelwdlf['FT']=='8 FT')&(dfcafeznelwdlf['LFIMPSWMDN']>=11),'YES',
+                           np.where((dfcafeznelwdlf['FT']=='11 FT')&(dfcafeznelwdlf['LFIMPSWMDN']>=14),'YES','NO'))
 dfcafeznelwdlf.to_file(path+'SIDEWALK CAFE/or_dcp2.shp')
 dfcafeznelwdlf=dfcafeznelwdlf[np.isin(dfcafeznelwdlf['TYPE'],['BOTH','SIDEWALK'])].reset_index(drop=True)
 dfcafeznelwdlf['CAFETYPE']=np.where(dfcafeznelwdlf['CAFETYPE']=='NOT PERMITTED','SPECIFICALLY PROHIBITED',
@@ -2096,23 +2117,28 @@ orcafecd.to_csv('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/sidewalkcafe/orcaf
 # Sidewalk Open Restaurants Before & After
 dfcafeznelwdlf=gpd.read_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/sidewalkcafe/or_dcp2.geojson')
 dfcafeznelwdlf.crs=4326
-orcafecdpre=dfcafeznelwdlf.groupby(['CD','EXISTING'],as_index=False).agg({'ID':'count'}).reset_index(drop=True)
-orcafecdpre=orcafecdpre.pivot(index='CD',columns='EXISTING',values='ID').reset_index(drop=False)
-orcafecdpre=orcafecdpre.fillna(0)
-orcafecdpre['EXISTING']=orcafecdpre['YES'].copy()
-orcafecdpost=dfcafeznelwdlf.groupby(['CD','PROPOSAL'],as_index=False).agg({'ID':'count'}).reset_index(drop=True)
-orcafecdpost=orcafecdpost.pivot(index='CD',columns='PROPOSAL',values='ID').reset_index(drop=False)
-orcafecdpost=orcafecdpost.fillna(0)
-orcafecdpost['PROPOSAL']=orcafecdpost['YES'].copy()
+orcafecdpre=dfcafeznelwdlf.groupby(['CD','CAFETYPE'],as_index=False).agg({'ID':'count'}).reset_index(drop=True)
+orcafecdpre=orcafecdpre.pivot(index='CD',columns='CAFETYPE',values='ID').reset_index(drop=False)
+orcafecdpre=orcafecdpre[['CD','ALL CAFES','SMALL ONLY','UNENCLOSED ONLY','SPECIFICALLY PROHIBITED',
+                         'RESIDENTIAL AREA']].reset_index(drop=True)
+orcafecdpost=dfcafeznelwdlf.groupby(['CD','FT'],as_index=False).agg({'ID':'count'}).reset_index(drop=True)
+orcafecdpost=orcafecdpost.pivot(index='CD',columns='FT',values='ID').reset_index(drop=False)
+orcafecdpost=orcafecdpost[['CD','8 FT','11 FT']].reset_index(drop=True)
 cd=gpd.read_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/sidewalkcafe/cd.geojson')
 cd.crs=4326
-sdwkorcafecd=pd.merge(cd,orcafecdpre[['CD','EXISTING']],how='left',on='CD')
-sdwkorcafecd=pd.merge(sdwkorcafecd,orcafecdpost[['CD','PROPOSAL']],how='left',on='CD')
-sdwkorcafecd=sdwkorcafecd[['CD','EXISTING','PROPOSAL']].reset_index(drop=True)
+sdwkorcafecd=pd.merge(cd,orcafecdpre,how='left',on='CD')
+sdwkorcafecd=pd.merge(sdwkorcafecd,orcafecdpost,how='left',on='CD')
+sdwkorcafecd=sdwkorcafecd[['CD','ALL CAFES','SMALL ONLY','UNENCLOSED ONLY','SPECIFICALLY PROHIBITED',
+                         'RESIDENTIAL AREA','8 FT','11 FT']].reset_index(drop=True)
 sdwkorcafecd=sdwkorcafecd.fillna(0)
 sdwkorcafecd.loc[len(sdwkorcafecd),'CD']=999
-sdwkorcafecd.loc[len(sdwkorcafecd)-1,'EXISTING']=np.sum(sdwkorcafecd['EXISTING'])
-sdwkorcafecd.loc[len(sdwkorcafecd)-1,'PROPOSAL']=np.sum(sdwkorcafecd['PROPOSAL'])
+sdwkorcafecd.loc[len(sdwkorcafecd)-1,'ALL CAFES']=np.sum(sdwkorcafecd['ALL CAFES'])
+sdwkorcafecd.loc[len(sdwkorcafecd)-1,'SMALL ONLY']=np.sum(sdwkorcafecd['SMALL ONLY'])
+sdwkorcafecd.loc[len(sdwkorcafecd)-1,'UNENCLOSED ONLY']=np.sum(sdwkorcafecd['UNENCLOSED ONLY'])
+sdwkorcafecd.loc[len(sdwkorcafecd)-1,'SPECIFICALLY PROHIBITED']=np.sum(sdwkorcafecd['SPECIFICALLY PROHIBITED'])
+sdwkorcafecd.loc[len(sdwkorcafecd)-1,'RESIDENTIAL AREA']=np.sum(sdwkorcafecd['RESIDENTIAL AREA'])
+sdwkorcafecd.loc[len(sdwkorcafecd)-1,'8 FT']=np.sum(sdwkorcafecd['8 FT'])
+sdwkorcafecd.loc[len(sdwkorcafecd)-1,'11 FT']=np.sum(sdwkorcafecd['11 FT'])
 sdwkorcafecd.to_csv('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/sidewalkcafe/sdwkorcafecd.csv',index=False)
 
 
