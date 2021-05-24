@@ -1344,9 +1344,16 @@ dfcafeznelwdlf=dfcafeznelwdlf.drop_duplicates(['ID'],keep='first').reset_index(d
 dfcafeznelwdlf['geometry']=[shapely.geometry.Point(x,y) for x,y in zip(dfcafeznelwdlf['XADJ'],dfcafeznelwdlf['YADJ'])]
 dfcafeznelwdlf=dfcafeznelwdlf.to_crs(4326)
 dfcafeznelwdlf=dfcafeznelwdlf.drop(['index_right','FLAG','ON','FROM','TO'],axis=1).reset_index(drop=True)
-dfcafeznelwdlf['ALLOWED']=np.where(pd.isna(dfcafeznelwdlf['FT'])&(dfcafeznelwdlf['LFIMPSWMDN']>=11),'YES',
-                          np.where((dfcafeznelwdlf['FT']=='11')&(dfcafeznelwdlf['LFIMPSWMDN']>=14),'YES','NO'))
+dfcafeznelwdlf['EXISTING']=np.where((dfcafeznelwdlf['CAFETYPE'].isin(['ALL CAFES','UNENCLOSED ONLY','SMALL ONLY']))&(dfcafeznelwdlf['LFIMPSWMDN']>=11),'YES','NO')
+dfcafeznelwdlf['PROPOSAL']=np.where(pd.isna(dfcafeznelwdlf['FT'])&(dfcafeznelwdlf['LFIMPSWMDN']>=11),'YES',
+                           np.where((dfcafeznelwdlf['FT']=='11')&(dfcafeznelwdlf['LFIMPSWMDN']>=14),'YES','NO'))
 dfcafeznelwdlf.to_file(path+'SIDEWALK CAFE/or_dcp2.shp')
+dfcafeznelwdlf=dfcafeznelwdlf[np.isin(dfcafeznelwdlf['TYPE'],['BOTH','SIDEWALK'])].reset_index(drop=True)
+dfcafeznelwdlf['CAFETYPE']=np.where(dfcafeznelwdlf['CAFETYPE']=='NOT PERMITTED','SPECIFICALLY PROHIBITED',
+                           np.where(dfcafeznelwdlf['CAFETYPE']=='NONE','RESIDENTIAL AREA',dfcafeznelwdlf['CAFETYPE']))
+dfcafeznelwdlf.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/sidewalkcafe/or_dcp2.geojson',driver='GeoJSON')
+
+
 
 
 
@@ -2070,7 +2077,7 @@ dcacafecd.loc[len(dcacafecd)-1,'UNENCLOSED']=np.sum(dcacafecd['UNENCLOSED'])
 dcacafecd.loc[len(dcacafecd)-1,'REGULAR UNENCLOSED/SMALL UNENCLOSED']=np.sum(dcacafecd['REGULAR UNENCLOSED/SMALL UNENCLOSED'])
 dcacafecd.to_csv('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/sidewalkcafe/dcacafecd.csv',index=False)
 
-# Open Restaurants
+# Open Restaurants by Type
 dfcafeznelwdlf=gpd.read_file(path+'SIDEWALK CAFE/or_cafe_zn_el_wd_lf.shp')
 dfcafeznelwdlf.crs=4326
 orcafecd=dfcafeznelwdlf.groupby(['CD','TYPE'],as_index=False).agg({'ID':'count'}).reset_index(drop=True)
@@ -2086,10 +2093,27 @@ orcafecd.loc[len(orcafecd)-1,'ROADWAY']=np.sum(orcafecd['ROADWAY'])
 orcafecd.loc[len(orcafecd)-1,'BOTH']=np.sum(orcafecd['BOTH'])
 orcafecd.to_csv('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/sidewalkcafe/orcafecd.csv',index=False)
 
-
-
-
-
+# Sidewalk Open Restaurants Before & After
+dfcafeznelwdlf=gpd.read_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/sidewalkcafe/or_dcp2.geojson')
+dfcafeznelwdlf.crs=4326
+orcafecdpre=dfcafeznelwdlf.groupby(['CD','EXISTING'],as_index=False).agg({'ID':'count'}).reset_index(drop=True)
+orcafecdpre=orcafecdpre.pivot(index='CD',columns='EXISTING',values='ID').reset_index(drop=False)
+orcafecdpre=orcafecdpre.fillna(0)
+orcafecdpre['EXISTING']=orcafecdpre['YES'].copy()
+orcafecdpost=dfcafeznelwdlf.groupby(['CD','PROPOSAL'],as_index=False).agg({'ID':'count'}).reset_index(drop=True)
+orcafecdpost=orcafecdpost.pivot(index='CD',columns='PROPOSAL',values='ID').reset_index(drop=False)
+orcafecdpost=orcafecdpost.fillna(0)
+orcafecdpost['PROPOSAL']=orcafecdpost['YES'].copy()
+cd=gpd.read_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/sidewalkcafe/cd.geojson')
+cd.crs=4326
+sdwkorcafecd=pd.merge(cd,orcafecdpre[['CD','EXISTING']],how='left',on='CD')
+sdwkorcafecd=pd.merge(sdwkorcafecd,orcafecdpost[['CD','PROPOSAL']],how='left',on='CD')
+sdwkorcafecd=sdwkorcafecd[['CD','EXISTING','PROPOSAL']].reset_index(drop=True)
+sdwkorcafecd=sdwkorcafecd.fillna(0)
+sdwkorcafecd.loc[len(sdwkorcafecd),'CD']=999
+sdwkorcafecd.loc[len(sdwkorcafecd)-1,'EXISTING']=np.sum(sdwkorcafecd['EXISTING'])
+sdwkorcafecd.loc[len(sdwkorcafecd)-1,'PROPOSAL']=np.sum(sdwkorcafecd['PROPOSAL'])
+sdwkorcafecd.to_csv('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/sidewalkcafe/sdwkorcafecd.csv',index=False)
 
 
 
