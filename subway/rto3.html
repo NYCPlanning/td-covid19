@@ -296,7 +296,7 @@
                 'sourcedata': 'cplxrtoam21.geojson', // data source
                 'layerid': 'cplxrtoam21', // layer id
                 'layertype': 'circle', // symbology type
-                'layername1': 'Early May vs Early April 2021 Subway Ridership Percent Change', // layer name for the legend
+                'layername1': 'Mid May vs Mid April 2021 Subway Ridership Percent Change', // layer name for the legend
                 'layername2': 'Weekday AM Peak Average', // layer name for the legend
                 'layervisibility': 'visible', // visibility of the layer
                 'layercolname': 'DiffPctCat', // category column name
@@ -376,9 +376,9 @@
                 description += "<b>Borough: </b><span>" + e.features[0].properties.Borough + "</span><br>";
                 description += "<b>Complex Name: </b><span>" + e.features[0].properties.CplxName + "</span><br>";
                 description += "<b>Routes: </b><span>" + e.features[0].properties.Routes + "</span><br>";
-                description += "<b>Early April 2021 Subway Ridership: </b><span>" + e.features[0].properties.E202104.toFixed(2) + "</span><br>";
-                description += "<b>Early May 2021 Subway Ridership: </b><span>" + e.features[0].properties.E202105.toFixed(2) + "</span><br>";
-                description += "<b>Early May vs Early April 2021 Percent Change: </b><span>" + (Number(e.features[0].properties.DiffPct) * 100).toFixed(2) + "%</span><br>";
+                description += "<b>Mid April 2021 Subway Ridership: </b><span>" + e.features[0].properties.E202104.toFixed(2) + "</span><br>";
+                description += "<b>Mid May 2021 Subway Ridership: </b><span>" + e.features[0].properties.E202105.toFixed(2) + "</span><br>";
+                description += "<b>Mid May vs Mid April 2021 Percent Change: </b><span>" + (Number(e.features[0].properties.DiffPct) * 100).toFixed(2) + "%</span><br>";
                 popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
             });
             // Add hover events
@@ -546,7 +546,7 @@
                 'sourcedata': 'cplxrtopm21.geojson', // data source
                 'layerid': 'cplxrtopm21', // layer id
                 'layertype': 'circle', // symbology type
-                'layername1': 'Early May vs Early April 2021 Subway Ridership Percent Change', // layer name for the legend
+                'layername1': 'Mid May vs Mid April 2021 Subway Ridership Percent Change', // layer name for the legend
                 'layername2': 'Weekday PM Peak Average', // layer name for the legend
                 'layervisibility': 'visible', // visibility of the layer
                 'layercolname': 'DiffPctCat', // category column name
@@ -627,9 +627,9 @@
                 description += "<b>Borough: </b><span>" + e.features[0].properties.Borough + "</span><br>";
                 description += "<b>Complex Name: </b><span>" + e.features[0].properties.CplxName + "</span><br>";
                 description += "<b>Routes: </b><span>" + e.features[0].properties.Routes + "</span><br>";
-                description += "<b>Early April 2021 Subway Ridership: </b><span>" + e.features[0].properties.E202104.toFixed(2) + "</span><br>";
-                description += "<b>Early May 2021 Subway Ridership: </b><span>" + e.features[0].properties.E202105.toFixed(2) + "</span><br>";
-                description += "<b>Early May vs Early April 2021 Percent Change: </b><span>" + (Number(e.features[0].properties.DiffPct) * 100).toFixed(2) + "%</span><br>";
+                description += "<b>Mid April 2021 Subway Ridership: </b><span>" + e.features[0].properties.E202104.toFixed(2) + "</span><br>";
+                description += "<b>Mid May 2021 Subway Ridership: </b><span>" + e.features[0].properties.E202105.toFixed(2) + "</span><br>";
+                description += "<b>Mid May vs Mid April 2021 Percent Change: </b><span>" + (Number(e.features[0].properties.DiffPct) * 100).toFixed(2) + "%</span><br>";
                 popup.setLngLat(coordinates).setHTML(description).addTo(map2); //add popup
             });
             // Add hover events

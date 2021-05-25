@@ -226,7 +226,7 @@
                 'sourcedata': 'cplxrto.geojson', // data source
                 'layerid': 'cplxrto', // layer id
                 'layertype': 'circle', // symbology type
-                'layername1': 'Early May 2021 as Percentage of Early May 2019 Subway Ridership', // layer name for the legend
+                'layername1': 'Mid May 2021 as Percentage of Mid May 2019 Subway Ridership', // layer name for the legend
                 'layername2': 'Average Weekday Daily', // layer name for the legend
                 'layervisibility': 'visible', // visibility of the layer
                 'layercolname': 'PctCat', // category column name
@@ -308,9 +308,9 @@
                 description += "<b>Borough: </b><span>" + e.features[0].properties.Borough + "</span><br>";
                 description += "<b>Complex Name: </b><span>" + e.features[0].properties.CplxName + "</span><br>";
                 description += "<b>Routes: </b><span>" + e.features[0].properties.Routes + "</span><br>";
-                description += "<b>Early May 2019 Subway Ridership: </b><span>" + e.features[0].properties.E201905.toFixed(2) + "</span><br>";
-                description += "<b>Early May 2021 Subway Ridership: </b><span>" + e.features[0].properties.E202105.toFixed(2) + "</span><br>";
-                description += "<b>Early May 2021 as Percentage of Early May 2019: </b><span>" + (Number(e.features[0].properties.Pct) * 100).toFixed(2) + "%</span><br>";
+                description += "<b>Mid May 2019 Subway Ridership: </b><span>" + e.features[0].properties.E201905.toFixed(2) + "</span><br>";
+                description += "<b>Mid May 2021 Subway Ridership: </b><span>" + e.features[0].properties.E202105.toFixed(2) + "</span><br>";
+                description += "<b>Mid May 2021 as Percentage of Mid May 2019: </b><span>" + (Number(e.features[0].properties.Pct) * 100).toFixed(2) + "%</span><br>";
                 popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
             });
             // Add hover events

@@ -316,7 +316,7 @@
                 if (data[i]['CD'] == 999) {
                     var q = '<b> Sidewalk Open Restaurants by Proposed Regulation </b><br>'
                     q += '8 Feet: ' + Number(data[i]['8 FT']).toLocaleString() + '<br>';
-                    q += '11 Feet: ' + Number(data[i]['11 FT']).toLocaleString() + '<br>';
+                    q += '12 Feet: ' + Number(data[i]['12 FT']).toLocaleString() + '<br>';
                     document.getElementById('propReg').innerHTML = q;
                 };
             };
@@ -420,7 +420,7 @@
                 'layerlinejoin': 'round', // line joining; bevel/round/miter
                 'layervisibility': 'none', // visibility of the layer
                 'layercolname': 'FT', // category column name
-                'layercat': ['8 FT', '11 FT'], // categories
+                'layercat': ['8 FT', '12 FT'], // categories
                 'layercolor': ['rgba(100,100,255,1)', 'rgba(255,109,109,1)'], // color for each category; use rgba
                 'layeropacity': 1, // line opacity
                 'layerwidth': 2, // line width
@@ -586,7 +586,7 @@
                 'layername': 'Sidewalk Open Restaurant by Poposed Regulation', // layer name for the legend
                 'layervisibility': 'none', // visibility of the layer
                 'layercolname': 'FT', // category column name
-                'layercat': ['8 FT', '11 FT'], // categories
+                'layercat': ['8 FT', '12 FT'], // categories
                 'layercolor': ['rgba(100,100,255,1)', 'rgba(255,109,109,1)'], // color for each category; use rgba
                 'layeropacity': 1, // circle opacity
                 'layerradius': 3.5, // circle radius; change size based on zoom level
@@ -1063,7 +1063,7 @@
                         if (data[i]['CD'] == chosenCD) {
                             var q = '<b> Sidewalk Open Restaurants by Proposed Regulation </b><br>'
                             q += '8 Feet: ' + Number(data[i]['8 FT']).toLocaleString() + '<br>';
-                            q += '11 Feet: ' + Number(data[i]['11 FT']).toLocaleString() + '<br>';
+                            q += '12 Feet: ' + Number(data[i]['12 FT']).toLocaleString() + '<br>';
                             document.getElementById('propReg').innerHTML = q;
                         };
                     };
