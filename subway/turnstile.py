@@ -2914,76 +2914,20 @@ cplxamcp.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/cplxrtopm2
 
 
 # RTO chart
-dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
-predates=['05/13/2019','05/14/2019','05/15/2019','05/16/2019']
-postdates=['05/17/2021','05/18/2021','05/19/2021','05/20/2021']
-cplxrtopre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
-cplxrtopre=cplxrtopre.groupby(['unit','firstdate'],as_index=False).agg({'entries':'sum'}).reset_index(drop=True)
-cplxrtopre=cplxrtopre.groupby(['unit'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
-cplxrtopre=pd.merge(cplxrtopre,rc,how='left',left_on='unit',right_on='Remote')
-cplxrtopre=cplxrtopre.groupby(['CplxID'],as_index=False).agg({'entries':'sum'}).reset_index(drop=True)
-cplxrtopre.columns=['CplxID','E201905']
-cplxrtopost=dfunitentry[np.isin(dfunitentry['firstdate'],postdates)].reset_index(drop=True)
-cplxrtopost=cplxrtopost.groupby(['unit','firstdate'],as_index=False).agg({'entries':'sum'}).reset_index(drop=True)
-cplxrtopost=cplxrtopost.groupby(['unit'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
-cplxrtopost=pd.merge(cplxrtopost,rc,how='left',left_on='unit',right_on='Remote')
-cplxrtopost=cplxrtopost.groupby(['CplxID'],as_index=False).agg({'entries':'sum'}).reset_index(drop=True)
-cplxrtopost.columns=['CplxID','E202105']
-cplxrto=pd.merge(cplxrtopre,cplxrtopost,how='inner',on='CplxID')
-cplxrto=pd.merge(rc.drop('Remote',axis=1).drop_duplicates(keep='first').reset_index(drop=True),cplxrto,how='left',on='CplxID')
-cplxrtodiff=cplxrto[['CplxID','CplxLat','CplxLong','E201905','E202105']].reset_index(drop=True)
-cplxrtodiff=gpd.GeoDataFrame(cplxrtodiff,geometry=[shapely.geometry.Point(x,y) for x,y in zip(cplxrtodiff['CplxLong'],cplxrtodiff['CplxLat'])],crs='epsg:4326')
-cplxrtodiff=cplxrtodiff.to_crs(6539)
-cplxrtodiff['geometry']=cplxrtodiff.buffer(2640)
-cplxrtodiff=cplxrtodiff.to_crs(4326)
-telsubam=gpd.read_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/telsubam.geojson')
-telsubam.crs=4326
-cplxrtodiffpuma=gpd.sjoin(telsubam,cplxrtodiff,how='left',op='intersects')
-cplxrtodiffpuma=cplxrtodiffpuma.groupby(['puma'],as_index=False).agg({'E201905':'sum','E202105':'sum','telsubpct':'mean'}).reset_index(drop=True)
-cplxrtodiffpuma=cplxrtodiffpuma[cplxrtodiffpuma['E201905']!=0].reset_index(drop=True)
-cplxrtodiffpuma['Pct']=cplxrtodiffpuma['E202105']/cplxrtodiffpuma['E201905']
-cplxrtodiffpuma.to_csv('C:/Users/mayij/Desktop/cplxrtochart202105.csv',index=False)
-
-dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
-predates=['04/15/2019','04/16/2019','04/17/2019','04/18/2019']
-postdates=['04/19/2021','04/20/2021','04/21/2021','04/22/2021']
-cplxrtopre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
-cplxrtopre=cplxrtopre.groupby(['unit','firstdate'],as_index=False).agg({'entries':'sum'}).reset_index(drop=True)
-cplxrtopre=cplxrtopre.groupby(['unit'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
-cplxrtopre=pd.merge(cplxrtopre,rc,how='left',left_on='unit',right_on='Remote')
-cplxrtopre=cplxrtopre.groupby(['CplxID'],as_index=False).agg({'entries':'sum'}).reset_index(drop=True)
-cplxrtopre.columns=['CplxID','E201904']
-cplxrtopost=dfunitentry[np.isin(dfunitentry['firstdate'],postdates)].reset_index(drop=True)
-cplxrtopost=cplxrtopost.groupby(['unit','firstdate'],as_index=False).agg({'entries':'sum'}).reset_index(drop=True)
-cplxrtopost=cplxrtopost.groupby(['unit'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
-cplxrtopost=pd.merge(cplxrtopost,rc,how='left',left_on='unit',right_on='Remote')
-cplxrtopost=cplxrtopost.groupby(['CplxID'],as_index=False).agg({'entries':'sum'}).reset_index(drop=True)
-cplxrtopost.columns=['CplxID','E202104']
-cplxrto=pd.merge(cplxrtopre,cplxrtopost,how='inner',on='CplxID')
-cplxrto=pd.merge(rc.drop('Remote',axis=1).drop_duplicates(keep='first').reset_index(drop=True),cplxrto,how='left',on='CplxID')
-cplxrtodiff=cplxrto[['CplxID','CplxLat','CplxLong','E201904','E202104']].reset_index(drop=True)
-cplxrtodiff=gpd.GeoDataFrame(cplxrtodiff,geometry=[shapely.geometry.Point(x,y) for x,y in zip(cplxrtodiff['CplxLong'],cplxrtodiff['CplxLat'])],crs='epsg:4326')
-cplxrtodiff=cplxrtodiff.to_crs(6539)
-cplxrtodiff['geometry']=cplxrtodiff.buffer(2640)
-cplxrtodiff=cplxrtodiff.to_crs(4326)
-telsubam=gpd.read_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/telsubam.geojson')
-telsubam.crs=4326
-cplxrtodiffpuma=gpd.sjoin(telsubam,cplxrtodiff,how='left',op='intersects')
-cplxrtodiffpuma=cplxrtodiffpuma.groupby(['puma'],as_index=False).agg({'E201904':'sum','E202104':'sum','telsubpct':'mean'}).reset_index(drop=True)
-cplxrtodiffpuma=cplxrtodiffpuma[cplxrtodiffpuma['E201904']!=0].reset_index(drop=True)
-cplxrtodiffpuma['Pct']=cplxrtodiffpuma['E202104']/cplxrtodiffpuma['E201904']
-cplxrtodiffpuma.to_csv('C:/Users/mayij/Desktop/cplxrtochart202104.csv',index=False)
-
+# 202004
 dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
 predates=['04/15/2019','04/16/2019','04/17/2019','04/18/2019']
 postdates=['04/13/2020','04/14/2020','04/15/2020','04/16/2020']
+amlist=['05:00:00-09:00:00','05:30:00-09:30:00','06:00:00-10:00:00','06:30:00-10:30:00','07:00:00-11:00:00',
+        '07:22:00-11:22:00','07:30:00-11:30:00','08:00:00-12:00:00','08:22:00-12:22:00','08:30:00-12:30:00']
 cplxrtopre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
-cplxrtopre=cplxrtopre.groupby(['unit','firstdate'],as_index=False).agg({'entries':'sum'}).reset_index(drop=True)
+cplxrtopre=cplxrtopre[np.isin(cplxrtopre['time'],amlist)].reset_index(drop=True)
 cplxrtopre=cplxrtopre.groupby(['unit'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
 cplxrtopre=pd.merge(cplxrtopre,rc,how='left',left_on='unit',right_on='Remote')
 cplxrtopre=cplxrtopre.groupby(['CplxID'],as_index=False).agg({'entries':'sum'}).reset_index(drop=True)
 cplxrtopre.columns=['CplxID','E201904']
 cplxrtopost=dfunitentry[np.isin(dfunitentry['firstdate'],postdates)].reset_index(drop=True)
+cplxrtopost=cplxrtopost[np.isin(cplxrtopost['time'],amlist)].reset_index(drop=True)
 cplxrtopost=cplxrtopost.groupby(['unit','firstdate'],as_index=False).agg({'entries':'sum'}).reset_index(drop=True)
 cplxrtopost=cplxrtopost.groupby(['unit'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
 cplxrtopost=pd.merge(cplxrtopost,rc,how='left',left_on='unit',right_on='Remote')
@@ -3001,20 +2945,25 @@ telsubam.crs=4326
 cplxrtodiffpuma=gpd.sjoin(telsubam,cplxrtodiff,how='left',op='intersects')
 cplxrtodiffpuma=cplxrtodiffpuma.groupby(['puma'],as_index=False).agg({'E201904':'sum','E202004':'sum','telsubpct':'mean'}).reset_index(drop=True)
 cplxrtodiffpuma=cplxrtodiffpuma[cplxrtodiffpuma['E201904']!=0].reset_index(drop=True)
-cplxrtodiffpuma['Pct']=cplxrtodiffpuma['E202004']/cplxrtodiffpuma['E201904']
-cplxrtodiffpuma.to_csv('C:/Users/mayij/Desktop/cplxrtochartE202004.csv',index=False)
+cplxrtodiffpuma['Pct202004']=cplxrtodiffpuma['E202004']/cplxrtodiffpuma['E201904']
+cplxrtodiffpuma['nontelsubpct']=1-cplxrtodiffpuma['telsubpct']
+cplxrtodiffpuma=cplxrtodiffpuma[['puma','nontelsubpct','Pct202004']].reset_index(drop=True)
+pumarto=cplxrtodiffpuma.copy()
 
+# 202009
 dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
 predates=['09/16/2019','09/17/2019','09/18/2019','09/19/2019']
 postdates=['09/14/2020','09/15/2020','09/16/2020','09/17/2020']
+amlist=['05:00:00-09:00:00','05:30:00-09:30:00','06:00:00-10:00:00','06:30:00-10:30:00','07:00:00-11:00:00',
+        '07:22:00-11:22:00','07:30:00-11:30:00','08:00:00-12:00:00','08:22:00-12:22:00','08:30:00-12:30:00']
 cplxrtopre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
-cplxrtopre=cplxrtopre.groupby(['unit','firstdate'],as_index=False).agg({'entries':'sum'}).reset_index(drop=True)
+cplxrtopre=cplxrtopre[np.isin(cplxrtopre['time'],amlist)].reset_index(drop=True)
 cplxrtopre=cplxrtopre.groupby(['unit'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
 cplxrtopre=pd.merge(cplxrtopre,rc,how='left',left_on='unit',right_on='Remote')
 cplxrtopre=cplxrtopre.groupby(['CplxID'],as_index=False).agg({'entries':'sum'}).reset_index(drop=True)
 cplxrtopre.columns=['CplxID','E201909']
 cplxrtopost=dfunitentry[np.isin(dfunitentry['firstdate'],postdates)].reset_index(drop=True)
-cplxrtopost=cplxrtopost.groupby(['unit','firstdate'],as_index=False).agg({'entries':'sum'}).reset_index(drop=True)
+cplxrtopost=cplxrtopost[np.isin(cplxrtopost['time'],amlist)].reset_index(drop=True)
 cplxrtopost=cplxrtopost.groupby(['unit'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
 cplxrtopost=pd.merge(cplxrtopost,rc,how='left',left_on='unit',right_on='Remote')
 cplxrtopost=cplxrtopost.groupby(['CplxID'],as_index=False).agg({'entries':'sum'}).reset_index(drop=True)
@@ -3031,8 +2980,81 @@ telsubam.crs=4326
 cplxrtodiffpuma=gpd.sjoin(telsubam,cplxrtodiff,how='left',op='intersects')
 cplxrtodiffpuma=cplxrtodiffpuma.groupby(['puma'],as_index=False).agg({'E201909':'sum','E202009':'sum','telsubpct':'mean'}).reset_index(drop=True)
 cplxrtodiffpuma=cplxrtodiffpuma[cplxrtodiffpuma['E201909']!=0].reset_index(drop=True)
-cplxrtodiffpuma['Pct']=cplxrtodiffpuma['E202009']/cplxrtodiffpuma['E201909']
-cplxrtodiffpuma.to_csv('C:/Users/mayij/Desktop/cplxrtochartE202009.csv',index=False)
+cplxrtodiffpuma['Pct202009']=cplxrtodiffpuma['E202009']/cplxrtodiffpuma['E201909']
+cplxrtodiffpuma=cplxrtodiffpuma[['puma','Pct202009']].reset_index(drop=True)
+pumarto=pumarto.merge(cplxrtodiffpuma,how='inner',on='puma')
+
+#202104
+dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
+predates=['04/15/2019','04/16/2019','04/17/2019','04/18/2019']
+postdates=['04/19/2021','04/20/2021','04/21/2021','04/22/2021']
+amlist=['05:00:00-09:00:00','05:30:00-09:30:00','06:00:00-10:00:00','06:30:00-10:30:00','07:00:00-11:00:00',
+        '07:22:00-11:22:00','07:30:00-11:30:00','08:00:00-12:00:00','08:22:00-12:22:00','08:30:00-12:30:00']
+cplxrtopre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
+cplxrtopre=cplxrtopre[np.isin(cplxrtopre['time'],amlist)].reset_index(drop=True)
+cplxrtopre=cplxrtopre.groupby(['unit'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
+cplxrtopre=pd.merge(cplxrtopre,rc,how='left',left_on='unit',right_on='Remote')
+cplxrtopre=cplxrtopre.groupby(['CplxID'],as_index=False).agg({'entries':'sum'}).reset_index(drop=True)
+cplxrtopre.columns=['CplxID','E201904']
+cplxrtopost=dfunitentry[np.isin(dfunitentry['firstdate'],postdates)].reset_index(drop=True)
+cplxrtopost=cplxrtopost[np.isin(cplxrtopost['time'],amlist)].reset_index(drop=True)
+cplxrtopost=cplxrtopost.groupby(['unit'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
+cplxrtopost=pd.merge(cplxrtopost,rc,how='left',left_on='unit',right_on='Remote')
+cplxrtopost=cplxrtopost.groupby(['CplxID'],as_index=False).agg({'entries':'sum'}).reset_index(drop=True)
+cplxrtopost.columns=['CplxID','E202104']
+cplxrto=pd.merge(cplxrtopre,cplxrtopost,how='inner',on='CplxID')
+cplxrto=pd.merge(rc.drop('Remote',axis=1).drop_duplicates(keep='first').reset_index(drop=True),cplxrto,how='left',on='CplxID')
+cplxrtodiff=cplxrto[['CplxID','CplxLat','CplxLong','E201904','E202104']].reset_index(drop=True)
+cplxrtodiff=gpd.GeoDataFrame(cplxrtodiff,geometry=[shapely.geometry.Point(x,y) for x,y in zip(cplxrtodiff['CplxLong'],cplxrtodiff['CplxLat'])],crs='epsg:4326')
+cplxrtodiff=cplxrtodiff.to_crs(6539)
+cplxrtodiff['geometry']=cplxrtodiff.buffer(2640)
+cplxrtodiff=cplxrtodiff.to_crs(4326)
+telsubam=gpd.read_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/telsubam.geojson')
+telsubam.crs=4326
+cplxrtodiffpuma=gpd.sjoin(telsubam,cplxrtodiff,how='left',op='intersects')
+cplxrtodiffpuma=cplxrtodiffpuma.groupby(['puma'],as_index=False).agg({'E201904':'sum','E202104':'sum','telsubpct':'mean'}).reset_index(drop=True)
+cplxrtodiffpuma=cplxrtodiffpuma[cplxrtodiffpuma['E201904']!=0].reset_index(drop=True)
+cplxrtodiffpuma['Pct202104']=cplxrtodiffpuma['E202104']/cplxrtodiffpuma['E201904']
+cplxrtodiffpuma=cplxrtodiffpuma[['puma','Pct202104']].reset_index(drop=True)
+pumarto=pumarto.merge(cplxrtodiffpuma,how='inner',on='puma')
+
+# 202105
+dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
+predates=['05/13/2019','05/14/2019','05/15/2019','05/16/2019']
+postdates=['05/17/2021','05/18/2021','05/19/2021','05/20/2021']
+amlist=['05:00:00-09:00:00','05:30:00-09:30:00','06:00:00-10:00:00','06:30:00-10:30:00','07:00:00-11:00:00',
+        '07:22:00-11:22:00','07:30:00-11:30:00','08:00:00-12:00:00','08:22:00-12:22:00','08:30:00-12:30:00']
+cplxrtopre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
+cplxrtopre=cplxrtopre[np.isin(cplxrtopre['time'],amlist)].reset_index(drop=True)
+cplxrtopre=cplxrtopre.groupby(['unit'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
+cplxrtopre=pd.merge(cplxrtopre,rc,how='left',left_on='unit',right_on='Remote')
+cplxrtopre=cplxrtopre.groupby(['CplxID'],as_index=False).agg({'entries':'sum'}).reset_index(drop=True)
+cplxrtopre.columns=['CplxID','E201905']
+cplxrtopost=dfunitentry[np.isin(dfunitentry['firstdate'],postdates)].reset_index(drop=True)
+cplxrtopost=cplxrtopost[np.isin(cplxrtopost['time'],amlist)].reset_index(drop=True)
+cplxrtopost=cplxrtopost.groupby(['unit'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
+cplxrtopost=pd.merge(cplxrtopost,rc,how='left',left_on='unit',right_on='Remote')
+cplxrtopost=cplxrtopost.groupby(['CplxID'],as_index=False).agg({'entries':'sum'}).reset_index(drop=True)
+cplxrtopost.columns=['CplxID','E202105']
+cplxrto=pd.merge(cplxrtopre,cplxrtopost,how='inner',on='CplxID')
+cplxrto=pd.merge(rc.drop('Remote',axis=1).drop_duplicates(keep='first').reset_index(drop=True),cplxrto,how='left',on='CplxID')
+cplxrtodiff=cplxrto[['CplxID','CplxLat','CplxLong','E201905','E202105']].reset_index(drop=True)
+cplxrtodiff=gpd.GeoDataFrame(cplxrtodiff,geometry=[shapely.geometry.Point(x,y) for x,y in zip(cplxrtodiff['CplxLong'],cplxrtodiff['CplxLat'])],crs='epsg:4326')
+cplxrtodiff=cplxrtodiff.to_crs(6539)
+cplxrtodiff['geometry']=cplxrtodiff.buffer(2640)
+cplxrtodiff=cplxrtodiff.to_crs(4326)
+telsubam=gpd.read_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/telsubam.geojson')
+telsubam.crs=4326
+cplxrtodiffpuma=gpd.sjoin(telsubam,cplxrtodiff,how='left',op='intersects')
+cplxrtodiffpuma=cplxrtodiffpuma.groupby(['puma'],as_index=False).agg({'E201905':'sum','E202105':'sum','telsubpct':'mean'}).reset_index(drop=True)
+cplxrtodiffpuma=cplxrtodiffpuma[cplxrtodiffpuma['E201905']!=0].reset_index(drop=True)
+cplxrtodiffpuma['Pct202105']=cplxrtodiffpuma['E202105']/cplxrtodiffpuma['E201905']
+cplxrtodiffpuma=cplxrtodiffpuma[['puma','Pct202105']].reset_index(drop=True)
+pumarto=pumarto.merge(cplxrtodiffpuma,how='inner',on='puma')
+pumarto.to_csv(path+'OUTPUT/pumartoam.csv',index=False)
+
+
+
 
 
 
