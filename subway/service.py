@@ -284,6 +284,13 @@ k['hour']=[x.strftime('%H') for x in k['time']]
 k=k.groupby('hour',as_index=False).agg({'tripid':'count'}).reset_index(drop=True)
 k.to_csv(path+'SERVICE/k.csv',index=False)
 
+k=pd.read_csv(path+'SERVICE/gtfsrt/tp_20210524.csv',dtype=float,converters={'routeid':str,'tripdate':str,'tripid':str,'startstopid':str,'endstopid':str})
+k=k[k['starttime']!=0].reset_index(drop=True)
+k=k[k['endtime']!=0].reset_index(drop=True)
+k['time']=[datetime.datetime.fromtimestamp(x,tz=pytz.timezone('America/New_York')) for x in k['starttime']]
+k['hour']=[x.strftime('%H') for x in k['time']]
+k=k.groupby('hour',as_index=False).agg({'tripid':'count'}).reset_index(drop=True)
+k.to_csv(path+'SERVICE/k.csv',index=False)
 
 
 
