@@ -7,6 +7,10 @@
     <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
     <script src="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js"></script>
     <link href="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.0/font/bootstrap-icons.css">
+
 
 
 
@@ -14,6 +18,7 @@
         body {
             margin: 0;
             padding: 0;
+            font-family: sans-serif;
         }
 
         #mainmap {
@@ -26,103 +31,90 @@
         #legend {
             position: absolute;
             top: 1rem;
-            left: 1rem;
-            line-height: 1.5rem;
-            color: #000000;
-            background-color: rgba(255, 255, 255, 0);
-            font-family: sans-serif;
+            right: 1rem;
+            width: 13rem;
+            height: auto;
+            max-height: 90%;
+            padding-top: 1rem;
+            padding-right: 1rem;
+            padding-left: 1rem;
+            padding-bottom: 1rem;
+            color: rgba(0, 0, 0, 0.9);
+            background-color: rgba(255, 255, 255, 0.9);
+            font-size: 1rem;
+            overflow: auto;
+            box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+        }
+
+        #header {
+            font-weight: bold;
+        }
+
+        #chevron {
+            margin-left: 0.5rem;
+        }
+
+        .itemgroup1 {
+            margin-top: 0.5rem;
+        }
+
+        .item1-input {
+            width: 0.9rem;
+            height: 0.9rem;
+            margin-right: 0.5rem;
+            vertical-align: -0.1rem;
+        }
+
+        .item1-label1 {
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+        .item1-label2 {
             font-size: 0.9rem;
         }
 
-        #legend1-title1 {
-            font-weight: bold;
-            background-color: rgba(255, 255, 255, 1);
-            padding-top: 0.5rem;
-            padding-bottom: 0.5rem;
-            padding-right: 0.5rem;
-            padding-left: 0.5rem;
-            width: 15rem;
-            height: auto;
+        .itemgroup2 {
+            margin-left: 0rem;
         }
 
-        #legend1-title2 {
-            background-color: rgba(255, 255, 255, 1);
-            padding-right: 0.5rem;
-            padding-left: 0.5rem;
-            padding-bottom: 0.5rem;
-            width: 15rem;
-            height: auto;
+        .item2-input {
+            width: 0.8rem;
+            height: 0.8rem;
+            margin-right: 0.5rem;
+            vertical-align: -0.1rem;
         }
 
-        #legend1-layer {
-            width: 8rem;
-            height: auto;
-            background-color: rgba(255, 255, 255, 1);
-            padding-right: 0.5rem;
-            padding-left: 0.5rem;
-            padding-bottom: 0.5rem;
-            width: 15rem;
+        .item2-label {
+            font-size: 0.8rem;
         }
 
-        #legend2-title1 {
-            font-weight: bold;
-            background-color: rgba(255, 255, 255, 1);
-            padding-top: 0.5rem;
-            padding-bottom: 0.5rem;
-            padding-right: 0.5rem;
-            padding-left: 0.5rem;
-            width: 15rem;
-            height: auto;
-        }
-
-        #legend2-layer {
-            width: 8rem;
-            height: auto;
-            background-color: rgba(255, 255, 255, 1);
-            padding-right: 0.5rem;
-            padding-left: 0.5rem;
-            padding-bottom: 0.5rem;
-            width: 15rem;
-        }
-
-        .legend-key-circle {
-            width: 1rem;
-            height: 1rem;
-            margin-left: 0.25rem;
-            margin-right: 1rem;
+        .key-circle {
+            width: 0.8rem;
+            height: 0.8rem;
+            margin-right: 0.5rem;
             border-radius: 100%;
             display: inline-block;
-            vertical-align: -0.15rem;
+            vertical-align: -0.1rem;
         }
 
-        .legend-key-line {
-            width: 1rem;
+        .key-line {
+            width: 0.8rem;
             height: 0.3rem;
-            margin-left: 0.25rem;
-            margin-right: 1rem;
+            margin-right: 0.5rem;
             border-radius: 0%;
             display: inline-block;
-            vertical-align: 0.25rem;
+            vertical-align: 0.15rem;
         }
 
-        .legend-key-fill {
-            width: 1rem;
-            height: 1rem;
-            margin-left: 0.25rem;
-            margin-right: 1rem;
+        .key-fill {
+            width: 0.8rem;
+            height: 0.8rem;
+            margin-right: 0.5rem;
             border-radius: 0%;
             display: inline-block;
-            vertical-align: -0.15rem;
-        }
-
-        .legend-key-fill-extrusion {
-            width: 1rem;
-            height: 1rem;
-            margin-left: 0.25rem;
-            margin-right: 1rem;
-            border-radius: 0%;
-            display: inline-block;
-            vertical-align: -0.15rem;
+            vertical-align: -0.1rem;
         }
     </style>
 </head>
@@ -131,19 +123,27 @@
 
 <body>
     <div id="mainmap"></div> <!-- placeholder for main map -->
+
     <nav id="legend">
-        <div id="legend1-title1"></div>
-        <div id="legend1-title2"></div>
-        <div id="legend1-layer"></div>
-        <div id="legend2-title1"></div>
-        <div id="legend2-layer"></div>
-    </nav> <!-- placeholder for layer selector and legend -->
+        <div class="container g-0">
+            <div class="row g-0 justify-content-between" id="header">
+                <div class="col-auto"> Return to Office </div>
+                <div class="col-auto">
+                    <i class="bi bi-chevron-down" id='chevron'></i>
+                </div>
+            </div>
+            <div class="row g-0 justify-content-start">
+                <div class="col-auto" id="legends"> </div> <!-- placeholder for layer selector and legend -->
+            </div>
+        </div>
+    </nav>
 
 
 
     <script>
         'use strict';
         // Set MapBox token
+
         mapboxgl.accessToken = 'pk.eyJ1IjoibWF5aWp1biIsImEiOiJjaXg4ZmlyY20wMDBjMm9tcjI0bjQ0Z21zIn0.Io0XJ4JelN903V9HGo4TfQ'; // still need to find a way to store the token
 
 
@@ -155,10 +155,8 @@
             hash: true, // make sure it's on to get the url with map view
             attributionControl: false, // show the credit bar
             preserveDrawingBuffer: true, // make sure it's on to allow printing
-            center: [-73.5471, 40.7469], // testing to get the centroid of bounds
-            zoom: 9.8, // set the initial zoom of the map view
-            logoPosition: 'bottom-right', // no need to change 
-
+            center: [-74.0197, 40.721], // testing to get the centroid of bounds
+            zoom: 10, // set the initial zoom of the map view
         });
 
 
@@ -167,6 +165,24 @@
         map.on('load', function () {
 
             var layerContentList = []; // store all the layer contents
+
+            // Add full screen control
+            map.addControl(new mapboxgl.FullscreenControl({
+                container: document.querySelector('body'),
+            }),
+                'bottom-left', // control position
+            );
+
+            // Add navigation control
+            map.addControl(new mapboxgl.NavigationControl({
+                showCompass: true, // show compass
+                showZoom: true, // show zoom
+                visualizePitch: true, // show pitch
+            }),
+                'bottom-left', // control position
+            );
+
+
 
             // Add polygons
             // Set layer contents
@@ -182,6 +198,7 @@
                 'layercat': ['22%~30%', '31%~35%', '36%~54%'], // categories
                 'layercolor': ['rgba(209,227,243,1)', 'rgba(154,200,225,1)', 'rgba(82,157,204,1)'], // color for each category; use rgba
                 'layeropacity': 1, // fill opacity
+                'layeroutlinecolor': 'rgba(255,255,255,0)', // outline color; can only be set to 1px width; to change the outline width, add another line layer
             };
 
             // Generate layer colors
@@ -234,6 +251,7 @@
                 'layercolor': ['rgba(153,52,4,1)', 'rgba(223,103,17,1)', 'rgba(254,171,70,1)'], // color for each category; use rgba
                 'layeropacity': 1, // circle opacity
                 'layerradius': 3, // circle radius; change size based on zoom level
+                'layeroutlinecolor': 'rgba(255,255,255,0)', // outline color; can only be set to 1px width; to change the outline width, add another line layer
             };
 
             // Generate layer colors
@@ -322,10 +340,6 @@
             });
 
 
-
-
-
-
             // Add layer selector and legend
             var layerOrder = ['cplxrto']; // set layer order in the legend
             var layerContentListOrder = []; // create ordered layer content list
@@ -333,36 +347,75 @@
                 layerContentListOrder.push(layerContentList.filter(e => e.layerid == layerOrder[i])[0]);
             };
 
-            var legendTitle1 = document.getElementById('legend1-title1');
-            var legendTitle2 = document.getElementById('legend1-title2');
-            var legendLayer = document.getElementById('legend1-layer');
-
+            var filterLegend = document.getElementById('legends');
             for (var i = 0; i < layerContentListOrder.length; i++) {
-                // Create legend title
-                var title1 = document.createElement('div'); // create title1
-                title1.innerHTML = layerContentListOrder[i]['layername1'];
-                legendTitle1.appendChild(title1);
+                // Create layer selector
+                var itemgroup1 = document.createElement('div'); // create level-1 item group
+                itemgroup1.className = 'itemgroup1';
+                var item1 = document.createElement('div'); // create level-1 item
+                item1.className = 'item1';
+                var label1 = document.createElement('label'); // create level-1 checkbox label
+                label1.className = 'item1-label1';
+                label1.setAttribute('for', layerContentListOrder[i]['layerid']);
+                label1.textContent = layerContentListOrder[i]['layername1'];
+                var label2 = document.createElement('label'); // create level-1 checkbox label
+                label2.className = 'item1-label2';
+                label2.setAttribute('for', layerContentListOrder[i]['layerid']);
+                label2.textContent = layerContentListOrder[i]['layername2'];
+                item1.appendChild(label1);
+                item1.appendChild(document.createElement('br'));
+                item1.appendChild(label2);
+                itemgroup1.appendChild(item1);
 
-                var title2 = document.createElement('div'); // create title2
-                title2.innerHTML = layerContentListOrder[i]['layername2'];
-                legendTitle2.appendChild(title2);
-
-                // Create legend layer
-                for (var j = 0; j < layerContentListOrder[i]['layercat'].length; j++) {
-                    var item = document.createElement('div'); // create item
-                    item.className = layerContentListOrder[i]['layerid'] + 'legend';
-                    var key = document.createElement('span'); // create key
-                    key.className = 'legend-key-' + layerContentListOrder[i]['layertype'];
-                    key.style.backgroundColor = layerContentListOrder[i]['layercolor'][j]
-                        .replace(',1)', ',' + layerContentListOrder[i]['layeropacity'] + ')'); // set color with opacity
-                    var value = document.createElement('span'); // create label
-                    value.innerHTML = layerContentListOrder[i]['layercat'][j];
-                    item.appendChild(key);
-                    item.appendChild(value);
-                    legendLayer.appendChild(item);
+                // Create legend selector
+                var itemgroup2 = document.createElement('div'); // create level-2 item group
+                itemgroup2.className = 'itemgroup2';
+                itemgroup2.id = layerContentListOrder[i]['layerid'] + '-cat';
+                if (layerContentListOrder[i]['layervisibility'] === 'visible') {
+                    itemgroup2.style.display = 'block';
+                } else {
+                    itemgroup2.style.display = 'none';
                 };
-            };
+                for (var j = 0; j < layerContentListOrder[i]['layercat'].length; j++) {
+                    var item2 = document.createElement('div'); // create level-2 item
+                    item2.className = 'item2';
+                    var input2 = document.createElement('input'); // create level-2 checkbox
+                    input2.type = 'checkbox';
+                    input2.className = 'item2-input';
+                    input2.id = layerContentListOrder[i]['layerid'] + '|' + layerContentListOrder[i]['layercolname'] + '|' + layerContentListOrder[i]['layercat'][j];
+                    input2.checked = true;
+                    var key2 = document.createElement('span'); // create level-2 key
+                    key2.className = 'key-' + layerContentListOrder[i]['layertype'];
+                    key2.style.backgroundColor = layerContentListOrder[i]['layercolor'][j];
+                    key2.style.borderColor = layerContentListOrder[i]['layeroutlinecolor'];
+                    key2.style.borderStyle = 'solid';
+                    key2.style.borderWidth = 'thin';
+                    var label2 = document.createElement('label'); // create level-2 label
+                    label2.className = 'item2-label';
+                    label2.setAttribute('for', layerContentListOrder[i]['layerid'] + '|' + layerContentListOrder[i]['layercolname'] + '|' + layerContentListOrder[i]['layercat'][j]);
+                    label2.textContent = layerContentListOrder[i]['layercat'][j];
+                    item2.appendChild(input2);
+                    item2.appendChild(key2);
+                    item2.appendChild(label2);
+                    itemgroup2.appendChild(item2);
 
+                    // Create legend selector click event
+                    input2.addEventListener('click', function (e) {
+                        var clickedLayer = this.id.split('|')[0];
+                        var clickedLayerColname = this.id.split('|')[1];
+                        var catGroup = document.getElementById(clickedLayer + '-cat').getElementsByClassName('item2-input');
+                        var checkedFilter = ['any'];
+                        for (var k = 0; k < catGroup.length; k++) {
+                            if (catGroup[k]['checked'] === true) {
+                                checkedFilter.push(['==', clickedLayerColname, catGroup[k].id.split('|')[2]]);
+                            };
+                        };
+                        map.setFilter(clickedLayer, checkedFilter);
+                    });
+                };
+                itemgroup1.appendChild(itemgroup2);
+                filterLegend.appendChild(itemgroup1);
+            };
 
             // Add layer selector and legend
             var layerOrder = ['telsubam']; // set layer order in the legend
@@ -371,33 +424,89 @@
                 layerContentListOrder.push(layerContentList.filter(e => e.layerid == layerOrder[i])[0]);
             };
 
-            var legendTitle1 = document.getElementById('legend2-title1');
-            var legendLayer = document.getElementById('legend2-layer');
-
+            var filterLegend = document.getElementById('legends');
             for (var i = 0; i < layerContentListOrder.length; i++) {
-                // Create legend title
-                var title1 = document.createElement('div'); // create title1
-                title1.innerHTML = layerContentListOrder[i]['layername1'];
-                legendTitle1.appendChild(title1);
+                // Create layer selector
+                var itemgroup1 = document.createElement('div'); // create level-1 item group
+                itemgroup1.className = 'itemgroup1';
+                var item1 = document.createElement('div'); // create level-1 item
+                item1.className = 'item1';
+                var label1 = document.createElement('label'); // create level-1 checkbox label
+                label1.className = 'item1-label1';
+                label1.setAttribute('for', layerContentListOrder[i]['layerid']);
+                label1.textContent = layerContentListOrder[i]['layername1'];
+                item1.appendChild(label1);
+                itemgroup1.appendChild(item1);
 
-                // Create legend layer
-                for (var j = 0; j < layerContentListOrder[i]['layercat'].length; j++) {
-                    var item = document.createElement('div'); // create item
-                    item.className = layerContentListOrder[i]['layerid'] + 'legend';
-                    var key = document.createElement('span'); // create key
-                    key.className = 'legend-key-' + layerContentListOrder[i]['layertype'];
-                    key.style.backgroundColor = layerContentListOrder[i]['layercolor'][j]
-                        .replace(',1)', ',' + layerContentListOrder[i]['layeropacity'] + ')'); // set color with opacity
-                    var value = document.createElement('span'); // create label
-                    value.innerHTML = layerContentListOrder[i]['layercat'][j];
-                    item.appendChild(key);
-                    item.appendChild(value);
-                    legendLayer.appendChild(item);
+                // Create legend selector
+                var itemgroup2 = document.createElement('div'); // create level-2 item group
+                itemgroup2.className = 'itemgroup2';
+                itemgroup2.id = layerContentListOrder[i]['layerid'] + '-cat';
+                if (layerContentListOrder[i]['layervisibility'] === 'visible') {
+                    itemgroup2.style.display = 'block';
+                } else {
+                    itemgroup2.style.display = 'none';
                 };
+                for (var j = 0; j < layerContentListOrder[i]['layercat'].length; j++) {
+                    var item2 = document.createElement('div'); // create level-2 item
+                    item2.className = 'item2';
+                    var input2 = document.createElement('input'); // create level-2 checkbox
+                    input2.type = 'checkbox';
+                    input2.className = 'item2-input';
+                    input2.id = layerContentListOrder[i]['layerid'] + '|' + layerContentListOrder[i]['layercolname'] + '|' + layerContentListOrder[i]['layercat'][j];
+                    input2.checked = true;
+                    var key2 = document.createElement('span'); // create level-2 key
+                    key2.className = 'key-' + layerContentListOrder[i]['layertype'];
+                    key2.style.backgroundColor = layerContentListOrder[i]['layercolor'][j];
+                    key2.style.borderColor = layerContentListOrder[i]['layeroutlinecolor'];
+                    key2.style.borderStyle = 'solid';
+                    key2.style.borderWidth = 'thin';
+                    var label2 = document.createElement('label'); // create level-2 label
+                    label2.className = 'item2-label';
+                    label2.setAttribute('for', layerContentListOrder[i]['layerid'] + '|' + layerContentListOrder[i]['layercolname'] + '|' + layerContentListOrder[i]['layercat'][j]);
+                    label2.textContent = layerContentListOrder[i]['layercat'][j];
+                    item2.appendChild(input2);
+                    item2.appendChild(key2);
+                    item2.appendChild(label2);
+                    itemgroup2.appendChild(item2);
+
+                    // Create legend selector click event
+                    input2.addEventListener('click', function (e) {
+                        var clickedLayer = this.id.split('|')[0];
+                        var clickedLayerColname = this.id.split('|')[1];
+                        var catGroup = document.getElementById(clickedLayer + '-cat').getElementsByClassName('item2-input');
+                        var checkedFilter = ['any'];
+                        for (var k = 0; k < catGroup.length; k++) {
+                            if (catGroup[k]['checked'] === true) {
+                                checkedFilter.push(['==', clickedLayerColname, catGroup[k].id.split('|')[2]]);
+                            };
+                        };
+                        map.setFilter(clickedLayer, checkedFilter);
+                    });
+                };
+                itemgroup1.appendChild(itemgroup2);
+                filterLegend.appendChild(itemgroup1);
             };
+
+
+
+            // Set collapse event
+            var collapsevalue = 0;
+            header.addEventListener('click', function () {
+                if (collapsevalue === 0) {
+                    document.getElementById('legends').style.display = "none";
+                    document.getElementById('chevron').className = "bi bi-chevron-up";
+                    collapsevalue = 1;
+                } else {
+                    document.getElementById('legends').style.display = "block";
+                    document.getElementById('chevron').className = "bi bi-chevron-down";
+                    collapsevalue = 0;
+                };
+            });
         });
     </script>
 
 </body>
 
 </html>
+

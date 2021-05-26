@@ -7,169 +7,171 @@
     <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
     <script src="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js"></script>
     <link href="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css" rel="stylesheet" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.0/font/bootstrap-icons.css">
+
 
 
     <style>
         body {
             margin: 0;
             padding: 0;
+            font-family: sans-serif;
         }
 
-        #map,
+        #map1 {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 50%;
+            border-right-style: solid;
+            border-right-width: 0.1rem;
+            border-right-color: rgba(0, 0, 0, 0.5);
+        }
+
         #map2 {
             position: absolute;
-            top: 0px;
-            bottom: 0px;
-            width: 100%;
-            border: 1px solid black;
-        }
-
-        #map2 {
-            right: 0px;
-        }
-
-        #divider {
-            background-color: gray;
-            width: 8px;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 50%;
+            border-left-style: solid;
+            border-left-width: 0.1rem;
+            border-left-color: rgba(0, 0, 0, 0.5);
         }
 
         #legend {
             position: absolute;
             top: 1rem;
             left: 1rem;
-            line-height: 1.5rem;
-            color: #000000;
-            background-color: rgba(255, 255, 255, 0);
-            font-family: sans-serif;
+            width: auto;
+            height: auto;
+            max-height: 90%;
+            padding-top: 1rem;
+            padding-right: 1rem;
+            padding-left: 1rem;
+            padding-bottom: 1rem;
+            color: rgba(0, 0, 0, 0.9);
+            background-color: rgba(255, 255, 255, 0.9);
+            font-size: 1rem;
+            overflow: auto;
+            box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+        }
+
+        #header {
+            font-weight: bold;
+        }
+
+        #chevron {
+            margin-left: 0.5rem;
+        }
+
+        .itemgroup1 {
+            margin-top: 0.5rem;
+        }
+
+        .item1-input {
+            width: 0.9rem;
+            height: 0.9rem;
+            margin-right: 0.5rem;
+            vertical-align: 1.2rem;
+        }
+
+        .item1-label {
             font-size: 0.9rem;
-        }
-
-        #legend-title1 {
             font-weight: bold;
-            background-color: rgba(255, 255, 255, 1);
-            padding-top: 0.5rem;
-            padding-bottom: 0.5rem;
-            padding-right: 0.5rem;
-            padding-left: 0.5rem;
-            width: 11rem;
-            height: auto;
-        }
-
-        #legend-layer1 {
-            width: 8rem;
-            height: auto;
-            background-color: rgba(255, 255, 255, 1);
-            padding-right: 0.5rem;
-            padding-left: 0.5rem;
-            padding-bottom: 0.5rem;
             width: 11rem;
         }
 
-        #legend-title2 {
-            font-weight: bold;
-            background-color: rgba(255, 255, 255, 1);
-            padding-top: 0.5rem;
-            padding-bottom: 0.5rem;
-            padding-right: 0.5rem;
-            padding-left: 0.5rem;
-            width: 11rem;
-            height: auto;
+        .itemgroup2 {
+            margin-left: 0rem;
         }
 
-        #legend-layer2 {
-            width: 8rem;
-            height: auto;
-            background-color: rgba(255, 255, 255, 1);
-            padding-right: 0.5rem;
-            padding-left: 0.5rem;
-            padding-bottom: 0.5rem;
-            width: 11rem;
+        .item2-input {
+            width: 0.8rem;
+            height: 0.8rem;
+            margin-right: 0.5rem;
+            vertical-align: -0.1rem;
         }
 
-        .legend-key-circle {
-            width: 1rem;
-            height: 1rem;
-            margin-left: 0.25rem;
-            margin-right: 1rem;
+        .item2-label {
+            font-size: 0.8rem;
+        }
+
+        .key-circle {
+            width: 0.8rem;
+            height: 0.8rem;
+            margin-right: 0.5rem;
             border-radius: 100%;
             display: inline-block;
-            vertical-align: -0.15rem;
+            vertical-align: -0.1rem;
         }
 
-        .legend-key-line {
-            width: 1rem;
+        .key-line {
+            width: 0.8rem;
             height: 0.3rem;
-            margin-left: 0.25rem;
-            margin-right: 1rem;
+            margin-right: 0.5rem;
             border-radius: 0%;
             display: inline-block;
-            vertical-align: 0.25rem;
+            vertical-align: 0.15rem;
         }
 
-        .legend-key-fill {
-            width: 1rem;
-            height: 1rem;
-            margin-left: 0.25rem;
-            margin-right: 1rem;
+        .key-fill {
+            width: 0.8rem;
+            height: 0.8rem;
+            margin-right: 0.5rem;
             border-radius: 0%;
             display: inline-block;
-            vertical-align: -0.15rem;
+            vertical-align: -0.1rem;
         }
 
-        .legend-key-fill-extrusion {
-            width: 1rem;
-            height: 1rem;
-            margin-left: 0.25rem;
-            margin-right: 1rem;
-            border-radius: 0%;
-            display: inline-block;
-            vertical-align: -0.15rem;
-        }
-
-
-        #legend2 {
+        #title1-nav {
             position: absolute;
-            bottom: 1rem;
-            left: 1rem;
-            line-height: 1rem;
-            color: #000000;
-            background-color: rgba(255, 255, 255, 0);
-            font-family: sans-serif;
-            font-size: 0.8rem;
+            top: 1rem;
+            right: 50%;
         }
 
-        #legend2-title1 {
-            font-weight: bold;
-            background-color: rgba(255, 255, 255, 1);
+        #title1 {
+            position: relative;
+            right: 1rem;
+            width: auto;
+            height: auto;
             padding-top: 0.5rem;
             padding-right: 0.5rem;
             padding-left: 0.5rem;
             padding-bottom: 0.5rem;
+            color: rgba(0, 0, 0, 0.9);
+            background-color: rgba(255, 255, 255, 0.9);
+            font-size: 0.9rem;
+            font-weight: bold;
+            box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+        }
+
+        #title2-nav {
+            position: absolute;
+            top: 1rem;
+            right: 0;
+        }
+
+        #title2 {
+            position: relative;
+            right: 1rem;
             width: auto;
             height: auto;
-        }
-
-        #legend3 {
-            position: absolute;
-            bottom: 1rem;
-            left: 51%;
-            line-height: 1rem;
-            color: #000000;
-            background-color: rgba(255, 255, 255, 0);
-            font-family: sans-serif;
-            font-size: 0.8rem;
-        }
-
-        #legend3-title1 {
-            font-weight: bold;
-            background-color: rgba(255, 255, 255, 1);
             padding-top: 0.5rem;
             padding-right: 0.5rem;
             padding-left: 0.5rem;
             padding-bottom: 0.5rem;
-            width: auto;
-            height: auto;
+            color: rgba(0, 0, 0, 0.9);
+            background-color: rgba(255, 255, 255, 0.9);
+            font-size: 0.9rem;
+            font-weight: bold;
+            box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
         }
     </style>
 </head>
@@ -177,40 +179,39 @@
 
 
 <body>
-    <div id="container">
-        <div id="map"></div>
-        <div id="divider"></div>
-        <div id="map2"></div>
-    </div>
+    <div id="map1"></div>
+    <div id="map2"></div>
     <nav id="legend">
-        <div id="legend-title1"></div>
-        <div id="legend-layer1"></div>
-        <div id="legend-title2"></div>
-        <div id="legend-layer2"></div>
+        <div class="container g-0">
+            <div class="row g-0 justify-content-between" id="header">
+                <div class="col-auto"> Return to Office </div>
+                <div class="col-auto">
+                    <i class="bi bi-chevron-down" id='chevron'></i>
+                </div>
+            </div>
+            <div class="row g-0 justify-content-start">
+                <div class="col-auto" id="legends"> </div>
+                <!-- placeholder for layer selector and legend -->
+            </div>
+        </div>
     </nav> <!-- placeholder for layer selector and legend -->
-    <nav id="legend2">
-        <div id="legend2-title1"></div>
-    </nav> <!-- placeholder for layer selector and legend -->
-    <nav id="legend3">
-        <div id="legend3-title1"></div>
-    </nav> <!-- placeholder for layer selector and legend -->
+    <nav id="title1-nav">
+        <div class="container g-0">
+            <div class="row g-0 justify-content-center">
+                <div class="col-auto" id="title1"> Weekday AM Peak </div>
+            </div>
+        </div>
+    </nav>
+    <nav id="title2-nav">
+        <div class="container g-0">
+            <div class="row g-0 justify-content-center">
+                <div class="col-auto" id="title2"> Weekday PM Peak </div>
+            </div>
+        </div>
+    </nav>
 
     <script>
         'use strict';
-
-
-        window.onload = function () { start(); }
-
-        window.onresize = function () {
-            setWindowSize();
-        }
-
-        function setWindowSize() {
-            var width = (window.innerWidth - 6) / 2;
-            d3.select("#map").style("width", width + "px")
-            d3.select("#map2").style("width", width + "px")
-        }
-        setWindowSize();
 
         // Set MapBox token
         mapboxgl.accessToken = 'pk.eyJ1IjoibWF5aWp1biIsImEiOiJjaXg4ZmlyY20wMDBjMm9tcjI0bjQ0Z21zIn0.Io0XJ4JelN903V9HGo4TfQ'; // still need to find a way to store the token
@@ -218,25 +219,41 @@
 
 
         // Initialize the map
-        var map = new mapboxgl.Map({ // creating a new map
-            container: 'map', // same as the div id to place the map
+        var map1 = new mapboxgl.Map({ // creating a new map
+            container: 'map1', // same as the div id to place the map
             style: 'mapbox://styles/mapbox/light-v10', // light base map
             hash: true, // make sure it's on to get the url with map view
             attributionControl: false, // show the credit bar
+            logoPosition: 'bottom-left', // no need to change 
             preserveDrawingBuffer: true, // make sure it's on to allow printing
-            center: [-73.5471, 40.7469], // testing to get the centroid of bounds
-            zoom: 9.8, // set the initial zoom of the map view
-            logoPosition: 'top-right', // no need to change 
-
+            center: [-74.0197, 40.721], // testing to get the centroid of bounds
+            zoom: 10, // set the initial zoom of the map view
         });
 
 
 
 
         // Add layers
-        map.on('load', function () {
+        map1.on('load', function () {
 
             var layerContentList = []; // store all the layer contents
+
+            // Add full screen control
+            map1.addControl(new mapboxgl.FullscreenControl({
+                container: document.querySelector('body'),
+            }),
+                'bottom-left', // control position
+            );
+
+            // Add navigation control
+            map1.addControl(new mapboxgl.NavigationControl({
+                showCompass: true, // show compass
+                showZoom: true, // show zoom
+                visualizePitch: true, // show pitch
+            }),
+                'bottom-left', // control position
+            );
+
 
             // Add polygons
             // Set layer contents
@@ -246,12 +263,13 @@
                 'sourcedata': 'teleworkam.geojson', // data source
                 'layerid': 'telam', // layer id
                 'layertype': 'fill', // symbology type
-                'layername1': 'Telework Capability by Place of Residence (Left) and Workplace (Right)​', // layer name for the legend
+                'layername': 'Telework Capability by Place of Residence (Left) and Workplace (Right)​', // layer name for the legend
                 'layervisibility': 'visible', // visibility of the layer
                 'layercolname': 'cat', // category column name
                 'layercat': ['15%~25%', '26%~30%', '31%~58%'], // categories
                 'layercolor': ['rgba(209,227,243,1)', 'rgba(154,200,225,1)', 'rgba(82,157,204,1)'], // color for each category; use rgba
                 'layeropacity': 1, // fill opacity
+                'layeroutlinecolor': 'rgba(255,255,255,0)', // outline color; can only be set to 1px width; to change the outline width, add another line layer
             };
 
             // Generate layer colors
@@ -266,13 +284,13 @@
             layerContentList.push(layerContent);
 
             // Add data source
-            map.addSource(layerContent['sourceid'], {
+            map1.addSource(layerContent['sourceid'], {
                 'type': layerContent['sourcetype'],
                 'data': layerContent['sourcedata'],
             });
 
             // Add fill layer
-            map.addLayer({
+            map1.addLayer({
                 'id': layerContent['layerid'],
                 'type': layerContent['layertype'],
                 'source': layerContent['sourceid'],
@@ -296,14 +314,14 @@
                 'sourcedata': 'cplxrtoam21.geojson', // data source
                 'layerid': 'cplxrtoam21', // layer id
                 'layertype': 'circle', // symbology type
-                'layername1': 'Mid May vs Mid April 2021 Subway Ridership Percent Change', // layer name for the legend
-                'layername2': 'Weekday AM Peak Average', // layer name for the legend
+                'layername': 'Mid May vs Mid April 2021 Subway Ridership Percent Change', // layer name for the legend
                 'layervisibility': 'visible', // visibility of the layer
                 'layercolname': 'DiffPctCat', // category column name
                 'layercat': ['<=5%', '6%~10%', '11%~25%', '>25%'], // categories
                 'layercolor': ['rgba(95,30,0,1)', 'rgba(153,52,4,1)', 'rgba(223,103,17,1)', 'rgba(254,171,70,1)'], // color for each category; use rgba
                 'layeropacity': 1, // circle opacity
                 'layerradius': 3, // circle radius; change size based on zoom level
+                'layeroutlinecolor': 'rgba(255,255,255,0)', // outline color; can only be set to 1px width; to change the outline width, add another line layer
             };
 
             // Generate layer colors
@@ -318,13 +336,13 @@
             layerContentList.push(layerContent);
 
             // Add data source
-            map.addSource(layerContent['sourceid'], {
+            map1.addSource(layerContent['sourceid'], {
                 'type': layerContent['sourcetype'],
                 'data': layerContent['sourcedata'],
             });
 
             // Add circle layer
-            map.addLayer({
+            map1.addLayer({
                 'id': layerContent['layerid'],
                 'type': layerContent['layertype'],
                 'source': layerContent['sourceid'],
@@ -353,24 +371,24 @@
 
             // Add telam popup
             // Add click event
-            map.on('click', 'telam', function (e) {
+            map1.on('click', 'telam', function (e) {
                 var coordinates = e.lngLat; // get pointer coordinates
                 var description = "<b>NTA Code: </b><span>" + e.features[0].properties.ntacode + "</span><br>"; // description in the popup
                 description += "<b>Telework Capability by Place of Residence​: </b><span>" + (Number(e.features[0].properties.telework) * 100).toFixed(2) + "%</span><br>";
-                popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
+                popup.setLngLat(coordinates).setHTML(description).addTo(map1); //add popup
             });
             // Add hover events
-            map.on('mouseenter', 'telam', function () {
-                map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
+            map1.on('mouseenter', 'telam', function () {
+                map1.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
             });
-            map.on('mouseleave', 'telam', function () {
-                map.getCanvas().style.cursor = '';
+            map1.on('mouseleave', 'telam', function () {
+                map1.getCanvas().style.cursor = '';
             });
 
 
-            // Add cplxrtoam21 popup
+            // Add cplxrtoam popup
             // Add click event
-            map.on('click', 'cplxrtoam21', function (e) {
+            map1.on('click', 'cplxrtoam21', function (e) {
                 var coordinates = e.features[0].geometry.coordinates.slice(); // get point coordinates
                 var description = "<b>Complex ID: </b><span>" + e.features[0].properties.CplxID + "</span><br>"; // description in the popup
                 description += "<b>Borough: </b><span>" + e.features[0].properties.Borough + "</span><br>";
@@ -379,90 +397,89 @@
                 description += "<b>Mid April 2021 Subway Ridership: </b><span>" + e.features[0].properties.E202104.toFixed(2) + "</span><br>";
                 description += "<b>Mid May 2021 Subway Ridership: </b><span>" + e.features[0].properties.E202105.toFixed(2) + "</span><br>";
                 description += "<b>Mid May vs Mid April 2021 Percent Change: </b><span>" + (Number(e.features[0].properties.DiffPct) * 100).toFixed(2) + "%</span><br>";
-                popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
+                popup.setLngLat(coordinates).setHTML(description).addTo(map1); //add popup
             });
             // Add hover events
-            map.on('mouseenter', 'cplxrtoam21', function () {
-                map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
+            map1.on('mouseenter', 'cplxrtoam21', function () {
+                map1.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
             });
-            map.on('mouseleave', 'cplxrtoam21', function () {
-                map.getCanvas().style.cursor = '';
+            map1.on('mouseleave', 'cplxrtoam21', function () {
+                map1.getCanvas().style.cursor = '';
             });
-
 
 
             // Add layer selector and legend
-            var layerOrder = ['cplxrtoam21']; // set layer order in the legend
+            var layerOrder = ['cplxrtoam21', 'telam']; // set layer order in the legend
             var layerContentListOrder = []; // create ordered layer content list
             for (var i = 0; i < layerOrder.length; i++) {
                 layerContentListOrder.push(layerContentList.filter(e => e.layerid == layerOrder[i])[0]);
             };
 
-            var legendTitle1 = document.getElementById('legend-title1');
-            var legendTitle2 = document.getElementById('legend2-title1');
-            var legendLayer = document.getElementById('legend-layer1');
-
+            var filterLegend = document.getElementById('legends');
             for (var i = 0; i < layerContentListOrder.length; i++) {
-                // Create legend title
-                var title1 = document.createElement('div'); // create title1
-                title1.innerHTML = layerContentListOrder[i]['layername1'];
-                legendTitle1.appendChild(title1);
+                // Create layer selector
+                var itemgroup1 = document.createElement('div'); // create level-1 item group
+                itemgroup1.className = 'itemgroup1';
+                var item1 = document.createElement('div'); // create level-1 item
+                item1.className = 'item1';
+                var label1 = document.createElement('label'); // create level-1 checkbox label
+                label1.className = 'item1-label';
+                label1.setAttribute('for', layerContentListOrder[i]['layerid']);
+                label1.textContent = layerContentListOrder[i]['layername'];
+                item1.appendChild(label1);
+                itemgroup1.appendChild(item1);
 
-                var title2 = document.createElement('div'); // create title2
-                title2.innerHTML = layerContentListOrder[i]['layername2'];
-                legendTitle2.appendChild(title2);
-
-                // Create legend layer
-                for (var j = 0; j < layerContentListOrder[i]['layercat'].length; j++) {
-                    var item = document.createElement('div'); // create item
-                    item.className = layerContentListOrder[i]['layerid'] + 'legend';
-                    var key = document.createElement('span'); // create key
-                    key.className = 'legend-key-' + layerContentListOrder[i]['layertype'];
-                    key.style.backgroundColor = layerContentListOrder[i]['layercolor'][j]
-                        .replace(',1)', ',' + layerContentListOrder[i]['layeropacity'] + ')'); // set color with opacity
-                    var value = document.createElement('span'); // create label
-                    value.innerHTML = layerContentListOrder[i]['layercat'][j];
-                    item.appendChild(key);
-                    item.appendChild(value);
-                    legendLayer.appendChild(item);
+                // Create legend selector
+                var itemgroup2 = document.createElement('div'); // create level-2 item group
+                itemgroup2.className = 'itemgroup2';
+                itemgroup2.id = layerContentListOrder[i]['layerid'] + '-cat';
+                if (layerContentListOrder[i]['layervisibility'] === 'visible') {
+                    itemgroup2.style.display = 'block';
+                } else {
+                    itemgroup2.style.display = 'none';
                 };
-            };
-
-
-            // Add layer selector and legend
-            var layerOrder = ['telam']; // set layer order in the legend
-            var layerContentListOrder = []; // create ordered layer content list
-            for (var i = 0; i < layerOrder.length; i++) {
-                layerContentListOrder.push(layerContentList.filter(e => e.layerid == layerOrder[i])[0]);
-            };
-
-            var legendTitle1 = document.getElementById('legend-title2');
-            var legendLayer = document.getElementById('legend-layer2');
-
-            for (var i = 0; i < layerContentListOrder.length; i++) {
-                // Create legend title
-                var title1 = document.createElement('div'); // create title1
-                title1.innerHTML = layerContentListOrder[i]['layername1'];
-                legendTitle1.appendChild(title1);
-
-                // Create legend layer
                 for (var j = 0; j < layerContentListOrder[i]['layercat'].length; j++) {
-                    var item = document.createElement('div'); // create item
-                    item.className = layerContentListOrder[i]['layerid'] + 'legend';
-                    var key = document.createElement('span'); // create key
-                    key.className = 'legend-key-' + layerContentListOrder[i]['layertype'];
-                    key.style.backgroundColor = layerContentListOrder[i]['layercolor'][j]
-                        .replace(',1)', ',' + layerContentListOrder[i]['layeropacity'] + ')'); // set color with opacity
-                    var value = document.createElement('span'); // create label
-                    value.innerHTML = layerContentListOrder[i]['layercat'][j];
-                    item.appendChild(key);
-                    item.appendChild(value);
-                    legendLayer.appendChild(item);
+                    var item2 = document.createElement('div'); // create level-2 item
+                    item2.className = 'item2';
+                    var input2 = document.createElement('input'); // create level-2 checkbox
+                    input2.type = 'checkbox';
+                    input2.className = 'item2-input';
+                    input2.id = layerContentListOrder[i]['layerid'] + '|' + layerContentListOrder[i]['layercolname'] + '|' + layerContentListOrder[i]['layercat'][j];
+                    input2.checked = true;
+                    var key2 = document.createElement('span'); // create level-2 key
+                    key2.className = 'key-' + layerContentListOrder[i]['layertype'];
+                    key2.style.backgroundColor = layerContentListOrder[i]['layercolor'][j];
+                    key2.style.borderColor = layerContentListOrder[i]['layeroutlinecolor'];
+                    key2.style.borderStyle = 'solid';
+                    key2.style.borderWidth = 'thin';
+                    var label2 = document.createElement('label'); // create level-2 label
+                    label2.className = 'item2-label';
+                    label2.setAttribute('for', layerContentListOrder[i]['layerid'] + '|' + layerContentListOrder[i]['layercolname'] + '|' + layerContentListOrder[i]['layercat'][j]);
+                    label2.textContent = layerContentListOrder[i]['layercat'][j];
+                    item2.appendChild(input2);
+                    item2.appendChild(key2);
+                    item2.appendChild(label2);
+                    itemgroup2.appendChild(item2);
+
+                    // Create legend selector click event
+                    input2.addEventListener('click', function (e) {
+                        var clickedLayer = this.id.split('|')[0];
+                        var clickedLayerColname = this.id.split('|')[1];
+                        var catGroup = document.getElementById(clickedLayer + '-cat').getElementsByClassName('item2-input');
+                        var checkedFilter = ['any'];
+                        for (var k = 0; k < catGroup.length; k++) {
+                            if (catGroup[k]['checked'] === true) {
+                                checkedFilter.push(['==', clickedLayerColname, catGroup[k].id.split('|')[2]]);
+                            };
+                        };
+                        map1.setFilter(clickedLayer, checkedFilter);
+                        map2.setFilter(clickedLayer, checkedFilter);
+                    });
                 };
+                itemgroup1.appendChild(itemgroup2);
+                filterLegend.appendChild(itemgroup1);
             };
         });
-
-
 
 
 
@@ -473,13 +490,13 @@
             container: 'map2', // same as the div id to place the map
             style: 'mapbox://styles/mapbox/light-v10', // light base map
             hash: true, // make sure it's on to get the url with map view
-            attributionControl: false, // show the credit bar
-            center: [-73.5471, 40.7469], // testing to get the centroid of bounds
-            zoom: 9.8, // set the initial zoom of the map view
-            logoPosition: 'top-right', // no need to change 
-
+            attributionControl: true, // show the credit bar
+            customAttribution: '<b> Data Sources: <a href="http://web.mta.info/developers/fare.html" target="blank">MTA Fare Data</a>; <a href="https://lehd.ces.census.gov/" target="blank">Census Bureau LEHD 2017</a></b>', // add overall credit to the beggining
+            logoPosition: 'bottom-left', // no need to change 
+            preserveDrawingBuffer: true, // make sure it's on to allow printing
+            center: [-74.0197, 40.721], // testing to get the centroid of bounds
+            zoom: 10, // set the initial zoom of the map view
         });
-
 
 
 
@@ -546,14 +563,14 @@
                 'sourcedata': 'cplxrtopm21.geojson', // data source
                 'layerid': 'cplxrtopm21', // layer id
                 'layertype': 'circle', // symbology type
-                'layername1': 'Mid May vs Mid April 2021 Subway Ridership Percent Change', // layer name for the legend
-                'layername2': 'Weekday PM Peak Average', // layer name for the legend
+                'layername': 'Mid May vs Mid April 2021 Subway Ridership Percent Change', // layer name for the legend
                 'layervisibility': 'visible', // visibility of the layer
                 'layercolname': 'DiffPctCat', // category column name
                 'layercat': ['<=5%', '6%~10%', '11%~25%', '>25%'], // categories
                 'layercolor': ['rgba(127,39,4,1)', 'rgba(153,52,4,1)', 'rgba(223,103,17,1)', 'rgba(254,171,70,1)'], // color for each category; use rgba
                 'layeropacity': 1, // circle opacity
                 'layerradius': 3, // circle radius; change size based on zoom level
+                'layeroutlinecolor': 'rgba(255,255,255,0)', // outline color; can only be set to 1px width; to change the outline width, add another line layer
             };
 
             // Generate layer colors
@@ -643,60 +660,56 @@
 
 
 
-            // Add layer selector and legend
-            var layerOrder = ['cplxrtopm21']; // set layer order in the legend
-            var layerContentListOrder = []; // create ordered layer content list
-            for (var i = 0; i < layerOrder.length; i++) {
-                layerContentListOrder.push(layerContentList.filter(e => e.layerid == layerOrder[i])[0]);
-            };
+            // Synchronize the two maps
+            var disable = false;
+            map1.on("move", function () {
+                if (!disable) {
+                    var center = map1.getCenter();
+                    var zoom = map1.getZoom();
+                    var pitch = map1.getPitch();
+                    var bearing = map1.getBearing();
 
-            var legendTitle3 = document.getElementById('legend3-title1');
+                    disable = true;
+                    map2.setCenter(center);
+                    map2.setZoom(zoom);
+                    map2.setPitch(pitch);
+                    map2.setBearing(bearing);
+                    disable = false;
+                }
+            });
 
-            for (var i = 0; i < layerContentListOrder.length; i++) {
+            map2.on("move", function () {
+                if (!disable) {
+                    var center = map2.getCenter();
+                    var zoom = map2.getZoom();
+                    var pitch = map2.getPitch();
+                    var bearing = map2.getBearing();
 
-                var title3 = document.createElement('div'); // create title2
-                title3.innerHTML = layerContentListOrder[i]['layername2'];
-                legendTitle3.appendChild(title3);
+                    disable = true;
+                    map1.setCenter(center);
+                    map1.setZoom(zoom);
+                    map1.setPitch(pitch);
+                    map1.setBearing(bearing);
+                    disable = false;
+                }
+            });
 
-            };
 
 
+            // Set collapse event
+            var collapsevalue = 0;
+            header.addEventListener('click', function () {
+                if (collapsevalue === 0) {
+                    document.getElementById('legends').style.display = "none";
+                    document.getElementById('chevron').className = "bi bi-chevron-up";
+                    collapsevalue = 1;
+                } else {
+                    document.getElementById('legends').style.display = "block";
+                    document.getElementById('chevron').className = "bi bi-chevron-down";
+                    collapsevalue = 0;
+                };
+            });
         });
-
-
-        var disable = false;
-        map.on("move", function () {
-            if (!disable) {
-                var center = map.getCenter();
-                var zoom = map.getZoom();
-                var pitch = map.getPitch();
-                var bearing = map.getBearing();
-
-                disable = true;
-                map2.setCenter(center);
-                map2.setZoom(zoom);
-                map2.setPitch(pitch);
-                map2.setBearing(bearing);
-                disable = false;
-            }
-        });
-
-        map2.on("move", function () {
-            if (!disable) {
-                var center = map2.getCenter();
-                var zoom = map2.getZoom();
-                var pitch = map2.getPitch();
-                var bearing = map2.getBearing();
-
-                disable = true;
-                map.setCenter(center);
-                map.setZoom(zoom);
-                map.setPitch(pitch);
-                map.setBearing(bearing);
-                disable = false;
-            }
-        });
-
     </script>
 
 </body>
