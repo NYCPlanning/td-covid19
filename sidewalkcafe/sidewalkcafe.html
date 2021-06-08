@@ -551,10 +551,10 @@
                 'sourceid': 'orcafeznelwd', // source id
                 'sourcetype': 'geojson', // source type
                 'sourcedata': 'or_cafe_zn_el_wd_lf.geojson', // data source
-                'layerid': 'orcafe', // layer id
+                'layerid': 'orcafereg', // layer id
                 'layertype': 'circle', // symbology type
                 'layername': 'Open Restaurant by Cafe Regulation', // layer name for the legend
-                'layervisibility': 'visible', // visibility of the layer
+                'layervisibility': 'none', // visibility of the layer
                 'layercolname': 'CAFETYPE', // category column name
                 'layercat': ['ALL CAFES', 'SMALL ONLY', 'UNENCLOSED ONLY', 'SPECIFICALLY PROHIBITED', 'RESIDENTIAL AREA'], // categories
                 'layercolor': ['rgba(113,190,40,1)', 'rgba(246,189,0,1)', 'rgba(222,134,239,1)', 'rgba(255,109,109,1)', 'rgba(100,100,255,1)'], // color for each category; use rgba
@@ -603,6 +603,49 @@
 
 
 
+            // Add Open Restaurant
+            // Set layer contents
+            var layerContent = {
+                'sourceid': 'orcafeznelwd', // source id
+                'sourcetype': 'geojson', // source type
+                'sourcedata': 'or_cafe_zn_el_wd_lf.geojson', // data source
+                'layerid': 'orcafe', // layer id
+                'layertype': 'circle', // symbology type
+                'layername': 'Open Restaurant', // layer name for the legend
+                'layervisibility': 'visible', // visibility of the layer
+                'layercolname': 'CAFETYPE', // category column name
+                'layercat': [''], // categories
+                'layercolor': ['rgba(113,190,40,1)'], // color for each category; use rgba
+                'layeropacity': 1, // circle opacity
+                'layerradius': { 'base': 2, 'stops': [[12, 3], [22, 180]] }, // circle radius; change size based on zoom level
+                'layerstrokecolor': 'rgba(255,255,255,1)', // circle stroke color
+                'layerstrokeopacity': 1, // circle stroke opacity
+                'layerstrokewidth': 0.5, // circle stroke width
+                'layeroutlinecolor': 'rgba(0,0,0,0)', // outline color; for legend purpose only
+            };
+
+            // Add layer content to the overall layer content list
+            layerContentList.push(layerContent);
+
+            // Add circle layer
+            map.addLayer({
+                'id': layerContent['layerid'],
+                'type': layerContent['layertype'],
+                'source': layerContent['sourceid'],
+                'layout': {
+                    'visibility': layerContent['layervisibility'],
+                },
+                'paint': {
+                    'circle-color': layerContent['layercolor'][0],
+                    'circle-opacity': layerContent['layeropacity'],
+                    'circle-radius': layerContent['layerradius'],
+                    'circle-stroke-color': layerContent['layerstrokecolor'],
+                    'circle-stroke-opacity': layerContent['layerstrokeopacity'],
+                    'circle-stroke-width': layerContent['layerstrokewidth'],
+                },
+            });
+
+
 
 
 
@@ -628,7 +671,7 @@
 
             // Add open restaurant by cafe regulation popup
             // Add click event
-            map.on('click', 'orcafe', function (e) {
+            map.on('click', 'orcafereg', function (e) {
                 var coordinates = e.features[0].geometry.coordinates.slice(); // get point coordinates
                 var description = "<b>ID: </b><span>" + e.features[0].properties.ID + "</span><br>"; // description in the popup
                 description += "<b>Submission Time: </b><span>" + e.features[0].properties.TIME + "</span><br>";
@@ -655,10 +698,10 @@
                 popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
             });
             // Add hover events
-            map.on('mouseenter', 'orcafe', function () {
+            map.on('mouseenter', 'orcafereg', function () {
                 map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
             });
-            map.on('mouseleave', 'orcafe', function () {
+            map.on('mouseleave', 'orcafereg', function () {
                 map.getCanvas().style.cursor = '';
             });
 
@@ -669,7 +712,7 @@
 
 
             // Add layer selector and legend
-            var layerOrder = ['orcafe', 'sdwkcafe', 'zd', 'sp', 'cd']; // set layer order in the legend
+            var layerOrder = ['orcafe', 'orcafereg', 'sdwkcafe', 'zd', 'sp', 'cd']; // set layer order in the legend
             var layerContentListOrder = []; // create ordered layer content list
             for (var i = 0; i < layerOrder.length; i++) {
                 layerContentListOrder.push(layerContentList.filter(e => e.layerid == layerOrder[i])[0]);
