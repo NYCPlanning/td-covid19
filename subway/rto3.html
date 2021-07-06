@@ -314,7 +314,7 @@
                 'sourcedata': 'cplxrtoam21.geojson', // data source
                 'layerid': 'cplxrtoam21', // layer id
                 'layertype': 'circle', // symbology type
-                'layername': 'Mid May vs Mid April 2021 Subway Ridership Percent Change', // layer name for the legend
+                'layername': 'Late June vs Mid April 2021 Subway Ridership Percent Change', // layer name for the legend
                 'layervisibility': 'visible', // visibility of the layer
                 'layercolname': 'DiffPctCat', // category column name
                 'layercat': ['<=5%', '6%~10%', '11%~25%', '>25%'], // categories
@@ -395,8 +395,8 @@
                 description += "<b>Complex Name: </b><span>" + e.features[0].properties.CplxName + "</span><br>";
                 description += "<b>Routes: </b><span>" + e.features[0].properties.Routes + "</span><br>";
                 description += "<b>Mid April 2021 Subway Ridership: </b><span>" + e.features[0].properties.E202104.toFixed(2) + "</span><br>";
-                description += "<b>Mid May 2021 Subway Ridership: </b><span>" + e.features[0].properties.E202105.toFixed(2) + "</span><br>";
-                description += "<b>Mid May vs Mid April 2021 Percent Change: </b><span>" + (Number(e.features[0].properties.DiffPct) * 100).toFixed(2) + "%</span><br>";
+                description += "<b>Late June 2021 Subway Ridership: </b><span>" + e.features[0].properties.E202106.toFixed(2) + "</span><br>";
+                description += "<b>Late June vs Mid April 2021 Percent Change: </b><span>" + (Number(e.features[0].properties.DiffPct) * 100).toFixed(2) + "%</span><br>";
                 popup.setLngLat(coordinates).setHTML(description).addTo(map1); //add popup
             });
             // Add hover events
@@ -433,11 +433,6 @@
                 var itemgroup2 = document.createElement('div'); // create level-2 item group
                 itemgroup2.className = 'itemgroup2';
                 itemgroup2.id = layerContentListOrder[i]['layerid'] + '-cat';
-                if (layerContentListOrder[i]['layervisibility'] === 'visible') {
-                    itemgroup2.style.display = 'block';
-                } else {
-                    itemgroup2.style.display = 'none';
-                };
                 for (var j = 0; j < layerContentListOrder[i]['layercat'].length; j++) {
                     var item2 = document.createElement('div'); // create level-2 item
                     item2.className = 'item2';
@@ -473,7 +468,7 @@
                             };
                         };
                         map1.setFilter(clickedLayer, checkedFilter);
-                        map2.setFilter(clickedLayer, checkedFilter);
+                        map2.setFilter(clickedLayer.replace('am', 'pm'), checkedFilter);
                     });
                 };
                 itemgroup1.appendChild(itemgroup2);
@@ -563,7 +558,7 @@
                 'sourcedata': 'cplxrtopm21.geojson', // data source
                 'layerid': 'cplxrtopm21', // layer id
                 'layertype': 'circle', // symbology type
-                'layername': 'Mid May vs Mid April 2021 Subway Ridership Percent Change', // layer name for the legend
+                'layername': 'Late June vs Mid April 2021 Subway Ridership Percent Change', // layer name for the legend
                 'layervisibility': 'visible', // visibility of the layer
                 'layercolname': 'DiffPctCat', // category column name
                 'layercat': ['<=5%', '6%~10%', '11%~25%', '>25%'], // categories
@@ -645,8 +640,8 @@
                 description += "<b>Complex Name: </b><span>" + e.features[0].properties.CplxName + "</span><br>";
                 description += "<b>Routes: </b><span>" + e.features[0].properties.Routes + "</span><br>";
                 description += "<b>Mid April 2021 Subway Ridership: </b><span>" + e.features[0].properties.E202104.toFixed(2) + "</span><br>";
-                description += "<b>Mid May 2021 Subway Ridership: </b><span>" + e.features[0].properties.E202105.toFixed(2) + "</span><br>";
-                description += "<b>Mid May vs Mid April 2021 Percent Change: </b><span>" + (Number(e.features[0].properties.DiffPct) * 100).toFixed(2) + "%</span><br>";
+                description += "<b>Late June 2021 Subway Ridership: </b><span>" + e.features[0].properties.E202106.toFixed(2) + "</span><br>";
+                description += "<b>Late June vs Mid April 2021 Percent Change: </b><span>" + (Number(e.features[0].properties.DiffPct) * 100).toFixed(2) + "%</span><br>";
                 popup.setLngLat(coordinates).setHTML(description).addTo(map2); //add popup
             });
             // Add hover events

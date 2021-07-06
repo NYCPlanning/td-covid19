@@ -186,8 +186,8 @@
         'use strict';
 
         var todNum = document.getElementById('sliderbar').value;
-        var todList = ['em','am','md','pm','en','ln'];
-        var todLabel = ['Early Morning','AM Peak', 'Midday', 'PM Peak', 'Early Night','Late Night'];
+        var todList = ['em', 'am', 'md', 'pm', 'en', 'ln'];
+        var todLabel = ['Early Morning', 'AM Peak', 'Midday', 'PM Peak', 'Early Night', 'Late Night'];
         document.getElementById('slideroutput').textContent = todLabel[todNum];
 
 
@@ -243,10 +243,10 @@
                 'sourcedata': 'am.geojson', // data source
                 'layerid': 'ntaturnstile', // layer id
                 'layertype': 'fill', // symbology type
-                'layername': 'Early May 2021 as Percentage of Early May 2019 Subway Ridership', // layer name for the legend
+                'layername': 'Late June 2021 as Percentage of Late June 2019 Subway Ridership', // layer name for the legend
                 'layervisibility': 'visible', // visibility of the layer
                 'layercolname': 'PctCat', // category column name
-                'layercat': ['<=20%', '21%~30%', '31%~40%', '41%~50%', '>50%'], // categories
+                'layercat': ['>60%', '51%~60%', '41%~50%', '31%~40%', '<=30%'], // categories
                 'layercolor': ['rgba(127, 39, 4, 1)', 'rgba(209, 69, 1, 1)', 'rgba(246, 119, 34, 1)', 'rgba(253, 172, 103, 1)', 'rgba(254, 219, 183, 1)', 'rgba(255, 245, 235, 1)'], // color for each category; use rgba
                 'layeroutlinecolor': 'rgba(255, 255, 255, 0)', // outline color; for legend only
             };
@@ -345,9 +345,9 @@
                 var coordinates = e.lngLat; // get pointer coordinates
                 var description = "<b>NTA Code: </b><span>" + e.features[0].properties.NTACode + "</span><br>"; // description in the popup
                 description += "<b>NTA Name: </b><span>" + e.features[0].properties.NTAName + "</span><br>";
-                description += "<b>Early May 2019 Subway Ridership: </b><span>" + e.features[0].properties.PreEntries.toFixed(2) + "</span><br>";
-                description += "<b>Early May 2021 Subway Ridership: </b><span>" + e.features[0].properties.PostEntries.toFixed(2) + "</span><br>";
-                description += "<b>Early May 2021 as Percentage of Early May 2019: </b><span>" + (Number(e.features[0].properties.Pct) * 100).toFixed(2) + "%</span><br>";
+                description += "<b>Late June 2019 Subway Ridership: </b><span>" + e.features[0].properties.PreEntries.toFixed(2) + "</span><br>";
+                description += "<b>Late June 2021 Subway Ridership: </b><span>" + e.features[0].properties.PostEntries.toFixed(2) + "</span><br>";
+                description += "<b>Late June 2021 as Percentage of Late June 2019: </b><span>" + (Number(e.features[0].properties.Pct) * 100).toFixed(2) + "%</span><br>";
                 popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
             });
             // Add hover events
