@@ -32,7 +32,7 @@
             position: absolute;
             top: 1rem;
             right: 1rem;
-            width: 13rem;
+            width: 19rem;
             height: auto;
             max-height: 90%;
             padding-top: 1rem;
@@ -243,12 +243,12 @@
                 'sourcedata': 'cplxrto.geojson', // data source
                 'layerid': 'cplxrto', // layer id
                 'layertype': 'circle', // symbology type
-                'layername1': 'Late June 2021 as Percentage of Late June 2019 Subway Ridership', // layer name for the legend
+                'layername1': 'Early June 2021 as Percentage of Early June 2019 Weekday Subway Ridership', // layer name for the legend
                 'layername2': 'Average Weekday Daily', // layer name for the legend
                 'layervisibility': 'visible', // visibility of the layer
                 'layercolname': 'PctCat', // category column name
                 'layercat': ['20%~40%', '41%~50%', '>50%'], // categories
-                'layercolor': ['rgba(153,52,4,1)', 'rgba(223,103,17,1)', 'rgba(254,171,70,1)'], // color for each category; use rgba
+                'layercolor': ['rgba(254,171,70,1)', 'rgba(223,103,17,1)', 'rgba(153,52,4,1)'], // color for each category; use rgba
                 'layeropacity': 1, // circle opacity
                 'layerradius': 3, // circle radius; change size based on zoom level
                 'layeroutlinecolor': 'rgba(255,255,255,0)', // outline color; can only be set to 1px width; to change the outline width, add another line layer
@@ -326,9 +326,9 @@
                 description += "<b>Borough: </b><span>" + e.features[0].properties.Borough + "</span><br>";
                 description += "<b>Complex Name: </b><span>" + e.features[0].properties.CplxName + "</span><br>";
                 description += "<b>Routes: </b><span>" + e.features[0].properties.Routes + "</span><br>";
-                description += "<b>Late June 2019 Subway Ridership: </b><span>" + e.features[0].properties.E201906.toFixed(2) + "</span><br>";
-                description += "<b>Late June 2021 Subway Ridership: </b><span>" + e.features[0].properties.E202106.toFixed(2) + "</span><br>";
-                description += "<b>Late June 2021 as Percentage of Late June 2019: </b><span>" + (Number(e.features[0].properties.Pct) * 100).toFixed(2) + "%</span><br>";
+                description += "<b>Early June 2019 Subway Ridership: </b><span>" + e.features[0].properties.E201906.toFixed(2) + "</span><br>";
+                description += "<b>Early June 2021 Subway Ridership: </b><span>" + e.features[0].properties.E202106.toFixed(2) + "</span><br>";
+                description += "<b>Early June 2021 as Percentage of Early June 2019: </b><span>" + (Number(e.features[0].properties.Pct) * 100).toFixed(2) + "%</span><br>";
                 popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
             });
             // Add hover events
@@ -504,4 +504,3 @@
 </body>
 
 </html>
-
