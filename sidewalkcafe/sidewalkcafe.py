@@ -215,20 +215,29 @@ df.to_file(path+'SIDEWALK CAFE/or_xyadj.shp')
 
 
 # Join Open Restaurant to Sidewalk Cafe Reg
-sdwkcafe=gpd.read_file(path+'SIDEWALK CAFE/sidewalk_cafe.shp')
-sdwkcafe.crs='epsg:4326'
-sdwkcafe=sdwkcafe.to_crs('epsg:6539')
-sdwkcafe['geometry']=[x.buffer(5) for x in sdwkcafe['geometry']]
-sdwkcafe=sdwkcafe.to_crs('epsg:4326')
-sdwkcafe['CAFETYPE']=[str(x).strip().upper() for x in sdwkcafe['CafeType']]
-sdwkcafe=sdwkcafe[['CAFETYPE','geometry']].reset_index(drop=True)
 df=gpd.read_file(path+'SIDEWALK CAFE/or_xyadj.shp')
 df.crs='epsg:4326'
-dfcafe=gpd.sjoin(df,sdwkcafe,how='left',op='intersects')
-dfcafe=dfcafe[['ID','CAFETYPE']].drop_duplicates(['ID'],keep='first').reset_index(drop=True)
-dfcafe['CAFETYPE']=np.where(pd.notna(dfcafe['CAFETYPE']),dfcafe['CAFETYPE'],'NONE')
-dfcafe=pd.merge(df,dfcafe,how='inner',on='ID')
-dfcafe.to_file(path+'SIDEWALK CAFE/or_cafe.shp')
+dfbuffer=df.copy()
+dfbuffer=dfbuffer.to_crs('epsg:6539')
+df['CAFETYPE']=''
+dfbuffer['geometry']=[x.buffer(20) for x in dfbuffer['geometry']]
+dfbuffer=dfbuffer.to_crs('epsg:4326')
+sdwkcafe=gpd.read_file(path+'SIDEWALK CAFE/sidewalk_cafe.shp')
+sdwkcafe.crs='epsg:4326'
+sdwkcafe['CAFETYPE']=[str(x).strip().upper() for x in sdwkcafe['CafeType']]
+sdwkcafe=sdwkcafe[['CAFETYPE','geometry']].reset_index(drop=True)
+dfbuffercafe=gpd.sjoin(dfbuffer,sdwkcafe,how='left',op='intersects')
+for i in df.index:
+    tp=dfbuffercafe[dfbuffercafe['ID']==df.loc[i,'ID']].reset_index(drop=True)
+    if pd.isna(tp.loc[0,'CAFETYPE']):
+        df.loc[i,'CAFETYPE']='NONE'
+    else:
+        for j in range(0,len(tp)):
+            tp.loc[j,'dist']=df.loc[i,'geometry'].distance(sdwkcafe.loc[tp.loc[j,'index_right'],'geometry'])
+        tp=tp.sort_values(['dist'],ascending=True).reset_index(drop=True)
+        tp=tp[['ID','CAFETYPE']].drop_duplicates(['ID'],keep='first').reset_index(drop=True)
+        df.loc[i,'CAFETYPE']=tp.loc[0,'CAFETYPE']
+df.to_file(path+'SIDEWALK CAFE/or_cafe.shp')
 
 
 
@@ -655,20 +664,29 @@ df.to_file(path+'SIDEWALK CAFE/dca_xyadj.shp')
 
 
 # Join DCA License to Sidewalk Cafe Reg
-sdwkcafe=gpd.read_file(path+'SIDEWALK CAFE/sidewalk_cafe.shp')
-sdwkcafe.crs='epsg:4326'
-sdwkcafe=sdwkcafe.to_crs('epsg:6539')
-sdwkcafe['geometry']=[x.buffer(5) for x in sdwkcafe['geometry']]
-sdwkcafe=sdwkcafe.to_crs('epsg:4326')
-sdwkcafe['CAFETYPE']=[str(x).strip().upper() for x in sdwkcafe['CafeType']]
-sdwkcafe=sdwkcafe[['CAFETYPE','geometry']].reset_index(drop=True)
 df=gpd.read_file(path+'SIDEWALK CAFE/dca_xyadj.shp')
 df.crs='epsg:4326'
-dfcafe=gpd.sjoin(df,sdwkcafe,how='left',op='intersects')
-dfcafe=dfcafe[['ID','CAFETYPE']].drop_duplicates(['ID'],keep='first').reset_index(drop=True)
-dfcafe['CAFETYPE']=np.where(pd.notna(dfcafe['CAFETYPE']),dfcafe['CAFETYPE'],'NONE')
-dfcafe=pd.merge(df,dfcafe,how='inner',on='ID')
-dfcafe.to_file(path+'SIDEWALK CAFE/dca_cafe.shp')
+dfbuffer=df.copy()
+dfbuffer=dfbuffer.to_crs('epsg:6539')
+df['CAFETYPE']=''
+dfbuffer['geometry']=[x.buffer(20) for x in dfbuffer['geometry']]
+dfbuffer=dfbuffer.to_crs('epsg:4326')
+sdwkcafe=gpd.read_file(path+'SIDEWALK CAFE/sidewalk_cafe.shp')
+sdwkcafe.crs='epsg:4326'
+sdwkcafe['CAFETYPE']=[str(x).strip().upper() for x in sdwkcafe['CafeType']]
+sdwkcafe=sdwkcafe[['CAFETYPE','geometry']].reset_index(drop=True)
+dfbuffercafe=gpd.sjoin(dfbuffer,sdwkcafe,how='left',op='intersects')
+for i in df.index:
+    tp=dfbuffercafe[dfbuffercafe['ID']==df.loc[i,'ID']].reset_index(drop=True)
+    if pd.isna(tp.loc[0,'CAFETYPE']):
+        df.loc[i,'CAFETYPE']='NONE'
+    else:
+        for j in range(0,len(tp)):
+            tp.loc[j,'dist']=df.loc[i,'geometry'].distance(sdwkcafe.loc[tp.loc[j,'index_right'],'geometry'])
+        tp=tp.sort_values(['dist'],ascending=True).reset_index(drop=True)
+        tp=tp[['ID','CAFETYPE']].drop_duplicates(['ID'],keep='first').reset_index(drop=True)
+        df.loc[i,'CAFETYPE']=tp.loc[0,'CAFETYPE']
+df.to_file(path+'SIDEWALK CAFE/dca_cafe.shp')
 
 
 
@@ -1565,20 +1583,31 @@ df.to_file(path+'SIDEWALK CAFE/dohmh_xyadj.shp')
 
 
 # Join DOHMH to Sidewalk Cafe Reg
-sdwkcafe=gpd.read_file(path+'SIDEWALK CAFE/sidewalk_cafe.shp')
-sdwkcafe.crs='epsg:4326'
-sdwkcafe=sdwkcafe.to_crs('epsg:6539')
-sdwkcafe['geometry']=[x.buffer(5) for x in sdwkcafe['geometry']]
-sdwkcafe=sdwkcafe.to_crs('epsg:4326')
-sdwkcafe['CAFETYPE']=[str(x).strip().upper() for x in sdwkcafe['CafeType']]
-sdwkcafe=sdwkcafe[['CAFETYPE','geometry']].reset_index(drop=True)
 df=gpd.read_file(path+'SIDEWALK CAFE/dohmh_xyadj.shp')
 df.crs='epsg:4326'
-dfcafe=gpd.sjoin(df,sdwkcafe,how='left',op='intersects')
-dfcafe=dfcafe[['CAMIS','CAFETYPE']].drop_duplicates(['CAMIS'],keep='first').reset_index(drop=True)
-dfcafe['CAFETYPE']=np.where(pd.notna(dfcafe['CAFETYPE']),dfcafe['CAFETYPE'],'NONE')
-dfcafe=pd.merge(df,dfcafe,how='inner',on='CAMIS')
-dfcafe.to_file(path+'SIDEWALK CAFE/dohmh_cafe.shp')
+dfbuffer=df.copy()
+dfbuffer=dfbuffer.to_crs('epsg:6539')
+df['CAFETYPE']=''
+dfbuffer['geometry']=[x.buffer(20) for x in dfbuffer['geometry']]
+dfbuffer=dfbuffer.to_crs('epsg:4326')
+sdwkcafe=gpd.read_file(path+'SIDEWALK CAFE/sidewalk_cafe.shp')
+sdwkcafe.crs='epsg:4326'
+sdwkcafe['CAFETYPE']=[str(x).strip().upper() for x in sdwkcafe['CafeType']]
+sdwkcafe=sdwkcafe[['CAFETYPE','geometry']].reset_index(drop=True)
+dfbuffercafe=gpd.sjoin(dfbuffer,sdwkcafe,how='left',op='intersects')
+for i in df.index:
+    tp=dfbuffercafe[dfbuffercafe['CAMIS']==df.loc[i,'CAMIS']].reset_index(drop=True)
+    if pd.isna(tp.loc[0,'CAFETYPE']):
+        df.loc[i,'CAFETYPE']='NONE'
+    else:
+        for j in range(0,len(tp)):
+            tp.loc[j,'dist']=df.loc[i,'geometry'].distance(sdwkcafe.loc[tp.loc[j,'index_right'],'geometry'])
+        tp=tp.sort_values(['dist'],ascending=True).reset_index(drop=True)
+        tp=tp[['CAMIS','CAFETYPE']].drop_duplicates(['CAMIS'],keep='first').reset_index(drop=True)
+        df.loc[i,'CAFETYPE']=tp.loc[0,'CAFETYPE']
+df.to_file(path+'SIDEWALK CAFE/dohmh_cafe.shp')
+
+
 
 
 
