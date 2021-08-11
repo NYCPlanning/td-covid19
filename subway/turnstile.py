@@ -1024,6 +1024,28 @@ cplxdbk.to_csv(path+'OUTPUT/cplxdbkjune.csv',index=False)
 # cplxpmdbk=cplxpmdbk[['CplxID','Borough','CplxName','Routes','CplxLat','CplxLong','TimePeriod','Date','Entries']].reset_index(drop=True)
 # cplxpmdbk.to_csv(path+'OUTPUT/cplxpmdbk.csv',index=False)
 
+
+
+
+# Coney Island
+dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
+unitlist=['R151','R312']
+cplxci=dfunitentry[np.isin(dfunitentry['unit'],unitlist)].reset_index(drop=True)
+cplxci=pd.merge(cplxci,rc,how='left',left_on='unit',right_on='Remote')
+cplxci=cplxci.groupby(['CplxID','firstdate'],as_index=False).agg({'entries':'sum'}).reset_index(drop=True)
+cplxci.columns=['CplxID','Date','Entries']
+cplxci=pd.merge(cplxci,rc.drop('Remote',axis=1).drop_duplicates(keep='first').reset_index(drop=True),how='left',on='CplxID')
+cplxci=cplxci[['CplxID','Borough','CplxName','Routes','CplxLat','CplxLong','Date','Entries']].reset_index(drop=True)
+cplxci.to_csv(path+'OUTPUT/cplxci.csv',index=False)
+
+
+
+
+
+
+
+
+
 # # AM Peak Phase4 vs last year by NTA
 # dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
 # predates=['08/05/2019','08/07/2019','08/08/2019']
