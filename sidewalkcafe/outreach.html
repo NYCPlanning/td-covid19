@@ -166,6 +166,11 @@
                 <div class="col-12">
                     <select class='form-select' id="selector">
                         <option value=999> All Community Districts </option>
+                        <option value=991> All Manhattan Community Districts </option>
+                        <option value=992> All Bronx Community Districts </option>
+                        <option value=993> All Brooklyn Community Districts </option>
+                        <option value=994> All Queens Community Districts </option>
+                        <option value=995> All Staten Island Community Districts </option>
                         <option value=101> Manhattan 1 </option>
                         <option value=102> Manhattan 2 </option>
                         <option value=103> Manhattan 3 </option>
@@ -1015,6 +1020,36 @@
                     map.setFilter('orcafepost', null);
                     map.setFilter('cd', null);
                     map.setFilter('cd-label', null);
+                } else if (chosenCD === 991) {
+                    map.setFilter('dcacafe', ['==', 'BORO', 'MANHATTAN']);
+                    map.setFilter('orcafepre', ['==', 'BORO', 'MANHATTAN']);
+                    map.setFilter('orcafepost', ['==', 'BORO', 'MANHATTAN']);
+                    map.setFilter('cd', ['==', 'BORO', 1]);
+                    map.setFilter('cd-label', ['==', 'BORO', 1]);
+                } else if (chosenCD === 992) {
+                    map.setFilter('dcacafe', ['==', 'BORO', 'BRONX']);
+                    map.setFilter('orcafepre', ['==', 'BORO', 'BRONX']);
+                    map.setFilter('orcafepost', ['==', 'BORO', 'BRONX']);
+                    map.setFilter('cd', ['==', 'BORO', 2]);
+                    map.setFilter('cd-label', ['==', 'BORO', 2]);
+                } else if (chosenCD === 993) {
+                    map.setFilter('dcacafe', ['==', 'BORO', 'BROOKLYN']);
+                    map.setFilter('orcafepre', ['==', 'BORO', 'BROOKLYN']);
+                    map.setFilter('orcafepost', ['==', 'BORO', 'BROOKLYN']);
+                    map.setFilter('cd', ['==', 'BORO', 3]);
+                    map.setFilter('cd-label', ['==', 'BORO', 3]);
+                } else if (chosenCD === 994) {
+                    map.setFilter('dcacafe', ['==', 'BORO', 'QUEENS']);
+                    map.setFilter('orcafepre', ['==', 'BORO', 'QUEENS']);
+                    map.setFilter('orcafepost', ['==', 'BORO', 'QUEENS']);
+                    map.setFilter('cd', ['==', 'BORO', 4]);
+                    map.setFilter('cd-label', ['==', 'BORO', 4]);
+                } else if (chosenCD === 995) {
+                    map.setFilter('dcacafe', ['==', 'BORO', 'STATEN IS']);
+                    map.setFilter('orcafepre', ['==', 'BORO', 'STATEN IS']);
+                    map.setFilter('orcafepost', ['==', 'BORO', 'STATEN IS']);
+                    map.setFilter('cd', ['==', 'BORO', 5]);
+                    map.setFilter('cd-label', ['==', 'BORO', 5]);
                 } else {
                     map.setFilter('dcacafe', ['==', 'CD', chosenCD]);
                     map.setFilter('orcafepre', ['==', 'CD', chosenCD]);

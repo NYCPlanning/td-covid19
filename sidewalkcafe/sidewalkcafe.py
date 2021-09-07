@@ -82,6 +82,7 @@ for i in df.index:
                 df.loc[i,'Y']=pd.to_numeric(addr['Spatial X-Y Coordinates of Address'][7:14])
                 df.loc[i,'BKFACE']=pd.to_numeric(addr['Blockface ID'])
                 df.loc[i,'CD']=pd.to_numeric(addr['COMMUNITY DISTRICT']['COMMUNITY DISTRICT'])
+                df.loc[i,'BORO']=addr['First Borough Name'].strip().upper()
             else:
                 print(str(df.loc[i,'ID'])+' not geocoded with 1B zipcode!')
             addr=g['AP']({'house_number':housenumber,'street_name':streetname,'zip_code':zipcode})
@@ -111,6 +112,7 @@ for i in df.index:
                 df.loc[i,'Y']=pd.to_numeric(addr['Spatial X-Y Coordinates of Address'][7:14])
                 df.loc[i,'BKFACE']=pd.to_numeric(addr['Blockface ID'])
                 df.loc[i,'CD']=pd.to_numeric(addr['COMMUNITY DISTRICT']['COMMUNITY DISTRICT'])
+                df.loc[i,'BORO']=addr['First Borough Name'].strip().upper()
             else:
                 print(str(df.loc[i,'ID'])+' not geocoded with 1B borough!')
             addr=g['AP']({'house_number':housenumber,'street_name':streetname,'borough_code':boroughcode})
@@ -138,6 +140,7 @@ for i in df.index:
                 df.loc[i,'Y']=pd.to_numeric(addr['Spatial X-Y Coordinates of Address'][7:14])
                 df.loc[i,'BKFACE']=pd.to_numeric(addr['Blockface ID'])
                 df.loc[i,'CD']=pd.to_numeric(addr['COMMUNITY DISTRICT']['COMMUNITY DISTRICT'])
+                df.loc[i,'BORO']=addr['First Borough Name'].strip().upper()
             else:
                 print(str(df.loc[i,'ID'])+' not geocoded with 1B zipcode!')
             addr=g['AP']({'house_number':housenumber,'street_name':streetname,'zip_code':zipcode})
@@ -167,6 +170,7 @@ for i in df.index:
                 df.loc[i,'Y']=pd.to_numeric(addr['Spatial X-Y Coordinates of Address'][7:14])
                 df.loc[i,'BKFACE']=pd.to_numeric(addr['Blockface ID'])
                 df.loc[i,'CD']=pd.to_numeric(addr['COMMUNITY DISTRICT']['COMMUNITY DISTRICT'])
+                df.loc[i,'BORO']=addr['First Borough Name'].strip().upper()
             else:
                 print(str(df.loc[i,'ID'])+' not geocoded with 1B borough!')
             addr=g['AP']({'house_number':housenumber,'street_name':streetname,'borough_code':boroughcode})
@@ -587,6 +591,7 @@ for i in df.index:
                 df.loc[i,'Y']=pd.to_numeric(addr['Spatial X-Y Coordinates of Address'][7:14])
                 df.loc[i,'BKFACE']=pd.to_numeric(addr['Blockface ID'])
                 df.loc[i,'CD']=pd.to_numeric(addr['COMMUNITY DISTRICT']['COMMUNITY DISTRICT'])
+                df.loc[i,'BORO']=addr['First Borough Name'].strip().upper()
             else:
                 print(str(df.loc[i,'ID'])+' not geocoded with 1B zipcode!')
             addr=g['AP']({'house_number':housenumber,'street_name':streetname,'zip_code':zipcode})
@@ -616,6 +621,7 @@ for i in df.index:
                 df.loc[i,'Y']=pd.to_numeric(addr['Spatial X-Y Coordinates of Address'][7:14])
                 df.loc[i,'BKFACE']=pd.to_numeric(addr['Blockface ID'])
                 df.loc[i,'CD']=pd.to_numeric(addr['COMMUNITY DISTRICT']['COMMUNITY DISTRICT'])
+                df.loc[i,'BORO']=addr['First Borough Name'].strip().upper()
             else:
                 print(str(df.loc[i,'ID'])+' not geocoded with 1B borough!')
             addr=g['AP']({'house_number':housenumber,'street_name':streetname,'borough_code':boroughcode})
@@ -1506,6 +1512,7 @@ for i in df.index:
                 df.loc[i,'Y']=pd.to_numeric(addr['Spatial X-Y Coordinates of Address'][7:14])
                 df.loc[i,'BKFACE']=pd.to_numeric(addr['Blockface ID'])
                 df.loc[i,'CD']=pd.to_numeric(addr['COMMUNITY DISTRICT']['COMMUNITY DISTRICT'])
+                df.loc[i,'BORO']=addr['First Borough Name'].strip().upper()
             else:
                 print(str(df.loc[i,'CAMIS'])+' not geocoded with 1B zipcode!')
             addr=g['AP']({'house_number':housenumber,'street_name':streetname,'zip_code':zipcode})
@@ -1535,6 +1542,7 @@ for i in df.index:
                 df.loc[i,'Y']=pd.to_numeric(addr['Spatial X-Y Coordinates of Address'][7:14])
                 df.loc[i,'BKFACE']=pd.to_numeric(addr['Blockface ID'])
                 df.loc[i,'CD']=pd.to_numeric(addr['COMMUNITY DISTRICT']['COMMUNITY DISTRICT'])
+                df.loc[i,'BORO']=addr['First Borough Name'].strip().upper()
             else:
                 print(str(df.loc[i,'CAMIS'])+' not geocoded with 1B borough!')
             addr=g['AP']({'house_number':housenumber,'street_name':streetname,'borough_code':boroughcode})
@@ -2118,13 +2126,39 @@ dcacafecd=dcacafecd.pivot(index='CD',columns='TYPE',values='ID').reset_index(dro
 cd=gpd.read_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/sidewalkcafe/cd.geojson')
 cd.crs=4326
 dcacafecd=pd.merge(cd,dcacafecd,how='left',on='CD')
-dcacafecd=dcacafecd[['CD','ENCLOSED','SMALL UNENCLOSED','UNENCLOSED','REGULAR UNENCLOSED/SMALL UNENCLOSED']].reset_index(drop=True)
+dcacafecd=dcacafecd[['CD','BORO','ENCLOSED','SMALL UNENCLOSED','UNENCLOSED','REGULAR UNENCLOSED/SMALL UNENCLOSED']].reset_index(drop=True)
 dcacafecd=dcacafecd.fillna(0)
 dcacafecd.loc[len(dcacafecd),'CD']=999
 dcacafecd.loc[len(dcacafecd)-1,'ENCLOSED']=np.sum(dcacafecd['ENCLOSED'])
 dcacafecd.loc[len(dcacafecd)-1,'SMALL UNENCLOSED']=np.sum(dcacafecd['SMALL UNENCLOSED'])
 dcacafecd.loc[len(dcacafecd)-1,'UNENCLOSED']=np.sum(dcacafecd['UNENCLOSED'])
 dcacafecd.loc[len(dcacafecd)-1,'REGULAR UNENCLOSED/SMALL UNENCLOSED']=np.sum(dcacafecd['REGULAR UNENCLOSED/SMALL UNENCLOSED'])
+dcacafecd.loc[len(dcacafecd),'CD']=991
+dcacafecd.loc[len(dcacafecd)-1,'ENCLOSED']=np.sum(dcacafecd.loc[dcacafecd['BORO']==1,'ENCLOSED'])
+dcacafecd.loc[len(dcacafecd)-1,'SMALL UNENCLOSED']=np.sum(dcacafecd.loc[dcacafecd['BORO']==1,'SMALL UNENCLOSED'])
+dcacafecd.loc[len(dcacafecd)-1,'UNENCLOSED']=np.sum(dcacafecd.loc[dcacafecd['BORO']==1,'UNENCLOSED'])
+dcacafecd.loc[len(dcacafecd)-1,'REGULAR UNENCLOSED/SMALL UNENCLOSED']=np.sum(dcacafecd.loc[dcacafecd['BORO']==1,'REGULAR UNENCLOSED/SMALL UNENCLOSED'])
+dcacafecd.loc[len(dcacafecd),'CD']=992
+dcacafecd.loc[len(dcacafecd)-1,'ENCLOSED']=np.sum(dcacafecd.loc[dcacafecd['BORO']==2,'ENCLOSED'])
+dcacafecd.loc[len(dcacafecd)-1,'SMALL UNENCLOSED']=np.sum(dcacafecd.loc[dcacafecd['BORO']==2,'SMALL UNENCLOSED'])
+dcacafecd.loc[len(dcacafecd)-1,'UNENCLOSED']=np.sum(dcacafecd.loc[dcacafecd['BORO']==2,'UNENCLOSED'])
+dcacafecd.loc[len(dcacafecd)-1,'REGULAR UNENCLOSED/SMALL UNENCLOSED']=np.sum(dcacafecd.loc[dcacafecd['BORO']==2,'REGULAR UNENCLOSED/SMALL UNENCLOSED'])
+dcacafecd.loc[len(dcacafecd),'CD']=993
+dcacafecd.loc[len(dcacafecd)-1,'ENCLOSED']=np.sum(dcacafecd.loc[dcacafecd['BORO']==3,'ENCLOSED'])
+dcacafecd.loc[len(dcacafecd)-1,'SMALL UNENCLOSED']=np.sum(dcacafecd.loc[dcacafecd['BORO']==3,'SMALL UNENCLOSED'])
+dcacafecd.loc[len(dcacafecd)-1,'UNENCLOSED']=np.sum(dcacafecd.loc[dcacafecd['BORO']==3,'UNENCLOSED'])
+dcacafecd.loc[len(dcacafecd)-1,'REGULAR UNENCLOSED/SMALL UNENCLOSED']=np.sum(dcacafecd.loc[dcacafecd['BORO']==3,'REGULAR UNENCLOSED/SMALL UNENCLOSED'])
+dcacafecd.loc[len(dcacafecd),'CD']=994
+dcacafecd.loc[len(dcacafecd)-1,'ENCLOSED']=np.sum(dcacafecd.loc[dcacafecd['BORO']==4,'ENCLOSED'])
+dcacafecd.loc[len(dcacafecd)-1,'SMALL UNENCLOSED']=np.sum(dcacafecd.loc[dcacafecd['BORO']==4,'SMALL UNENCLOSED'])
+dcacafecd.loc[len(dcacafecd)-1,'UNENCLOSED']=np.sum(dcacafecd.loc[dcacafecd['BORO']==4,'UNENCLOSED'])
+dcacafecd.loc[len(dcacafecd)-1,'REGULAR UNENCLOSED/SMALL UNENCLOSED']=np.sum(dcacafecd.loc[dcacafecd['BORO']==4,'REGULAR UNENCLOSED/SMALL UNENCLOSED'])
+dcacafecd.loc[len(dcacafecd),'CD']=995
+dcacafecd.loc[len(dcacafecd)-1,'ENCLOSED']=np.sum(dcacafecd.loc[dcacafecd['BORO']==5,'ENCLOSED'])
+dcacafecd.loc[len(dcacafecd)-1,'SMALL UNENCLOSED']=np.sum(dcacafecd.loc[dcacafecd['BORO']==5,'SMALL UNENCLOSED'])
+dcacafecd.loc[len(dcacafecd)-1,'UNENCLOSED']=np.sum(dcacafecd.loc[dcacafecd['BORO']==5,'UNENCLOSED'])
+dcacafecd.loc[len(dcacafecd)-1,'REGULAR UNENCLOSED/SMALL UNENCLOSED']=np.sum(dcacafecd.loc[dcacafecd['BORO']==5,'REGULAR UNENCLOSED/SMALL UNENCLOSED'])
+dcacafecd=dcacafecd[['CD','ENCLOSED','SMALL UNENCLOSED','UNENCLOSED','REGULAR UNENCLOSED/SMALL UNENCLOSED']].reset_index(drop=True)
 dcacafecd.to_csv('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/sidewalkcafe/dcacafecd.csv',index=False)
 
 # Open Restaurants by Type
@@ -2135,12 +2169,33 @@ orcafecd=orcafecd.pivot(index='CD',columns='TYPE',values='ID').reset_index(drop=
 cd=gpd.read_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/sidewalkcafe/cd.geojson')
 cd.crs=4326
 orcafecd=pd.merge(cd,orcafecd,how='left',on='CD')
-orcafecd=orcafecd[['CD','SIDEWALK','ROADWAY','BOTH']].reset_index(drop=True)
+orcafecd=orcafecd[['CD','BORO','SIDEWALK','ROADWAY','BOTH']].reset_index(drop=True)
 orcafecd=orcafecd.fillna(0)
 orcafecd.loc[len(orcafecd),'CD']=999
 orcafecd.loc[len(orcafecd)-1,'SIDEWALK']=np.sum(orcafecd['SIDEWALK'])
 orcafecd.loc[len(orcafecd)-1,'ROADWAY']=np.sum(orcafecd['ROADWAY'])
 orcafecd.loc[len(orcafecd)-1,'BOTH']=np.sum(orcafecd['BOTH'])
+orcafecd.loc[len(orcafecd),'CD']=991
+orcafecd.loc[len(orcafecd)-1,'SIDEWALK']=np.sum(orcafecd.loc[orcafecd['BORO']==1,'SIDEWALK'])
+orcafecd.loc[len(orcafecd)-1,'ROADWAY']=np.sum(orcafecd.loc[orcafecd['BORO']==1,'ROADWAY'])
+orcafecd.loc[len(orcafecd)-1,'BOTH']=np.sum(orcafecd.loc[orcafecd['BORO']==1,'BOTH'])
+orcafecd.loc[len(orcafecd),'CD']=992
+orcafecd.loc[len(orcafecd)-1,'SIDEWALK']=np.sum(orcafecd.loc[orcafecd['BORO']==2,'SIDEWALK'])
+orcafecd.loc[len(orcafecd)-1,'ROADWAY']=np.sum(orcafecd.loc[orcafecd['BORO']==2,'ROADWAY'])
+orcafecd.loc[len(orcafecd)-1,'BOTH']=np.sum(orcafecd.loc[orcafecd['BORO']==2,'BOTH'])
+orcafecd.loc[len(orcafecd),'CD']=993
+orcafecd.loc[len(orcafecd)-1,'SIDEWALK']=np.sum(orcafecd.loc[orcafecd['BORO']==3,'SIDEWALK'])
+orcafecd.loc[len(orcafecd)-1,'ROADWAY']=np.sum(orcafecd.loc[orcafecd['BORO']==3,'ROADWAY'])
+orcafecd.loc[len(orcafecd)-1,'BOTH']=np.sum(orcafecd.loc[orcafecd['BORO']==3,'BOTH'])
+orcafecd.loc[len(orcafecd),'CD']=994
+orcafecd.loc[len(orcafecd)-1,'SIDEWALK']=np.sum(orcafecd.loc[orcafecd['BORO']==4,'SIDEWALK'])
+orcafecd.loc[len(orcafecd)-1,'ROADWAY']=np.sum(orcafecd.loc[orcafecd['BORO']==4,'ROADWAY'])
+orcafecd.loc[len(orcafecd)-1,'BOTH']=np.sum(orcafecd.loc[orcafecd['BORO']==4,'BOTH'])
+orcafecd.loc[len(orcafecd),'CD']=995
+orcafecd.loc[len(orcafecd)-1,'SIDEWALK']=np.sum(orcafecd.loc[orcafecd['BORO']==5,'SIDEWALK'])
+orcafecd.loc[len(orcafecd)-1,'ROADWAY']=np.sum(orcafecd.loc[orcafecd['BORO']==5,'ROADWAY'])
+orcafecd.loc[len(orcafecd)-1,'BOTH']=np.sum(orcafecd.loc[orcafecd['BORO']==5,'BOTH'])
+orcafecd=orcafecd[['CD','SIDEWALK','ROADWAY','BOTH']].reset_index(drop=True)
 orcafecd.to_csv('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/sidewalkcafe/orcafecd.csv',index=False)
 
 # Sidewalk Open Restaurants Before & After
@@ -2157,7 +2212,7 @@ cd=gpd.read_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/sidewalkcafe/cd.g
 cd.crs=4326
 sdwkorcafecd=pd.merge(cd,orcafecdpre,how='left',on='CD')
 sdwkorcafecd=pd.merge(sdwkorcafecd,orcafecdpost,how='left',on='CD')
-sdwkorcafecd=sdwkorcafecd[['CD','ALL CAFES','SMALL ONLY','UNENCLOSED ONLY','SPECIFICALLY PROHIBITED',
+sdwkorcafecd=sdwkorcafecd[['CD','BORO','ALL CAFES','SMALL ONLY','UNENCLOSED ONLY','SPECIFICALLY PROHIBITED',
                          'RESIDENTIAL AREA','8 FT','12 FT']].reset_index(drop=True)
 sdwkorcafecd=sdwkorcafecd.fillna(0)
 sdwkorcafecd.loc[len(sdwkorcafecd),'CD']=999
@@ -2168,6 +2223,48 @@ sdwkorcafecd.loc[len(sdwkorcafecd)-1,'SPECIFICALLY PROHIBITED']=np.sum(sdwkorcaf
 sdwkorcafecd.loc[len(sdwkorcafecd)-1,'RESIDENTIAL AREA']=np.sum(sdwkorcafecd['RESIDENTIAL AREA'])
 sdwkorcafecd.loc[len(sdwkorcafecd)-1,'8 FT']=np.sum(sdwkorcafecd['8 FT'])
 sdwkorcafecd.loc[len(sdwkorcafecd)-1,'12 FT']=np.sum(sdwkorcafecd['12 FT'])
+sdwkorcafecd.loc[len(sdwkorcafecd),'CD']=991
+sdwkorcafecd.loc[len(sdwkorcafecd)-1,'ALL CAFES']=np.sum(sdwkorcafecd.loc[sdwkorcafecd['BORO']==1,'ALL CAFES'])
+sdwkorcafecd.loc[len(sdwkorcafecd)-1,'SMALL ONLY']=np.sum(sdwkorcafecd.loc[sdwkorcafecd['BORO']==1,'SMALL ONLY'])
+sdwkorcafecd.loc[len(sdwkorcafecd)-1,'UNENCLOSED ONLY']=np.sum(sdwkorcafecd.loc[sdwkorcafecd['BORO']==1,'UNENCLOSED ONLY'])
+sdwkorcafecd.loc[len(sdwkorcafecd)-1,'SPECIFICALLY PROHIBITED']=np.sum(sdwkorcafecd.loc[sdwkorcafecd['BORO']==1,'SPECIFICALLY PROHIBITED'])
+sdwkorcafecd.loc[len(sdwkorcafecd)-1,'RESIDENTIAL AREA']=np.sum(sdwkorcafecd.loc[sdwkorcafecd['BORO']==1,'RESIDENTIAL AREA'])
+sdwkorcafecd.loc[len(sdwkorcafecd)-1,'8 FT']=np.sum(sdwkorcafecd.loc[sdwkorcafecd['BORO']==1,'8 FT'])
+sdwkorcafecd.loc[len(sdwkorcafecd)-1,'12 FT']=np.sum(sdwkorcafecd.loc[sdwkorcafecd['BORO']==1,'12 FT'])
+sdwkorcafecd.loc[len(sdwkorcafecd),'CD']=992
+sdwkorcafecd.loc[len(sdwkorcafecd)-1,'ALL CAFES']=np.sum(sdwkorcafecd.loc[sdwkorcafecd['BORO']==2,'ALL CAFES'])
+sdwkorcafecd.loc[len(sdwkorcafecd)-1,'SMALL ONLY']=np.sum(sdwkorcafecd.loc[sdwkorcafecd['BORO']==2,'SMALL ONLY'])
+sdwkorcafecd.loc[len(sdwkorcafecd)-1,'UNENCLOSED ONLY']=np.sum(sdwkorcafecd.loc[sdwkorcafecd['BORO']==2,'UNENCLOSED ONLY'])
+sdwkorcafecd.loc[len(sdwkorcafecd)-1,'SPECIFICALLY PROHIBITED']=np.sum(sdwkorcafecd.loc[sdwkorcafecd['BORO']==2,'SPECIFICALLY PROHIBITED'])
+sdwkorcafecd.loc[len(sdwkorcafecd)-1,'RESIDENTIAL AREA']=np.sum(sdwkorcafecd.loc[sdwkorcafecd['BORO']==2,'RESIDENTIAL AREA'])
+sdwkorcafecd.loc[len(sdwkorcafecd)-1,'8 FT']=np.sum(sdwkorcafecd.loc[sdwkorcafecd['BORO']==2,'8 FT'])
+sdwkorcafecd.loc[len(sdwkorcafecd)-1,'12 FT']=np.sum(sdwkorcafecd.loc[sdwkorcafecd['BORO']==2,'12 FT'])
+sdwkorcafecd.loc[len(sdwkorcafecd),'CD']=993
+sdwkorcafecd.loc[len(sdwkorcafecd)-1,'ALL CAFES']=np.sum(sdwkorcafecd.loc[sdwkorcafecd['BORO']==3,'ALL CAFES'])
+sdwkorcafecd.loc[len(sdwkorcafecd)-1,'SMALL ONLY']=np.sum(sdwkorcafecd.loc[sdwkorcafecd['BORO']==3,'SMALL ONLY'])
+sdwkorcafecd.loc[len(sdwkorcafecd)-1,'UNENCLOSED ONLY']=np.sum(sdwkorcafecd.loc[sdwkorcafecd['BORO']==3,'UNENCLOSED ONLY'])
+sdwkorcafecd.loc[len(sdwkorcafecd)-1,'SPECIFICALLY PROHIBITED']=np.sum(sdwkorcafecd.loc[sdwkorcafecd['BORO']==3,'SPECIFICALLY PROHIBITED'])
+sdwkorcafecd.loc[len(sdwkorcafecd)-1,'RESIDENTIAL AREA']=np.sum(sdwkorcafecd.loc[sdwkorcafecd['BORO']==3,'RESIDENTIAL AREA'])
+sdwkorcafecd.loc[len(sdwkorcafecd)-1,'8 FT']=np.sum(sdwkorcafecd.loc[sdwkorcafecd['BORO']==3,'8 FT'])
+sdwkorcafecd.loc[len(sdwkorcafecd)-1,'12 FT']=np.sum(sdwkorcafecd.loc[sdwkorcafecd['BORO']==3,'12 FT'])
+sdwkorcafecd.loc[len(sdwkorcafecd),'CD']=994
+sdwkorcafecd.loc[len(sdwkorcafecd)-1,'ALL CAFES']=np.sum(sdwkorcafecd.loc[sdwkorcafecd['BORO']==4,'ALL CAFES'])
+sdwkorcafecd.loc[len(sdwkorcafecd)-1,'SMALL ONLY']=np.sum(sdwkorcafecd.loc[sdwkorcafecd['BORO']==4,'SMALL ONLY'])
+sdwkorcafecd.loc[len(sdwkorcafecd)-1,'UNENCLOSED ONLY']=np.sum(sdwkorcafecd.loc[sdwkorcafecd['BORO']==4,'UNENCLOSED ONLY'])
+sdwkorcafecd.loc[len(sdwkorcafecd)-1,'SPECIFICALLY PROHIBITED']=np.sum(sdwkorcafecd.loc[sdwkorcafecd['BORO']==4,'SPECIFICALLY PROHIBITED'])
+sdwkorcafecd.loc[len(sdwkorcafecd)-1,'RESIDENTIAL AREA']=np.sum(sdwkorcafecd.loc[sdwkorcafecd['BORO']==4,'RESIDENTIAL AREA'])
+sdwkorcafecd.loc[len(sdwkorcafecd)-1,'8 FT']=np.sum(sdwkorcafecd.loc[sdwkorcafecd['BORO']==4,'8 FT'])
+sdwkorcafecd.loc[len(sdwkorcafecd)-1,'12 FT']=np.sum(sdwkorcafecd.loc[sdwkorcafecd['BORO']==4,'12 FT'])
+sdwkorcafecd.loc[len(sdwkorcafecd),'CD']=995
+sdwkorcafecd.loc[len(sdwkorcafecd)-1,'ALL CAFES']=np.sum(sdwkorcafecd.loc[sdwkorcafecd['BORO']==5,'ALL CAFES'])
+sdwkorcafecd.loc[len(sdwkorcafecd)-1,'SMALL ONLY']=np.sum(sdwkorcafecd.loc[sdwkorcafecd['BORO']==5,'SMALL ONLY'])
+sdwkorcafecd.loc[len(sdwkorcafecd)-1,'UNENCLOSED ONLY']=np.sum(sdwkorcafecd.loc[sdwkorcafecd['BORO']==5,'UNENCLOSED ONLY'])
+sdwkorcafecd.loc[len(sdwkorcafecd)-1,'SPECIFICALLY PROHIBITED']=np.sum(sdwkorcafecd.loc[sdwkorcafecd['BORO']==5,'SPECIFICALLY PROHIBITED'])
+sdwkorcafecd.loc[len(sdwkorcafecd)-1,'RESIDENTIAL AREA']=np.sum(sdwkorcafecd.loc[sdwkorcafecd['BORO']==5,'RESIDENTIAL AREA'])
+sdwkorcafecd.loc[len(sdwkorcafecd)-1,'8 FT']=np.sum(sdwkorcafecd.loc[sdwkorcafecd['BORO']==5,'8 FT'])
+sdwkorcafecd.loc[len(sdwkorcafecd)-1,'12 FT']=np.sum(sdwkorcafecd.loc[sdwkorcafecd['BORO']==5,'12 FT'])
+sdwkorcafecd=sdwkorcafecd[['CD','ALL CAFES','SMALL ONLY','UNENCLOSED ONLY','SPECIFICALLY PROHIBITED',
+                         'RESIDENTIAL AREA','8 FT','12 FT']].reset_index(drop=True)
 sdwkorcafecd.to_csv('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/sidewalkcafe/sdwkorcafecd.csv',index=False)
 
 
