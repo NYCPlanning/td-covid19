@@ -124,10 +124,7 @@ tp['weekstart']=[datetime.datetime.strptime(x.split('-')[0],'%m/%d/%Y') for x in
 tp.to_csv(path+'faretype.csv',index=False)
 
 
-
-
-
-
+# Plot chart
 pio.renderers.default = "browser"
 
 fig=go.Figure()
@@ -169,7 +166,7 @@ fig.update_layout(
             'yanchor':'top'},
      legend={'orientation':'v',
              'title_text':'',
-             'font_size':16,
+             'font_size':14,
              'x':1,
              'xanchor':'left',
              'y':1,
