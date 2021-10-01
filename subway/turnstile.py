@@ -2551,7 +2551,7 @@ td=datetime.datetime.strptime('03/01/2021','%m/%d/%Y')
 td=td-datetime.timedelta(td.weekday())
 pr=td-datetime.timedelta(731)
 pr=pr-datetime.timedelta(pr.weekday())
-for i in range(0,17):
+for i in range(0,30):
     predates=[]
     postdates=[]
     for j in range(0,5):
@@ -2648,7 +2648,7 @@ td=datetime.datetime.strptime('03/01/2021','%m/%d/%Y')
 td=td-datetime.timedelta(td.weekday())
 pr=td-datetime.timedelta(731)
 pr=pr-datetime.timedelta(pr.weekday())
-for i in range(0,17):
+for i in range(0,30):
     predates=[]
     postdates=[]
     for j in range(0,5):
@@ -2672,7 +2672,7 @@ ntapm.crs=4326
 # Post March 2021
 td=datetime.datetime.strptime('03/15/2021','%m/%d/%Y')
 td=td-datetime.timedelta(td.weekday())
-for i in range(0,14):
+for i in range(0,27):
     predates=[]
     postdates=[]
     for j in range(0,5):
@@ -2760,7 +2760,7 @@ ntapm.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/slider/ntawow
 # Print Weeklist
 td=datetime.datetime.strptime('03/15/2021','%m/%d/%Y')
 td=td-datetime.timedelta(td.weekday())
-for i in range(0,14):
+for i in range(0,27):
     predates=[]
     postdates=[]
     for j in range(0,5):
@@ -3154,8 +3154,59 @@ cplxrtodiffnta.to_csv(path+'OUTPUT/ntaludi.csv',index=False)
 
 
 
+# RTO Full1
+dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
+predates=['09/09/2019','09/10/2019','09/11/2019','09/12/2019','09/13/2019','09/16/2019','09/17/2019','09/18/2019','09/19/2019']
+postdates=['09/13/2021','09/14/2021','09/15/2021','09/16/2021','09/17/2021','09/20/2021','09/21/2021','09/22/2021','09/23/2021']
+cplxrtopre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
+cplxrtopre=cplxrtopre.groupby(['unit','firstdate'],as_index=False).agg({'entries':'sum'}).reset_index(drop=True)
+cplxrtopre=cplxrtopre.groupby(['unit'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
+cplxrtopre=pd.merge(cplxrtopre,rc,how='left',left_on='unit',right_on='Remote')
+cplxrtopre=cplxrtopre.groupby(['CplxID'],as_index=False).agg({'entries':'sum'}).reset_index(drop=True)
+cplxrtopre.columns=['CplxID','E201909']
+cplxrtopost=dfunitentry[np.isin(dfunitentry['firstdate'],postdates)].reset_index(drop=True)
+cplxrtopost=cplxrtopost.groupby(['unit','firstdate'],as_index=False).agg({'entries':'sum'}).reset_index(drop=True)
+cplxrtopost=cplxrtopost.groupby(['unit'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
+cplxrtopost=pd.merge(cplxrtopost,rc,how='left',left_on='unit',right_on='Remote')
+cplxrtopost=cplxrtopost.groupby(['CplxID'],as_index=False).agg({'entries':'sum'}).reset_index(drop=True)
+cplxrtopost.columns=['CplxID','E202109']
+cplxrto=pd.merge(cplxrtopre,cplxrtopost,how='inner',on='CplxID')
+cplxrto['Pct']=cplxrto['E202109']/cplxrto['E201909']
+cplxrto['Pct'].describe(percentiles=np.arange(0.2,1,0.2))
+cplxrto['PctCat']=np.where(cplxrto['Pct']<=0.4,'18%~40%',
+                  np.where(cplxrto['Pct']<=0.5,'41%~50%','>50%'))
+cplxrto=pd.merge(rc.drop('Remote',axis=1).drop_duplicates(keep='first').reset_index(drop=True),cplxrto,how='inner',on='CplxID')
+cplxrto=cplxrto[['CplxID','Borough','CplxName','Routes','CplxLat','CplxLong','E201909','E202109',
+                 'Pct','PctCat']].reset_index(drop=True)
+cplxrto=gpd.GeoDataFrame(cplxrto,geometry=[shapely.geometry.Point(x,y) for x,y in zip(cplxrto['CplxLong'],cplxrto['CplxLat'])],crs='epsg:4326')
+cplxrto.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/cplxrtofull1.geojson',driver='GeoJSON')
 
-
+# RTO Full2
+dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
+predates=['04/19/2021','04/20/2021','04/21/2021','04/22/2021','04/23/2021','04/26/2021','04/27/2021','04/28/2021','04/29/2021']
+postdates=['09/13/2021','09/14/2021','09/15/2021','09/16/2021','09/17/2021','09/20/2021','09/21/2021','09/22/2021','09/23/2021']
+cplxrtopre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
+cplxrtopre=cplxrtopre.groupby(['unit','firstdate'],as_index=False).agg({'entries':'sum'}).reset_index(drop=True)
+cplxrtopre=cplxrtopre.groupby(['unit'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
+cplxrtopre=pd.merge(cplxrtopre,rc,how='left',left_on='unit',right_on='Remote')
+cplxrtopre=cplxrtopre.groupby(['CplxID'],as_index=False).agg({'entries':'sum'}).reset_index(drop=True)
+cplxrtopre.columns=['CplxID','E202104']
+cplxrtopost=dfunitentry[np.isin(dfunitentry['firstdate'],postdates)].reset_index(drop=True)
+cplxrtopost=cplxrtopost.groupby(['unit','firstdate'],as_index=False).agg({'entries':'sum'}).reset_index(drop=True)
+cplxrtopost=cplxrtopost.groupby(['unit'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
+cplxrtopost=pd.merge(cplxrtopost,rc,how='left',left_on='unit',right_on='Remote')
+cplxrtopost=cplxrtopost.groupby(['CplxID'],as_index=False).agg({'entries':'sum'}).reset_index(drop=True)
+cplxrtopost.columns=['CplxID','E202109']
+cplxrto=pd.merge(cplxrtopre,cplxrtopost,how='inner',on='CplxID')
+cplxrto['Pct']=(cplxrto['E202109']-cplxrto['E202104'])/cplxrto['E202104']
+cplxrto['Pct'].describe(percentiles=np.arange(0.2,1,0.2))
+cplxrto['PctCat']=np.where(cplxrto['Pct']<=0.2,'<=20%',
+                  np.where(cplxrto['Pct']<=0.4,'21%~40%','>40%'))
+cplxrto=pd.merge(rc.drop('Remote',axis=1).drop_duplicates(keep='first').reset_index(drop=True),cplxrto,how='inner',on='CplxID')
+cplxrto=cplxrto[['CplxID','Borough','CplxName','Routes','CplxLat','CplxLong','E202104','E202109',
+                 'Pct','PctCat']].reset_index(drop=True)
+cplxrto=gpd.GeoDataFrame(cplxrto,geometry=[shapely.geometry.Point(x,y) for x,y in zip(cplxrto['CplxLong'],cplxrto['CplxLat'])],crs='epsg:4326')
+cplxrto.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/cplxrtofull2.geojson',driver='GeoJSON')
 
 
 

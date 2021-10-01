@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title> Return to Office </title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+    <script src="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js"></script>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.0/font/bootstrap-icons.css">
+
+
+
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: sans-serif;
+        }
+
+        #mainmap {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+
+        #legend {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 19rem;
+            height: auto;
+            max-height: 90%;
+            padding-top: 1rem;
+            padding-right: 1rem;
+            padding-left: 1rem;
+            padding-bottom: 1rem;
+            color: rgba(0, 0, 0, 0.9);
+            background-color: rgba(255, 255, 255, 0.9);
+            font-size: 1rem;
+            overflow: auto;
+            box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+        }
+
+        #header {
+            font-weight: bold;
+        }
+
+        #chevron {
+            margin-left: 0.5rem;
+        }
+
+        .itemgroup1 {
+            margin-top: 0.5rem;
+        }
+
+        .item1-input {
+            width: 0.9rem;
+            height: 0.9rem;
+            margin-right: 0.5rem;
+            vertical-align: -0.1rem;
+        }
+
+        .item1-label1 {
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+        .item1-label2 {
+            font-size: 0.9rem;
+        }
+
+        .itemgroup2 {
+            margin-left: 0rem;
+        }
+
+        .item2-input {
+            width: 0.8rem;
+            height: 0.8rem;
+            margin-right: 0.5rem;
+            vertical-align: -0.1rem;
+        }
+
+        .item2-label {
+            font-size: 0.8rem;
+        }
+
+        .key-circle {
+            width: 0.8rem;
+            height: 0.8rem;
+            margin-right: 0.5rem;
+            border-radius: 100%;
+            display: inline-block;
+            vertical-align: -0.1rem;
+        }
+
+        .key-line {
+            width: 0.8rem;
+            height: 0.3rem;
+            margin-right: 0.5rem;
+            border-radius: 0%;
+            display: inline-block;
+            vertical-align: 0.15rem;
+        }
+
+        .key-fill {
+            width: 0.8rem;
+            height: 0.8rem;
+            margin-right: 0.5rem;
+            border-radius: 0%;
+            display: inline-block;
+            vertical-align: -0.1rem;
+        }
+    </style>
+</head>
+
+
+
+<body>
+    <div id="mainmap"></div> <!-- placeholder for main map -->
+
+    <nav id="legend">
+        <div class="container g-0">
+            <div class="row g-0 justify-content-between" id="header">
+                <div class="col-auto"> Return to Office </div>
+                <div class="col-auto">
+                    <i class="bi bi-chevron-down" id='chevron'></i>
+                </div>
+            </div>
+            <div class="row g-0 justify-content-start">
+                <div class="col-auto" id="legends"> </div> <!-- placeholder for layer selector and legend -->
+            </div>
+        </div>
+    </nav>
+
+
+
+    <script>
+        'use strict';
+        // Set MapBox token
+
+        mapboxgl.accessToken = 'pk.eyJ1IjoibWF5aWp1biIsImEiOiJjaXg4ZmlyY20wMDBjMm9tcjI0bjQ0Z21zIn0.Io0XJ4JelN903V9HGo4TfQ'; // still need to find a way to store the token
+
+
+
+        // Initialize the map
+        var map = new mapboxgl.Map({ // creating a new map
+            container: 'mainmap', // same as the div id to place the map
+            style: 'mapbox://styles/mapbox/light-v10', // light base map
+            hash: true, // make sure it's on to get the url with map view
+            attributionControl: false, // show the credit bar
+            preserveDrawingBuffer: true, // make sure it's on to allow printing
+            center: [-74.0197, 40.721], // testing to get the centroid of bounds
+            zoom: 10, // set the initial zoom of the map view
+        });
+
+
+
+        // Add layers
+        map.on('load', function () {
+
+            var layerContentList = []; // store all the layer contents
+
+            // Add full screen control
+            map.addControl(new mapboxgl.FullscreenControl({
+                container: document.querySelector('body'),
+            }),
+                'bottom-left', // control position
+            );
+
+            // Add navigation control
+            map.addControl(new mapboxgl.NavigationControl({
+                showCompass: true, // show compass
+                showZoom: true, // show zoom
+                visualizePitch: true, // show pitch
+            }),
+                'bottom-left', // control position
+            );
+
+
+
+            // Add polygons
+            // Set layer contents
+            var layerContent = {
+                'sourceid': 'telsubam', // source id
+                'sourcetype': 'geojson', // source type
+                'sourcedata': 'telsubam.geojson', // data source
+                'layerid': 'telsubam', // layer id
+                'layertype': 'fill', // symbology type
+                'layername1': 'Telework Capability of Subway Commuters by Place of Residence​', // layer name for the legend
+                'layervisibility': 'visible', // visibility of the layer
+                'layercolname': 'cat', // category column name
+                'layercat': ['22%~30%', '31%~35%', '36%~54%'], // categories
+                'layercolor': ['rgba(209,227,243,1)', 'rgba(154,200,225,1)', 'rgba(82,157,204,1)'], // color for each category; use rgba
+                'layeropacity': 1, // fill opacity
+                'layeroutlinecolor': 'rgba(255,255,255,0)', // outline color; can only be set to 1px width; to change the outline width, add another line layer
+            };
+
+            // Generate layer colors
+            var layerColor = ['match', ['get', layerContent['layercolname']]];
+            for (var i = 0; i < layerContent.layercat.length; i++) {
+                layerColor.push(layerContent.layercat[i]);
+                layerColor.push(layerContent.layercolor[i]);
+            };
+            layerColor.push('#000000');
+
+            // Add layer content to the overall layer content list
+            layerContentList.push(layerContent);
+
+            // Add data source
+            map.addSource(layerContent['sourceid'], {
+                'type': layerContent['sourcetype'],
+                'data': layerContent['sourcedata'],
+            });
+
+            // Add fill layer
+            map.addLayer({
+                'id': layerContent['layerid'],
+                'type': layerContent['layertype'],
+                'source': layerContent['sourceid'],
+                'layout': {
+                    'visibility': layerContent['layervisibility'],
+                },
+                'paint': {
+                    'fill-color': layerColor,
+                    'fill-opacity': layerContent['layeropacity'],
+                },
+            });
+
+
+
+
+            // Add points
+            // Set layer contents
+            var layerContent = {
+                'sourceid': 'cplxrto', // source id
+                'sourcetype': 'geojson', // source type
+                'sourcedata': 'cplxrtofull1.geojson', // data source
+                'layerid': 'cplxrto', // layer id
+                'layertype': 'circle', // symbology type
+                'layername1': 'Late September 2021 as Percentage of Late September 2019 Weekday Subway Ridership', // layer name for the legend
+                'layername2': 'Average Weekday Daily', // layer name for the legend
+                'layervisibility': 'visible', // visibility of the layer
+                'layercolname': 'PctCat', // category column name
+                'layercat': ['18%~40%', '41%~50%', '>50%'], // categories
+                'layercolor': ['rgba(254,171,70,1)', 'rgba(223,103,17,1)', 'rgba(153,52,4,1)'], // color for each category; use rgba
+                'layeropacity': 1, // circle opacity
+                'layerradius': 3, // circle radius; change size based on zoom level
+                'layeroutlinecolor': 'rgba(255,255,255,0)', // outline color; can only be set to 1px width; to change the outline width, add another line layer
+            };
+
+            // Generate layer colors
+            var layerColor = ['match', ['get', layerContent['layercolname']]];
+            for (var i = 0; i < layerContent.layercat.length; i++) {
+                layerColor.push(layerContent.layercat[i]);
+                layerColor.push(layerContent.layercolor[i]);
+            };
+            layerColor.push('#000000');
+
+            // Add layer content to the overall layer content list
+            layerContentList.push(layerContent);
+
+            // Add data source
+            map.addSource(layerContent['sourceid'], {
+                'type': layerContent['sourcetype'],
+                'data': layerContent['sourcedata'],
+            });
+
+            // Add circle layer
+            map.addLayer({
+                'id': layerContent['layerid'],
+                'type': layerContent['layertype'],
+                'source': layerContent['sourceid'],
+                'layout': {
+                    'visibility': layerContent['layervisibility'],
+                },
+                'paint': {
+                    'circle-color': layerColor,
+                    'circle-opacity': layerContent['layeropacity'],
+                    'circle-radius': layerContent['layerradius'],
+                },
+            });
+
+
+
+
+
+
+            // Add popup
+            var popup = new mapboxgl.Popup({
+                closeButton: true, // close button
+                closeOnClick: false, // close if click on map
+                closeOnMove: false, // close if move the map
+                anchor: 'bottom', // anchor of the popup
+                offset: 0, // offset from the feature
+                maxWidth: 'none', // max width of the popoup; 'none' to fit to the content                
+            });
+
+            // Add telsubam popup
+            // Add click event
+            map.on('click', 'telsubam', function (e) {
+                var coordinates = e.lngLat; // get pointer coordinates
+                var description = "<b>PUMA: </b><span>" + e.features[0].properties.puma + "</span><br>"; // description in the popup
+                description += "<b>Telework Capability of Subway Commuters by Place of Residence​: </b><span>" + (Number(e.features[0].properties.telsubpct) * 100).toFixed(2) + "%</span><br>";
+                popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
+            });
+            // Add hover events
+            map.on('mouseenter', 'telsubam', function () {
+                map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
+            });
+            map.on('mouseleave', 'telsubam', function () {
+                map.getCanvas().style.cursor = '';
+            });
+
+
+            // Add cplxrto popup
+            // Add click event
+            map.on('click', 'cplxrto', function (e) {
+                var coordinates = e.features[0].geometry.coordinates.slice(); // get point coordinates
+                var description = "<b>Complex ID: </b><span>" + e.features[0].properties.CplxID + "</span><br>"; // description in the popup
+                description += "<b>Borough: </b><span>" + e.features[0].properties.Borough + "</span><br>";
+                description += "<b>Complex Name: </b><span>" + e.features[0].properties.CplxName + "</span><br>";
+                description += "<b>Routes: </b><span>" + e.features[0].properties.Routes + "</span><br>";
+                description += "<b>Late September 2019 Subway Ridership: </b><span>" + e.features[0].properties.E201909.toFixed(2) + "</span><br>";
+                description += "<b>Late September 2021 Subway Ridership: </b><span>" + e.features[0].properties.E202109.toFixed(2) + "</span><br>";
+                description += "<b>Late September 2021 as Percentage of Late September 2019: </b><span>" + (Number(e.features[0].properties.Pct) * 100).toFixed(2) + "%</span><br>";
+                popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
+            });
+            // Add hover events
+            map.on('mouseenter', 'cplxrto', function () {
+                map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
+            });
+            map.on('mouseleave', 'cplxrto', function () {
+                map.getCanvas().style.cursor = '';
+            });
+
+
+            // Add layer selector and legend
+            var layerOrder = ['cplxrto']; // set layer order in the legend
+            var layerContentListOrder = []; // create ordered layer content list
+            for (var i = 0; i < layerOrder.length; i++) {
+                layerContentListOrder.push(layerContentList.filter(e => e.layerid == layerOrder[i])[0]);
+            };
+
+            var filterLegend = document.getElementById('legends');
+            for (var i = 0; i < layerContentListOrder.length; i++) {
+                // Create layer selector
+                var itemgroup1 = document.createElement('div'); // create level-1 item group
+                itemgroup1.className = 'itemgroup1';
+                var item1 = document.createElement('div'); // create level-1 item
+                item1.className = 'item1';
+                var label1 = document.createElement('label'); // create level-1 checkbox label
+                label1.className = 'item1-label1';
+                label1.setAttribute('for', layerContentListOrder[i]['layerid']);
+                label1.textContent = layerContentListOrder[i]['layername1'];
+                var label2 = document.createElement('label'); // create level-1 checkbox label
+                label2.className = 'item1-label2';
+                label2.setAttribute('for', layerContentListOrder[i]['layerid']);
+                label2.textContent = layerContentListOrder[i]['layername2'];
+                item1.appendChild(label1);
+                item1.appendChild(document.createElement('br'));
+                item1.appendChild(label2);
+                itemgroup1.appendChild(item1);
+
+                // Create legend selector
+                var itemgroup2 = document.createElement('div'); // create level-2 item group
+                itemgroup2.className = 'itemgroup2';
+                itemgroup2.id = layerContentListOrder[i]['layerid'] + '-cat';
+                for (var j = 0; j < layerContentListOrder[i]['layercat'].length; j++) {
+                    var item2 = document.createElement('div'); // create level-2 item
+                    item2.className = 'item2';
+                    var input2 = document.createElement('input'); // create level-2 checkbox
+                    input2.type = 'checkbox';
+                    input2.className = 'item2-input';
+                    input2.id = layerContentListOrder[i]['layerid'] + '|' + layerContentListOrder[i]['layercolname'] + '|' + layerContentListOrder[i]['layercat'][j];
+                    input2.checked = true;
+                    var key2 = document.createElement('span'); // create level-2 key
+                    key2.className = 'key-' + layerContentListOrder[i]['layertype'];
+                    key2.style.backgroundColor = layerContentListOrder[i]['layercolor'][j];
+                    key2.style.borderColor = layerContentListOrder[i]['layeroutlinecolor'];
+                    key2.style.borderStyle = 'solid';
+                    key2.style.borderWidth = 'thin';
+                    var label2 = document.createElement('label'); // create level-2 label
+                    label2.className = 'item2-label';
+                    label2.setAttribute('for', layerContentListOrder[i]['layerid'] + '|' + layerContentListOrder[i]['layercolname'] + '|' + layerContentListOrder[i]['layercat'][j]);
+                    label2.textContent = layerContentListOrder[i]['layercat'][j];
+                    item2.appendChild(input2);
+                    item2.appendChild(key2);
+                    item2.appendChild(label2);
+                    itemgroup2.appendChild(item2);
+
+                    // Create legend selector click event
+                    input2.addEventListener('click', function (e) {
+                        var clickedLayer = this.id.split('|')[0];
+                        var clickedLayerColname = this.id.split('|')[1];
+                        var catGroup = document.getElementById(clickedLayer + '-cat').getElementsByClassName('item2-input');
+                        var checkedFilter = ['any'];
+                        for (var k = 0; k < catGroup.length; k++) {
+                            if (catGroup[k]['checked'] === true) {
+                                checkedFilter.push(['==', clickedLayerColname, catGroup[k].id.split('|')[2]]);
+                            };
+                        };
+                        map.setFilter(clickedLayer, checkedFilter);
+                    });
+                };
+                itemgroup1.appendChild(itemgroup2);
+                filterLegend.appendChild(itemgroup1);
+            };
+
+            // Add layer selector and legend
+            var layerOrder = ['telsubam']; // set layer order in the legend
+            var layerContentListOrder = []; // create ordered layer content list
+            for (var i = 0; i < layerOrder.length; i++) {
+                layerContentListOrder.push(layerContentList.filter(e => e.layerid == layerOrder[i])[0]);
+            };
+
+            var filterLegend = document.getElementById('legends');
+            for (var i = 0; i < layerContentListOrder.length; i++) {
+                // Create layer selector
+                var itemgroup1 = document.createElement('div'); // create level-1 item group
+                itemgroup1.className = 'itemgroup1';
+                var item1 = document.createElement('div'); // create level-1 item
+                item1.className = 'item1';
+                var label1 = document.createElement('label'); // create level-1 checkbox label
+                label1.className = 'item1-label1';
+                label1.setAttribute('for', layerContentListOrder[i]['layerid']);
+                label1.textContent = layerContentListOrder[i]['layername1'];
+                item1.appendChild(label1);
+                itemgroup1.appendChild(item1);
+
+                // Create legend selector
+                var itemgroup2 = document.createElement('div'); // create level-2 item group
+                itemgroup2.className = 'itemgroup2';
+                itemgroup2.id = layerContentListOrder[i]['layerid'] + '-cat';
+                if (layerContentListOrder[i]['layervisibility'] === 'visible') {
+                    itemgroup2.style.display = 'block';
+                } else {
+                    itemgroup2.style.display = 'none';
+                };
+                for (var j = 0; j < layerContentListOrder[i]['layercat'].length; j++) {
+                    var item2 = document.createElement('div'); // create level-2 item
+                    item2.className = 'item2';
+                    var input2 = document.createElement('input'); // create level-2 checkbox
+                    input2.type = 'checkbox';
+                    input2.className = 'item2-input';
+                    input2.id = layerContentListOrder[i]['layerid'] + '|' + layerContentListOrder[i]['layercolname'] + '|' + layerContentListOrder[i]['layercat'][j];
+                    input2.checked = true;
+                    var key2 = document.createElement('span'); // create level-2 key
+                    key2.className = 'key-' + layerContentListOrder[i]['layertype'];
+                    key2.style.backgroundColor = layerContentListOrder[i]['layercolor'][j];
+                    key2.style.borderColor = layerContentListOrder[i]['layeroutlinecolor'];
+                    key2.style.borderStyle = 'solid';
+                    key2.style.borderWidth = 'thin';
+                    var label2 = document.createElement('label'); // create level-2 label
+                    label2.className = 'item2-label';
+                    label2.setAttribute('for', layerContentListOrder[i]['layerid'] + '|' + layerContentListOrder[i]['layercolname'] + '|' + layerContentListOrder[i]['layercat'][j]);
+                    label2.textContent = layerContentListOrder[i]['layercat'][j];
+                    item2.appendChild(input2);
+                    item2.appendChild(key2);
+                    item2.appendChild(label2);
+                    itemgroup2.appendChild(item2);
+
+                    // Create legend selector click event
+                    input2.addEventListener('click', function (e) {
+                        var clickedLayer = this.id.split('|')[0];
+                        var clickedLayerColname = this.id.split('|')[1];
+                        var catGroup = document.getElementById(clickedLayer + '-cat').getElementsByClassName('item2-input');
+                        var checkedFilter = ['any'];
+                        for (var k = 0; k < catGroup.length; k++) {
+                            if (catGroup[k]['checked'] === true) {
+                                checkedFilter.push(['==', clickedLayerColname, catGroup[k].id.split('|')[2]]);
+                            };
+                        };
+                        map.setFilter(clickedLayer, checkedFilter);
+                    });
+                };
+                itemgroup1.appendChild(itemgroup2);
+                filterLegend.appendChild(itemgroup1);
+            };
+
+
+
+            // Set collapse event
+            var collapsevalue = 0;
+            header.addEventListener('click', function () {
+                if (collapsevalue === 0) {
+                    document.getElementById('legends').style.display = "none";
+                    document.getElementById('chevron').className = "bi bi-chevron-up";
+                    collapsevalue = 1;
+                } else {
+                    document.getElementById('legends').style.display = "block";
+                    document.getElementById('chevron').className = "bi bi-chevron-down";
+                    collapsevalue = 0;
+                };
+            });
+        });
+    </script>
+
+</body>
+
+</html>
