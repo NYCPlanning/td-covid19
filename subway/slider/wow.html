@@ -356,7 +356,7 @@
                 'layername': 'Percent Change over Previous Week​', // layer name for the legend
                 'layervisibility': 'visible', // visibility of the layer
                 'layercolname': 'Week' + weekNum + 'DiffPctCat', // category column name
-                'layercat': ['<= 1.0%', '1.1% ~ 2.0%', '2.1% ~ 3.0%', '3.1% ~ 4.0%', '4.1% ~ 5.0%', '> 5.0%'], // categories
+                'layercat': ['<= 0%', '1% ~ 5%', '6% ~ 10%', '11% ~ 15%', '16% ~ 20%', '> 20%'], // categories
                 'layercolor': ['rgba(255, 245, 235, 1)', 'rgba(254, 219, 183, 1)', 'rgba(253, 172, 103, 1)', 'rgba(246, 119, 34, 1)', 'rgba(209, 69, 1, 1)', 'rgba(127, 39, 4, 1)'], // color for each category; use rgba
                 'layeroutlinecolor': 'rgba(255, 255, 255, 0)', // outline color; for legend only
             };
@@ -521,7 +521,7 @@
                 'layername': 'Percent Change over Previous Week​', // layer name for the legend
                 'layervisibility': 'visible', // visibility of the layer
                 'layercolname': 'Week' + weekNum + 'DiffPctCat', // category column name
-                'layercat': ['<= 1.0%', '1.1% ~ 2.0%', '2.1% ~ 3.0%', '3.1% ~ 4.0%', '4.1% ~ 5.0%', '> 5.0%'], // categories
+                'layercat': ['<= 0%', '1% ~ 5%', '6% ~ 10%', '11% ~ 15%', '16% ~ 20%', '> 20%'], // categories
                 'layercolor': ['rgba(255, 245, 235, 1)', 'rgba(254, 219, 183, 1)', 'rgba(253, 172, 103, 1)', 'rgba(246, 119, 34, 1)', 'rgba(209, 69, 1, 1)', 'rgba(127, 39, 4, 1)'], // color for each category; use rgba
                 'layeroutlinecolor': 'rgba(255, 255, 255, 0)', // outline color; for legend only
             };
@@ -667,7 +667,7 @@
             var weekNum = document.getElementById('sliderbar').value;
             document.getElementById('slideroutput').textContent = weekList[weekNum];
             var layercolname = 'Week' + weekNum + 'DiffPctCat';
-            var layercat = ['<= 1.0%', '1.1% ~ 2.0%', '2.1% ~ 3.0%', '3.1% ~ 4.0%', '4.1% ~ 5.0%', '> 5.0%'];
+            var layercat = ['<= 0%', '1% ~ 5%', '6% ~ 10%', '11% ~ 15%', '16% ~ 20%', '> 20%'];
             var layercolor = ['rgba(255, 245, 235, 1)', 'rgba(254, 219, 183, 1)', 'rgba(253, 172, 103, 1)', 'rgba(246, 119, 34, 1)', 'rgba(209, 69, 1, 1)', 'rgba(127, 39, 4, 1)'];
             var layerColor = ['match', ['get', layercolname]];
             for (var i = 0; i < layercat.length; i++) {

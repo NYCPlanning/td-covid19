@@ -7,6 +7,7 @@ import datetime
 import pytz
 import geopandas as gpd
 import shapely
+import holidays
 
 
 
@@ -2476,6 +2477,8 @@ for i in range(0,52):
     for j in range(0,5):
         predates+=[(pr+datetime.timedelta(i*7+j)).strftime('%m/%d/%Y')]
         postdates+=[(td+datetime.timedelta(i*7+j)).strftime('%m/%d/%Y')]
+    predates=[x for x in predates if x not in holidays.US(state='NY')]
+    postdates=[x for x in postdates if x not in holidays.US(state='NY')]
     # AM Peak
     cplxampre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
     cplxampre=cplxampre[np.isin(cplxampre['time'],amlist)].reset_index(drop=True)
@@ -2557,6 +2560,8 @@ for i in range(0,30):
     for j in range(0,5):
         predates+=[(pr+datetime.timedelta(i*7+j)).strftime('%m/%d/%Y')]
         postdates+=[(td+datetime.timedelta(i*7+j)).strftime('%m/%d/%Y')]
+    predates=[x for x in predates if x not in holidays.US(state='NY')]
+    postdates=[x for x in postdates if x not in holidays.US(state='NY')]
     # AM Peak
     cplxampre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
     cplxampre=cplxampre[np.isin(cplxampre['time'],amlist)].reset_index(drop=True)
@@ -2658,6 +2663,8 @@ for i in range(0,30):
 
 
 
+
+
 # Slider Week over Week
 # Pre and Post by NTA
 dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
@@ -2678,6 +2685,8 @@ for i in range(0,27):
     for j in range(0,5):
         predates+=[(td+datetime.timedelta(i*7+j)).strftime('%m/%d/%Y')]
         postdates+=[(td+datetime.timedelta((i+1)*7+j)).strftime('%m/%d/%Y')]
+    predates=[x for x in predates if x not in holidays.US(state='NY')]
+    postdates=[x for x in postdates if x not in holidays.US(state='NY')]
     # AM Peak
     cplxampre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
     cplxampre=cplxampre[np.isin(cplxampre['time'],amlist)].reset_index(drop=True)
@@ -2705,14 +2714,13 @@ for i in range(0,27):
     cplxamdiffnta=cplxamdiffnta[cplxamdiffnta['PreEntries']!=0].reset_index(drop=True)
     cplxamdiffnta.columns=['NTACode','PreEntries','PostEntries']
     cplxamdiffnta['Diff']=cplxamdiffnta['PostEntries']-cplxamdiffnta['PreEntries']
-    
     cplxamdiffnta['DiffPct']=cplxamdiffnta['Diff']/cplxamdiffnta['PreEntries']
     cplxamdiffnta['DiffPct'].describe(percentiles=np.arange(0.2,1,0.2))
-    cplxamdiffnta['DiffPctCat']=np.where(cplxamdiffnta['DiffPct']<=0.01,'<= 1.0%',
-                                np.where(cplxamdiffnta['DiffPct']<=0.02,'1.1% ~ 2.0%',
-                                np.where(cplxamdiffnta['DiffPct']<=0.03,'2.1% ~ 3.0%',
-                                np.where(cplxamdiffnta['DiffPct']<=0.04,'3.1% ~ 4.0%',
-                                np.where(cplxamdiffnta['DiffPct']<=0.05,'4.1% ~ 5.0%','> 5.0%')))))
+    cplxamdiffnta['DiffPctCat']=np.where(cplxamdiffnta['DiffPct']<=0,'<= 0%',
+                                np.where(cplxamdiffnta['DiffPct']<=0.05,'1% ~ 5%',
+                                np.where(cplxamdiffnta['DiffPct']<=0.1,'6% ~ 10%',
+                                np.where(cplxamdiffnta['DiffPct']<=0.15,'11% ~ 15%',
+                                np.where(cplxamdiffnta['DiffPct']<=0.2,'16% ~ 20%','> 20%')))))
     cplxamdiffnta.columns=['NTACode','Week'+str(i)+'Pre','Week'+str(i)+'Post','Week'+str(i)+'Diff',
                            'Week'+str(i)+'DiffPct','Week'+str(i)+'DiffPctCat']    
     ntaam=pd.merge(ntaam,cplxamdiffnta,how='inner',on='NTACode')
@@ -2745,11 +2753,11 @@ for i in range(0,27):
     cplxpmdiffnta['Diff']=cplxpmdiffnta['PostEntries']-cplxpmdiffnta['PreEntries']
     cplxpmdiffnta['DiffPct']=cplxpmdiffnta['Diff']/cplxpmdiffnta['PreEntries']
     cplxpmdiffnta['DiffPct'].describe(percentiles=np.arange(0.2,1,0.2))
-    cplxpmdiffnta['DiffPctCat']=np.where(cplxpmdiffnta['DiffPct']<=0.01,'<= 1.0%',
-                                np.where(cplxpmdiffnta['DiffPct']<=0.02,'1.1% ~ 2.0%',
-                                np.where(cplxpmdiffnta['DiffPct']<=0.03,'2.1% ~ 3.0%',
-                                np.where(cplxpmdiffnta['DiffPct']<=0.04,'3.1% ~ 4.0%',
-                                np.where(cplxpmdiffnta['DiffPct']<=0.05,'4.1% ~ 5.0%','> 5.0%')))))
+    cplxpmdiffnta['DiffPctCat']=np.where(cplxpmdiffnta['DiffPct']<=0,'<= 0%',
+                                np.where(cplxpmdiffnta['DiffPct']<=0.05,'1% ~ 5%',
+                                np.where(cplxpmdiffnta['DiffPct']<=0.1,'6% ~ 10%',
+                                np.where(cplxpmdiffnta['DiffPct']<=0.15,'11% ~ 15%',
+                                np.where(cplxpmdiffnta['DiffPct']<=0.2,'16% ~ 20%','> 20%')))))
     cplxpmdiffnta.columns=['NTACode','Week'+str(i)+'Pre','Week'+str(i)+'Post','Week'+str(i)+'Diff',
                            'Week'+str(i)+'DiffPct','Week'+str(i)+'DiffPctCat']      
     ntapm=pd.merge(ntapm,cplxpmdiffnta,how='inner',on='NTACode')

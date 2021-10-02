@@ -466,8 +466,8 @@
                 'layername': 'Ridership as % of Pre-Pandemic Equivalent Week​', // layer name for the legend
                 'layervisibility': 'visible', // visibility of the layer
                 'layercolname': 'Week' + weekNum + 'PctCat', // category column name
-                'layercat': ['> 50%', '41% ~ 50%', '31% ~ 40%', '21% ~ 30%', '11% ~ 20%', '<= 10%'], // categories
-                'layercolor': ['rgba(127, 39, 4, 1)', 'rgba(209, 69, 1, 1)', 'rgba(246, 119, 34, 1)', 'rgba(253, 172, 103, 1)', 'rgba(254, 219, 183, 1)', 'rgba(255, 245, 235, 1)'], // color for each category; use rgba
+                'layercat': ['<= 10%', '11% ~ 20%', '21% ~ 30%', '31% ~ 40%', '41% ~ 50%', '> 50%'], // categories
+                'layercolor': ['rgba(255, 245, 235, 1)', 'rgba(254, 219, 183, 1)', 'rgba(253, 172, 103, 1)', 'rgba(246, 119, 34, 1)', 'rgba(209, 69, 1, 1)', 'rgba(127, 39, 4, 1)'], // color for each category; use rgba
                 'layeroutlinecolor': 'rgba(255, 255, 255, 0)', // outline color; for legend only
             };
 
@@ -631,8 +631,8 @@
                 'layername': 'Ridership as % of Pre-Pandemic Equivalent Week​', // layer name for the legend
                 'layervisibility': 'visible', // visibility of the layer
                 'layercolname': 'Week' + weekNum + 'PctCat', // category column name
-                'layercat': ['> 50%', '41% ~ 50%', '31% ~ 40%', '21% ~ 30%', '11% ~ 20%', '<= 10%'], // categories
-                'layercolor': ['rgba(127, 39, 4, 1)', 'rgba(209, 69, 1, 1)', 'rgba(246, 119, 34, 1)', 'rgba(253, 172, 103, 1)', 'rgba(254, 219, 183, 1)', 'rgba(255, 245, 235, 1)'], // color for each category; use rgba
+                'layercat': ['<= 10%', '11% ~ 20%', '21% ~ 30%', '31% ~ 40%', '41% ~ 50%', '> 50%'], // categories
+                'layercolor': ['rgba(255, 245, 235, 1)', 'rgba(254, 219, 183, 1)', 'rgba(253, 172, 103, 1)', 'rgba(246, 119, 34, 1)', 'rgba(209, 69, 1, 1)', 'rgba(127, 39, 4, 1)'], // color for each category; use rgba
                 'layeroutlinecolor': 'rgba(255, 255, 255, 0)', // outline color; for legend only
             };
 
@@ -777,8 +777,8 @@
             var weekNum = document.getElementById('sliderbar').value;
             document.getElementById('slideroutput').textContent = weekList[weekNum];
             var layercolname = 'Week' + weekNum + 'PctCat';
-            var layercat = ['> 50%', '41% ~ 50%', '31% ~ 40%', '21% ~ 30%', '11% ~ 20%', '<= 10%'];
-            var layercolor = ['rgba(127, 39, 4, 1)', 'rgba(209, 69, 1, 1)', 'rgba(246, 119, 34, 1)', 'rgba(253, 172, 103, 1)', 'rgba(254, 219, 183, 1)', 'rgba(255, 245, 235, 1)'];
+            var layercat = ['<= 10%', '11% ~ 20%', '21% ~ 30%', '31% ~ 40%', '41% ~ 50%', '> 50%'];
+            var layercolor = ['rgba(255, 245, 235, 1)', 'rgba(254, 219, 183, 1)', 'rgba(253, 172, 103, 1)', 'rgba(246, 119, 34, 1)', 'rgba(209, 69, 1, 1)', 'rgba(127, 39, 4, 1)'];
             var layerColor = ['match', ['get', layercolname]];
             for (var i = 0; i < layercat.length; i++) {
                 layerColor.push(layercat[i]);
