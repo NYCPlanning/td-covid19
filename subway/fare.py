@@ -242,7 +242,9 @@ cplxdiff.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/nadirfare.
 
 
 
-
-
-
+# By Borough
+df=pd.read_csv(path+'fare.csv',dtype=str,converters={'fare':float})
+df=pd.merge(df,rc,how='left',left_on='unit',right_on='Remote')
+df=df.groupby(['Borough','week'],as_index=False).agg({'fare':'sum'}).reset_index(drop=True)
+df.to_csv('C:/Users/mayij/Desktop/fareboro.csv',index=False)
 
