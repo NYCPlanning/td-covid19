@@ -3484,11 +3484,13 @@ df['firstdate']=pd.to_datetime(df['firstdate'],format='%m/%d/%Y')
 df['year']=df['firstdate'].dt.year
 df['month']=df['firstdate'].dt.month
 df['weekday']=df['firstdate'].dt.weekday+1
-df=df[df['month']==8].reset_index(drop=True)
+df=df[df['month']==9].reset_index(drop=True)
 df=df[np.isin(df['weekday'],[1,2,3,4,5])].reset_index(drop=True)
 df=df[[x not in holidays.US(state='NY') for x in df['firstdate']]].reset_index(drop=True)
 df=df.groupby(['CplxID','year'],as_index=False).agg({'entries':'mean'}).reset_index(drop=True)
-df[df['CplxID']==303]
+# df[df['CplxID']==303]
+df=df.pivot(index='CplxID',columns='year').reset_index(drop=False)
+df.to_csv(path+'VALIDATION/MTA/TURNSTILE09.csv',index=False)
 
 
 
