@@ -3492,6 +3492,20 @@ df=df.groupby(['CplxID','year'],as_index=False).agg({'entries':'mean'}).reset_in
 df=df.pivot(index='CplxID',columns='year').reset_index(drop=False)
 df.to_csv(path+'VALIDATION/MTA/TURNSTILE09.csv',index=False)
 
+# Compare with MTA Daily Estimate
+
+
+# Compare with MTA August Weekday data (AFC+OMNY)
+dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
+dfunitentry=dfunitentry.groupby(['firstdate'],as_index=False).agg({'entries':'sum'}).reset_index(drop=True)
+dfunitentry['firstdate']=[datetime.datetime.strptime(x,'%m/%d/%Y') for x in dfunitentry['firstdate']]
+df=pd.read_csv('https://new.mta.info/document/20441',dtype=str)
+df['Date']=[datetime.datetime.strptime(x,'%m/%d/%Y') for x in df['Date']]
+df['Subway']=[int(x) for x in df['Subways: Total Estimated Ridership']]
+df=df[['Date','Subway']].reset_index(drop=True)
+df=pd.merge(df,dfunitentry,how='inner',left_on='Date',right_on='firstdate')
+df.to_csv(path+'VALIDATION/MTA/DAILY.csv',index=False)
+
 
 
 
