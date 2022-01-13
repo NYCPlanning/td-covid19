@@ -3493,9 +3493,6 @@ df=df.pivot(index='CplxID',columns='year').reset_index(drop=False)
 df.to_csv(path+'VALIDATION/MTA/TURNSTILE09.csv',index=False)
 
 # Compare with MTA Daily Estimate
-
-
-# Compare with MTA August Weekday data (AFC+OMNY)
 dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
 dfunitentry=dfunitentry.groupby(['firstdate'],as_index=False).agg({'entries':'sum'}).reset_index(drop=True)
 dfunitentry['firstdate']=[datetime.datetime.strptime(x,'%m/%d/%Y') for x in dfunitentry['firstdate']]
