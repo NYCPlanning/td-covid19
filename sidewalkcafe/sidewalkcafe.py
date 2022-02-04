@@ -2427,8 +2427,3 @@ sdwkorcafecd.to_csv('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/sidewalkcafe/s
 
 
 
-
-
-
-
-
