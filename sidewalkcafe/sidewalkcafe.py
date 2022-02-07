@@ -2805,8 +2805,3 @@ df['CITIBIKE']=np.where(pd.isna(df['CITIBIKE']),'N',df['CITIBIKE'])
 df=df[['CAMIS','DBA','BORO','BLDGNUM','STNAME','ZIP','CUISINE','ORTYPE','CITIBIKE','geometry']].reset_index(drop=True)
 df.to_file(path+'SIDEWALK CAFE/dohmh_or_citibike_20220206.geojson',driver='GeoJSON')
 
-
-
-
-
-
