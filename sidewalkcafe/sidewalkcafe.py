@@ -2765,13 +2765,13 @@ for i in df.index:
         tpbkfc=tpbkfc.loc[np.argmin([df.loc[i,'geometry'].distance(x) for x in tpbkfc['geometry']]),'BLOCKFACEI']
         tpbkfc=list(pvmtedge.loc[pvmtedge['BLOCKFACEI']==tpbkfc,'geometry'])[0]
         tpsplit=tpbkfc.project(df.loc[i,'geometry'],normalized=False)
-        if tpsplit-50<0:
-            tpsplit=[0,tpsplit+50]
+        if tpsplit-100<0:
+            tpsplit=[0,tpsplit+100]
             tpsplit=shapely.geometry.MultiPoint([tpbkfc.interpolate(x,normalized=False) for x in tpsplit])
             tpsplit=shapely.ops.split(tpbkfc,tpsplit.buffer(1e-8))[1]
             df.loc[i,'geom']=tpsplit
         else:
-            tpsplit=[tpsplit-50,tpsplit+50]
+            tpsplit=[tpsplit-100,tpsplit+100]
             tpsplit=shapely.geometry.MultiPoint([tpbkfc.interpolate(x,normalized=False) for x in tpsplit])
             tpsplit=shapely.ops.split(tpbkfc,tpsplit.buffer(1e-8))[2]
             df.loc[i,'geom']=tpsplit
