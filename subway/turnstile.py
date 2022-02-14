@@ -3477,6 +3477,8 @@ df=pd.DataFrame(columns=['Time Period','Late January 2020','Late January 2022'])
 dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
 predates=['01/27/2020','01/28/2020','01/29/2020','01/30/2020','01/31/2020']
 postdates=['01/24/2022','01/25/2022','01/26/2022','01/27/2022','01/28/2022']
+# predates=['09/23/2019','09/24/2019','09/25/2019','09/26/2019','09/27/2019']
+# postdates=['09/27/2021','09/28/2021','09/29/2021','09/30/2021','10/01/2021']
 emlist=['01:00:00-05:00:00','01:30:00-05:30:00','02:00:00-06:00:00','02:30:00-06:30:00','03:00:00-07:00:00',
         '03:22:00-07:22:00','03:30:00-07:30:00','04:00:00-08:00:00','04:22:00-08:22:00','04:30:00-08:30:00']
 amlist=['05:00:00-09:00:00','05:30:00-09:30:00','06:00:00-10:00:00','06:30:00-10:30:00','07:00:00-11:00:00',
@@ -3499,6 +3501,8 @@ df.loc[4]=['Early Night',sum(pre.loc[np.isin(pre['time'],enlist),'entries']),sum
 df.loc[5]=['Late Night',sum(pre.loc[np.isin(pre['time'],lnlist),'entries']),sum(post.loc[np.isin(post['time'],lnlist),'entries'])]
 df['Percentage']=df['Late January 2022']/df['Late January 2020']
 df.to_csv('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/tod/summary.csv',index=False)
+
+
 
 
 
