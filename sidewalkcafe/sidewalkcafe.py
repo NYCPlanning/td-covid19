@@ -333,6 +333,7 @@ dfcafeznelwdbf=gpd.sjoin(dfcafeznelwdbf,mapplutolftmswsp,how='left',op='intersec
 dfcafeznelwdbf=dfcafeznelwdbf[['ID','LFIMPSWMDN']].drop_duplicates(['ID'],keep='first').reset_index(drop=True)
 dfcafeznelwdlf=pd.merge(dfcafeznelwd,dfcafeznelwdbf,how='left',on='ID')
 dfcafeznelwdlf.to_file(path+'SIDEWALK CAFE/or_cafe_zn_el_wd_lf.shp')
+dfcafeznelwdlf.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/sidewalkcafe/or_all_type.geojson',driver='GeoJSON')
 dfcafeznelwdlf=gpd.read_file(path+'SIDEWALK CAFE/or_cafe_zn_el_wd_lf.shp')
 dfcafeznelwdlf.crs=4326
 dfcafeznelwdlf=dfcafeznelwdlf[np.isin(dfcafeznelwdlf['TYPE'],['BOTH','SIDEWALK'])].reset_index(drop=True)
@@ -360,9 +361,6 @@ dfcafeznelwdlf['LFCPCAT']=np.where(dfcafeznelwdlf['LFIMPSWMDN']>=11,'Likely Elig
 dfcafeznelwdlf['CAFETYPE']=np.where(dfcafeznelwdlf['CAFETYPE']=='NOT PERMITTED','SPECIFICALLY PROHIBITED',
                             np.where(dfcafeznelwdlf['CAFETYPE']=='NONE','RESIDENTIAL AREA',dfcafeznelwdlf['CAFETYPE']))
 dfcafeznelwdlf.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/sidewalkcafe/or_cafe_zn_el_wd_lf.geojson',driver='GeoJSON')
-
-
-
 
 
 
