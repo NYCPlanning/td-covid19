@@ -2805,3 +2805,60 @@ df['CITIBIKE']=np.where(pd.isna(df['CITIBIKE']),'N',df['CITIBIKE'])
 df=df[['CAMIS','DBA','BORO','BLDGNUM','STNAME','ZIP','CUISINE','ORTYPE','CITIBIKE','geometry']].reset_index(drop=True)
 df.to_file(path+'SIDEWALK CAFE/dohmh_or_citibike_20220206.geojson',driver='GeoJSON')
 
+
+
+
+
+
+
+
+
+
+
+
+# Comparison
+pre=pd.read_csv(path+'SIDEWALK CAFE/DOHMH_Letter_Grade_20200612.csv',dtype=str)
+pre['CAMIS']=[str(x).strip().upper() for x in pre['camis']]
+pre['DBA']=[str(x).strip().upper() for x in pre['dba']]
+pre['BORO']=[str(x).strip().upper() for x in pre['boro']]
+pre['BLDGNUM']=[str(x).strip().upper() for x in pre['building']]
+pre['STNAME']=[str(x).strip().upper() for x in pre['street']]
+pre['ZIP']=[str(x).strip().upper() for x in pre['zipcode']]
+pre['PRE']=1
+pre=pre[['CAMIS','DBA','BORO','BLDGNUM','STNAME','ZIP','PRE']].reset_index(drop=True)
+
+post=pd.read_csv(path+'SIDEWALK CAFE/DOHMH_Letter_Grade_20220206.csv',dtype=str)
+post['CAMIS']=[str(x).strip().upper() for x in post['CAMIS']]
+post['DBA']=[str(x).strip().upper() for x in post['DBA']]
+post['BORO']=[str(x).strip().upper() for x in post['BORO']]
+post['BLDGNUM']=[str(x).strip().upper() for x in post['BUILDING']]
+post['STNAME']=[str(x).strip().upper() for x in post['STREET']]
+post['ZIP']=[str(x).strip().upper() for x in post['ZIPCODE']]
+post['POST']=1
+post=post[['CAMIS','DBA','BORO','BLDGNUM','STNAME','ZIP','POST']].reset_index(drop=True)
+
+opres=pd.DataFrame()
+opres=pd.concat([opres,pd.read_csv(path+'SIDEWALK CAFE/Open_Restaurant_Applications_20201014.csv',dtype=str)],axis=0,ignore_index=True)
+opres=pd.concat([opres,pd.read_csv(path+'SIDEWALK CAFE/Open_Restaurant_Applications_20210316.csv',dtype=str)],axis=0,ignore_index=True)
+opres=pd.concat([opres,pd.read_csv(path+'SIDEWALK CAFE/Open_Restaurant_Applications_20210521.csv',dtype=str)],axis=0,ignore_index=True)
+opres=pd.concat([opres,pd.read_csv(path+'SIDEWALK CAFE/Open_Restaurant_Applications_20220206.csv',dtype=str)],axis=0,ignore_index=True)
+opres['ORTYPE']=[str(x).strip().upper() for x in opres['Seating Interest (Sidewalk/Roadway/Both)']]
+opres['PMTNUM']=[str(x).strip().upper() for x in opres['Food Service Establishment Permit #']]
+opres=opres[['PMTNUM','ORTYPE']].drop_duplicates(keep='first').reset_index(drop=True)
+opres=opres.groupby(['PMTNUM'])['ORTYPE'].apply('/'.join).reset_index(drop=False)
+
+df=pd.merge(pre,post,how='outer',on='CAMIS')
+df=pd.merge(df,opres,how='left',left_on='CAMIS',right_on='PMTNUM')
+df['DBA']=np.where(pd.notna(df['DBA_x']),df['DBA_x'],df['DBA_y'])
+df['BORO']=np.where(pd.notna(df['BORO_x']),df['BORO_x'],df['BORO_y'])
+df['BLDGNUM']=np.where(pd.notna(df['BLDGNUM_x']),df['BLDGNUM_x'],df['BLDGNUM_y'])
+df['STNAME']=np.where(pd.notna(df['STNAME_x']),df['STNAME_x'],df['STNAME_y'])
+df['ZIP']=np.where(pd.notna(df['ZIP_x']),df['ZIP_x'],df['ZIP_y'])
+df['STATUS']=np.where((pd.notna(df['PRE'])&(pd.notna(df['POST']))),'STAY',
+             np.where((pd.notna(df['PRE'])&(pd.isna(df['POST']))),'CLOSED',
+             np.where((pd.isna(df['PRE'])&(pd.notna(df['POST']))),'NEW','OTHER')))
+df['OR']=np.where(pd.notna(df['PMTNUM']),1,0)
+df=df[['CAMIS','DBA','BORO','BLDGNUM','STNAME','ZIP','PRE','POST','STATUS','OR']].reset_index(drop=True)
+df=df.fillna(0)
+
+df.groupby(['STATUS','OR'],as_index=False).agg({'CAMIS':'count'}).reset_index(drop=True)
