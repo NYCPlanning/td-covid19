@@ -2860,3 +2860,6 @@ df=df[['CAMIS','DBA','BORO','BLDGNUM','STNAME','ZIP','PRE','POST','STATUS','OR']
 df=df.fillna(0)
 
 df.groupby(['STATUS','OR'],as_index=False).agg({'CAMIS':'count'}).reset_index(drop=True)
+
+
+
