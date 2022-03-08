@@ -311,8 +311,9 @@
                 'layerlinejoin': 'round', // line joining; bevel/round/miter
                 'layervisibility': 'visible', // visibility of the layer
                 'layercolname': 'FT', // category column name
-                'layercat': ['8 FT', '12 FT'], // categories
-                'layercolor': ['rgba(100,100,255,1)', 'rgba(255,109,109,1)'], // color for each category; use rgba
+                'layercat': ['12 FT', '8 FT'], // categories
+                'layercolor': ['rgba(255,109,109,1)', 'rgba(100,100,255,1)'], // color for each category; use rgba
+                'layersortkey': [2, 1], // color for each category; use rgba
                 'layeropacity': 1, // line opacity
                 'layerwidth': 2, // line width
                 'layeroutlinecolor': 'rgba(0,0,0,0)', // outline color; for legend purpose only
@@ -325,6 +326,14 @@
                 layerColor.push(layerContent.layercolor[i]);
             };
             layerColor.push('#000000');
+
+            // Generate layer colors
+            var layerSortKey = ['match', ['get', layerContent['layercolname']]];
+            for (var i = 0; i < layerContent.layercat.length; i++) {
+                layerSortKey.push(layerContent.layercat[i]);
+                layerSortKey.push(layerContent.layersortkey[i]);
+            };
+            layerSortKey.push(0);
 
             // Add layer content to the overall layer content list
             layerContentList.push(layerContent);
@@ -344,6 +353,7 @@
                     'line-cap': layerContent['layerlinecap'],
                     'line-join': layerContent['layerlinejoin'],
                     'visibility': layerContent['layervisibility'],
+                    'line-sort-key': layerSortKey,
                 },
                 'paint': {
                     'line-color': layerColor,
