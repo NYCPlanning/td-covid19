@@ -597,8 +597,8 @@
 
 
 
-            // Add popup
-            var popup = new mapboxgl.Popup({
+            // Add popup1
+            var popup1 = new mapboxgl.Popup({
                 closeButton: true, // close button
                 closeOnClick: false, // close if click on map
                 closeOnMove: false, // close if move the map
@@ -616,7 +616,7 @@
                 description += "<b>" + document.getElementById('slideroutput').textContent.split(' vs ')[0] + ": </b><span>" + e.features[0].properties['Week' + document.getElementById('sliderbar').value + 'Post'].toFixed(0) + "</span><br>";// description in the popup
                 description += "<b>" + document.getElementById('slideroutput').textContent.split(' vs ')[1] + ": </b><span>" + e.features[0].properties['Week' + document.getElementById('sliderbar').value + 'Pre'].toFixed(0) + "</span><br>";// description in the popup
                 description += "<b>As % of Pre-Pandemic: </b><span>" + (e.features[0].properties['Week' + document.getElementById('sliderbar').value + 'Pct'] * 100).toFixed(1) + "%</span><br>";// description in the popup
-                popup.setLngLat(coordinates).setHTML(description).addTo(map1); //add popup
+                popup1.setLngLat(coordinates).setHTML(description).addTo(map1); //add popup
             }
             map1.on('click', 'ntaam', onClick);
             // Add hover events
@@ -674,6 +674,45 @@
                 itemgroup1.appendChild(itemgroup2);
                 filterLegend.appendChild(itemgroup1);
             };
+
+
+
+            // Set slider event
+            sliderbar.addEventListener('input', function () {
+                var weekNum = document.getElementById('sliderbar').value;
+                document.getElementById('slideroutput').textContent = weekList[weekNum];
+                var layercolname = 'Week' + weekNum + 'PctCat';
+                var layercat = ['<= 10%', '11% ~ 20%', '21% ~ 30%', '31% ~ 40%', '41% ~ 50%', '> 50%'];
+                var layercolor = ['rgba(255, 245, 235, 1)', 'rgba(254, 219, 183, 1)', 'rgba(253, 172, 103, 1)', 'rgba(246, 119, 34, 1)', 'rgba(209, 69, 1, 1)', 'rgba(127, 39, 4, 1)'];
+                var layerColor = ['match', ['get', layercolname]];
+                for (var i = 0; i < layercat.length; i++) {
+                    layerColor.push(layercat[i]);
+                    layerColor.push(layercolor[i]);
+                };
+                layerColor.push('#000000');
+                map1.setPaintProperty('ntaam', 'fill-color', layerColor);
+
+                // Remove current popups
+                var popups = document.getElementsByClassName("mapboxgl-popup");
+                for (var i = 0; i < popups.length; i++) {
+                    popups[i].remove();
+                };
+
+                // Remove current popup click event
+                map1.off('click', 'ntaam', onClick);
+
+                // Add new popup1
+                // Add click event
+                function onClick(e) {
+                    var coordinates = e.lngLat; // get pointer coordinates
+                    var description = "<b>NTA Code: </b><span>" + e.features[0].properties.NTACode + "</span><br>";// description in the popup
+                    description += "<b>" + document.getElementById('slideroutput').textContent.split(' vs ')[0] + ": </b><span>" + e.features[0].properties['Week' + document.getElementById('sliderbar').value + 'Post'].toFixed(0) + "</span><br>";// description in the popup
+                    description += "<b>" + document.getElementById('slideroutput').textContent.split(' vs ')[1] + ": </b><span>" + e.features[0].properties['Week' + document.getElementById('sliderbar').value + 'Pre'].toFixed(0) + "</span><br>";// description in the popup
+                    description += "<b>As % of Pre-Pandemic: </b><span>" + (e.features[0].properties['Week' + document.getElementById('sliderbar').value + 'Pct'] * 100).toFixed(1) + "%</span><br>";// description in the popup
+                    popup1.setLngLat(coordinates).setHTML(description).addTo(map1); //add popup
+                }
+                map1.on('click', 'ntaam', onClick);
+            });
         });
 
 
@@ -823,6 +862,45 @@
             map2.on('mouseleave', 'ntapm', function () {
                 map2.getCanvas().style.cursor = '';
             });
+
+
+
+            // Set slider event
+            sliderbar.addEventListener('input', function () {
+                var weekNum = document.getElementById('sliderbar').value;
+                document.getElementById('slideroutput').textContent = weekList[weekNum];
+                var layercolname = 'Week' + weekNum + 'PctCat';
+                var layercat = ['<= 10%', '11% ~ 20%', '21% ~ 30%', '31% ~ 40%', '41% ~ 50%', '> 50%'];
+                var layercolor = ['rgba(255, 245, 235, 1)', 'rgba(254, 219, 183, 1)', 'rgba(253, 172, 103, 1)', 'rgba(246, 119, 34, 1)', 'rgba(209, 69, 1, 1)', 'rgba(127, 39, 4, 1)'];
+                var layerColor = ['match', ['get', layercolname]];
+                for (var i = 0; i < layercat.length; i++) {
+                    layerColor.push(layercat[i]);
+                    layerColor.push(layercolor[i]);
+                };
+                layerColor.push('#000000');
+                map2.setPaintProperty('ntapm', 'fill-color', layerColor);
+
+                // Remove current popups
+                var popups = document.getElementsByClassName("mapboxgl-popup");
+                for (var i = 0; i < popups.length; i++) {
+                    popups[i].remove();
+                };
+
+                // Remove current popup click event
+                map2.off('click', 'ntapm', onClick);
+
+                // Add new popup2
+                // Add click event
+                function onClick(e) {
+                    var coordinates = e.lngLat; // get pointer coordinates
+                    var description = "<b>NTA Code: </b><span>" + e.features[0].properties.NTACode + "</span><br>";// description in the popup
+                    description += "<b>" + document.getElementById('slideroutput').textContent.split(' vs ')[0] + ": </b><span>" + e.features[0].properties['Week' + document.getElementById('sliderbar').value + 'Post'].toFixed(0) + "</span><br>";// description in the popup
+                    description += "<b>" + document.getElementById('slideroutput').textContent.split(' vs ')[1] + ": </b><span>" + e.features[0].properties['Week' + document.getElementById('sliderbar').value + 'Pre'].toFixed(0) + "</span><br>";// description in the popup
+                    description += "<b>As % of Pre-Pandemic: </b><span>" + (e.features[0].properties['Week' + document.getElementById('sliderbar').value + 'Pct'] * 100).toFixed(1) + "%</span><br>";// description in the popup
+                    popup2.setLngLat(coordinates).setHTML(description).addTo(map2); //add popup
+                }
+                map2.on('click', 'ntapm', onClick);
+            });
         });
 
 
@@ -879,61 +957,6 @@
                 document.getElementById('chevron').className = "bi bi-chevron-down";
                 collapsevalue = 0;
             };
-        });
-
-
-
-
-
-        // Set slider event
-        sliderbar.addEventListener('input', function () {
-            var weekNum = document.getElementById('sliderbar').value;
-            document.getElementById('slideroutput').textContent = weekList[weekNum];
-            var layercolname = 'Week' + weekNum + 'PctCat';
-            var layercat = ['<= 10%', '11% ~ 20%', '21% ~ 30%', '31% ~ 40%', '41% ~ 50%', '> 50%'];
-            var layercolor = ['rgba(255, 245, 235, 1)', 'rgba(254, 219, 183, 1)', 'rgba(253, 172, 103, 1)', 'rgba(246, 119, 34, 1)', 'rgba(209, 69, 1, 1)', 'rgba(127, 39, 4, 1)'];
-            var layerColor = ['match', ['get', layercolname]];
-            for (var i = 0; i < layercat.length; i++) {
-                layerColor.push(layercat[i]);
-                layerColor.push(layercolor[i]);
-            };
-            layerColor.push('#000000');
-            map1.setPaintProperty('ntaam', 'fill-color', layerColor);
-            map2.setPaintProperty('ntapm', 'fill-color', layerColor);
-
-            // Remove current popups
-            var popups = document.getElementsByClassName("mapboxgl-popup");
-            for (var i = 0; i < popups.length; i++) {
-                popups[i].remove();
-            };
-
-            // Remove current popup click event
-            map1.off('click', 'ntaam', onClick);
-            map2.off('click', 'ntapm', onClick);
-
-            // Add new popup1
-            // Add click event
-            function onClick(e) {
-                var coordinates = e.lngLat; // get pointer coordinates
-                var description = "<b>NTA Code: </b><span>" + e.features[0].properties.NTACode + "</span><br>";// description in the popup
-                description += "<b>" + document.getElementById('slideroutput').textContent.split(' vs ')[0] + ": </b><span>" + e.features[0].properties['Week' + document.getElementById('sliderbar').value + 'Post'].toFixed(0) + "</span><br>";// description in the popup
-                description += "<b>" + document.getElementById('slideroutput').textContent.split(' vs ')[1] + ": </b><span>" + e.features[0].properties['Week' + document.getElementById('sliderbar').value + 'Pre'].toFixed(0) + "</span><br>";// description in the popup
-                description += "<b>As % of Pre-Pandemic: </b><span>" + (e.features[0].properties['Week' + document.getElementById('sliderbar').value + 'Pct'] * 100).toFixed(1) + "%</span><br>";// description in the popup
-                popup1.setLngLat(coordinates).setHTML(description).addTo(map1); //add popup
-            }
-            map1.on('click', 'ntaam', onClick);
-
-            // Add new popup2
-            // Add click event
-            function onClick(e) {
-                var coordinates = e.lngLat; // get pointer coordinates
-                var description = "<b>NTA Code: </b><span>" + e.features[0].properties.NTACode + "</span><br>";// description in the popup
-                description += "<b>" + document.getElementById('slideroutput').textContent.split(' vs ')[0] + ": </b><span>" + e.features[0].properties['Week' + document.getElementById('sliderbar').value + 'Post'].toFixed(0) + "</span><br>";// description in the popup
-                description += "<b>" + document.getElementById('slideroutput').textContent.split(' vs ')[1] + ": </b><span>" + e.features[0].properties['Week' + document.getElementById('sliderbar').value + 'Pre'].toFixed(0) + "</span><br>";// description in the popup
-                description += "<b>As % of Pre-Pandemic: </b><span>" + (e.features[0].properties['Week' + document.getElementById('sliderbar').value + 'Pct'] * 100).toFixed(1) + "%</span><br>";// description in the popup
-                popup2.setLngLat(coordinates).setHTML(description).addTo(map1); //add popup
-            }
-            map2.on('click', 'ntapm', onClick);
         });
     </script>
 

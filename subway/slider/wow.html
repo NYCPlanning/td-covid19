@@ -232,7 +232,7 @@
             </div>
             <div class="row g-0 justify-content-center">
                 <div class="col-auto">
-                    <input type="range" min="0" max="45" step="1" value="45" list="steplist" id="sliderbar">
+                    <input type="range" min="0" max="50" step="1" value="50" list="steplist" id="sliderbar">
                     <datalist id="steplist">
                         <option>0</option>
                         <option>1</option>
@@ -280,6 +280,11 @@
                         <option>43</option>
                         <option>44</option>
                         <option>45</option>
+                        <option>46</option>
+                        <option>47</option>
+                        <option>48</option>
+                        <option>49</option>
+                        <option>50</option>
                     </datalist>
                 </div>
             </div>
@@ -337,7 +342,12 @@
             '01/10/2022-01/14/2022 vs 01/03/2022-01/07/2022',
             '01/17/2022-01/21/2022 vs 01/10/2022-01/14/2022',
             '01/24/2022-01/28/2022 vs 01/17/2022-01/21/2022',
-            '01/31/2022-02/04/2022 vs 01/24/2022-01/28/2022'];
+            '01/31/2022-02/04/2022 vs 01/24/2022-01/28/2022',
+            '02/07/2022-02/11/2022 vs 01/31/2022-02/04/2022',
+            '02/14/2022-02/18/2022 vs 02/07/2022-02/11/2022',
+            '02/21/2022-02/25/2022 vs 02/14/2022-02/18/2022',
+            '02/28/2022-03/04/2022 vs 02/21/2022-02/25/2022',
+            '03/07/2022-03/11/2022 vs 02/28/2022-03/04/2022'];
         document.getElementById('slideroutput').textContent = weekList[weekNum];
 
         // Set MapBox token
@@ -477,6 +487,39 @@
 
 
 
+            // Add popup1
+            var popup1 = new mapboxgl.Popup({
+                closeButton: true, // close button
+                closeOnClick: false, // close if click on map
+                closeOnMove: false, // close if move the map
+                anchor: 'bottom', // anchor of the popup
+                offset: 0, // offset from the feature
+                maxWidth: 'none', // max width of the popoup; 'none' to fit to the content                
+            });
+
+
+            // Add ntawowam popup
+            // Add click event
+            function onClick(e) {
+                var coordinates = e.lngLat; // get pointer coordinates
+                var description = "<b>NTA Code: </b><span>" + e.features[0].properties.NTACode + "</span><br>";// description in the popup
+                description += "<b>" + document.getElementById('slideroutput').textContent.split(' vs ')[0] + ": </b><span>" + e.features[0].properties['Week' + document.getElementById('sliderbar').value + 'Post'].toFixed(0) + "</span><br>";// description in the popup
+                description += "<b>" + document.getElementById('slideroutput').textContent.split(' vs ')[1] + ": </b><span>" + e.features[0].properties['Week' + document.getElementById('sliderbar').value + 'Pre'].toFixed(0) + "</span><br>";// description in the popup
+                description += "<b>Change: </b><span>" + e.features[0].properties['Week' + document.getElementById('sliderbar').value + 'Diff'].toFixed(0) + "</span><br>";// description in the popup
+                description += "<b>% Change: </b><span>" + (e.features[0].properties['Week' + document.getElementById('sliderbar').value + 'DiffPct'] * 100).toFixed(1) + "%</span><br>";// description in the popup
+                popup1.setLngLat(coordinates).setHTML(description).addTo(map1); //add popup
+            }
+            map1.on('click', 'ntawowam', onClick);
+            // Add hover events
+            map1.on('mouseenter', 'ntawowam', function () {
+                map1.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
+            });
+            map1.on('mouseleave', 'ntawowam', function () {
+                map1.getCanvas().style.cursor = '';
+            });
+
+
+
             // Add layer selector and legend
             var layerOrder = ['ntawowam', 'subwayline']; // set layer order in the legend
             var layerContentListOrder = []; // create ordered layer content list
@@ -522,6 +565,46 @@
                 itemgroup1.appendChild(itemgroup2);
                 filterLegend.appendChild(itemgroup1);
             };
+
+
+
+            // Set slider event
+            sliderbar.addEventListener('input', function () {
+                var weekNum = document.getElementById('sliderbar').value;
+                document.getElementById('slideroutput').textContent = weekList[weekNum];
+                var layercolname = 'Week' + weekNum + 'DiffPctCat';
+                var layercat = ['<= 0%', '1% ~ 5%', '6% ~ 10%', '11% ~ 15%', '16% ~ 20%', '> 20%'];
+                var layercolor = ['rgba(255, 245, 235, 1)', 'rgba(254, 219, 183, 1)', 'rgba(253, 172, 103, 1)', 'rgba(246, 119, 34, 1)', 'rgba(209, 69, 1, 1)', 'rgba(127, 39, 4, 1)'];
+                var layerColor = ['match', ['get', layercolname]];
+                for (var i = 0; i < layercat.length; i++) {
+                    layerColor.push(layercat[i]);
+                    layerColor.push(layercolor[i]);
+                };
+                layerColor.push('#000000');
+                map1.setPaintProperty('ntawowam', 'fill-color', layerColor);
+
+                // Remove current popups
+                var popups = document.getElementsByClassName("mapboxgl-popup");
+                for (var i = 0; i < popups.length; i++) {
+                    popups[i].remove();
+                };
+
+                // Remove current popup click event
+                map1.off('click', 'ntawowam', onClick);
+
+                // Add new popup1
+                // Add click event
+                function onClick(e) {
+                    var coordinates = e.lngLat; // get pointer coordinates
+                    var description = "<b>NTA Code: </b><span>" + e.features[0].properties.NTACode + "</span><br>";// description in the popup
+                    description += "<b>" + document.getElementById('slideroutput').textContent.split(' vs ')[0] + ": </b><span>" + e.features[0].properties['Week' + document.getElementById('sliderbar').value + 'Post'].toFixed(0) + "</span><br>";// description in the popup
+                    description += "<b>" + document.getElementById('slideroutput').textContent.split(' vs ')[1] + ": </b><span>" + e.features[0].properties['Week' + document.getElementById('sliderbar').value + 'Pre'].toFixed(0) + "</span><br>";// description in the popup
+                    description += "<b>Change: </b><span>" + e.features[0].properties['Week' + document.getElementById('sliderbar').value + 'Diff'].toFixed(0) + "</span><br>";// description in the popup
+                    description += "<b>% Change: </b><span>" + (e.features[0].properties['Week' + document.getElementById('sliderbar').value + 'DiffPct'] * 100).toFixed(1) + "%</span><br>";// description in the popup
+                    popup1.setLngLat(coordinates).setHTML(description).addTo(map1); //add popup
+                }
+                map1.on('click', 'ntawowam', onClick);
+            });
         });
 
 
@@ -638,6 +721,79 @@
                     'line-width': layerContent['layerwidth'],
                 },
             });
+
+
+
+            // Add popup2
+            var popup2 = new mapboxgl.Popup({
+                closeButton: true, // close button
+                closeOnClick: false, // close if click on map
+                closeOnMove: false, // close if move the map
+                anchor: 'bottom', // anchor of the popup
+                offset: 0, // offset from the feature
+                maxWidth: 'none', // max width of the popoup; 'none' to fit to the content                
+            });
+
+
+            // Add ntawowpm popup
+            // Add click event
+            function onClick(e) {
+                var coordinates = e.lngLat; // get pointer coordinates
+                var description = "<b>NTA Code: </b><span>" + e.features[0].properties.NTACode + "</span><br>";// description in the popup
+                description += "<b>" + document.getElementById('slideroutput').textContent.split(' vs ')[0] + ": </b><span>" + e.features[0].properties['Week' + document.getElementById('sliderbar').value + 'Post'].toFixed(0) + "</span><br>";// description in the popup
+                description += "<b>" + document.getElementById('slideroutput').textContent.split(' vs ')[1] + ": </b><span>" + e.features[0].properties['Week' + document.getElementById('sliderbar').value + 'Pre'].toFixed(0) + "</span><br>";// description in the popup
+                description += "<b>Change: </b><span>" + e.features[0].properties['Week' + document.getElementById('sliderbar').value + 'Diff'].toFixed(0) + "</span><br>";// description in the popup
+                description += "<b>% Change: </b><span>" + (e.features[0].properties['Week' + document.getElementById('sliderbar').value + 'DiffPct'] * 100).toFixed(1) + "%</span><br>";// description in the popup
+                popup2.setLngLat(coordinates).setHTML(description).addTo(map2); //add popup
+            }
+            map2.on('click', 'ntawowpm', onClick);
+            // Add hover events
+            map2.on('mouseenter', 'ntawowpm', function () {
+                map2.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
+            });
+            map2.on('mouseleave', 'ntawowpm', function () {
+                map2.getCanvas().style.cursor = '';
+            });
+
+
+
+            // Set slider event
+            sliderbar.addEventListener('input', function () {
+                var weekNum = document.getElementById('sliderbar').value;
+                document.getElementById('slideroutput').textContent = weekList[weekNum];
+                var layercolname = 'Week' + weekNum + 'DiffPctCat';
+                var layercat = ['<= 0%', '1% ~ 5%', '6% ~ 10%', '11% ~ 15%', '16% ~ 20%', '> 20%'];
+                var layercolor = ['rgba(255, 245, 235, 1)', 'rgba(254, 219, 183, 1)', 'rgba(253, 172, 103, 1)', 'rgba(246, 119, 34, 1)', 'rgba(209, 69, 1, 1)', 'rgba(127, 39, 4, 1)'];
+                var layerColor = ['match', ['get', layercolname]];
+                for (var i = 0; i < layercat.length; i++) {
+                    layerColor.push(layercat[i]);
+                    layerColor.push(layercolor[i]);
+                };
+                layerColor.push('#000000');
+                map2.setPaintProperty('ntawowpm', 'fill-color', layerColor);
+
+                // Remove current popups
+                var popups = document.getElementsByClassName("mapboxgl-popup");
+                for (var i = 0; i < popups.length; i++) {
+                    popups[i].remove();
+                };
+
+                // Remove current popup click event
+                map2.off('click', 'ntawowpm', onClick);
+
+                // Add new popup2
+                // Add click event
+                function onClick(e) {
+                    var coordinates = e.lngLat; // get pointer coordinates
+                    var description = "<b>NTA Code: </b><span>" + e.features[0].properties.NTACode + "</span><br>";// description in the popup
+                    description += "<b>" + document.getElementById('slideroutput').textContent.split(' vs ')[0] + ": </b><span>" + e.features[0].properties['Week' + document.getElementById('sliderbar').value + 'Post'].toFixed(0) + "</span><br>";// description in the popup
+                    description += "<b>" + document.getElementById('slideroutput').textContent.split(' vs ')[1] + ": </b><span>" + e.features[0].properties['Week' + document.getElementById('sliderbar').value + 'Pre'].toFixed(0) + "</span><br>";// description in the popup
+                    description += "<b>Change: </b><span>" + e.features[0].properties['Week' + document.getElementById('sliderbar').value + 'Diff'].toFixed(0) + "</span><br>";// description in the popup
+                    description += "<b>% Change: </b><span>" + (e.features[0].properties['Week' + document.getElementById('sliderbar').value + 'DiffPct'] * 100).toFixed(1) + "%</span><br>";// description in the popup
+                    popup2.setLngLat(coordinates).setHTML(description).addTo(map2); //add popup
+                }
+                map2.on('click', 'ntawowam', onClick);
+            });
         });
 
 
@@ -694,27 +850,6 @@
                 document.getElementById('chevron').className = "bi bi-chevron-down";
                 collapsevalue = 0;
             };
-        });
-
-
-
-
-
-        // Set slider event
-        sliderbar.addEventListener('input', function () {
-            var weekNum = document.getElementById('sliderbar').value;
-            document.getElementById('slideroutput').textContent = weekList[weekNum];
-            var layercolname = 'Week' + weekNum + 'DiffPctCat';
-            var layercat = ['<= 0%', '1% ~ 5%', '6% ~ 10%', '11% ~ 15%', '16% ~ 20%', '> 20%'];
-            var layercolor = ['rgba(255, 245, 235, 1)', 'rgba(254, 219, 183, 1)', 'rgba(253, 172, 103, 1)', 'rgba(246, 119, 34, 1)', 'rgba(209, 69, 1, 1)', 'rgba(127, 39, 4, 1)'];
-            var layerColor = ['match', ['get', layercolname]];
-            for (var i = 0; i < layercat.length; i++) {
-                layerColor.push(layercat[i]);
-                layerColor.push(layercolor[i]);
-            };
-            layerColor.push('#000000');
-            map1.setPaintProperty('ntawowam', 'fill-color', layerColor);
-            map2.setPaintProperty('ntawowpm', 'fill-color', layerColor);
         });
     </script>
 
