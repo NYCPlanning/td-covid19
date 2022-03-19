@@ -3567,10 +3567,10 @@ cplxamhed['PctCat']=np.where(cplxamhed['Pct']<=0.3,'<=30%',
 cplxamhed.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/tod/em.geojson',driver='GeoJSON')
 
 # Summary
-df=pd.DataFrame(columns=['Time Period','Late January 2020','Late January 2022'])
+df=pd.DataFrame(columns=['Time Period','Early March 2019','Early March 2022'])
 dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
-predates=['01/27/2020','01/28/2020','01/29/2020','01/30/2020','01/31/2020']
-postdates=['01/24/2022','01/25/2022','01/26/2022','01/27/2022','01/28/2022']
+predates=['03/04/2019','03/05/2019','03/06/2019','03/07/2019','03/08/2019']
+postdates=['03/07/2022','03/08/2022','03/09/2022','03/10/2022','03/11/2022']
 # predates=['09/23/2019','09/24/2019','09/25/2019','09/26/2019','09/27/2019']
 # postdates=['09/27/2021','09/28/2021','09/29/2021','09/30/2021','10/01/2021']
 emlist=['01:00:00-05:00:00','01:30:00-05:30:00','02:00:00-06:00:00','02:30:00-06:30:00','03:00:00-07:00:00',
@@ -3593,7 +3593,7 @@ df.loc[2]=['Midday',sum(pre.loc[np.isin(pre['time'],mdlist),'entries']),sum(post
 df.loc[3]=['PM Peak',sum(pre.loc[np.isin(pre['time'],pmlist),'entries']),sum(post.loc[np.isin(post['time'],pmlist),'entries'])]
 df.loc[4]=['Early Night',sum(pre.loc[np.isin(pre['time'],enlist),'entries']),sum(post.loc[np.isin(post['time'],enlist),'entries'])]
 df.loc[5]=['Late Night',sum(pre.loc[np.isin(pre['time'],lnlist),'entries']),sum(post.loc[np.isin(post['time'],lnlist),'entries'])]
-df['Percentage']=df['Late January 2022']/df['Late January 2020']
+df['Percentage']=df['Early March 2022']/df['Early March 2019']
 df.to_csv('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/tod/summary.csv',index=False)
 
 
