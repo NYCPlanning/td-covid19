@@ -242,7 +242,7 @@
                 'sourcedata': 'am.geojson', // data source
                 'layerid': 'ntaturnstile', // layer id
                 'layertype': 'fill', // symbology type
-                'layername': 'Late January 2022 as Percentage of Late January 2020 Weekday Subway Ridership', // layer name for the legend
+                'layername': 'Early March 2022 as Percentage of Early March 2019 Weekday Subway Ridership', // layer name for the legend
                 'layervisibility': 'visible', // visibility of the layer
                 'layercolname': 'PctCat', // category column name
                 'layercat': ['>60%', '51%~60%', '41%~50%', '31%~40%', '<=30%'], // categories
@@ -344,9 +344,9 @@
                 var coordinates = e.lngLat; // get pointer coordinates
                 var description = "<b>NTA Code: </b><span>" + e.features[0].properties.NTACode + "</span><br>"; // description in the popup
                 description += "<b>NTA Name: </b><span>" + e.features[0].properties.NTAName + "</span><br>";
-                description += "<b>Late January 2020 Weekday Subway Ridership: </b><span>" + e.features[0].properties.PreEntries.toFixed(2) + "</span><br>";
-                description += "<b>Late January 2022 Weekday Subway Ridership: </b><span>" + e.features[0].properties.PostEntries.toFixed(2) + "</span><br>";
-                description += "<b>Late January 2022 as Percentage of Late January 2020: </b><span>" + (Number(e.features[0].properties.Pct) * 100).toFixed(2) + "%</span><br>";
+                description += "<b>Early March 2019 Weekday Subway Ridership: </b><span>" + e.features[0].properties.PreEntries.toFixed(2) + "</span><br>";
+                description += "<b>Early March 2022 Weekday Subway Ridership: </b><span>" + e.features[0].properties.PostEntries.toFixed(2) + "</span><br>";
+                description += "<b>Early March 2022 as Percentage of Early March 2019: </b><span>" + (Number(e.features[0].properties.Pct) * 100).toFixed(2) + "%</span><br>";
                 popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
             });
             // Add hover events

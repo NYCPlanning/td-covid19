@@ -3316,8 +3316,8 @@ cplxrto.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/cplxrtofull
 # NTA Time of Day
 # AM Peak
 dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
-predates=['01/27/2020','01/28/2020','01/29/2020','01/30/2020','01/31/2020']
-postdates=['01/24/2022','01/25/2022','01/26/2022','01/27/2022','01/28/2022']
+predates=['03/04/2019','03/05/2019','03/06/2019','03/07/2019','03/08/2019']
+postdates=['03/07/2022','03/08/2022','03/09/2022','03/10/2022','03/11/2022']
 amlist=['05:00:00-09:00:00','05:30:00-09:30:00','06:00:00-10:00:00','06:30:00-10:30:00','07:00:00-11:00:00',
         '07:22:00-11:22:00','07:30:00-11:30:00','08:00:00-12:00:00','08:22:00-12:22:00','08:30:00-12:30:00']
 cplxampre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
@@ -3358,8 +3358,8 @@ cplxamhed.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/tod/am.ge
 
 # Midday
 dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
-predates=['01/27/2020','01/28/2020','01/29/2020','01/30/2020','01/31/2020']
-postdates=['01/24/2022','01/25/2022','01/26/2022','01/27/2022','01/28/2022']
+predates=['03/04/2019','03/05/2019','03/06/2019','03/07/2019','03/08/2019']
+postdates=['03/07/2022','03/08/2022','03/09/2022','03/10/2022','03/11/2022']
 mdlist=['09:00:00-13:00:00','09:30:00-13:30:00','10:00:00-14:00:00','10:30:00-14:30:00','11:00:00-15:00:00',
           '11:22:00-15:22:00','11:30:00-15:30:00','12:00:00-16:00:00','12:22:00-16:22:00','12:30:00-16:30:00']
 cplxampre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
@@ -3400,8 +3400,8 @@ cplxamhed.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/tod/md.ge
 
 # PM Peak
 dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
-predates=['01/27/2020','01/28/2020','01/29/2020','01/30/2020','01/31/2020']
-postdates=['01/24/2022','01/25/2022','01/26/2022','01/27/2022','01/28/2022']
+predates=['03/04/2019','03/05/2019','03/06/2019','03/07/2019','03/08/2019']
+postdates=['03/07/2022','03/08/2022','03/09/2022','03/10/2022','03/11/2022']
 pmlist=['13:00:00-17:00:00','13:30:00-17:30:00','14:00:00-18:00:00','14:30:00-18:30:00','15:00:00-19:00:00',
         '15:22:00-19:22:00','15:30:00-19:30:00','16:00:00-20:00:00','16:22:00-20:22:00','16:30:00-20:30:00']
 cplxampre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
@@ -3442,8 +3442,8 @@ cplxamhed.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/tod/pm.ge
 
 # Early Night
 dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
-predates=['01/27/2020','01/28/2020','01/29/2020','01/30/2020','01/31/2020']
-postdates=['01/24/2022','01/25/2022','01/26/2022','01/27/2022','01/28/2022']
+predates=['03/04/2019','03/05/2019','03/06/2019','03/07/2019','03/08/2019']
+postdates=['03/07/2022','03/08/2022','03/09/2022','03/10/2022','03/11/2022']
 enlist=['17:00:00-21:00:00','17:30:00-21:30:00','18:00:00-22:00:00','18:30:00-22:30:00','19:00:00-23:00:00',
         '19:22:00-23:22:00','19:30:00-23:30:00','20:00:00-00:00:00','20:22:00-00:22:00','20:30:00-00:30:00']
 cplxampre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
@@ -3484,8 +3484,8 @@ cplxamhed.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/tod/en.ge
 
 # Late Night
 dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
-predates=['01/27/2020','01/28/2020','01/29/2020','01/30/2020','01/31/2020']
-postdates=['01/24/2022','01/25/2022','01/26/2022','01/27/2022','01/28/2022']
+predates=['03/04/2019','03/05/2019','03/06/2019','03/07/2019','03/08/2019']
+postdates=['03/07/2022','03/08/2022','03/09/2022','03/10/2022','03/11/2022']
 lnlist=['21:00:00-01:00:00','21:30:00-01:30:00','22:00:00-02:00:00','22:30:00-02:30:00','23:00:00-03:00:00',
         '23:22:00-03:22:00','23:30:00-03:30:00','00:00:00-04:00:00','00:22:00-04:22:00','00:30:00-04:30:00']
 cplxampre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
@@ -3526,8 +3526,8 @@ cplxamhed.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/tod/ln.ge
 
 # Early Morning
 dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
-predates=['01/27/2020','01/28/2020','01/29/2020','01/30/2020','01/31/2020']
-postdates=['01/24/2022','01/25/2022','01/26/2022','01/27/2022','01/28/2022']
+predates=['03/04/2019','03/05/2019','03/06/2019','03/07/2019','03/08/2019']
+postdates=['03/07/2022','03/08/2022','03/09/2022','03/10/2022','03/11/2022']
 emlist=['01:00:00-05:00:00','01:30:00-05:30:00','02:00:00-06:00:00','02:30:00-06:30:00','03:00:00-07:00:00',
         '03:22:00-07:22:00','03:30:00-07:30:00','04:00:00-08:00:00','04:22:00-08:22:00','04:30:00-08:30:00']
 cplxampre=dfunitentry[np.isin(dfunitentry['firstdate'],predates)].reset_index(drop=True)
