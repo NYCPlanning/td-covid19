@@ -3619,11 +3619,13 @@ df=df.groupby(['CplxID','year'],as_index=False).agg({'entries':'mean'}).reset_in
 df=df.pivot(index='CplxID',columns='year').reset_index(drop=False)
 df.to_csv(path+'VALIDATION/MTA/TURNSTILE09.csv',index=False)
 
+
+
 # Compare with MTA Daily Estimate
 dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
 dfunitentry=dfunitentry.groupby(['firstdate'],as_index=False).agg({'entries':'sum'}).reset_index(drop=True)
 dfunitentry['firstdate']=[datetime.datetime.strptime(x,'%m/%d/%Y') for x in dfunitentry['firstdate']]
-df=pd.read_csv('https://new.mta.info/document/20441',dtype=str)
+df=pd.read_csv('https://data.ny.gov/api/views/vxuj-8kew/rows.csv?accessType=DOWNLOAD&sorting=true',dtype=str)
 df['Date']=[datetime.datetime.strptime(x,'%m/%d/%Y') for x in df['Date']]
 df['Subway']=[int(x) for x in df['Subways: Total Estimated Ridership']]
 df=df[['Date','Subway']].reset_index(drop=True)
@@ -3631,6 +3633,28 @@ df=pd.merge(df,dfunitentry,how='inner',left_on='Date',right_on='firstdate')
 df.to_csv(path+'VALIDATION/MTA/DAILY.csv',index=False)
 
 
+
+# Compare with Fare and MTA Day-by-Day Estimate
+dfunitentry=pd.read_csv(path+'OUTPUT/dfunitentry.csv',dtype=str,converters={'entries':float,'gooducs':float,'flagtime':float,'flagentry':float})
+dfdailyentry=dfunitentry.groupby(['firstdate'],as_index=False).agg({'entries':'sum'}).reset_index(drop=True)
+mta=pd.read_csv('https://data.ny.gov/api/views/vxuj-8kew/rows.csv?accessType=DOWNLOAD&sorting=true',dtype=str)
+mta['firstdate']=[datetime.datetime.strptime(x,'%m/%d/%Y') for x in mta['Date']]
+mta['firstdate']=[x.strftime('%m/%d/%Y') for x in mta['firstdate']]
+mta['Subway']=[int(x) for x in mta['Subways: Total Estimated Ridership']]
+mta=mta[['firstdate','Subway']].reset_index(drop=True)
+dfwk=pd.DataFrame()
+dfwk['firstdate']=sorted([datetime.datetime.strptime(x,'%m/%d/%Y') for x in dfunitentry['firstdate'].unique()])
+dfwk['firstdate']=[x.strftime('%m/%d/%Y') for x in dfwk['firstdate']]
+dfwk['weekid']=np.repeat(list(range(1,int(len(dfwk)/7)+2)),7)[0:len(dfwk)]
+dfwk['weekfirstdate']=np.repeat(list(dfwk.drop_duplicates('weekid',keep='first')['firstdate']),7)[0:len(dfwk)]
+dfwk=pd.merge(dfwk,dfdailyentry,how='inner',on='firstdate')
+dfwk=pd.merge(dfwk,mta,how='inner',on='firstdate')
+dfwk=dfwk.groupby(['weekid','weekfirstdate'],as_index=False).agg({'entries':'sum','Subway':'sum'}).reset_index(drop=True)
+fare=pd.read_csv('C:/Users/mayij/Desktop/DOC/DCP2020/COVID19/SUBWAY/FARE/fare.csv',dtype=str,converters={'fare':float})
+fare['weekfirstdate']=[str(x)[0:10] for x in fare['week']]
+fare=fare.groupby(['weekfirstdate'],as_index=False).agg({'fare':'sum'}).reset_index(drop=True)
+dfwk=pd.merge(dfwk,fare,how='inner',on=['weekfirstdate'])
+dfwk.to_csv(path+'VALIDATION/MTA/WEEKLY.csv',index=False)
 
 
 
