@@ -215,36 +215,36 @@ fig.write_html('C:/Users/mayij/Desktop/DOC/GITHUB/td-mtatracker/faretype.html',
 
 
 
-# Compare the data
-df=pd.read_csv(path+'fare.csv',dtype=str,converters={'fare':float})
-preweek='04/20/2019-04/26/2019'
-postweek='04/18/2020-04/24/2020'
-cplxpre=df[np.isin(df['week'],preweek)].reset_index(drop=True)
-cplxpre=pd.merge(cplxpre,rc,how='left',left_on='unit',right_on='Remote')
-cplxpre=cplxpre.groupby(['CplxID'],as_index=False).agg({'fare':'sum'}).reset_index(drop=True)
-cplxpre.columns=['CplxID','PreEntries']
-cplxpost=df[np.isin(df['week'],postweek)].reset_index(drop=True)
-cplxpost=pd.merge(cplxpost,rc,how='left',left_on='unit',right_on='Remote')
-cplxpost=cplxpost.groupby(['CplxID'],as_index=False).agg({'fare':'sum'}).reset_index(drop=True)
-cplxpost.columns=['CplxID','PostEntries']
-cplxdiff=pd.merge(cplxpre,cplxpost,how='inner',on='CplxID')
-cplxdiff['Pct']=cplxdiff['PostEntries']/cplxdiff['PreEntries']
-cplxdiff['Pct'].describe(percentiles=np.arange(0.2,1,0.2))
-cplxdiff['PctCat']=np.where(cplxdiff['Pct']<=0.1,'1%~10%',
-                   np.where(cplxdiff['Pct']<=0.15,'11%~15%',
-                            '16%~38%'))
-cplxdiff=pd.merge(cplxdiff,rc.drop('Remote',axis=1).drop_duplicates(keep='first').reset_index(drop=True),how='left',on='CplxID')
-cplxdiff=cplxdiff[['CplxID','Borough','CplxName','Routes','CplxLat','CplxLong','Hub','PreEntries','PostEntries','Pct','PctCat']].reset_index(drop=True)
-cplxdiff=gpd.GeoDataFrame(cplxdiff,geometry=[shapely.geometry.Point(x,y) for x,y in zip(cplxdiff['CplxLong'],cplxdiff['CplxLat'])],crs='epsg:4326')
-cplxdiff.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/nadirfare.geojson',driver='GeoJSON')
+# # Compare the data
+# df=pd.read_csv(path+'fare.csv',dtype=str,converters={'fare':float})
+# preweek='04/20/2019-04/26/2019'
+# postweek='04/18/2020-04/24/2020'
+# cplxpre=df[np.isin(df['week'],preweek)].reset_index(drop=True)
+# cplxpre=pd.merge(cplxpre,rc,how='left',left_on='unit',right_on='Remote')
+# cplxpre=cplxpre.groupby(['CplxID'],as_index=False).agg({'fare':'sum'}).reset_index(drop=True)
+# cplxpre.columns=['CplxID','PreEntries']
+# cplxpost=df[np.isin(df['week'],postweek)].reset_index(drop=True)
+# cplxpost=pd.merge(cplxpost,rc,how='left',left_on='unit',right_on='Remote')
+# cplxpost=cplxpost.groupby(['CplxID'],as_index=False).agg({'fare':'sum'}).reset_index(drop=True)
+# cplxpost.columns=['CplxID','PostEntries']
+# cplxdiff=pd.merge(cplxpre,cplxpost,how='inner',on='CplxID')
+# cplxdiff['Pct']=cplxdiff['PostEntries']/cplxdiff['PreEntries']
+# cplxdiff['Pct'].describe(percentiles=np.arange(0.2,1,0.2))
+# cplxdiff['PctCat']=np.where(cplxdiff['Pct']<=0.1,'1%~10%',
+#                    np.where(cplxdiff['Pct']<=0.15,'11%~15%',
+#                             '16%~38%'))
+# cplxdiff=pd.merge(cplxdiff,rc.drop('Remote',axis=1).drop_duplicates(keep='first').reset_index(drop=True),how='left',on='CplxID')
+# cplxdiff=cplxdiff[['CplxID','Borough','CplxName','Routes','CplxLat','CplxLong','Hub','PreEntries','PostEntries','Pct','PctCat']].reset_index(drop=True)
+# cplxdiff=gpd.GeoDataFrame(cplxdiff,geometry=[shapely.geometry.Point(x,y) for x,y in zip(cplxdiff['CplxLong'],cplxdiff['CplxLat'])],crs='epsg:4326')
+# cplxdiff.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-covid19/subway/nadirfare.geojson',driver='GeoJSON')
 
 
 
 
 
-# By Borough
-df=pd.read_csv(path+'fare.csv',dtype=str,converters={'fare':float})
-df=pd.merge(df,rc,how='left',left_on='unit',right_on='Remote')
-df=df.groupby(['Borough','week'],as_index=False).agg({'fare':'sum'}).reset_index(drop=True)
-df.to_csv('C:/Users/mayij/Desktop/fareboro.csv',index=False)
+# # By Borough
+# df=pd.read_csv(path+'fare.csv',dtype=str,converters={'fare':float})
+# df=pd.merge(df,rc,how='left',left_on='unit',right_on='Remote')
+# df=df.groupby(['Borough','week'],as_index=False).agg({'fare':'sum'}).reset_index(drop=True)
+# df.to_csv('C:/Users/mayij/Desktop/fareboro.csv',index=False)
 
